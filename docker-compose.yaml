@@ -1,6 +1,7 @@
+version: "3.9"
 services:
   nestjs-app:
-    image: node:18-alpine
+    build: ./nestjs-app
     restart: unless-stopped
     ports:
       - 3000:3000   # default port
@@ -11,10 +12,6 @@ services:
       - ./nestjs-app/app:/usr/src/app
     depends_on:     # ???
       - postgres-db
-    working_dir: /usr/src/app
-    # command: cd /usr/src/app
-    command: npm install
-    command: npm run start:dev
   postgres-db:
     image: postgres:14.2
     restart: unless-stopped
