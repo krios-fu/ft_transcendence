@@ -1,12 +1,12 @@
-FROM node:18-alpine
+# FROM node:18-alpine
 
-ADD     ./app /usr/src/app
+# # ADD     ./app /usr/src/app
 
-WORKDIR /usr/src/app
+# # WORKDIR /usr/src/app
 
-RUN npm install 
+# # RUN npm install 
 
-EXPOSE 3000/tcp
-EXPOSE 9229/tcp
+# EXPOSE 3000/tcp
+# EXPOSE 9229/tcp
 
-ENTRYPOINT ["npm", "run", "start:dev"]
+# ENTRYPOINT [ ["npm", "install"], ["npm", "run", "start:dev" ] ]
