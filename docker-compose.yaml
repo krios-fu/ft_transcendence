@@ -1,7 +1,7 @@
 services:
   nestjs-app:
     build: ./nestjs-app
-    working_dir: /usr/src/app
+#    working_dir: /usr/src/app
     restart: unless-stopped
     ports:
       - 3000:3000   # default port
@@ -9,7 +9,7 @@ services:
     networks:
       - webapp-network
     volumes:
-      - ./nestjs-app/src:/usr/src/app
+      - ./nestjs-app/app:/usr/src/app
     depends_on:     # ???
       - postgres-db
     command: npm run start:dev
@@ -17,7 +17,7 @@ services:
     image: postgres:14.2
     restart: unless-stopped
     ports:
-      - 5432:5432   # ???
+      - 5432:5432
     networks:
       - webapp-network
     environment:
