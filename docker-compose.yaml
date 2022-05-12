@@ -11,8 +11,8 @@ services:
       - ./backend/app:/usr/src/app
     depends_on:     # ???
       - db
-    working_dir: /usr/src/app
-    command: sh -c "npm install && npm run start:dev"
+    working_dir: /usr/src/app/api
+    command: sh -c "npm i -g @nestjs/cli && npm install && npm run start:dev"
     restart: unless-stopped
   db:
     image: postgres:14.2
