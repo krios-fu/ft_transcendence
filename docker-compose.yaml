@@ -1,34 +1,35 @@
 version: "3.9"
 services:
-  nestjs-app:
-    build: ./nestjs-app
-    restart: unless-stopped
+  backend:
+    image: node:18-alpine
     ports:
       - 3000:3000   # default port
       - 9229:9229   # default debug port
     networks:
       - webapp-network
     volumes:
-      - ./nestjs-app/app:/usr/src/app
+      - ./backend/app:/usr/src/app
     depends_on:     # ???
-      - postgres-db
-  postgres-db:
-    image: postgres:14.2
+      - db
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npm run start:dev"
     restart: unless-stopped
+  db:
+    image: postgres:14.2
     ports:
       - 5432:5432
     networks:
       - webapp-network
+    volumes:
+      - dbdata:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWD}
-    volumes:
-      - postgres-db-data:/var/lib/postgresql/data
-
+    restart: unless-stopped
 networks:
   webapp-network:
     driver: bridge
 
 volumes:
-  postgres-db-data: {}  
+  dbdata: {}
