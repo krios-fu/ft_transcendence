@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="usage: ./start.sh [ start | stop | purge | exec [ backend or db ] ]"
+USAGE="usage: ./start.sh [ start | stop | purge | exec [ backend, db, pgadmin ] ]"
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
    echo $USAGE
@@ -42,6 +42,13 @@ if [ "$1" = "exec" ]; then
         ID_DB=$( docker ps | grep db | awk '{ print $1 }' );
         docker exec -it "$ID_DB" sh;
         echo "STOP DATABSE POSTGRESQL";
+        exit 0
+    ;;
+    "pgadmin")
+        echo "STARTING PGADMIN";
+        ID_PGADMIN=$( docker ps | grep pgadmin | awk '{ print $1 }' );
+        docker exec -it "$ID_PGADMIN" sh;
+        echo "STOP PGADMIN";
         exit 0
     ;;
     esac
