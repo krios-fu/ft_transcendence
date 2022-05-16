@@ -9,7 +9,7 @@ import { UsersRepository } from './users.repository';
 export class UserService {
 
 	constructor(
-		private repository : UsersRepository ,
+		private repository : UsersRepository,
 		private userMap : UserMapper
 	){}
 
