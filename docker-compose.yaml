@@ -16,22 +16,6 @@ services:
     working_dir: /usr/src/app/api
     command: sh -c "npm install  && npm run start:dev"
     restart: unless-stopped
-  frontend:
-    env_file: .env
-    container_name: frontend
-    image: node:18-alpine
-    ports:
-      - 4200:4200   # default port
-      # - 9229:9229   # default debug port
-    networks:
-      - webapp-network
-    volumes:
-      - ./frontend/app:/usr/src/app/
-    depends_on:     # ???
-      - backend
-    working_dir: /usr/src/app/
-    command: sh -c "npm install && npm install -g @angular/cli &&  ng build && npm run start"
-    restart: unless-stopped
   db:
     container_name: db
     image: postgres:14.2
