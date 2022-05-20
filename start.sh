@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USAGE="usage: ./start.sh [ start | stop | purge | exec [ backend, db, pgadmin ] ]"
+USAGE="usage: ./start.sh [ start | stop | purge | exec [ backend, db, pgadmin, frontend ] ]"
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
    echo $USAGE
@@ -34,21 +34,28 @@ if [ "$1" = "exec" ]; then
         echo "STARTING BACKEND NESTJS";
         ID_BACKEND=$( docker ps | grep backend | awk '{ print $1 }' );
         docker exec -it "$ID_BACKEND" sh;
-        echo "STOP BACKEND NESTJS";
+        echo "EXIT CONTAINER  BACKEND NESTJS";
         exit 0
     ;;
     "db")
         echo "STARTING DATABSE POSTGRESQL";
         ID_DB=$( docker ps | grep db | awk '{ print $1 }' );
         docker exec -it "$ID_DB" sh;
-        echo "STOP DATABSE POSTGRESQL";
+        echo "EXIT CONTAINER DATABSE POSTGRESQL";
         exit 0
     ;;
     "pgadmin")
         echo "STARTING PGADMIN";
         ID_PGADMIN=$( docker ps | grep pgadmin | awk '{ print $1 }' );
         docker exec -it "$ID_PGADMIN" sh;
-        echo "STOP PGADMIN";
+        echo "EXIT CONTAINER  PGADMIN";
+        exit 0
+    ;;
+        "frontend")
+        echo "STARTING FRONTEND";
+        ID_FRONTEND=$( docker ps | grep frontend | awk '{ print $1 }' );
+        docker exec -it "$ID_FRONTEND" sh;
+        echo "EXIT CONTAINER FRONTEND ANGULAR";
         exit 0
     ;;
     esac
