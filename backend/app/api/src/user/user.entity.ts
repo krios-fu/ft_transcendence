@@ -1,29 +1,18 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { UserDto } from "./user.dto";
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
+export class UserEntity {
+    @PrimaryGeneratedColumn()
+    id: number;
 
+    @Column()
+    firstName: string;
 
-
-@Entity('user')
-export class User {
-
-	@PrimaryColumn()
-	username : string;
-	
-	@Column()
-	firstName : string;
-
-	@Column()
-	lastName : string;
-
-	@Column()
-	email : string;
-
-	@Column()
-	photo : string;
-
-	// constructor( userDto : UserDto )
-	// {
-	
-	// }
-}
+    @Column()
+    lastName: string;
+};

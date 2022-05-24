@@ -1,34 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { UserDto } from './user.dto';
-import { User } from './user.entity';
+import { Repository } from 'typeorm';
+import { UserEntity } from './user.entity';
 import { UserMapper } from './user.mapper';
-import { UsersRepository } from './users.repository';
+import { UserDto } from './user.dto';
 
+/* Función que espera una Promesa no debería ser siempre asíncrona ? */
 
 @Injectable()
-export class UserService {
+export class UserServices {
+    constructor(
+	private userRepository: Repository<UserEntity>,
+	private userMapper: UserMapper,
+    ) { }
 
-	constructor(
-		private repository : UsersRepository,
-		private userMap : UserMapper
-	){}
+    getAllUsers(): Promise<UserEntity[]> {
+	return this.userRepository.find();
+    }
 
-	async findAll() : Promise <UserDto []>{
-		const users : User[] = await this.repository.findAll();
-		return users.map( users => this.userMap.ToDto(users) )
-	}
+    getUserById(id: string): Promise<UserEntity> {
+	return this.userRepository.findOne(id);
+    }
 
-	async findOne( id : string ) : Promise<UserDto>{
-		const user : User = await this.repository.findOne( id );
-		return this.userMap.ToDto( user );
-	}
+    async postUser(newUser: UserDto): Promise<UserEntity> {
+	const newUserEntity = this.userMapper.toEntity(newUser);
+	
+	await this.userRepository.save(newUserEntity);
+	return newUserEntity;
+    }
 
-	async create ( newUser : UserDto ) : Promise<UserDto>{ 
-		const user : User = await this.repository.create( newUser );
-		return this.userMap.ToDto( user );
-	}
-
-	async remove( id :string ) : Promise<void>{
-		await this.repository.remove( id );
-	}
+    async removeUser(id: string): Promise<void> {
+	await this.userRepository.delete(id);
+    }
 }
