@@ -3,13 +3,14 @@ import { Repository } from 'typeorm';
 import { UserPwEntity } from './user.pw.entity';
 import { UserPwMapper } from './user.pw.mapper';
 import { UserPwDto } from './user.pw.dto';
+import { InjectRepository } from '@nestjs/typeorm';
 
 /* Función que espera una Promesa no debería ser siempre asíncrona ? */
 
 @Injectable()
 export class UserServices {
     constructor(
-	hola: string,
+	@InjectRepository(UserPwEntity)
 	private userPwRepository: Repository<UserPwEntity>,
 	private userPwMapper: UserPwMapper,
     ) { }
