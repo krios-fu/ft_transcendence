@@ -6,13 +6,16 @@ import {
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UserEntity {
+export class UserPwEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column()
-    firstName: string;
+    username: string;
 
     @Column()
-    lastName: string;
+    password: string;
+
+    @Column()
+    extraValue: string;
 };

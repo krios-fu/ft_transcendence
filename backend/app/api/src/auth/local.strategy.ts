@@ -11,11 +11,13 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from './auth.service';
+import { JwtService } from '@nestjs/jwt'; 
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
     constructor(
         private authService: AuthService,
+	private jwtService: JwtService,
     ) {
         super();
     }
@@ -27,5 +29,14 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
             throw new UnauthorizedException();
         }
         return user;
+    }
+
+    async login(user: any) {
+	const payload = { username: user.username, sub: user.userId };
+
+	console.log(this.jwtService.sign(payload));
+	return {
+	    access_token: this.jwtService.sign(payload), /* .sign() crea el token usado como jwt */
+	};
     }
 }

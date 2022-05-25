@@ -3,10 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './user/user.entity'
+import { UserPwEntity } from './user/user.pw.entity'
 import { AuthModule } from './auth/auth.module';
-import { UserServices } from './user/user.services';
-import { AuthModule } from './auth/auth.module';
+import { UserServices } from './user/user.service';
 
 @Module({
     imports: [
