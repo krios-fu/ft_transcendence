@@ -6,7 +6,7 @@ import { UserPwEntity } from './user.pw.entity';
 import { UserPwMapper } from './user.pw.mapper';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserPwEntity])],
+    imports: [TypeOrmModule.forFeature([UserPwEntityne])],
     controllers: [UserController],
     providers: [UserPwMapper, UserServices],
     exports: [UserServices],

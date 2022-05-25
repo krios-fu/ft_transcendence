@@ -28,6 +28,7 @@ export class UserController {
 
     @Post()
     postUser(@Body() userPwDto: UserPwDto): Promise<UserPwEntity> {
+	console.log("Got into post method" + userPwDto);
 	return this.userServices.postUser(userPwDto);
     }
 

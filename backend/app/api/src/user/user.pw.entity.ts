@@ -1,16 +1,13 @@
 import {
     Entity,
     Column,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
 } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
-@Injectable()
+@Entity('UserPwEntity')
 export class UserPwEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
-
-    @Column()
+    @PrimaryColumn()
     username: string;
 
     @Column()
