@@ -1,0 +1,129 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mr+Dafoe&display=swap');
+
+
+h1 {
+  position: relative;
+  font-family: 'Press Start 2P';
+  font-size: 7em;
+/*  margin: 0;*/
+  transform: skew(-15deg);
+  letter-spacing: 0.03em;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -0.1em;
+    right: 0.05em;
+    width: 0.4em;
+    height: 0.4em;
+    background:
+      radial-gradient(white 3%, rgba(white, 0.3) 15%, rgba(white, 0.05) 60%, transparent 80%),
+      radial-gradient(rgba(white, 0.2) 50%, transparent 60%) 50% 50% / 5% 100%,
+      radial-gradient(rgba(white, 0.2) 50%, transparent 60%) 50% 50% / 70% 5%;
+    background-repeat: no-repeat;
+  }
+
+  span:first-child {
+    display: block;
+    /*text-shadow: 0 0 0.1em #8ba2d0, 0 0 0.2em black,  0 0 5em #165ff3;*/
+    -webkit-text-stroke: 0.06em rgba(black, 0.5);
+  }
+
+  span:last-child {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-image: linear-gradient(#032d50 25%, #00a1ef 35%, white 50%, #20125f 50%, #8313e7 55%, #ff61af 75%);
+    -webkit-text-stroke: 0.01em #94a0b9;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+h2 {
+  font-family: 'Mr Dafoe', cursive;
+  letter-spacing:3.5px;
+
+  position: relative;
+  font-size: 2.5em;
+  margin-top: -3em;
+
+
+  color: white;
+  text-shadow: 0 0 0.05em #fff, 0 0 0.2em #fe05e1, 0 0 0.3em #fe05e1;
+  transform: rotate(-10deg);
+}
+
+
+.btn-neon{
+  position:relative;
+  display:inline-block;
+  padding:15px 30px;
+  color:#fff;
+  font-size:42px;
+  text-decoration:none;
+  letter-spacing:1px;
+  overflow:hidden;
+  transition:0.2s;
+  font-family: 'Press Start 2P', serif;
+
+
+}
+.btn-neon:hover{
+  background-color: #fe05e1;
+  box-shadow:0 0 10px #fe05e1, 0 0 40px #fe05e1, 0 0 80px #fe05e1;
+  transition-delay:1s;
+}
+.btn-neon span{
+  position:absolute;
+  display:block;
+}
+.span1{
+  top:0;
+  left:-100px;
+  width:100px;
+  height:2px;
+  background:linear-gradient(90deg,transparent,#fe05e1 )
+}
+.btn-neon:hover .span1{
+  left:100%;
+  transition:1s;
+}
+.span3{
+  bottom:0;
+  right:-100px;
+  width:100px;
+  height:2px;
+  background:linear-gradient(270deg,transparent,#fe05e1 )
+}
+.btn-neon:hover .span3{
+  right:100%;
+  transition:1s;
+  transition-delay:0.5s;
+}
+.span2{
+  top:-100%;
+  right:0;
+  width:2px;
+  height:100%;
+  background:linear-gradient(180deg,transparent,#fe05e1 )
+}
+.btn-neon:hover .span2{
+  top:100%;
+  transition:1s;
+  transition-delay:0.25s;
+}
+.span4{
+  bottom:-100%;
+  left:0;
+  width:2px;
+  height:100%;
+  background:linear-gradient(360deg,transparent,#fe05e1 )
+}
+.btn-neon:hover .span4{
+  bottom:100%;
+  transition:1s;
+  transition-delay:0.75s;
+}
