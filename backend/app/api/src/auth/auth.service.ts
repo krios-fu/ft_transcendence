@@ -15,8 +15,10 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
     constructor(
         private userServices: UserServices,
-	private jwtService: JwtService,
-    ) { }
+        private jwtService: JwtService,
+    ) {
+        console.log("AuthService inicializado");
+    }
 
     async validateUser(username: string, pass: string): Promise<any> {  /* valida usuario */
         const user = await this.userServices.getUserById(username);
@@ -30,10 +32,10 @@ export class AuthService {
     }
 
     async login(user: any) {  /* genera JWT */
-	const payload = { username: user.username, sub: user.userId };
-
-	return {
-	    access_token: this.jwtService.sign(payload),
-	}
+        const payload = { username: user.username, sub: user.userId };
+        console.log(user + payload.username + payload.sub);
+        return {
+            access_token: this.jwtService.sign(payload),
+        }
     }
 }

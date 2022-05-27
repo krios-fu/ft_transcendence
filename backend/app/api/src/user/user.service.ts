@@ -10,27 +10,29 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class UserServices {
     constructor(
-	@InjectRepository(UserPwEntity)
-	private userPwRepository: Repository<UserPwEntity>,
-	private userPwMapper: UserPwMapper,
-    ) { }
+        @InjectRepository(UserPwEntity)
+        private userPwRepository: Repository<UserPwEntity>,
+        private userPwMapper: UserPwMapper,
+    ) {
+        console.log("UserServices inicializado");
+    }
 
     async getAllUsers(): Promise<UserPwEntity[]> {  /* async ?? */
-	return await this.userPwRepository.find();
+        return await this.userPwRepository.find();
     }
 
     async getUserById(id: string): Promise<UserPwEntity> {
-	return await this.userPwRepository.findOne(id);
+        return await this.userPwRepository.findOne(id);
     }
 
     async postUser(newUser: UserPwDto): Promise<UserPwEntity> {
-	const newUserEntity = this.userPwMapper.toEntity(newUser);
-	
-	await this.userPwRepository.save(newUserEntity);
-	return newUserEntity;
+        const newUserEntity = this.userPwMapper.toEntity(newUser);
+
+        await this.userPwRepository.save(newUserEntity);
+        return newUserEntity;
     }
 
     async removeUser(id: string): Promise<void> {
-	await this.userPwRepository.delete(id);
+        await this.userPwRepository.delete(id);
     }
 }

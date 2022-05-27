@@ -6,9 +6,13 @@ import { UserPwEntity } from './user.pw.entity';
 import { UserPwMapper } from './user.pw.mapper';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([UserPwEntityne])],
+    imports: [TypeOrmModule.forFeature([UserPwEntity])],
     controllers: [UserController],
     providers: [UserPwMapper, UserServices],
     exports: [UserServices],
 })
-export class UserModule {}
+export class UserModule {
+    constructor() {
+        console.log("UserModule inicializado");
+    }
+}

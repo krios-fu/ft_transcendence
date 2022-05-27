@@ -11,14 +11,15 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt'; 
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
     constructor(
         private authService: AuthService,
-	private jwtService: JwtService,
+        private jwtService: JwtService,
     ) {
+        console.log("LocalStrategy inicializado");
         super();
     }
 
@@ -32,11 +33,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     async login(user: any) {
-	const payload = { username: user.username, sub: user.userId };
+        const payload = { username: user.username, sub: user.userId };
 
-	console.log(this.jwtService.sign(payload));
-	return {
-	    access_token: this.jwtService.sign(payload), /* .sign() crea el token usado como jwt */
-	};
+        console.log(this.jwtService.sign(payload));
+        return {
+            access_token: this.jwtService.sign(payload), /* .sign() crea el token usado como jwt */
+        };
     }
 }

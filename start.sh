@@ -17,6 +17,19 @@ if [ "$1" = "purge" ]; then
 fi
 
 if [ "$1" = "start" ]; then
+    # ** apaño ** #
+
+    if [ ! -f "./.env" ]; then
+	cat <<EOF > .env
+DB_USERNAME=youruser
+DB_NAME=yourdbname
+DB_PASSWD=yourpassword
+DB_HOST=db
+DB_PORT=5432
+PG_MAIL=youremail@yourdomain.yourcountry
+PG_PASSWD=yourpassword
+EOF
+    fi
     docker-compose up --build
 
     exit 0
