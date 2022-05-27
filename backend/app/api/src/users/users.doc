@@ -1,0 +1,24 @@
+Conexión con bases de datos:
+    Integración con el paquete TypeORM.
+    { ORM: Object-relational mapping }
+    Importamos el módulo TypeOrmModule en el módulo raíz del proyecto 
+    con la información necesaria para iniciar una conexión con la base de
+    datos 
+    (puerto, nombre del host en el que se establece el servicio,
+    credenciales de usuario...)
+    Esta información es conveniente pasarla como variables de entorno en el proyecto
+    (process.env.VAR_NAME)
+
+    Importamos el módulo TypeOrmModule como feature en el módulo en el que va a 
+    implementarse la lógica de comunicación con la base de datos, pasando como parámetro
+    la entidad que será usada como diseño de tabla.
+
+Entity:
+    Marcamos con un decorador @Entity la clase que defina la el diseño de la tabla a ser
+    usada. Esta clase necesita un atributo marcado como @PrimaryColumn como identificador
+    de tabla.
+
+Repository:
+    La comunnicación se realiza propiamente mediante la clase Repository, inyectada como
+    dependencia dentro del proveedor del módulo.
+

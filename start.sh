@@ -28,6 +28,8 @@ DB_HOST=db
 DB_PORT=5432
 PG_MAIL=youremail@yourdomain.yourcountry
 PG_PASSWD=yourpassword
+FORTYTWO_APP_ID=757cc91999d9d9a53b612c0d7626ff0573a3d697fda5870efa3b095169d40e4b
+FORTYTWO_APP_SECRET=e0a2e120a96310c36cbfeaa5b42905c30aa0eb8a8551b63e148454d76a4a3ff3
 EOF
     fi
     docker-compose up --build

@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
-import { UserModule } from '../user/user.module';
-import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
+import { FortyTwoStrategy } from './fortytwo.strategy';
 
 @Module({
     imports: [
-        UserModule,
+        UsersModule,
         PassportModule,
-        JwtModule.register({ /* añade la estrategia Jwt como proveedora */
-            secret: jwtConstants.secret,
-            signOptions: { expiresIn: '123s' },
+        JwtModule.register({
+            secret: process.env.FORTYTWO_APP_SECRET,
+            signOptions: { expiresIn: '60s' },
         }),
     ],
-    providers: [AuthService, LocalStrategy, JwtStrategy],
-    exports: [AuthService],
+    controllers: [AuthController],
+    providers: [
+        AuthService,
+        JwtStrategy,
+        FortyTwoStrategy,
+    ]
 })
-export class AuthModule {
-    constructor() { console.log("AuthModule instanciada"); }
-}
+export class AuthModule { }

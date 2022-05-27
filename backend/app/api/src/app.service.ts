@@ -6,7 +6,7 @@ export class AppService {
         console.log("AppService inicializado");
     }
 
-    getHello(): string {
-        return 'Hello World!';
+    printSmthng(): string {
+        return "Hello, user";
     }
 }
