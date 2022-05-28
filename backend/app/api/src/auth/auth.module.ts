@@ -10,17 +10,25 @@ import { FortyTwoStrategy } from './fortytwo.strategy';
 @Module({
     imports: [
         UsersModule,
-        PassportModule,
+        PassportModule.register({
+            defaultStrategy: 'jwt',
+            property: 'users',
+            session: false,
+        }),
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: { expiresIn: '60s' },
-        }),
+        }), /* Configuración necesaria para la función sign */
     ],
     controllers: [AuthController],
     providers: [
         AuthService,
         JwtStrategy,
         FortyTwoStrategy,
-    ]
+    ],
+    exports: [
+        PassportModule,
+        JwtModule,
+    ],
 })
 export class AuthModule { }

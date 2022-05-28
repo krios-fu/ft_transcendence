@@ -1,8 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { UsersMapper } from './users.mapper';
 import { UsersEntity } from './users.entity';
 import { UsersDto } from './users.dto';
+import {
+    Injectable,
+    HttpException,
+    HttpStatus,
+} from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -25,6 +29,10 @@ export class UsersService {
 
     /* post new user */
     async postUser(newUser: UsersDto): Promise<UsersEntity> {
+        const isInDb = this.usersRepository.findOne(newUser.username);
+        if (isInDb) {
+            throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+        }
         const newEntity = this.usersMapper.toEntity(newUser);
 
         this.usersRepository.create(newEntity);

@@ -8,6 +8,7 @@ import { UsersMapper } from './users.mapper';
 
 @Module({
     imports: [TypeOrmModule.forFeature([UsersEntity])],
+    exports: [UsersService],        /* Va a ser usado por el módulo externo AuthModule */
     controllers: [UsersController],
     providers: [
         UsersService,

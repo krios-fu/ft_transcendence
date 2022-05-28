@@ -9,7 +9,22 @@ export class UsersEntity {
     @PrimaryColumn()
     username: string;
 
+    @Column({
+        //type: varchar,
+        //nullable: false,
+        //unique: true,
+    })
+    firstName: string;
+
     @Column()
-    placeholder: string;
-    // ... check again when passport-42 is implemented
+    lastName: string;
+
+    @Column()
+    profileUrl: string;
+
+    @Column()
+    email: string;
+
+    @Column()
+    photoUrl: string
 }
