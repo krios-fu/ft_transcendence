@@ -7,10 +7,12 @@ import {
     HttpException,
     HttpStatus,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
     constructor(
+        @InjectRepository(UsersEntity)
         private usersRepository: UsersRepository,
         private usersMapper: UsersMapper,
     ) {
@@ -22,20 +24,20 @@ export class UsersService {
         return await this.usersRepository.find();
     }
 
-    /* find one user by name*/
-    async findByUsername(username: string): Promise<UsersEntity> {
-        return await this.usersRepository.findByUsername(username);
+    async findOne(id: string): Promise<UsersEntity> {
+        return await this.usersRepository.findOne(id);
     }
 
     /* post new user */
     async postUser(newUser: UsersDto): Promise<UsersEntity> {
-        const isInDb = this.usersRepository.findOne(newUser.username);
-        if (isInDb) {
+        const isInDb = this.findOne(newUser.username);
+
+        if (Object.keys(isInDb).length) {
             throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
         }
         const newEntity = this.usersMapper.toEntity(newUser);
 
-        this.usersRepository.create(newEntity);
+        this.usersRepository.save(newEntity);
         return newEntity;
     }
 

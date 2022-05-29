@@ -7,6 +7,7 @@ import {
     UseGuards,
     Req,
 } from '@nestjs/common';
+import { Public } from './public.decorator';
 
 interface RequestWithPayload extends Request {
     user: Payload;
@@ -18,19 +19,20 @@ export class AuthController {
         console.log("AuthController inicializado");
     }
 
+    /* Public aqui ?? */
+    @Public()
     @Get("42")
     @UseGuards(FortyTwoAuthGuard)
-    authFromFT(@Req() req: Request) {
-        /* no */
-    }
+    authFromFT() { /* no */ }
 
     @Get("42/redirect")
+    @Public()
     @UseGuards(FortyTwoAuthGuard)
     async authFromFTRedirect(@Req() req: RequestWithPayload): Promise<any> {
         const user = req.user;
         console.log("req debugging " + req);
 
-        this.authService.login(user);
+        return this.authService.login(user);
     }
 
 }

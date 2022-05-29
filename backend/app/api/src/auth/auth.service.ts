@@ -17,15 +17,14 @@ export class AuthService {
         if (!payload) {
             console.log("No user in request.");
             return { error: "bad" };
-        }
+        };
         const accessToken = this.jwtService.sign(payload);
         const userProfile = payload.userProfile;
-        const isInDb = this.usersService.findByUsername(userProfile.username);
+        const isInDb = this.usersService.findOne(userProfile.username);
 
-        if (!isInDb) {
+        if (!Object.keys(isInDb).length) {
             this.usersService.postUser(userProfile);
         }
-        console.log("access token: " + accessToken);
         return { 'accessToken': accessToken };
     }
 }

@@ -21,7 +21,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
         accessToken: string,
         refreshToken: string,
         profile: Profile,
-        callback: (err: any, payload: Payload) => void,
+        callback: (err: any, payload: any) => void,
     ): Promise<any> {
         const { username, name, profileUrl, emails, photos } = profile;
         const userProfile = {

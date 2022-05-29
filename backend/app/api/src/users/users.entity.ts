@@ -4,7 +4,7 @@ import {
     Column,
 } from 'typeorm';
 
-@Entity('user')
+@Entity()
 export class UsersEntity {
     @PrimaryColumn()
     username: string;

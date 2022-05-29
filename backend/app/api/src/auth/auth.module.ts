@@ -10,11 +10,7 @@ import { FortyTwoStrategy } from './fortytwo.strategy';
 @Module({
     imports: [
         UsersModule,
-        PassportModule.register({
-            defaultStrategy: 'jwt',
-            property: 'users',
-            session: false,
-        }),
+        PassportModule,
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: { expiresIn: '60s' },
