@@ -6,7 +6,8 @@ body, html {
   width: 100%;
   height: 100%;
   margin: 0;
-  overflow: hidden;
+ overflow: hidden;
+
 }
 
 body {
@@ -14,23 +15,24 @@ body {
   align-items: center;
   justify-content: normal;
   flex-direction: column;
-  background: radial-gradient(rgba(#7600bf, 0.5) 0%, transparent 70%), linear-gradient(#0b161e 40%, #202076 70%);
+  background: radial-gradient(rgba(#7600bf, 0.5) 0%, transparent 70%) , linear-gradient(#0b161e 40%, #202076 60%);
   /*background: url("https://pastoralclaretianasnorte.files.wordpress.com/2013/11/mono-riendo1.jpg");*/
   perspective: 900px;
   font-size: clamp(10px, 2vw, 20px);
+
 }
 
 .grid {
-  position: realtive;
-  $main: #7d41e6;
-  $glow: rgba(#2e26ff, 0.4);
+  position: absolute;
+  $main: white;
+  $glow: rgba(#60a0f3, 10.4);
   background:
     linear-gradient(transparent 65%, $glow 75%, $main 80%, $glow 85%, transparent 95%),
     linear-gradient(90deg, transparent 65%, $glow 75%, $main 80%, $glow 85%, transparent 95%);
   background-size: 30px 30px;
   width: 200vw;
   height: 300vh;
-  position: absolute;
+  /*position: absolute;*/
   bottom: -120vh;
   transform: rotateX(-100deg);
   -webkit-mask-image: linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0) 80%);
