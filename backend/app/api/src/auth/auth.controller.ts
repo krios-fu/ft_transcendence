@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from 'src/user/user.dto';
 import { AuthService } from './auth.service';
@@ -16,6 +16,7 @@ export class AuthController {
 
 	@Get('42/redirect')
 	@UseGuards( AuthGuard('42') )
+	@Redirect('http://localhost:4200', 301)
 	async fortyTwoRedirect( @Req() req: Request ) : Promise<UserDto>{
 		const { user } = <any>req;
 		return await this.authService.createUserFortyTwo( user.user );
