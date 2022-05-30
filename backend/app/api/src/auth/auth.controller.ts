@@ -19,7 +19,6 @@ export class AuthController {
         console.log("AuthController inicializado");
     }
 
-    /* Public aqui ?? */
     @Public()
     @Get("42")
     @UseGuards(FortyTwoAuthGuard)
