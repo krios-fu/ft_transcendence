@@ -2,6 +2,7 @@
 
 USAGE="usage: ./start.sh [ start | stop | purge | exec [ backend, db, pgadmin ] ]"
 
+
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
    echo $USAGE
 
