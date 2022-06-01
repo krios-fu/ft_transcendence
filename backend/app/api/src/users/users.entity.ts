@@ -1,7 +1,9 @@
+import { RoomEntity } from 'src/room/room.entity';
 import {
     Entity,
     PrimaryColumn,
     Column,
+    ManyToMany,
 } from 'typeorm';
 
 @Entity()
@@ -27,4 +29,10 @@ export class UsersEntity {
 
     @Column()
     photoUrl: string
+
+    @ManyToMany(
+        () => RoomEntity,
+        (roomEntity) => roomEntity.users
+    )
+    rooms: RoomEntity[];
 }

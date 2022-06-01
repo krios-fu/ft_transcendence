@@ -8,12 +8,15 @@ import {
     HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RoomService } from 'src/room/room.service';
+import { RoomEntity } from 'src/room/room.entity';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UsersEntity)
         private usersRepository: UsersRepository,
+        private roomService: RoomService,
         private usersMapper: UsersMapper,
     ) {
         console.log("UsersService inicializado");
@@ -25,7 +28,16 @@ export class UsersService {
     }
 
     async findOne(id: string): Promise<UsersEntity> {
-        return await this.usersRepository.findOne(id);
+        const usr = await this.usersRepository.findOne(id);
+
+        const loadedPhoto = await this.usersRepository.findOne({
+            where: {
+                username: id,
+            },
+            relations: ["rooms"],
+        });
+        console.log(JSON.stringify(loadedPhoto));
+        return usr;
     }
 
     /* post new user */
@@ -44,6 +56,14 @@ export class UsersService {
     /* delete user by name */
     async deleteUser(toRemove: UsersDto): Promise<void> {
         await this.usersRepository.remove(this.usersMapper.toEntity(toRemove));
+    }
+
+    async updateRoom(room: RoomEntity, id: string) {
+        const ourUser = await this.usersRepository.findOne(id);
+
+        ourUser.rooms = [room];
+        return await this.usersRepository.save(ourUser);
+        //return await this.usersRepository.update(id, {rooms: [room]});
     }
 
     // clear all
