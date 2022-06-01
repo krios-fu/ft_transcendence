@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { RoomModule } from './room/room.module';
 
 
 @Module({
@@ -22,6 +23,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
         }),
+        RoomModule,
     ],
     controllers: [AppController],
     providers: [
