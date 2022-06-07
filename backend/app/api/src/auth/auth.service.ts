@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { Payload } from '../users/users.dto';
@@ -16,7 +16,7 @@ export class AuthService {
 
         if (!payload) {
             console.log("No user in request.");
-            return { error: "bad" };
+            return new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         };
         const accessToken = this.jwtService.sign(payload);
         const userProfile = payload.userProfile;

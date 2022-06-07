@@ -1,12 +1,10 @@
-//export class RoomDto {
-//    roomName: string;
-//    password?: string;
-//};
-
-import { UsersEntity } from "src/users/users.entity";
+import { IsString } from "class-validator";
 
 export class RoomDto {
+
+    @IsString()
     roomName: string;
-//    date: Date;
-    users: UsersEntity[];
+
+    @IsString()
+    password?: string;
 };

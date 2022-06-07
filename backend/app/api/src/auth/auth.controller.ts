@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { FortyTwoAuthGuard } from './fortytwo-auth.guard';
+import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Payload } from '../users/users.dto';
 import {
     Controller,
@@ -7,7 +7,7 @@ import {
     UseGuards,
     Req,
 } from '@nestjs/common';
-import { Public } from './public.decorator';
+import { Public } from '../decorators/public.decorator';
 
 interface RequestWithPayload extends Request {
     user: Payload;

@@ -4,11 +4,7 @@ import {
     ExecutionContext,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from './public.decorator';
-
-/* Reflector: acceso a metadatos (roles)  de la ruta */
-/* Se ha de reescribir la función canActivate, heredada de
- * la interfaz AuthGuard */
+import { IS_PUBLIC_KEY } from '../../decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

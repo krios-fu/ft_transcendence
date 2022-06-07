@@ -8,7 +8,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RoomModule } from './room/room.module';
 
-
 @Module({
     imports: [
         AuthModule,
@@ -34,8 +33,4 @@ import { RoomModule } from './room/room.module';
         }
     ],
 })
-export class AppModule {
-    constructor() {
-        console.log("AppModule inicializado");
-    }
-}
+export class AppModule { }

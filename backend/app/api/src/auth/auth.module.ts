@@ -4,8 +4,8 @@ import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './jwt.strategy';
-import { FortyTwoStrategy } from './fortytwo.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { FortyTwoStrategy } from './strategy/fortytwo.strategy';
 
 @Module({
     imports: [
@@ -14,7 +14,7 @@ import { FortyTwoStrategy } from './fortytwo.strategy';
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: { expiresIn: '60s' },
-        }), /* Configuración necesaria para la función sign */
+        }),
     ],
     controllers: [AuthController],
     providers: [
