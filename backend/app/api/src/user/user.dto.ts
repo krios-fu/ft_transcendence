@@ -1,14 +1,13 @@
-export class UserDto {
-
-	username : string;
-	firstName : string;
-	lastName : string;
-	email : string;
-	photo : string;
-
+export class UsersDto {
+    username: string;
+    firstName: string;
+    lastName: string;
+    profileUrl: string;
+    email: string;
+    photoUrl: string;
 }
 
 export type Payload = {
-	userProfile : UserDto;
-	accessToken : string;
-}
+    userProfile: UsersDto;
+    accessToken: string;
+};

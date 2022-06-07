@@ -1,31 +1,52 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { User } from './user.entity'
-import { UserDto } from './user.dto';
-import { UserService } from './user.service';
+import {
+    Controller,
+    Get,
+    Post,
+    Param,
+    Body,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { UsersEntity } from './users.entity';
+import { UsersDto } from './users.dto';
+import { Public } from '../auth/public.decorator';
+import { RoomDto } from 'src/room/room.dto';
+import { Repository } from 'typeorm';
+import { RoomEntity } from 'src/room/room.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RoomService } from 'src/room/room.service';
+import { identity } from 'rxjs';
 
-@Controller('user')
-export class UserController {
-	constructor (
-		private readonly userService : UserService
-	) {}
+@Controller('users')
+export class UsersController {
+    constructor(
+        private roomService: RoomService,
+        private usersService: UsersService,
+    ) {
+        console.log("UsersController inicializado");
+    }
 
-	@Get()
-	async all() : Promise<User[]> {
-		return await this.userService.findAll();
-	}
+    @Public()
+    @Get()
+    async findAllUsers(): Promise<UsersEntity[]> {
+        return this.usersService.findAllUsers();
+    }
 
-	@Get(':id')
-	async one( @Param('id') id : string ) : Promise<User> {
-		return await this.userService.findOne( id );
-	}
+    @Public()
+    @Get(':id')
+    async findOneUser(@Param('id') id: string): Promise<UsersEntity> {
+        return this.usersService.findOne(id);
+    }
 
-	@Post()
-	async create ( @Body() user : UserDto ) : Promise<User> {
-		return await this.userService.create( user );
-	}
+    @Public()
+    @Post('new')
+    async postUser(@Body() newUser: UsersDto): Promise<UsersEntity> {
+        return this.usersService.postUser(newUser);
+    }
 
-	@Delete(':id')
-	async remove( @Param('id') id : string ) : Promise<void> {
-		return await this.userService.remove(id);
-	}
+    @Public()
+    @Post(':id/addroom')
+    async updateRoom(@Param('id') id, @Body() room: RoomDto) {
+        const roomEntity = await this.roomService.createRoom(room);
+        await this.usersService.updateRoom(roomEntity, id);
+    }
 }
