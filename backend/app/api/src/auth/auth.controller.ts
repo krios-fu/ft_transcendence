@@ -1,6 +1,6 @@
 import { AuthService } from './auth.service';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
-import { Payload } from '../users/users.dto';
+import { Payload } from '../user/user.dto';
 import {
     Controller,
     Get,
@@ -29,8 +29,6 @@ export class AuthController {
     @UseGuards(FortyTwoAuthGuard)
     async authFromFTRedirect(@Req() req: RequestWithPayload): Promise<any> {
         const user = req.user;
-        console.log("req debugging " + req);
-
         return this.authService.login(user);
     }
 

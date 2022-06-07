@@ -7,3 +7,8 @@ export class UserDto {
 	photo : string;
 
 }
+
+export type Payload = {
+	userProfile : UserDto;
+	accessToken : string;
+}

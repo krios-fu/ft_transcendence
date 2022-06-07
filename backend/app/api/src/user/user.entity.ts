@@ -34,32 +34,29 @@ export class User {
 	photo : string;
 
 	@Column()
-	nickName : string;
+	nickName ?: string;
 
 	@Column()
-	doubleAuth : boolean;
+	doubleAuth ?: boolean;
 
 	@Column({
 		type: 'enum',
 		enum: UserStatus,
 		default: UserStatus.ONLINE
 	})
-	status : UserStatus;
+	status ?: UserStatus;
 
 	@CreateDateColumn()
-	creationDate : Date;
+	creationDate ?: Date;
 
 	@UpdateDateColumn()
-	lastConnection : Date;
+	lastConnection ?: Date;
 
 	//Relations
 
-	@ManyToMany(() => Room, (room) => room.users)
+	/*@ManyToMany(() => Room, (room) => room.users)
   rooms: Room[];
 
 	@OneToMany(() => Score, (score) => score.user)
-	scores: Score[];
-
-	@OneToMany(() => BlockRequest, (blockRequest) => blockRequest.user)
-	blockRequests: BlockRequest[];
+	scores: Score[];*/
 }

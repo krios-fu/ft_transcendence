@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { Payload } from '../users/users.dto';
+import { Payload } from '../user/user.dto';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private usersService: UsersService,
+        private usersService: UserService,
         private jwtService: JwtService,
     ) {
         console.log("AuthService inicializado");
