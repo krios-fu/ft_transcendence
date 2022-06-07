@@ -1,20 +1,18 @@
-/* import { UsersEntity } from "src/users/users.entity";
+import { UsersEntity } from "../user/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
-import { Role } from "./role.enum";
+import { Roles } from "./roles.enum";
 import { RoomEntity } from "./room.entity";
 
 @Entity()
 export class RolesEntity {
     @ManyToOne(
         () => UsersEntity,
-    //    (usersEntity) => usersEntity.role,
         { primary: true }
     )
     user: UsersEntity;
 
     @ManyToOne(
         () => RoomEntity,
-    //    (roomEntity) => roomEntity.role,
         { primary: true }
     )
     room: RoomEntity;
@@ -23,11 +21,11 @@ export class RolesEntity {
         type: 'enum',
         nullable: false
     })
-    role: Role;
+    role: Roles;
 
     @Column({
-        type: Date;
+        type: Date,
         nullable: true
     })
     silencedDate: Date;
-} */
+}
