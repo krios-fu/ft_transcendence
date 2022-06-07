@@ -1,4 +1,4 @@
-import { RoomEntity } from 'src/room/room.entity';
+// import { RoomEntity } from 'src/room/room.entity';
 import {
     Entity,
     PrimaryColumn,
@@ -29,10 +29,10 @@ export class UsersEntity {
 
     @Column()
     photoUrl: string
-
+/* 
     @ManyToMany(
         () => RoomEntity,
         (roomEntity) => roomEntity.users
     )
-    rooms: RoomEntity[];
+    rooms: RoomEntity[]; */
 }

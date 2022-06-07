@@ -5,7 +5,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
-import { Payload } from '../users/users.dto';
+// import { Payload } from '../../user/user.dto';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {

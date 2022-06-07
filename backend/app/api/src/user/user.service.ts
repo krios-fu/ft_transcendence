@@ -1,22 +1,22 @@
-import { UsersRepository } from './users.repository';
-import { UsersMapper } from './users.mapper';
-import { UsersEntity } from './users.entity';
-import { UsersDto } from './users.dto';
+import { UsersRepository } from './user.repository';
+import { UsersMapper } from './user.mapper';
+import { UsersEntity } from './user.entity';
+import { UsersDto } from './user.dto';
 import {
     Injectable,
     HttpException,
     HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoomService } from 'src/room/room.service';
-import { RoomEntity } from 'src/room/room.entity';
+// import { RoomService } from 'src/room/room.service';
+// import { RoomEntity } from 'src/room/room.entity';
 
 @Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(UsersEntity)
         private usersRepository: UsersRepository,
-        private roomService: RoomService,
+        // private roomService: RoomService,
         private usersMapper: UsersMapper,
     ) {
         console.log("UsersService inicializado");
@@ -29,14 +29,6 @@ export class UsersService {
 
     async findOne(id: string): Promise<UsersEntity> {
         const usr = await this.usersRepository.findOne(id);
-
-        const loadedPhoto = await this.usersRepository.findOne({
-            where: {
-                username: id,
-            },
-            relations: ["rooms"],
-        });
-        console.log(JSON.stringify(loadedPhoto));
         return usr;
     }
 
@@ -58,11 +50,4 @@ export class UsersService {
         await this.usersRepository.remove(this.usersMapper.toEntity(toRemove));
     }
 
-    async checkUserRole(role: string): Promise<bool> {
-        /* Check here if user is authentified */
-
-        await this.usersRepository.find({
-            
-        })
-    }
 }

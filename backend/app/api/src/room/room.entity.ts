@@ -1,21 +1,21 @@
-import { UsersEntity } from "src/users/users.entity";
+/* import { UsersEntity } from "src/users/users.entity";
 import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 
-/* scope adecuado ?? */
+scope adecuado ?? 
 export class IsPrivate {
     isPrivate: boolean;
     password?: string;
 };
 
-/* Parámetros de configuración de columna: 
+ Parámetros de configuración de columna: 
     type,     name,         length,        width,      onUpdate,
     nullable, update,       insert,        select,     default,
     primary,  unique,       comment,       precision,  scale, 
     zerofill, unisgned,     charset,       collation,  enum, 
     enumName, asExpression, generatedType, hstoreType, array,
     transformer
-*/
+
 @Entity()
 export class RoomEntity {
     @PrimaryColumn({
@@ -57,3 +57,4 @@ export class RoomEntity {
     )
     owner: OwnerEntity;
 }
+ */

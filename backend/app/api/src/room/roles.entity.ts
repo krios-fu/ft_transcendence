@@ -1,4 +1,4 @@
-import { UsersEntity } from "src/users/users.entity";
+/* import { UsersEntity } from "src/users/users.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Role } from "./role.enum";
 import { RoomEntity } from "./room.entity";
@@ -30,4 +30,4 @@ export class RolesEntity {
         nullable: true
     })
     silencedDate: Date;
-}
+} */
