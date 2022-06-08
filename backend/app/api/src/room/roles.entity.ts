@@ -19,6 +19,8 @@ export class RolesEntity {
 
     @Column({
         type: 'enum',
+        enum: Roles,
+        default: Roles.User,
         nullable: false
     })
     role: Roles;
