@@ -1,22 +1,26 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn} from "typeorm";
 import {UserEntity} from "../user/user.entity";
 import {ChatEntity} from "./chat.entity";
 
-@Entity()
+@Entity({
+    name : 'messages'
+})
 export class MessageEntity {
     @PrimaryGeneratedColumn('uuid')
     id : number;
 
     @Column()
-    text : string;
+    content : string;
 
-    @ManyToOne( (type) => UserEntity, (user) => user.messages , {
+    @ManyToOne( () => UserEntity, (user) => user.messages , {
         cascade : true,
     })
-    user : UserEntity;
+    @JoinColumn({ name : 'author' } )
+    author : UserEntity;
 
-    @ManyToOne( (type) => ChatEntity, (chat) => chat.messages , {
+    @ManyToOne( () => ChatEntity, {
         cascade : true,
     })
+    @JoinColumn({ name : 'chatId' })
     chat : ChatEntity;
 }

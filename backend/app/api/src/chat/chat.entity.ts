@@ -1,7 +1,20 @@
-import {Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {MessageEntity} from "./message.entity";
+import {UserEntity} from "../user/user.entity";
 
-@Entity()
+@Entity({
+    name : 'chats'
+    }
+)
 export class ChatEntity {
     @PrimaryGeneratedColumn('uuid')
     id : number;
@@ -9,6 +22,14 @@ export class ChatEntity {
     @CreateDateColumn()
     createdAt: Date;
 
-    @OneToMany( (type) => MessageEntity, (messages) => messages.chat )
-    messages : MessageEntity[];
+    @ManyToOne( () => UserEntity )
+    @JoinColumn( { name : 'userOne' } )
+    userOne : UserEntity;
+
+    @ManyToOne( () => UserEntity )
+    @JoinColumn( { name : 'userTwo'} )
+    userTwo : UserEntity;
+
+    /*@OneToMany( (type) => MessageEntity, (messages) => messages.chat )
+    messages : MessageEntity[];*/
 }
