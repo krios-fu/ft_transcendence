@@ -1,11 +1,22 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
-import { UserDto } from "./user.dto";
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	PrimaryColumn,
+	UpdateDateColumn,
+	ManyToMany,
+	ManyToOne,
+	OneToMany
+} from "typeorm";
 
+export enum UserStatus {
+	ONLINE = "online",
+	OFFLINE = "offline",
+	PLAYING = "playing",
+}
 
-
-
-@Entity('user')
-export class User {
+@Entity()
+export class UserEntity {
 
 	@PrimaryColumn()
 	username : string;
@@ -20,10 +31,40 @@ export class User {
 	email : string;
 
 	@Column()
-	photo : string;
+	photoUrl : string;
 
-	// constructor( userDto : UserDto )
-	// {
-	
-	// }
+  @Column()
+	profileUrl : string;
+
+	@Column()
+	nickName : string;
+
+	@Column({
+		default: false
+	})
+	doubleAuth : boolean;
+
+	@Column({
+		type: 'enum',
+		enum: UserStatus,
+		default: UserStatus.ONLINE
+	})
+	status : UserStatus;
+
+	@CreateDateColumn()
+	creationDate : Date;
+
+	@UpdateDateColumn()
+	lastConnection : Date;
+
+	//Relations
+
+	/*@ManyToMany(() => Room, (room) => room.users)
+  rooms: Room[];
+
+	@OneToMany(() => Score, (score) => score.user)
+	scores: Score[];
+
+	@OneToMany(() => Friendship, (friendship) => friendship.user)
+	friendships: Friendship[];*/
 }

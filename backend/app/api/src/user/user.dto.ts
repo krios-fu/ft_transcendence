@@ -1,19 +1,17 @@
-
-// import { Injectable } from "@nestjs/common";
-
-// @Injectable()
 export class UserDto {
 
-	username : string;
-	firstName : string;
-	lastName : string;
-	email : string;
-	photo : string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    profileUrl: string;
+    email: string;
+    photoUrl: string;
 
-	constructor( username: string, firstName: string, lastName: string, email: string, photo: string){
-		this.username = username;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.photo = photo;}
 }
+
+export type Payload = {
+
+    userProfile: UserDto;
+    accessToken: string;
+
+};

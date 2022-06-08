@@ -1,34 +1,54 @@
-import { Injectable } from '@nestjs/common';
-import { UserDto } from './user.dto';
-import { User } from './user.entity';
+import { UserRepository } from './user.repository';
 import { UserMapper } from './user.mapper';
-import { UsersRepository } from './users.repository';
-
+import { UserEntity } from './user.entity';
+import { UserDto } from './user.dto';
+import {
+    Injectable,
+    HttpException,
+    HttpStatus,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
+    constructor(
+        @InjectRepository(UserEntity)
+        private userRepository: UserRepository,
+        private userMapper: UserMapper,
+    ) {
+        console.log("UsersService inicializado");
+    }
 
-	constructor(
-		private repository : UsersRepository,
-		private userMap : UserMapper
-	){}
+    async findAllUsers(): Promise<UserEntity[]> {
+        return await this.userRepository.find();
+    }
 
-	async findAll() : Promise <UserDto []>{
-		const users : User[] = await this.repository.findAll();
-		return users.map( users => this.userMap.ToDto(users) )
-	}
+    async findOne(id: string): Promise<UserEntity> {
+        const usr = await this.userRepository.findOne(id);
+        return usr;
+    }
 
-	async findOne( id : string ) : Promise<UserDto>{
-		const user : User = await this.repository.findOne( id );
-		return this.userMap.ToDto( user );
-	}
+    /* post new user */
+    async postUser(newUser: UserDto): Promise<UserEntity> {
+        const isInDb = this.findOne(newUser.username);
 
-	async create ( newUser : UserDto ) : Promise<UserDto>{ 
-		const user : User = await this.repository.create( newUser );
-		return this.userMap.ToDto( user );
-	}
+        if (Object.keys(isInDb).length) {
+            throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
+        }
+        const newEntity = this.userMapper.toEntity(newUser);
 
-	async remove( id :string ) : Promise<void>{
-		await this.repository.remove( id );
-	}
+        this.userRepository.save(newEntity);
+        return newEntity;
+    }
+
+    /*
+    **  Delete user by name.
+    **
+    **  Determine which type of repository method is most appropriate,
+    **  delete or remove.
+    */
+    async deleteUser(id: string): Promise<void> {
+        await this.userRepository.delete(id);
+    }
+
 }

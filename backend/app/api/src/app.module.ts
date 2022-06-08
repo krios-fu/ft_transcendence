@@ -1,30 +1,31 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import {  TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user/user.entity'
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt( process.env.DB_PORT ),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWD,
-      database: process.env.DB_NAME,
-      synchronize: true,
-      entities: [ "dist/**/*.entity{.ts,.js}" ],
-      autoLoadEntities: true
-    }),
-    UserModule,
-    AuthModule
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+    imports: [
+        AuthModule,
+        UserModule,
+        TypeOrmModule.forRoot({
+            type: 'postgres',
+            host: process.env.DB_HOST,
+            port: 5432,
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWD,
+            database: process.env.DB_NAME,
+            entities: ["dist/**/*.entity{.ts,.js}"],
+            synchronize: true,
+        }),
+    ],
+    controllers: [],
+    providers: [
+        {
+            provide: APP_GUARD,
+            useClass: JwtAuthGuard,
+        }
+    ],
 })
-
-
-export class AppModule {}
+export class AppModule { }

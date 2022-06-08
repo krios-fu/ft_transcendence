@@ -1,24 +1,34 @@
-import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { UserDto } from 'src/user/user.dto';
 import { AuthService } from './auth.service';
+import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
+import { Payload } from '../user/user.dto';
+import {
+    Controller,
+    Get,
+    UseGuards,
+    Req,
+} from '@nestjs/common';
+import { Public } from '../decorators/public.decorator';
+
+interface RequestWithPayload extends Request {
+    user: Payload;
+};
 
 @Controller('auth')
 export class AuthController {
+    constructor(private authService: AuthService) {
+        console.log("AuthController inicializado");
+    }
 
-	constructor( private authService : AuthService){}
+    @Public()
+    @Get("42")
+    @UseGuards(FortyTwoAuthGuard)
+    authFromFT() { /* no */ }
 
-	@Get('42')
-	@UseGuards( AuthGuard('42') )
-	async fortyTwo() : Promise<any> {
-		return await this.authService.fortyTwo();
-	}
-
-	@Get('42/redirect')
-	@UseGuards( AuthGuard('42') )
-	@Redirect('http://localhost:4200', 301)
-	async fortyTwoRedirect( @Req() req: Request ) : Promise<UserDto>{
-		const { user } = <any>req;
-		return await this.authService.createUserFortyTwo( user.user );
-	}
+    @Get("42/redirect")
+    @Public()
+    @UseGuards(FortyTwoAuthGuard)
+    async authFromFTRedirect(@Req() req: RequestWithPayload): Promise<any> {
+        const user = req.user;
+        return this.authService.login(user);
+    }
 }

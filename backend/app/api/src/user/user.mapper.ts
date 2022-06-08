@@ -1,28 +1,31 @@
-import { Injectable } from "@nestjs/common";
-import { UserDto } from "./user.dto";
-import { User } from "./user.entity";
-
+import { Injectable } from '@nestjs/common';
+import { UserEntity } from './user.entity';
+import { UserDto } from './user.dto';
 
 @Injectable()
 export class UserMapper {
+    toEntity(userDto: UserDto): UserEntity {
+        const newEntity = new UserEntity;
 
-	ToEntity( userDto : UserDto ) : User {
+        newEntity.username = userDto.username;
+        newEntity.firstName = userDto.firstName;
+        newEntity.lastName = userDto.lastName;
+        newEntity.profileUrl = userDto.profileUrl;
+        newEntity.email = userDto.email;
+        newEntity.photoUrl = userDto.photoUrl;
+        newEntity.nickName = newEntity.username;
+        return newEntity;
+    }
 
-		const user = new User();
-		user.username = userDto.username;
-		user.firstName = userDto.firstName;
-		user.lastName = userDto.lastName;
-		user.email =  userDto.email;
-		user.photo = userDto.photo;
-		return  user;
-	}
+    toDto(userEntity: UserEntity): UserDto {
+        const newDto = new UserDto;
 
-	ToDto( user : User) : UserDto {
-		return new UserDto(
-			user.username,
-			user.firstName,
-			user.lastName,
-			user.email,
-			user.photo);
-	}
+        newDto.username = userEntity.username;
+        newDto.firstName = userEntity.firstName;
+        newDto.lastName = userEntity.lastName;
+        newDto.profileUrl = userEntity.profileUrl;
+        newDto.email = userEntity.email;
+        newDto.photoUrl = userEntity.photoUrl;
+        return newDto;
+    }
 }

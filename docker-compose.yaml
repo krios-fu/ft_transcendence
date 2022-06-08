@@ -33,6 +33,8 @@ services:
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
+    logging:
+      driver: none
     restart: always
     volumes:
       - pgadmindata:/var/tmp/pgadmin

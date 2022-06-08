@@ -1,20 +1,30 @@
-import { Injectable, UseGuards, Req, HttpStatus } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { UserDto } from 'src/user/user.dto';
-import { UserService } from 'src/user/user.service';
-
-
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { JwtService } from '@nestjs/jwt';
+import { Payload } from '../user/user.dto';
 
 @Injectable()
 export class AuthService {
+    constructor(
+        private userService: UserService,
+        private jwtService: JwtService,
+    ) {
+        console.log("AuthService inicializado");
+    }
 
-		constructor( private userService : UserService ){}
-	async fortyTwo() : Promise<any> {
-		return HttpStatus.OK;
-	}
+    async login(payload: Payload): Promise<any> {
 
-	@UseGuards( AuthGuard('42') )
-	async createUserFortyTwo( newUser : UserDto ) : Promise<UserDto>{
-		return await this.userService.create( newUser );
-	}
+        if (!payload) {
+            console.log("No user in request.");
+            return new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+        };
+        const accessToken = this.jwtService.sign(payload);
+        const userProfile = payload.userProfile;
+        const isInDb = this.userService.findOne(userProfile.username);
+
+        if (!Object.keys(isInDb).length) {
+            this.userService.postUser(userProfile);
+        }
+        return { 'accessToken': accessToken };
+    }
 }
