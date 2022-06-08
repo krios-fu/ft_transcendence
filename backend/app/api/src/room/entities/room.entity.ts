@@ -2,7 +2,7 @@ import { UserEntity } from "src/user/user.entity";
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 
-@Entity()
+@Entity({ name: "room" })
 export class RoomEntity {
     @PrimaryColumn({
         type: "varchar",
