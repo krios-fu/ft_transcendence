@@ -1,16 +1,17 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { AuthService } from "src/auth/auth.service";
+import { RoomService } from "../room.service";
 
 @Injectable()
 export class PrivateRoomGuard implements CanActivate {
     constructor (
-        private readonly authService: AuthService
+        private readonly roomService: RoomService
     ) { }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest();
 
-        return this.authService.loginToRoom(request.body);
+        //console.log(request);
+        return this.roomService.loginToRoom(request.body);
     }
 }

@@ -7,6 +7,8 @@ import { RoomEntity } from "./entities/room.entity";
 import { RoomMapper } from "./room.mapper";
 import { RoomRepository } from "./repositories/room.repository";
 import { RoomLogin } from "./room-login.interface";
+import { RoomDto } from "./room.dto";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class RoomService {
@@ -24,6 +26,10 @@ export class RoomService {
     }
 
     async findOne(name: string): Promise<RoomEntity> {
+        /*const test = this.roomRepository.find({
+
+        })*/
+
         return await this.roomRepository.findOne(name);
     }
 
@@ -61,5 +67,17 @@ export class RoomService {
         console.log(roomEntity);
         await this.roomRepository.save(roomEntity);
         return roomEntity;
+    }
+
+    async loginToRoom(roomCredentials: RoomDto): Promise<boolean> {
+        const roomEntity = await this.roomRepository.findOne(roomCredentials.name);
+
+        if (roomEntity === undefined) {
+            throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
+        }
+        if (roomEntity.password === undefined) {
+            return true;
+        }
+        return await bcrypt.compare(roomEntity.password, roomEntity.password);
     }
 }
