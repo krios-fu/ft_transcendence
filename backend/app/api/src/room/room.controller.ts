@@ -1,9 +1,11 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { RequestWithPayload } from "src/auth/auth.controller";
 import { PrivateRoomGuard } from "../auth/guard/private-room.guard";
 import { RoomDto } from "./room.dto";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomService } from "./room.service";
+import { Public } from "src/decorators/public.decorator";
+import { stringify } from "querystring";
+import { IRequestUser } from "src/interfaces/request-user.interface";
 
 @Controller('room')
 export class RoomController {
@@ -12,30 +14,32 @@ export class RoomController {
     ) { }
     //@UseGuards(PrivateRoomGuard)
     //@UseGuards(BanGuard)
+    @Public()
     @Post()
     async joinRoom(
-        @Req()  req: RequestWithPayload,
+       // @Req()  req: IRequestUser,
         @Body() roomCredentials: RoomDto
     ): Promise<RoomEntity> {
         const roomLogin = {
-            "userName": req.user.userProfile.username,
+            "userName": /*req.username*/"john",
             "name": roomCredentials.name,
         };
 
         return await this.roomService.joinRoom(roomLogin);
     }
 
+    @Public()
     @Post('new')
     async createRoom(
-        @Req()  req: RequestWithPayload,
+        @Req()  req: IRequestUser,
         @Body() roomCredentials: RoomDto
     ): Promise<RoomEntity> {
         const roomLogin = {
-            "userName":   req.user.userProfile.username,
-            "name":   roomCredentials.name,
+            "userName": /*req.username*/"john",
+            "name": roomCredentials.name,
             "password": roomCredentials.password,
         };
-
+        
         return await this.roomService.createRoom(roomLogin);
     }
 
@@ -48,6 +52,4 @@ export class RoomController {
     async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomService.getAllRooms();
     }
-
-
 }

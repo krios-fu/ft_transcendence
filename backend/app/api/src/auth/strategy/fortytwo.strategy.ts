@@ -32,8 +32,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
             userProfile,
             accessToken,
         };
-        /* encrypt payload */
-
+        
         callback(null, payload);
     }
 }

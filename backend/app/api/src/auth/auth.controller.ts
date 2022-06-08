@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
 
-export interface RequestWithPayload extends Request {
+interface IRequestPayload extends Request {
     user: Payload;
 };
 
@@ -27,7 +27,7 @@ export class AuthController {
     @Get("42/redirect")
     @Public()
     @UseGuards(FortyTwoAuthGuard)
-    async authFromFTRedirect(@Req() req: RequestWithPayload): Promise<any> {
+    async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
         const user = req.user;
         return this.authService.authUser(user);
     }

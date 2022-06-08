@@ -18,12 +18,13 @@ export class AuthService {
     }
 
     async authUser(payload: Payload): Promise<AuthToken> {
+
         if (!payload) {
             console.log("No user in request.");
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         };
-        const accessToken = this.jwtService.sign(payload);
         const userProfile = payload.userProfile;
+        const accessToken = this.jwtService.sign(userProfile.username);
         const isInDb = this.userService.findOne(userProfile.username);
 
         if (!Object.keys(isInDb).length) {
@@ -41,6 +42,6 @@ export class AuthService {
         if (roomEntity.password === undefined) {
             return true;
         }
-        return await bcrypt.compare(roomCredentials.password, roomEntity.password);
+        return await bcrypt.compare(roomEntity.password, roomEntity.password);
     }
 }

@@ -7,13 +7,19 @@ import { RoomEntity } from "./room.entity";
 export class RolesEntity {
     @ManyToOne(
         () => UserEntity,
-        { primary: true }
+        { 
+            primary: true,
+            cascade: ["remove"],
+        }
     )
     user: UserEntity;
 
     @ManyToOne(
         () => RoomEntity,
-        { primary: true }
+        { 
+            primary: true,
+            cascade: ["remove"],
+        }
     )
     room: RoomEntity;
 
@@ -35,7 +41,7 @@ export class RolesEntity {
         user: UserEntity,
         room: RoomEntity,
         role: Roles = Roles.User,
-        date?: Date
+        date: Date = null,
     ) {
         this.user = user;
         this.room = room;

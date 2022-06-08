@@ -31,9 +31,12 @@ export class RoomEntity {
 
     @ManyToOne(
         () => UserEntity, 
-        { cascade: ['remove'] }
+        { 
+            cascade: ['remove'],
+            eager: true
+        }
     )
-    @JoinColumn({ name: "owner_name" })
+    @JoinColumn({ name: "owner_user" })
     owner: UserEntity;
 
     constructor(
