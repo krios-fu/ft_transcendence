@@ -1,53 +1,54 @@
-import { UsersRepository } from './user.repository';
-import { UsersMapper } from './user.mapper';
-import { UsersEntity } from './user.entity';
-import { UsersDto } from './user.dto';
+import { UserRepository } from './user.repository';
+import { UserMapper } from './user.mapper';
+import { UserEntity } from './user.entity';
+import { UserDto } from './user.dto';
 import {
     Injectable,
     HttpException,
     HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-// import { RoomService } from 'src/room/room.service';
-// import { RoomEntity } from 'src/room/room.entity';
 
 @Injectable()
-export class UsersService {
+export class UserService {
     constructor(
-        @InjectRepository(UsersEntity)
-        private usersRepository: UsersRepository,
-        // private roomService: RoomService,
-        private usersMapper: UsersMapper,
+        @InjectRepository(UserEntity)
+        private userRepository: UserRepository,
+        private userMapper: UserMapper,
     ) {
         console.log("UsersService inicializado");
     }
 
-    /* find all */
-    async findAllUsers(): Promise<UsersEntity[]> {
-        return await this.usersRepository.find();
+    async findAllUsers(): Promise<UserEntity[]> {
+        return await this.userRepository.find();
     }
 
-    async findOne(id: string): Promise<UsersEntity> {
-        const usr = await this.usersRepository.findOne(id);
+    async findOne(id: string): Promise<UserEntity> {
+        const usr = await this.userRepository.findOne(id);
         return usr;
     }
 
     /* post new user */
-    async postUser(newUser: UsersDto): Promise<UsersEntity> {
+    async postUser(newUser: UserDto): Promise<UserEntity> {
         const isInDb = this.findOne(newUser.username);
 
         if (Object.keys(isInDb).length) {
             throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
         }
-        const newEntity = this.usersMapper.toEntity(newUser);
+        const newEntity = this.userMapper.toEntity(newUser);
 
-        this.usersRepository.save(newEntity);
+        this.userRepository.save(newEntity);
         return newEntity;
     }
 
-    /* delete user by name */
-    async deleteUser(toRemove: UsersDto): Promise<void> {
-        await this.usersRepository.remove(this.usersMapper.toEntity(toRemove));
+    /*
+    **  Delete user by name.
+    **
+    **  Determine which type of repository method is most appropriate,
+    **  delete or remove.
+    */
+    async deleteUser(id: string): Promise<void> {
+        await this.userRepository.delete(id);
     }
 
 }

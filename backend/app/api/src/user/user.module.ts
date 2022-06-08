@@ -1,27 +1,25 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './user.controller';
-import { UsersService } from './user.service';
-import { UsersEntity } from './user.entity';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
+import { UserEntity } from './user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersRepository } from './user.repository';
-import { UsersMapper } from './user.mapper';
-// import { RoomModule } from 'src/room/room.module';
+import { UserRepository } from './user.repository';
+import { UserMapper } from './user.mapper';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UsersEntity]),
-        // RoomModule,
+        TypeOrmModule.forFeature([UserEntity])
     ],
-    exports: [UsersService],        /* Va a ser usado por el módulo externo AuthModule */
-    controllers: [UsersController],
+    exports: [UserService], //Usado por el módulo externo AuthModule
+    controllers: [UserController],
     providers: [
-        UsersService,
-        UsersRepository,
-        UsersMapper,
+        UserService,
+        UserRepository,
+        UserMapper,
     ]
 })
-export class UsersModule {
+export class UserModule {
     constructor() {
-        console.log("UsersModule inicializado");
+        console.log("UserModule inicializado");
     }
 }
