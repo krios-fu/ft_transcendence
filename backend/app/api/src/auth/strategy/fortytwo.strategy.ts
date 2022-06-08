@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {

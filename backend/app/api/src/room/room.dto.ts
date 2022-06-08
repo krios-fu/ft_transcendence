@@ -1,4 +1,4 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class RoomDto {
 
@@ -6,5 +6,7 @@ export class RoomDto {
     name: string;
 
     @IsString()
+    @IsOptional()
     password?: string;
 };
+//dfsdf
