@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { UsersEntity } from './user.entity';
-import { UsersDto } from './user.dto';
+import { UserEntity } from './user.entity';
+import { UserDto } from './user.dto';
 
 @Injectable()
-export class UsersMapper {
-    toEntity(userDto: UsersDto): UsersEntity {
-        const newEntity = new UsersEntity;
+export class UserMapper {
+    toEntity(userDto: UserDto): UserEntity {
+        const newEntity = new UserEntity;
 
         newEntity.username = userDto.username;
         newEntity.firstName = userDto.firstName;
@@ -13,11 +13,12 @@ export class UsersMapper {
         newEntity.profileUrl = userDto.profileUrl;
         newEntity.email = userDto.email;
         newEntity.photoUrl = userDto.photoUrl;
+        newEntity.nickName = newEntity.username;
         return newEntity;
     }
 
-    toDto(userEntity: UsersEntity): UsersDto {
-        const newDto = new UsersDto;
+    toDto(userEntity: UserEntity): UserDto {
+        const newDto = new UserDto;
 
         newDto.username = userEntity.username;
         newDto.firstName = userEntity.firstName;

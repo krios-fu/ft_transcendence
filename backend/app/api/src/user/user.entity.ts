@@ -1,38 +1,70 @@
-// import { RoomEntity } from 'src/room/room.entity';
 import {
-    Entity,
-    PrimaryColumn,
-    Column,
-    ManyToMany,
-} from 'typeorm';
+	Column,
+	CreateDateColumn,
+	Entity,
+	PrimaryColumn,
+	UpdateDateColumn,
+	ManyToMany,
+	ManyToOne,
+	OneToMany
+} from "typeorm";
+
+export enum UserStatus {
+	ONLINE = "online",
+	OFFLINE = "offline",
+	PLAYING = "playing",
+}
 
 @Entity()
-export class UsersEntity {
-    @PrimaryColumn()
-    username: string;
+export class UserEntity {
 
-    @Column({
-        //type: varchar,
-        //nullable: false,
-        //unique: true,
-    })
-    firstName: string;
+	@PrimaryColumn()
+	username : string;
+	
+	@Column()
+	firstName : string;
 
-    @Column()
-    lastName: string;
+	@Column()
+	lastName : string;
 
-    @Column()
-    profileUrl: string;
+	@Column()
+	email : string;
 
-    @Column()
-    email: string;
+	@Column()
+	photoUrl : string;
 
-    @Column()
-    photoUrl: string
-/* 
-    @ManyToMany(
-        () => RoomEntity,
-        (roomEntity) => roomEntity.users
-    )
-    rooms: RoomEntity[]; */
+  @Column()
+	profileUrl : string;
+
+	@Column()
+	nickName : string;
+
+	@Column({
+		default: false
+	})
+	doubleAuth : boolean;
+
+	@Column({
+		type: 'enum',
+		enum: UserStatus,
+		default: UserStatus.ONLINE
+	})
+	status : UserStatus;
+
+	@CreateDateColumn()
+	creationDate : Date;
+
+	@UpdateDateColumn()
+	lastConnection : Date;
+
+	//Relations
+
+	/*@ManyToMany(() => Room, (room) => room.users)
+  rooms: Room[];
+
+	@OneToMany(() => Score, (score) => score.user)
+	scores: Score[];
+
+	@OneToMany(() => Friendship, (friendship) => friendship.user)
+	friendships: Friendship[];*/
 }
