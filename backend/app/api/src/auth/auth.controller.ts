@@ -11,12 +11,12 @@ import { Public } from '../decorators/public.decorator';
 
 interface RequestWithPayload extends Request {
     user: Payload;
-};
+}
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {
-        console.log("AuthController inicializado");
+        console.log("AuthController initialization");
     }
 
     @Public()

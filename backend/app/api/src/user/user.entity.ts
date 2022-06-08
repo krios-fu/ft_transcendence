@@ -6,8 +6,10 @@ import {
 	UpdateDateColumn,
 	ManyToMany,
 	ManyToOne,
-	OneToMany
+	OneToMany, JoinTable
 } from "typeorm";
+import {ChatEntity} from "../chat/chat.entity";
+import {MessageEntity} from "../chat/message.entity";
 
 export enum UserStatus {
 	ONLINE = "online",
@@ -33,7 +35,7 @@ export class UserEntity {
 	@Column()
 	photoUrl : string;
 
-  @Column()
+	@Column()
 	profileUrl : string;
 
 	@Column()
@@ -56,6 +58,14 @@ export class UserEntity {
 
 	@UpdateDateColumn()
 	lastConnection : Date;
+
+	@ManyToMany((type) => ChatEntity )
+	@JoinTable()
+	chats : ChatEntity [];
+
+	@OneToMany((type) => MessageEntity, (message) => message.user )
+	@JoinTable()
+	messages : MessageEntity[];
 
 	//Relations
 
