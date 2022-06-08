@@ -38,7 +38,6 @@ export class RoomService {
         const roomEntity = await this.roomRepository.findOne({ "roomName": name });
         const userEntity = await this.userService.findOne(userName);
 
-        console.log(roomEntity);
         if (roomEntity === undefined) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
         }
@@ -46,7 +45,6 @@ export class RoomService {
             userEntity,
             roomEntity
         );
-        console.log(newRole);
         await this.rolesRepository.save(newRole);
         return roomEntity;
     }
@@ -64,7 +62,6 @@ export class RoomService {
         if (roomInDb != undefined) {
             throw new HttpException('Room already in db', HttpStatus.BAD_REQUEST);
         }
-        console.log(roomEntity);
         await this.roomRepository.save(roomEntity);
         return roomEntity;
     }
@@ -75,9 +72,9 @@ export class RoomService {
         if (roomEntity === undefined) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
         }
-        if (roomEntity.password === undefined) {
+        if (roomEntity.password === null) {
             return true;
         }
-        return await bcrypt.compare(roomEntity.password, roomEntity.password);
+        return await bcrypt.compare(roomCredentials.password, roomEntity.password);
     }
 }

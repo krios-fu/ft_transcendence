@@ -1,5 +1,5 @@
 import { UserEntity } from "src/user/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { Roles } from "../roles.enum";
 import { RoomEntity } from "./room.entity";
 
@@ -12,6 +12,7 @@ export class RolesEntity {
             cascade: ["remove"],
         }
     )
+    @JoinColumn({ name: "user_role" })
     user: UserEntity;
 
     @ManyToOne(
@@ -21,6 +22,7 @@ export class RolesEntity {
             cascade: ["remove"],
         }
     )
+    @JoinColumn({ name: "room_role" })
     room: RoomEntity;
 
     @Column({

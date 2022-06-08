@@ -4,7 +4,8 @@ import { RoomEntity } from "./entities/room.entity";
 import { RoomService } from "./room.service";
 import { IRequestUser } from "src/interfaces/request-user.interface";
 import { PrivateRoomGuard } from "./guard/private-room.guard";
-import { Public } from "src/decorators/public.decorator";
+//import { Public } from "src/decorators/public.decorator";
+import { BannedGuard } from "./guard/banned.guard";
 
 @Controller('room')
 export class RoomController {
@@ -12,16 +13,15 @@ export class RoomController {
         private readonly roomService: RoomService,
     ) { }
 
-    @UseGuards(PrivateRoomGuard)
-    //@UseGuards(BanGuard)
     @Post()
-    @Public()
+    @UseGuards(PrivateRoomGuard)
+    @UseGuards(BannedGuard)
     async joinRoom(
         @Req()  req: IRequestUser,
         @Body() roomCredentials: RoomDto
     ): Promise<RoomEntity> {
         const roomLogin = {
-            "userName": /*req.username*/"john",
+            "userName": req.username,
             "name": roomCredentials.name,
         };
 
