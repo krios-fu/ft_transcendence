@@ -1,6 +1,6 @@
-import { UserEntity } from "../user/user.entity";
+import { UserEntity } from "src/user/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
-import { Roles } from "./roles.enum";
+import { Roles } from "../roles.enum";
 import { RoomEntity } from "./room.entity";
 
 @Entity()

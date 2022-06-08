@@ -1,5 +1,5 @@
 import { UserEntity } from "src/user/user.entity";
-import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 
 @Entity()

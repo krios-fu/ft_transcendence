@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "src/user/user.entity";
 import { RoomDto } from "./room.dto";
-import { RoomEntity } from "./room.entity";
+import { RoomEntity } from "./entities/room.entity";
 
 @Injectable()
 export class RoomMapper {
@@ -9,15 +9,15 @@ export class RoomMapper {
         const { roomName, password } = roomEntity;
 
         return {
-            "roomName": roomName,
+            "name": roomName,
             "password": password
         };
     }
 
     toEntity(roomDto: RoomDto, owner: UserEntity): RoomEntity {
-        const { roomName, password } = roomDto;
+        const { name, password } = roomDto;
         const roomEntity = new RoomEntity (
-            roomName,
+            name,
             owner,
             password,
         );

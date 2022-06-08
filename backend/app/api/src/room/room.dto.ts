@@ -3,7 +3,7 @@ import { IsString } from "class-validator";
 export class RoomDto {
 
     @IsString()
-    roomName: string;
+    name: string;
 
     @IsString()
     password?: string;

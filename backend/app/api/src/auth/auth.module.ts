@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { FortyTwoStrategy } from './strategy/fortytwo.strategy';
+import { RoomModule } from 'src/room/room.module';
 
 @Module({
     imports: [
@@ -15,6 +16,7 @@ import { FortyTwoStrategy } from './strategy/fortytwo.strategy';
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: { expiresIn: '60s' },
         }),
+        RoomModule
     ],
     controllers: [AuthController],
     providers: [

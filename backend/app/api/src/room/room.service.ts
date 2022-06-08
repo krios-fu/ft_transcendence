@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserService } from "src/user/user.service";
-import { RolesEntity } from "./roles.entity";
-import { RolesRepository } from "./roles.repository";
+import { RolesEntity } from "./entities/roles.entity";
+import { RolesRepository } from "./repositories/roles.repository";
 import { RoomDto } from "./room.dto";
-import { RoomEntity } from "./room.entity";
+import { RoomEntity } from "./entities/room.entity";
 import { RoomMapper } from "./room.mapper";
-import { RoomRepository } from "./room.repository";
+import { RoomRepository } from "./repositories/room.repository";
+import * as bcrypt from 'bcrypt';
+import { RoomLogin } from "./room-login.interface";
 
 @Injectable()
 export class RoomService {
@@ -22,9 +24,14 @@ export class RoomService {
         return await this.roomRepository.find();
     }
 
-    async joinRoom(username: string, roomName: string): Promise<RoomEntity> {
-        const roomEntity = await this.roomRepository.findOne({"roomName": roomName});
-        const userEntity = await this.userService.findOne(username);
+    async findOne(name: string): Promise<RoomEntity> {
+        return await this.roomRepository.findOne(name);
+    }
+
+    async joinRoom(roomLogin: RoomLogin): Promise<RoomEntity> {
+        const { name, userName } = roomLogin;
+        const roomEntity = await this.roomRepository.findOne({"roomName": name});
+        const userEntity = await this.userService.findOne(userName);
 
         if (!Object.keys(roomEntity).length) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
@@ -37,19 +44,20 @@ export class RoomService {
         return roomEntity;
     }
 
-    async createRoom(roomDto: RoomDto, username: string): Promise<RoomDto> {
-        const ownerEntity = this.userService.findOne(username);
+    async createRoom(roomLogin: RoomLogin): Promise<RoomEntity> {
+        const { userName, ...roomDto } = roomLogin;
+        const ownerEntity = await this.userService.findOne(userName);
 
         if (!Object.keys(ownerEntity).length) {
             throw new HttpException('User currently not in db', HttpStatus.UNAUTHORIZED);
         }
         const roomEntity = this.roomMapper.toEntity(roomDto, ownerEntity);
-        const roomInDb = this.roomRepository.findOne(roomEntity.roomName);
+        const roomInDb = await this.roomRepository.findOne(roomEntity.roomName);
         
         if (!Object.keys(roomInDb).length) {
             throw new HttpException('Room already in db', HttpStatus.BAD_REQUEST);
         }
         await this.roomRepository.save(roomEntity);
-        return roomDto;
+        return roomEntity;
     }
 }
