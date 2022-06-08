@@ -1,4 +1,4 @@
-import { UsersEntity } from "../user/user.entity";
+import { UserEntity } from "../user/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Roles } from "./roles.enum";
 import { RoomEntity } from "./room.entity";
@@ -6,10 +6,10 @@ import { RoomEntity } from "./room.entity";
 @Entity()
 export class RolesEntity {
     @ManyToOne(
-        () => UsersEntity,
+        () => UserEntity,
         { primary: true }
     )
-    user: UsersEntity;
+    user: UserEntity;
 
     @ManyToOne(
         () => RoomEntity,
@@ -30,4 +30,16 @@ export class RolesEntity {
         nullable: true
     })
     silencedDate: Date;
+
+    constructor (
+        user: UserEntity,
+        room: RoomEntity,
+        role: Roles = Roles.User,
+        date?: Date
+    ) {
+        this.user = user;
+        this.room = room;
+        this.role = role,
+        this.silencedDate = date;
+    }
 }

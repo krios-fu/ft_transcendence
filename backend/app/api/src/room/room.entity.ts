@@ -1,4 +1,4 @@
-import { UsersEntity } from "src/user/user.entity";
+import { UserEntity } from "src/user/user.entity";
 import { BeforeInsert, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 
@@ -30,9 +30,20 @@ export class RoomEntity {
     date: Date;
 
     @ManyToOne(
-        () => UsersEntity, 
+        () => UserEntity, 
         { cascade: ['remove'] }
     )
     @JoinColumn({ name: "owner_name" })
-    owner: UsersEntity;
+    owner: UserEntity;
+
+    constructor(
+        name: string,
+        owner: UserEntity,
+        password?: string,      
+    ) {
+        this.roomName = name;
+        this.owner = owner;
+        this.password = password;
+        this.date = new Date();
+    }
 }
