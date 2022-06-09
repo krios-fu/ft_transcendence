@@ -24,7 +24,10 @@ export class UserService {
     }
 
     async findOne(id: string): Promise<UserEntity> {
-        const usr = await this.userRepository.findOne(id);
+        const usr = await this.userRepository.findOne(id,
+            {
+                relations: ["frienships"]
+            });
         return usr;
     }
 
