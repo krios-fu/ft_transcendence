@@ -1,15 +1,12 @@
 import {
-    Column,
     CreateDateColumn,
     Entity,
     JoinColumn,
-    ManyToMany,
     ManyToOne,
-    OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
-import {MessageEntity} from "./message.entity";
-import {UserEntity} from "../user/user.entity";
+//import {MessageEntity} from "./message.entity";
+import {UserEntity} from "../../user/user.entity";
 
 @Entity({
     name : 'chats'

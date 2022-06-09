@@ -10,6 +10,7 @@ import { ChatModule } from './chat/chat.module';
     imports: [
         AuthModule,
         UserModule,
+        ChatModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
@@ -20,7 +21,6 @@ import { ChatModule } from './chat/chat.module';
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
         }),
-        ChatModule,
     ],
     controllers: [],
     providers: [

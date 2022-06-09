@@ -8,8 +8,8 @@ import {
 	ManyToOne,
 	OneToMany, JoinTable
 } from "typeorm";
-import {ChatEntity} from "../chat/chat.entity";
-import {MessageEntity} from "../chat/message.entity";
+import {ChatEntity} from "../chat/entities/chat.entity";
+import {MessageEntity} from "../chat/entities/message.entity";
 
 export enum UserStatus {
 	ONLINE = "online",
@@ -63,7 +63,7 @@ export class UserEntity {
 	@JoinTable()
 	chats : ChatEntity [];
 
-	@OneToMany((type) => MessageEntity, (message) => message.user )
+	@OneToMany((type) => MessageEntity, (message) => message.author )
 	@JoinTable()
 	messages : MessageEntity[];
 

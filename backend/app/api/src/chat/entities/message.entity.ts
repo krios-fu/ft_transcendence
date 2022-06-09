@@ -1,5 +1,5 @@
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn} from "typeorm";
-import {UserEntity} from "../user/user.entity";
+import {UserEntity} from "../../user/user.entity";
 import {ChatEntity} from "./chat.entity";
 
 @Entity({
