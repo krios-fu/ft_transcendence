@@ -8,7 +8,6 @@ import {
 	ManyToOne,
 	OneToMany
 } from "typeorm";
-import { FriendshipEntity } from "./friendship/frienship.entity";
 
 export enum UserStatus {
 	ONLINE = "online",
@@ -66,10 +65,4 @@ export class UserEntity {
 	@OneToMany(() => Score, (score) => score.user)
 	scores: Score[];*/
 
-	@OneToMany(() => FriendshipEntity, (friendship) => {
-		friendship.friendOne,
-		friendship.friendTwo
-	},
-	{cascade: true})
-	friendships: FriendshipEntity[];
 }
