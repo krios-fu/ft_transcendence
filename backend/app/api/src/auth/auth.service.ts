@@ -30,4 +30,6 @@ export class AuthService {
         }
         return { 'accessToken': accessToken };
     }
+
+    async authRole
 }

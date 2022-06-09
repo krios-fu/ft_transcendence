@@ -13,7 +13,7 @@ export class RoomController {
 
     @Post()
     @UseGuards(PrivateRoomGuard)
-    @UseGuards(BannedGuard)
+    @UseGuards(R)
     async joinRoom(
         @Req()  req: IRequestUser,
         @Body() roomCredentials: RoomDto

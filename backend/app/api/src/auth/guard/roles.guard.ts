@@ -9,7 +9,7 @@ import { UserRepository } from 'src/user/user.repository';
 export class RolesGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private userRepository: UserRepository,
+    private rolesRepository: UserRepository,
   ) { }
 
   canActivate(
@@ -22,7 +22,12 @@ export class RolesGuard implements CanActivate {
                 ctxt.getClass(),           
             ]
         )
+        const username = request.username;
+        const userRole = this.userRepository.find({
+          select: {
 
+          }
+        })
         if (routeRole <= )
   }
 }
