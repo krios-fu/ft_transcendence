@@ -4,8 +4,6 @@ import { RoomEntity } from "./entities/room.entity";
 import { RoomService } from "./room.service";
 import { IRequestUser } from "src/interfaces/request-user.interface";
 import { PrivateRoomGuard } from "./guard/private-room.guard";
-//import { Public } from "src/decorators/public.decorator";
-import { BannedGuard } from "./guard/banned.guard";
 
 @Controller('room')
 export class RoomController {

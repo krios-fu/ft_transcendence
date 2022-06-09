@@ -23,10 +23,10 @@ export class AuthService {
         };
         const userProfile = payload.userProfile;
         const accessToken = this.jwtService.sign(userProfile.username);
-        const isInDb = this.userService.findOne(userProfile.username);
+        const isInDb = await this.userService.findOne(userProfile.username);
 
-        if (!Object.keys(isInDb).length) {
-            this.userService.postUser(userProfile);
+        if (isInDb === undefined) {
+            await this.userService.postUser(userProfile);
         }
         return { 'accessToken': accessToken };
     }
