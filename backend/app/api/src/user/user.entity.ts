@@ -63,8 +63,6 @@ export class UserEntity {
   rooms: Room[];
 
 	@OneToMany(() => Score, (score) => score.user)
-	scores: Score[];
+	scores: Score[];*/
 
-	@OneToMany(() => Friendship, (friendship) => friendship.user)
-	friendships: Friendship[];*/
 }
