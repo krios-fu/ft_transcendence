@@ -1,4 +1,4 @@
-export interface RoomLogin {
+export interface IRoomLogin {
     userName: string,
     name: string,
     password?: string,

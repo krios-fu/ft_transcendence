@@ -6,7 +6,7 @@ import { RolesRepository } from "./repositories/roles.repository";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomMapper } from "./room.mapper";
 import { RoomRepository } from "./repositories/room.repository";
-import { RoomLogin } from "./room-login.interface";
+import { IRoomLogin } from "./room-login.interface";
 import { RoomDto } from "./room.dto";
 import * as bcrypt from "bcrypt";
 
@@ -33,7 +33,7 @@ export class RoomService {
         return await this.roomRepository.findOne(name);
     }
 
-    async joinRoom(roomLogin: RoomLogin): Promise<RoomEntity> {
+    async joinRoom(roomLogin: IRoomLogin): Promise<RoomEntity> {
         const { name, userName } = roomLogin;
         const roomEntity = await this.roomRepository.findOne({ "roomName": name });
         const userEntity = await this.userService.findOne(userName);
@@ -49,7 +49,7 @@ export class RoomService {
         return roomEntity;
     }
 
-    async createRoom(roomLogin: RoomLogin): Promise<RoomEntity> {
+    async createRoom(roomLogin: IRoomLogin): Promise<RoomEntity> {
         const { userName, ...roomDto } = roomLogin;
         const ownerEntity = await this.userService.findOne(userName);
 
