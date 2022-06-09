@@ -7,3 +7,4 @@ export class MessageDto {
     author : UserDto;
     chat : ChatDto;
 }
+
