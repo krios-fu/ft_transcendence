@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendDto } from './friendship/friendship.dto';
+import { UpdateResult } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -59,6 +60,14 @@ export class UserService {
         await this.userRepository.delete(id);
     }
 
+    /*
+    **  Pending prevent inverse sender, receiver insertion.
+    **
+    **  @ToDo Try creating a transaction that looks for inverse
+    **  sender && receiver, and if not found, then saves
+    **  the friendship.
+    */
+
     async addFriend(senderId : string,
                     receiverId : string): Promise<FriendshipEntity> {
         const users = await this.userRepository.find({
@@ -75,9 +84,8 @@ export class UserService {
         friendship.sender = users[0].username
             === senderId ? users[0] : users[1];
         friendship.receiver = users[0].username
-            === receiverId ? users[0] : users[1];
-        this.friendRepository.save(friendship);
-        return friendship;
+            === receiverId ? users[0] : users[1];        
+        return await this.friendRepository.save(friendship);
     }
 
     async getFriends(userId: string): Promise<FriendDto[]>
@@ -99,14 +107,33 @@ export class UserService {
                 },
             ]
         });
-        let friends: FriendDto[];
-        
-        friends = [];
+        let friends: FriendDto[] = [];
+
         for (let i = 0; i < friendships.length; ++i)
         {
             friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
         }
         return (friends);
+    }
+
+    /*
+    **  Update the status from PENDING to CONFIRMED of a friendship
+    **  where sender and receiver usernames match senderId and receiverId.
+    */
+    async acceptFriend(receiverId: string, senderId: string):  Promise<UpdateResult> {
+        const result = await this.friendRepository.update(
+            {
+                sender: {
+                    username: senderId
+                },
+                receiver: {
+                    username: receiverId
+                },
+                status : FriendshipStatus.PENDING
+            },
+            { status: FriendshipStatus.CONFIRMED }
+        );
+        return result;
     }
 
 }

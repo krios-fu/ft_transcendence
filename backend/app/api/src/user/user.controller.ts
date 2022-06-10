@@ -5,13 +5,15 @@ import {
     Delete,
     Param,
     Body,
-    Req
+    Req,
+    Put
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
 import { FriendshipEntity } from './friendship/friendship.entity';
 import { FriendDto } from './friendship/friendship.dto';
+import { UpdateResult } from 'typeorm';
 
 @Controller('users')
 export class UserController {
@@ -28,7 +30,7 @@ export class UserController {
 
     @Get('friends')
     async getFriends(@Req() req): Promise<FriendDto[]> {
-        const   friends = await this.userService.getFriends(req.user.username);
+        const   friends = this.userService.getFriends(req.user.username);
 
         return friends;
     }
@@ -51,10 +53,19 @@ export class UserController {
     @Post('friends')
     async postFriend(@Req() req, @Body('friendId') friendId : string )
         : Promise<FriendshipEntity> {
-        const friendship = await this.userService.addFriend(req.user.username,
+        const friendship = this.userService.addFriend(req.user.username,
             friendId);
     
         return friendship;
+    }
+
+    @Put('friends')
+    async postAccept(@Req() req, @Body('friendId') friendId : string )
+        : Promise<UpdateResult> {
+        const result = this.userService.acceptFriend(req.user.username,
+            friendId);
+    
+        return result;
     }
 
 }
