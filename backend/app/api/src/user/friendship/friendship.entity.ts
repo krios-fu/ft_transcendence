@@ -14,7 +14,9 @@ export enum FriendshipStatus {
 	CONFIRMED = "confirmed",
 }
 
-@Entity()
+@Entity({
+  name: 'friendship'
+})
 export class  FriendshipEntity {
   
   @ManyToOne(() => UserEntity, {primary: true})

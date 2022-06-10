@@ -15,7 +15,9 @@ export enum UserStatus {
 	PLAYING = "playing",
 }
 
-@Entity()
+@Entity({
+	name: 'user'
+})
 export class UserEntity {
 
 	@PrimaryColumn()
