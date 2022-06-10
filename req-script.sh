@@ -64,3 +64,28 @@ then
 	fi
 	exit
 fi
+
+if [ $1 = "get-friends" ]
+then
+	curl -i -s $HOST/users/friend -H "Authorization: Bearer $TOKEN42" \
+		| tee /dev/tty | grep -q "401 Unauthorized"
+	check_invalid_token
+	exit
+fi
+
+if [ $1 = "post-friend" ]
+then
+	if [ -n "$2" ]
+	then
+		curl -i -s $HOST/users/friend \
+			-H "Authorization: Bearer $TOKEN42" \
+			-H "Content-Type: application/json" \
+			-d '{
+				"friendId":"'$2'"
+				}' | tee /dev/tty | grep -q "401 Unauthorized"
+			check_invalid_token
+	else
+		echo "Pass a username as second argument"
+	fi
+	exit
+fi
