@@ -87,15 +87,15 @@ export class UserService {
             where: [
                 {
                     sender: {
-                        username: userId,
-                        status: FriendshipStatus.CONFIRMED
+                        username: userId
                     },
+                    status: FriendshipStatus.CONFIRMED
                 },
                 {
                     receiver: {
-                        username: userId,
-                        status: FriendshipStatus.CONFIRMED
+                        username: userId
                     },
+                    status: FriendshipStatus.CONFIRMED
                 },
             ]
         });
