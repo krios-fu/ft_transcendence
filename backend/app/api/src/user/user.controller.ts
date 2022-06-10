@@ -26,10 +26,9 @@ export class UserController {
         return this.userService.findAllUsers();
     }
 
-    @Get('friend')
+    @Get('friends')
     async getFriends(@Req() req): Promise<FriendDto[]> {
-        console.log('hi ' + req.username);
-        const   friends = await this.userService.getFriends(req.username);
+        const   friends = await this.userService.getFriends(req.user.username);
 
         return friends;
     }
@@ -49,9 +48,11 @@ export class UserController {
 		return await this.userService.deleteUser(id);
 	}
 
-    @Post('friend')
-    async postFriend( @Body('friendId') friendId : string ): Promise<FriendshipEntity> {
-        const friendship = await this.userService.addFriend('onapoli-', friendId);
+    @Post('friends')
+    async postFriend(@Req() req, @Body('friendId') friendId : string )
+        : Promise<FriendshipEntity> {
+        const friendship = await this.userService.addFriend(req.user.username,
+            friendId);
     
         return friendship;
     }

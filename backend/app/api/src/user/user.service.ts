@@ -69,8 +69,7 @@ export class UserService {
         });
         const friendship = new FriendshipEntity();
 
-        if (users.length != 2
-            /*|| !users[0] || !users[1]*/) { //TEST
+        if (users.length != 2) { //TEST
             return friendship;
         }
         friendship.sender = users[0].username
@@ -84,21 +83,29 @@ export class UserService {
     async getFriends(userId: string): Promise<FriendDto[]>
     {
         const friendships = await this.friendRepository.find({
-             relations: ['sender', 'receiver'],
-             where: {
-                 sender: {
-                     username : userId,
-                 },
-
-             },
-        })
-        console.log(/*`friendships: ${friendships}` +*/ friendships)
+            relations: ['sender', 'receiver'],
+            where: [
+                {
+                    sender: {
+                        username: userId,
+                        status: FriendshipStatus.CONFIRMED
+                    },
+                },
+                {
+                    receiver: {
+                        username: userId,
+                        status: FriendshipStatus.CONFIRMED
+                    },
+                },
+            ]
+        });
         let friends: FriendDto[];
-
-        // for (let i = 0; i < friendships.length; ++i)
-        // {
-        //     friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
-        // }
+        
+        friends = [];
+        for (let i = 0; i < friendships.length; ++i)
+        {
+            friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
+        }
         return (friends);
     }
 

@@ -16,11 +16,8 @@ export enum FriendshipStatus {
 
 @Entity()
 export class  FriendshipEntity {
-
-  @PrimaryGeneratedColumn('uuid')
-    id : number;
   
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, {primary: true})
   @JoinColumn(
     {
       name : 'sender'
@@ -28,7 +25,7 @@ export class  FriendshipEntity {
   )
   sender : UserEntity
 
-  @ManyToOne(() => UserEntity)
+  @ManyToOne(() => UserEntity, {primary: true})
   @JoinColumn(
     {
       name : 'receiver'
