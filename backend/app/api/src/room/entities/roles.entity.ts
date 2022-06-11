@@ -12,7 +12,7 @@ export class RolesEntity {
             cascade: ["remove"],
         }
     )
-    @JoinColumn({ name: "user_role" })
+    @JoinColumn({ name: "role_user" })
     user: UserEntity;
 
     @ManyToOne(
@@ -22,7 +22,7 @@ export class RolesEntity {
             cascade: ["remove"],
         }
     )
-    @JoinColumn({ name: "room_role" })
+    @JoinColumn({ name: "role_room" })
     room: RoomEntity;
 
     @Column({

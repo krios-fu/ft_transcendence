@@ -9,7 +9,7 @@ export class RoomEntity {
         unique: true,
         length: 15,
     })
-    readonly roomName: string;
+    readonly name: string;
 
     @Column({
         type: "varchar",
@@ -44,7 +44,7 @@ export class RoomEntity {
         owner: UserEntity,
         password?: string,      
     ) {
-        this.roomName = name;
+        this.name = name;
         this.owner = owner;
         this.password = password;
         this.date = new Date();

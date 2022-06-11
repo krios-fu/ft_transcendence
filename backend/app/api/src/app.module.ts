@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { RoomModule } from './room/room.module';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
         }),
+        RoomModule,
     ],
     controllers: [],
     providers: [

@@ -7,8 +7,10 @@ import { RoomEntity } from "./entities/room.entity";
 import { RoomMapper } from "./room.mapper";
 import { RoomRepository } from "./repositories/room.repository";
 import { IRoomLogin } from "./room-login.interface";
-import { RoomDto } from "./room.dto";
+import { RoomDto } from "./dto/room.dto";
 import * as bcrypt from "bcrypt";
+import { Roles } from "./roles.enum";
+import { RoleInfoDto } from "./dto/role-info.dto";
 
 @Injectable()
 export class RoomService {
@@ -35,7 +37,7 @@ export class RoomService {
 
     async joinRoom(roomLogin: IRoomLogin): Promise<RoomEntity> {
         const { name, userName } = roomLogin;
-        const roomEntity = await this.roomRepository.findOne({ "roomName": name });
+        const roomEntity = await this.roomRepository.findOne({ "name": name });
         const userEntity = await this.userService.findOne(userName);
 
         if (roomEntity === undefined) {
@@ -57,7 +59,7 @@ export class RoomService {
             throw new HttpException('User currently not in db', HttpStatus.UNAUTHORIZED);
         }
         const roomEntity = this.roomMapper.toEntity(roomDto, ownerEntity);
-        const roomInDb = await this.roomRepository.findOne(roomEntity.roomName);
+        const roomInDb = await this.roomRepository.findOne(roomEntity.name);
         
         if (roomInDb != undefined) {
             throw new HttpException('Room already in db', HttpStatus.BAD_REQUEST);
@@ -75,6 +77,29 @@ export class RoomService {
         if (roomEntity.password === null) {
             return true;
         }
+        if (roomCredentials.password === undefined) {
+            return false;
+        }
         return await bcrypt.compare(roomCredentials.password, roomEntity.password);
+    }
+
+    async authRole(userRoleCreds: RoleInfoDto, allowedRole: Roles): Promise<boolean> {
+        const { user, room } = userRoleCreds;
+        const userRole = await this.getUserRole(user, room);
+
+        return (allowedRole === userRole);
+    }
+
+    async getUserRole(user: string, room: string): Promise<Roles> {
+        const role = await this.rolesRepository.find({
+            select: ["role"],
+            where: {
+                role_user: user,
+                role_room: room,
+            }
+        });
+        console.log('query auth: ' + role);
+        //return role;
+        return Roles.User;
     }
 }

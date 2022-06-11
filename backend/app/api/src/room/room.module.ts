@@ -8,6 +8,7 @@ import { RoomMapper } from './room.mapper';
 import { RolesRepository } from './repositories/roles.repository';
 import { UserModule } from 'src/user/user.module';
 import { RolesEntity } from './entities/roles.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { RolesEntity } from './entities/roles.entity';
       RoomEntity,
       RolesEntity
     ]),
-    UserModule
+    UserModule,
   ],
   controllers: [RoomController],
   providers: [
@@ -24,7 +25,9 @@ import { RolesEntity } from './entities/roles.entity';
     RoomMapper,
     RolesRepository
   ],
-  exports: [RoomService]
+  exports: [
+//    RoomService,
+  ]
 })
 export class RoomModule {}
 

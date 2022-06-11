@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "src/user/user.entity";
-import { RoomDto } from "./room.dto";
+import { RoomDto } from "./dto/room.dto";
 import { RoomEntity } from "./entities/room.entity";
 
 @Injectable()
 export class RoomMapper {
     toDto(roomEntity: RoomEntity): RoomDto {
-        const { roomName, password } = roomEntity;
+        const { name, password } = roomEntity;
 
         return {
-            "name": roomName,
+            "name": name,
             "password": password
         };
     }

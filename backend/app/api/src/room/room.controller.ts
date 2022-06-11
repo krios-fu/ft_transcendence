@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { RoomDto } from "./room.dto";
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { RoomDto } from "./dto/room.dto";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomService } from "./room.service";
 import { IRequestUser } from "src/interfaces/request-user.interface";
 import { PrivateRoomGuard } from "./guard/private-room.guard";
+import { Roles } from "./roles.enum";
+import { UserRole } from "src/decorators/roles.decorator";
+import { RoomRolesGuard } from "./guard/room-roles.guard";
 
 @Controller('room')
 export class RoomController {
@@ -12,8 +15,9 @@ export class RoomController {
     ) { }
 
     @Post()
+    @UserRole(Roles.Banned)
     @UseGuards(PrivateRoomGuard)
-    @UseGuards(R)
+    @UseGuards(RoomRolesGuard)
     async joinRoom(
         @Req()  req: IRequestUser,
         @Body() roomCredentials: RoomDto
@@ -49,4 +53,10 @@ export class RoomController {
     async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomService.getAllRooms();
     }
+
+    /*
+    @Delete()
+    //@UseGuards(Role.Owner)
+    async removeRoom
+    */
 }

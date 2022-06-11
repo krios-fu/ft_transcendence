@@ -3,14 +3,12 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Payload } from '../user/user.dto';
 import { AuthToken } from './auth.token';
-import { RoomService } from 'src/room/room.service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-        private readonly roomService: RoomService
     ) {
         console.log("AuthService inicializado");
     }
@@ -22,7 +20,10 @@ export class AuthService {
             throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
         };
         const userProfile = payload.userProfile;
-        const accessToken = this.jwtService.sign(userProfile.username);
+        const accessToken = this.jwtService.sign(
+            { data: userProfile.username }, 
+            { expiresIn: '100m' }
+        );
         const isInDb = await this.userService.findOne(userProfile.username);
 
         if (isInDb === undefined) {
@@ -30,6 +31,4 @@ export class AuthService {
         }
         return { 'accessToken': accessToken };
     }
-
-    async authRole
 }
