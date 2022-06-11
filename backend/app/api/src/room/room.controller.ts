@@ -5,8 +5,9 @@ import { RoomService } from "./room.service";
 import { IRequestUser } from "src/interfaces/request-user.interface";
 import { PrivateRoomGuard } from "./guard/private-room.guard";
 import { Roles } from "./roles.enum";
-import { UserRole } from "src/decorators/roles.decorator";
 import { RoomRolesGuard } from "./guard/room-roles.guard";
+import { MinRoleAllowed } from "src/decorators/roles.decorator";
+import { LoginInfoDto } from "./dto/login-info.dto";
 
 @Controller('room')
 export class RoomController {
@@ -15,30 +16,22 @@ export class RoomController {
     ) { }
 
     @Post()
-    @UserRole(Roles.Banned)
+    @MinRoleAllowed(Roles.NOT_IN_ROOM)
     @UseGuards(PrivateRoomGuard)
     @UseGuards(RoomRolesGuard)
-    async joinRoom(
-        @Req()  req: IRequestUser,
-        @Body() roomCredentials: RoomDto
-    ): Promise<RoomEntity> {
-        const roomLogin = {
-            "userName": req.username,
-            "name": roomCredentials.name,
-        };
-
-        return await this.roomService.joinRoom(roomLogin);
+    async joinRoom(@Body() loginInfo: LoginInfoDto): Promise<RoomEntity> {
+        return await this.roomService.joinRoom(loginInfo);
     }
 
     @Post('new')
     async createRoom(
         @Req()  req: IRequestUser,
-        @Body() roomCredentials: RoomDto
+        @Body() roomDto: RoomDto,
     ): Promise<RoomEntity> {
-        const roomLogin = {
-            "userName": req.username,
-            "name": roomCredentials.name,
-            "password": roomCredentials.password,
+        const roomLogin: LoginInfoDto = {
+            "user": req.username,
+            "name": roomDto.name,
+            "password": roomDto.password,
         };
         
         return await this.roomService.createRoom(roomLogin);

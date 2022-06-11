@@ -28,7 +28,7 @@ export class RolesEntity {
     @Column({
         type: 'enum',
         enum: Roles,
-        default: Roles.User,
+        default: Roles.USER,
         nullable: false
     })
     role: Roles;
@@ -42,7 +42,7 @@ export class RolesEntity {
     constructor (
         user: UserEntity,
         room: RoomEntity,
-        role: Roles = Roles.User,
+        role: Roles = Roles.USER,
         date: Date = null,
     ) {
         this.user = user;

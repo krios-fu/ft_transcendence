@@ -6,11 +6,11 @@ import { RolesRepository } from "./repositories/roles.repository";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomMapper } from "./room.mapper";
 import { RoomRepository } from "./repositories/room.repository";
-import { IRoomLogin } from "./room-login.interface";
 import { RoomDto } from "./dto/room.dto";
 import * as bcrypt from "bcrypt";
 import { Roles } from "./roles.enum";
 import { RoleInfoDto } from "./dto/role-info.dto";
+import { LoginInfoDto } from "./dto/login-info.dto";
 
 @Injectable()
 export class RoomService {
@@ -35,10 +35,10 @@ export class RoomService {
         return await this.roomRepository.findOne(name);
     }
 
-    async joinRoom(roomLogin: IRoomLogin): Promise<RoomEntity> {
-        const { name, userName } = roomLogin;
+    async joinRoom(roomLogin: LoginInfoDto): Promise<RoomEntity> {
+        const { name, user } = roomLogin;
         const roomEntity = await this.roomRepository.findOne({ "name": name });
-        const userEntity = await this.userService.findOne(userName);
+        const userEntity = await this.userService.findOne(user);
 
         if (roomEntity === undefined) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
@@ -51,9 +51,13 @@ export class RoomService {
         return roomEntity;
     }
 
-    async createRoom(roomLogin: IRoomLogin): Promise<RoomEntity> {
-        const { userName, ...roomDto } = roomLogin;
-        const ownerEntity = await this.userService.findOne(userName);
+    async createRoom(roomLogin: LoginInfoDto): Promise<RoomEntity> {
+        const { name, password, user } = roomLogin;
+        const roomDto: RoomDto = {
+            name: name,
+            password: password,
+        };
+        const ownerEntity = await this.userService.findOne(user);
 
         if (ownerEntity === undefined) {
             throw new HttpException('User currently not in db', HttpStatus.UNAUTHORIZED);
@@ -68,8 +72,8 @@ export class RoomService {
         return roomEntity;
     }
 
-    async loginToRoom(roomCredentials: RoomDto): Promise<boolean> {
-        const roomEntity = await this.roomRepository.findOne(roomCredentials.name);
+    async loginToRoom(loginInfo: LoginInfoDto): Promise<boolean> {
+        const roomEntity = await this.roomRepository.findOne(loginInfo.name);
 
         if (roomEntity === undefined) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
@@ -77,29 +81,34 @@ export class RoomService {
         if (roomEntity.password === null) {
             return true;
         }
-        if (roomCredentials.password === undefined) {
+        if (loginInfo.password === undefined) {
             return false;
         }
-        return await bcrypt.compare(roomCredentials.password, roomEntity.password);
+        return await bcrypt.compare(loginInfo.password, roomEntity.password);
+    }
+
+    async getUserRole(user: string, room: string): Promise<Roles> {
+        const roleArray = await this.rolesRepository.find({
+            select: ["role"],
+            where: {
+                user: user,
+                room: room,
+            }
+        });
+        if (roleArray.length === 0) {
+            return Roles.NOT_IN_ROOM;
+        }
+        return roleArray[0].role;
     }
 
     async authRole(userRoleCreds: RoleInfoDto, allowedRole: Roles): Promise<boolean> {
         const { user, room } = userRoleCreds;
+
+        if (user === undefined || room === undefined) { // ???
+            return false;
+        }
         const userRole = await this.getUserRole(user, room);
 
-        return (allowedRole === userRole);
-    }
-
-    async getUserRole(user: string, room: string): Promise<Roles> {
-        const role = await this.rolesRepository.find({
-            select: ["role"],
-            where: {
-                role_user: user,
-                role_room: room,
-            }
-        });
-        console.log('query auth: ' + role);
-        //return role;
-        return Roles.User;
+        return (userRole >= allowedRole);
     }
 }
