@@ -3,6 +3,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {ChatEntity} from "./entities/chat.entity";
 import {MessageEntity} from "./entities/message.entity";
 import {UserModule} from "../user/user.module";
+import { ChatGateway } from './chat.gateway';
 
 @Module({
     imports: [
@@ -12,5 +13,6 @@ import {UserModule} from "../user/user.module";
         ]),
         UserModule,
     ],
+    providers: [ChatGateway],
 })
 export class ChatModule {}

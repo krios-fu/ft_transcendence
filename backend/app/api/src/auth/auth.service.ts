@@ -9,7 +9,7 @@ export class AuthService {
         private userService: UserService,
         private jwtService: JwtService,
     ) {
-        console.log("AuthService inicializado");
+        console.log("AuthService initialization");
     }
 
     async login(payload: Payload): Promise<any> {
@@ -17,7 +17,7 @@ export class AuthService {
         if (!payload) {
             console.log("No user in request.");
             return new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-        };
+        }
         const accessToken = this.jwtService.sign(payload);
         const userProfile = payload.userProfile;
         const isInDb = this.userService.findOne(userProfile.username);
