@@ -5,14 +5,11 @@ import {
     Delete,
     Param,
     Body,
-    Req,
-    Put
+    Patch
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
-import { FriendshipEntity } from './friendship/friendship.entity';
-import { FriendDto } from './friendship/friendship.dto';
 import { UpdateResult } from 'typeorm';
 
 @Controller('users')
@@ -28,13 +25,6 @@ export class UserController {
         return this.userService.findAllUsers();
     }
 
-    @Get('friends')
-    async getFriends(@Req() req): Promise<FriendDto[]> {
-        const   friends = this.userService.getFriends(req.user.username);
-
-        return friends;
-    }
-
     @Get(':id')
     async findOneUser(@Param('id') id: string): Promise<UserEntity> {
         return this.userService.findOne(id);
@@ -45,27 +35,23 @@ export class UserController {
         return this.userService.postUser(newUser);
     }
 
+    /*
+    **  It can only change a user's:
+    **      - photoUrl
+    **      - nickname
+    **      - doubleAuth (boolean)
+    **      - status (ONLINE, OFFLINE, PLAYING
+    */
+
+    @Patch(':id')
+    async updateUser( @Param('id') id: string, @Body() body: Object)
+                    : Promise<UpdateResult> {
+        return this.userService.updateUser(id, body);
+    }
+
     @Delete(':id')
-	async remove( @Param('id') id : string ): Promise<void> {
-		return await this.userService.deleteUser(id);
+	async remove( @Param('id') id: string ): Promise<void> {
+		return this.userService.deleteUser(id);
 	}
-
-    @Post('friends')
-    async postFriend(@Req() req, @Body('friendId') friendId : string )
-        : Promise<FriendshipEntity> {
-        const friendship = this.userService.addFriend(req.user.username,
-            friendId);
-    
-        return friendship;
-    }
-
-    @Put('friends')
-    async postAccept(@Req() req, @Body('friendId') friendId : string )
-        : Promise<UpdateResult> {
-        const result = this.userService.acceptFriend(req.user.username,
-            friendId);
-    
-        return result;
-    }
 
 }

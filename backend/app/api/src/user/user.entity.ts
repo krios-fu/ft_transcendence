@@ -5,7 +5,6 @@ import {
 	PrimaryColumn,
 	UpdateDateColumn,
 	ManyToMany,
-	ManyToOne,
 	OneToMany
 } from "typeorm";
 
@@ -35,10 +34,12 @@ export class UserEntity {
 	@Column()
 	photoUrl : string;
 
-  @Column()
+  	@Column()
 	profileUrl : string;
 
-	@Column()
+	@Column({
+		unique: true
+	})
 	nickName : string;
 
 	@Column({

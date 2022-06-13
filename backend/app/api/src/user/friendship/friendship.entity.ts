@@ -3,32 +3,40 @@ import {
 	Entity,
 	ManyToOne,
   Column,
-  JoinColumn
+  JoinColumn,
+  PrimaryColumn
 } from "typeorm";
 import { UserEntity } from "../user.entity";
 
 export enum FriendshipStatus {
 	PENDING = "pending",
 	CONFIRMED = "confirmed",
+  REFUSED = "refused"
 }
 
 @Entity({
   name: 'friendship'
 })
 export class  FriendshipEntity {
-  
-  @ManyToOne(() => UserEntity, {primary: true})
+
+  @PrimaryColumn()
+  senderId: string
+
+  @ManyToOne(() => UserEntity)
   @JoinColumn(
     {
-      name : 'sender'
+      name : 'senderId',
     }
   )
   sender : UserEntity
 
-  @ManyToOne(() => UserEntity, {primary: true})
+  @PrimaryColumn()
+  receiverId: string
+
+  @ManyToOne(() => UserEntity)
   @JoinColumn(
     {
-      name : 'receiver'
+      name : 'receiverId'
     }
   )
   receiver : UserEntity
