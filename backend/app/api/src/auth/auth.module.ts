@@ -13,7 +13,7 @@ import { FortyTwoStrategy } from './strategy/fortytwo.strategy';
         PassportModule,
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
-            signOptions: { expiresIn: '60s' },
+            signOptions: { expiresIn: '60m' },
         }),
     ],
     controllers: [AuthController],
