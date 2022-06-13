@@ -1,24 +1,28 @@
 import { UserEntity } from "src/user/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Roles } from "../roles.enum";
 import { RoomEntity } from "./room.entity";
 
 @Entity({  name: "roles" })
 export class RolesEntity {
+    @PrimaryColumn()
+    role_user: string;
+
     @ManyToOne(
         () => UserEntity,
         { 
-            primary: true,
             cascade: ["remove"],
         }
     )
     @JoinColumn({ name: "role_user" })
     user: UserEntity;
 
+    @PrimaryColumn()
+    role_room: string;
+
     @ManyToOne(
         () => RoomEntity,
-        { 
-            primary: true,
+        {
             cascade: ["remove"],
         }
     )
