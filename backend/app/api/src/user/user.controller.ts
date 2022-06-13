@@ -16,9 +16,7 @@ import { UpdateResult } from 'typeorm';
 export class UserController {
     constructor(
         private userService: UserService,
-    ) {
-        console.log("UserController inicializado");
-    }
+    ) { }
 
     @Get()
     async findAllUsers(): Promise<UserEntity[]> {

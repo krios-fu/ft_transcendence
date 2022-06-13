@@ -26,8 +26,4 @@ import { FriendshipEntity } from './friendship/friendship.entity';
         FriendMapper
     ]
 })
-export class UserModule {
-    constructor() {
-        console.log("UserModule inicializado");
-    }
-}
+export class UserModule { }

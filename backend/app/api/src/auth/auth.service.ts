@@ -9,9 +9,7 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
-    ) {
-        console.log("AuthService inicializado");
-    }
+    ) { }
 
     async authUser(payload: Payload): Promise<AuthToken> {
 

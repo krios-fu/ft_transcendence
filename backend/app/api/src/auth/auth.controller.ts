@@ -15,9 +15,7 @@ interface IRequestPayload extends Request {
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {
-        console.log("AuthController inicializado");
-    }
+    constructor(private authService: AuthService) { }
 
     @Get("42")
     @Public()

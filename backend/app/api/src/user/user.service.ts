@@ -17,9 +17,7 @@ export class UserService {
         @InjectRepository(UserEntity)
         private userRepository: UserRepository,
         private userMapper: UserMapper
-    ) {
-        console.log("UserService inicializado");
-    }
+    ) { }
 
     async findAllUsers(): Promise<UserEntity[]> {
         return await this.userRepository.find();
