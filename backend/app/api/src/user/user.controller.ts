@@ -5,13 +5,12 @@ import {
     Delete,
     Param,
     Body,
-    Req
+    Patch
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
-import { FriendshipEntity } from './friendship/friendship.entity';
-import { FriendDto } from './friendship/friendship.dto';
+import { UpdateResult } from 'typeorm';
 
 @Controller('users')
 export class UserController {
@@ -26,14 +25,6 @@ export class UserController {
         return this.userService.findAllUsers();
     }
 
-    @Get('friend')
-    async getFriends(@Req() req): Promise<FriendDto[]> {
-        console.log('hi ' + req.username);
-        const   friends = await this.userService.getFriends(req.username);
-
-        return friends;
-    }
-
     @Get(':id')
     async findOneUser(@Param('id') id: string): Promise<UserEntity> {
         return this.userService.findOne(id);
@@ -44,16 +35,23 @@ export class UserController {
         return this.userService.postUser(newUser);
     }
 
-    @Delete(':id')
-	async remove( @Param('id') id : string ): Promise<void> {
-		return await this.userService.deleteUser(id);
-	}
+    /*
+    **  It can only change a user's:
+    **      - photoUrl
+    **      - nickname
+    **      - doubleAuth (boolean)
+    **      - status (ONLINE, OFFLINE, PLAYING
+    */
 
-    @Post('friend')
-    async postFriend( @Body('friendId') friendId : string ): Promise<FriendshipEntity> {
-        const friendship = await this.userService.addFriend('onapoli-', friendId);
-    
-        return friendship;
+    @Patch(':id')
+    async updateUser( @Param('id') id: string, @Body() body: Object)
+                    : Promise<UpdateResult> {
+        return this.userService.updateUser(id, body);
     }
+
+    @Delete(':id')
+	async remove( @Param('id') id: string ): Promise<void> {
+		return this.userService.deleteUser(id);
+	}
 
 }
