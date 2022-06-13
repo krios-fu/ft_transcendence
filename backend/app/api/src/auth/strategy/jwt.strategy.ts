@@ -15,11 +15,8 @@ constructor() {
         });
     }
 
-    async validate(payload: any) {
-        return {
-            /*userId: payload.sub,
-            username: payload.username,*/
-            username: payload.userProfile.username
-        }
+
+    async validate(username: string) {
+        return username;
     }
 }

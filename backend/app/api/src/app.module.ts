@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { ChatModule } from './chat/chat.module';
+import { RoomModule } from './room/room.module';
+
 
 @Module({
     imports: [
@@ -21,6 +23,7 @@ import { ChatModule } from './chat/chat.module';
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
         }),
+        RoomModule,
     ],
     controllers: [],
     providers: [

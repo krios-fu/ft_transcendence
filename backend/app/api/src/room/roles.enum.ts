@@ -1,7 +1,8 @@
 export enum Roles {
-    Mod = 'mod',
-    User = 'user',
-    Playing = 'playing',
-    Silenced = 'silenced',
-    Banned = 'banned'
+    BANNED,
+    NOT_IN_ROOM,
+    SILENCED,
+    USER,
+    PLAYING,
+    MOD
 };

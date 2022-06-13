@@ -79,7 +79,7 @@ export class    FriendshipService {
             relations: {
                 sender: true,
                 receiver: true,
-           }
+           },
             where: [
                 {
                     senderId: userId,

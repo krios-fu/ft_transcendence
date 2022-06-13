@@ -1,11 +1,6 @@
-/* 42 App provee de una app UID y una app SECRET,
-   deberán ser introducidas a la hora de crear la estrategia (super) 
- */
-
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
-// import { Payload } from '../../user/user.dto';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
@@ -36,8 +31,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, "42") {
             userProfile,
             accessToken,
         };
-
-        console.log("42-passport strategy: " + JSON.stringify(payload));
+        
         callback(null, payload);
     }
 }
