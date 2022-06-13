@@ -45,9 +45,31 @@ then
 				"email":"'$2'@mail.com",
 				"photoUrl":"'$2'-photoUrl"
 				}' | tee /dev/tty | grep -q "401 Unauthorized"
-			check_invalid_token
+		check_invalid_token
 	else
 		echo "Pass a username as second argument"
+	fi
+	exit
+fi
+
+# Need to pass a json object as third argument. The only properties
+# accepted bu the rout are: nickName (string), photoUrl (string),
+# doubleAuth (boolean) and status ("online", "offline", "playing").
+#
+# Example JSON object:
+# '{"nickname":"theGreat","doubleAuth":true,"status":"playing"}'
+
+if [ $1 = "update-user" ]
+then
+	if [ -n "$2" ] && [ -n "$3" ]
+	then
+		curl -i -s -X PATCH $HOST/users/$2 \
+			-H "Authorization: Bearer $TOKEN42" \
+			-H "Content-Type: application/json" \
+			-d $3 | tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
+	else
+		echo "Pass a username as second argument and JSON as third argument"
 	fi
 	exit
 fi
@@ -67,7 +89,7 @@ fi
 
 if [ $1 = "get-friends" ]
 then
-	curl -i -s $HOST/users/friends -H "Authorization: Bearer $TOKEN42" \
+	curl -i -s $HOST/friends -H "Authorization: Bearer $TOKEN42" \
 		| tee /dev/tty | grep -q "401 Unauthorized"
 	check_invalid_token
 	exit
@@ -77,13 +99,10 @@ if [ $1 = "post-friend" ]
 then
 	if [ -n "$2" ]
 	then
-		curl -i -s $HOST/users/friends \
+		curl -i -s -X POST $HOST/friends/$2 \
 			-H "Authorization: Bearer $TOKEN42" \
-			-H "Content-Type: application/json" \
-			-d '{
-				"friendId":"'$2'"
-				}' | tee /dev/tty | grep -q "401 Unauthorized"
-			check_invalid_token
+			| tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
 	else
 		echo "Pass a username as second argument"
 	fi
@@ -94,13 +113,24 @@ if [ $1 = "accept-friend" ]
 then
 	if [ -n "$2" ]
 	then
-		curl -i -s -X PUT $HOST/users/friends \
+		curl -i -s -X PATCH $HOST/friends/accept/$2 \
 			-H "Authorization: Bearer $TOKEN42" \
-			-H "Content-Type: application/json" \
-			-d '{
-				"friendId":"'$2'"
-				}' | tee /dev/tty | grep -q "401 Unauthorized"
-			check_invalid_token
+			| tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
+	else
+		echo "Pass a username as second argument"
+	fi
+	exit
+fi
+
+if [ $1 = "refuse-friend" ]
+then
+	if [ -n "$2" ]
+	then
+		curl -i -s -X PATCH $HOST/friends/refuse/$2 \
+			-H "Authorization: Bearer $TOKEN42" \
+			| tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
 	else
 		echo "Pass a username as second argument"
 	fi
