@@ -5,11 +5,10 @@ import {
 	PrimaryColumn,
 	UpdateDateColumn,
 	ManyToMany,
-	OneToMany
+	OneToMany, JoinColumn, JoinTable
 } from "typeorm";
 import {ChatEntity} from "../chat/entities/chat.entity";
 import {MessageEntity} from "../chat/entities/message.entity";
-import {JoinTable} from "typeorm/browser";
 
 export enum UserStatus {
 	ONLINE = "online",
@@ -65,11 +64,11 @@ export class UserEntity {
 	lastConnection : Date;
 
 	@ManyToMany((type) => ChatEntity )
-	@JoinTable()
+	@JoinColumn()
 	chats : ChatEntity [];
 
 	@OneToMany((type) => MessageEntity, (message) => message.author )
-	@JoinTable()
+	@JoinColumn()
 	messages : MessageEntity[];
 
 	//Relations

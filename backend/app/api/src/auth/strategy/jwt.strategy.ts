@@ -15,7 +15,6 @@ constructor() {
         });
     }
 
-
     async validate(username: string) {
         return username;
     }

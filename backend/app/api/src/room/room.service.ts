@@ -32,12 +32,20 @@ export class RoomService {
 
         })*/
 
-        return await this.roomRepository.findOne(name);
+        return await this.roomRepository.findOne({
+            where: {
+                name: name,
+            }
+        });
     }
 
     async joinRoom(roomLogin: LoginInfoDto): Promise<RoomEntity> {
         const { name, user } = roomLogin;
-        const roomEntity = await this.roomRepository.findOne({ "name": name });
+        const roomEntity = await this.roomRepository.findOne({ 
+            where: {
+                name: name,
+            }
+        });
         const userEntity = await this.userService.findOne(user);
 
         if (roomEntity === undefined) {
@@ -63,7 +71,11 @@ export class RoomService {
             throw new HttpException('User currently not in db', HttpStatus.UNAUTHORIZED);
         }
         const roomEntity = this.roomMapper.toEntity(roomDto, ownerEntity);
-        const roomInDb = await this.roomRepository.findOne(roomEntity.name);
+        const roomInDb = await this.roomRepository.findOne({ 
+            where: { 
+                name: roomEntity.name 
+            }
+        });
         
         if (roomInDb != undefined) {
             throw new HttpException('Room already in db', HttpStatus.BAD_REQUEST);
@@ -73,7 +85,11 @@ export class RoomService {
     }
 
     async loginToRoom(loginInfo: LoginInfoDto): Promise<boolean> {
-        const roomEntity = await this.roomRepository.findOne(loginInfo.name);
+        const roomEntity = await this.roomRepository.findOne({
+            where: {
+                name: loginInfo.name
+            }
+        });
 
         if (roomEntity === undefined) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
@@ -91,8 +107,8 @@ export class RoomService {
         const roleArray = await this.rolesRepository.find({
             select: ["role"],
             where: {
-                user: user,
-                room: room,
+                role_user: user,
+                role_room: room,
             }
         });
         if (roleArray.length === 0) {
