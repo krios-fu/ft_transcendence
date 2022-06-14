@@ -1,10 +1,9 @@
 import { IsString } from "class-validator";
 
-export class RoomDto {
+export class RoleInfoDto {
+    @IsString()
+    user: string;
 
     @IsString()
-    roomName: string;
-
-    @IsString()
-    password?: string;
-};
+    room: string;
+}

@@ -13,6 +13,6 @@ export class Chat {
   }
 
   getMessage() {
-    return  this.socket.fromEvent('message').pipe( map( (data : any ) => data.msg )) ;
+    return  this.socket.fromEvent('message');
   }
 }

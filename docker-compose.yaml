@@ -6,12 +6,13 @@ services:
     image: node:18-alpine
     ports:
       - 3000:3000   # default port
+      - 3001:3001
       - 9229:9229   # default debug port
     networks:
       - webapp-network
     volumes:
       - ./backend/app:/usr/src/app
-    depends_on:     # ???
+    depends_on:
       - db
     working_dir: /usr/src/app/api
     command: sh -c "npm install  && npm run start:dev"

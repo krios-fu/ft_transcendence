@@ -5,8 +5,7 @@ import {
 	PrimaryColumn,
 	UpdateDateColumn,
 	ManyToMany,
-	ManyToOne,
-	OneToMany, JoinTable
+	OneToMany, JoinColumn, JoinTable
 } from "typeorm";
 import {ChatEntity} from "../chat/entities/chat.entity";
 import {MessageEntity} from "../chat/entities/message.entity";
@@ -17,7 +16,9 @@ export enum UserStatus {
 	PLAYING = "playing",
 }
 
-@Entity()
+@Entity({
+	name: 'user'
+})
 export class UserEntity {
 
 	@PrimaryColumn()
@@ -35,10 +36,13 @@ export class UserEntity {
 	@Column()
 	photoUrl : string;
 
-	@Column()
+
+  	@Column()
 	profileUrl : string;
 
-	@Column()
+	@Column({
+		unique: true
+	})
 	nickName : string;
 
 	@Column({
@@ -60,11 +64,11 @@ export class UserEntity {
 	lastConnection : Date;
 
 	@ManyToMany((type) => ChatEntity )
-	@JoinTable()
+	@JoinColumn()
 	chats : ChatEntity [];
 
 	@OneToMany((type) => MessageEntity, (message) => message.author )
-	@JoinTable()
+	@JoinColumn()
 	messages : MessageEntity[];
 
 	//Relations
@@ -73,8 +77,6 @@ export class UserEntity {
   rooms: Room[];
 
 	@OneToMany(() => Score, (score) => score.user)
-	scores: Score[];
+	scores: Score[];*/
 
-	@OneToMany(() => Friendship, (friendship) => friendship.user)
-	friendships: Friendship[];*/
 }
