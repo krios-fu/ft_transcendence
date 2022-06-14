@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RoomModule } from './room/room.module';
+import { RoomChatModule } from './room-chat/room-chat.module';
 
 @Module({
     imports: [
@@ -21,6 +22,7 @@ import { RoomModule } from './room/room.module';
             synchronize: true,
         }),
         RoomModule,
+        RoomChatModule,
     ],
     controllers: [],
     providers: [
