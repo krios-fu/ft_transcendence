@@ -5,7 +5,7 @@ import {
     Controller,
     Get,
     UseGuards,
-    Req,
+    Req, Redirect,
 } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
 
@@ -27,6 +27,7 @@ export class AuthController {
     @Get("42/redirect")
     @Public()
     @UseGuards(FortyTwoAuthGuard)
+    @Redirect('http://localhost:4200')
     async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
         const user = req.user;
         return this.authService.authUser(user);

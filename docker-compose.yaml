@@ -6,6 +6,7 @@ services:
     image: node:18-alpine
     ports:
       - 3000:3000   # default port
+      - 3001:3001
       - 9229:9229   # default debug port
     networks:
       - webapp-network
