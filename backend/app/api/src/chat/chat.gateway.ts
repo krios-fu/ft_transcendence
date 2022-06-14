@@ -4,7 +4,7 @@ import { Server, Socket } from 'socket.io';
 @WebSocketGateway(
     3001,
     {
-      namespace: "private",
+      //namespace: "private",
       cors : { origin : '*' }
     })
 export class ChatGateway implements OnGatewayInit{

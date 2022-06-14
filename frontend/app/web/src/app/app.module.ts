@@ -26,9 +26,4 @@ const config: SocketIoConfig = { url:'https://localhost:3001', options: {} }
   bootstrap: [AppComponent]
 })
 export class AppModule {
-
-  constructor( private chat : Chat) {
-    chat.sendMessage('hello');
-    console.log(chat.getMessage());
-  }
 }

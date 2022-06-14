@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { ChatModule } from './chat/chat.module';
+import {ChatGateway} from "./chat/chat.gateway";
 
 @Module({
     imports: [
         AuthModule,
         UserModule,
-        ChatModule,
+        ChatGateway,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
