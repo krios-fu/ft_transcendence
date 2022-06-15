@@ -21,19 +21,19 @@ export class    FriendshipController {
 
     @Get()
     async getFriends(@Req() req): Promise<FriendDto[]> {
-        return this.friendshipService.getFriends(req.user.username);
+        return this.friendshipService.getFriends(req.user.data);
     }
 
     @Get(':id')
     async getOneFriend( @Req() req, @Param('id') id: string )
                         : Promise<FriendDto> {
-        return this.friendshipService.getOneFriend(req.user.username, id);
+        return this.friendshipService.getOneFriend(req.user.data, id);
     }
 
     @Post(':id')
     async postFriend( @Req() req, @Param('id') id: string )
                         : Promise<FriendshipEntity> {
-        return this.friendshipService.addFriend(req.user.username, id);
+        return this.friendshipService.addFriend(req.user.data, id);
     }
 
     /*
@@ -44,7 +44,7 @@ export class    FriendshipController {
     @Patch('accept/:id')
     async acceptFriend( @Req() req, @Param('id') id: string )
                         : Promise<UpdateResult> {
-        return this.friendshipService.acceptFriend(req.user.username, id);
+        return this.friendshipService.acceptFriend(req.user.data, id);
     }
 
     /*
@@ -55,7 +55,7 @@ export class    FriendshipController {
     @Patch('refuse/:id')
     async refuseFriend( @Req() req, @Param('id') id: string )
                         : Promise<UpdateResult> {
-        return this.friendshipService.refuseFriend(req.user.username, id);
+        return this.friendshipService.refuseFriend(req.user.data, id);
     }
 
     /*
