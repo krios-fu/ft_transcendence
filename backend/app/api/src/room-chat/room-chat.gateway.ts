@@ -1,5 +1,14 @@
 import { Logger } from '@nestjs/common';
-import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { 
+    ConnectedSocket, 
+    MessageBody, 
+    OnGatewayConnection, 
+    OnGatewayDisconnect, 
+    OnGatewayInit, 
+    SubscribeMessage, 
+    WebSocketGateway, 
+    WebSocketServer
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
@@ -26,7 +35,7 @@ export class RoomChatGateway implements
         this.logger.log(`Connection ${cl.id} closed`);0
     }
 
-    /* ** ***        *** ** */
+    /*                         */
 
     @WebSocketServer()
     private wss: Server;
