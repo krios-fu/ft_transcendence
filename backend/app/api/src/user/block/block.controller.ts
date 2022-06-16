@@ -18,7 +18,6 @@ export class    BlockController {
 
     @Get()
     async getBlockedFriends( @Req() req ) : Promise<FriendshipEntity[]> {
-        console.log("Hi")
         return this.blockService.getBlockedFriends(req.user.data);
     }
 
@@ -27,7 +26,7 @@ export class    BlockController {
     **  and adds a row in BlockEntity table.
     */
 
-    @Post('block/:id')
+    @Post(':id')
     async blockFriend( @Req() req, @Param('id') id: string )
                         : Promise<FriendshipEntity> {
         return this.blockService.blockFriend(req.user.data, id);
