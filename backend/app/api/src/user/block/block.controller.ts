@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { BlockService } from "./block.service";
 import { FriendshipEntity } from '../friendship/friendship.entity';
+import { FriendDto } from "../friendship/friendship.dto";
 
 @Controller('block')
 export class    BlockController {
@@ -17,7 +18,7 @@ export class    BlockController {
     }
 
     @Get()
-    async getBlockedFriends( @Req() req ) : Promise<FriendshipEntity[]> {
+    async getBlockedFriends( @Req() req ) : Promise<FriendDto[]> {
         return this.blockService.getBlockedFriends(req.user.data);
     }
 

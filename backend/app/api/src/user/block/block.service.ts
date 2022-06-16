@@ -5,6 +5,8 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendshipRepository } from '../friendship/friendship.repository';
+import { FriendDto } from '../friendship/friendship.dto';
+import { FriendMapper } from '../friendship/friendship.mapper';
 import {
     FriendshipEntity,
     FriendshipStatus
@@ -16,6 +18,7 @@ export class    BlockService {
     constructor(
         @InjectRepository(FriendshipEntity)
         private friendRepository: FriendshipRepository,
+        private friendMapper: FriendMapper,
     ) {
         console.log("BlockService inicializado");
     }
@@ -50,45 +53,47 @@ export class    BlockService {
         });
         if (!friendship)
             throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
-        blockEntity.blockSenderId = blockSenderId;
         blockEntity.blockSender = friendship.senderId === blockSenderId
             ? friendship.sender : friendship.receiver;
-        blockEntity.blockReceiverId = blockReceiverId;
-        blockEntity.blockReceiver = friendship.receiverId === blockReceiverId
-            ? friendship.receiver : friendship.sender;
         friendship.status = FriendshipStatus.BLOCKED;
         friendship.block = blockEntity;
         return await this.friendRepository.save(friendship);
     }
 
-    async getBlockedFriends(userId: string): Promise<FriendshipEntity[]> {
+    async getBlockedFriends(userId: string): Promise<FriendDto[]> {
         const blockedFriendships = await this.friendRepository.find({
             relations: {
-                block: {
-                    blockReceiver: true
-                },
+                sender: true,
+                receiver: true,
             },
             select: {
-                since: true,
-                block: {
-                    blockReceiverId: true,
-                    blockReceiver: {
-                        username: true,
-                        nickName: true,
-                        photoUrl: true
-                    }
-                }
+                senderId: true,
+                sender: {
+                    nickName: true,
+                },
+                receiverId: true,
+                receiver: {
+                    nickName: true,
+                },
             },
             where: [
                 {
                     block: {
-                        blockSenderId: userId
+                        blockSender: {
+                            username: userId
+                        }
                     },
                     status: FriendshipStatus.BLOCKED,
                 }
             ],
         });
-        return (blockedFriendships);
+        let friends: FriendDto[] = [];
+
+        for (let i = 0; i < blockedFriendships.length; ++i)
+        {
+            friends.push(this.friendMapper.toBlockedFriendDto(userId, blockedFriendships[i]));
+        }
+        return (friends);
     }
 
 }

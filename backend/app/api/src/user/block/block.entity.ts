@@ -4,7 +4,8 @@ import {
     ManyToOne,
     OneToOne,
     PrimaryColumn,
-    JoinColumn
+    JoinColumn,
+    PrimaryGeneratedColumn
 } from "typeorm";
 import { FriendshipEntity } from "../friendship/friendship.entity";
 import { UserEntity } from "../user.entity";
@@ -14,25 +15,16 @@ import { UserEntity } from "../user.entity";
 })
 export class    BlockEntity {
 
+    @PrimaryGeneratedColumn()
+    id: number
+
     @OneToOne(() => FriendshipEntity, (friendship) => friendship.block)
     @JoinColumn()
     friendship: FriendshipEntity
 
-    @PrimaryColumn()
-    blockReceiverId: string
-
     @ManyToOne(() => UserEntity)
     @JoinColumn({
-        name: "blockReceiverId"
-    })
-    blockReceiver: UserEntity
-
-    @PrimaryColumn()
-    blockSenderId: string
-
-    @ManyToOne(() => UserEntity)
-    @JoinColumn({
-        name: "blockSenderId"
+        name: "blockSender"
     })
     blockSender: UserEntity
 
