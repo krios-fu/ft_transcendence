@@ -8,9 +8,8 @@ import { RoomChatService } from './room-chat.service';
 })
 export class RoomChatComponent implements OnInit {
   constructor(
-    private roomChatService: RoomChatService,
+    public roomChatService: RoomChatService,
   ) { }
 
   ngOnInit(): void { }
-
 }

@@ -1,5 +1,12 @@
 <div>
-    <li *ngFor="let msg of messages">
+    <form>
+        <input type="text" id="message" name="message" [(ngModel)]="roomChatService.message">
+        <button type="button" (click)="roomChatService.sendMessage(roomChatService.message)">send</button>
+    </form>
+</div>
+{{ roomChatService.messages.length }}
+<div *ngIf="roomChatService.messages.length">
+    <li *ngFor="let msg of roomChatService.messages">
         {{msg}}
     </li>
 </div>

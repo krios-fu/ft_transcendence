@@ -12,7 +12,9 @@ import {
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
-    namespace: 'room/chat',
+   // transports: ['websockets'],
+    namespace: 'room-chat',
+    cors: true, /* esto está MUY mal */
 })
 export class RoomChatGateway implements 
     OnGatewayInit,
@@ -44,6 +46,9 @@ export class RoomChatGateway implements
     handleMessage(
         @ConnectedSocket() client: Socket, 
         @MessageBody(/*validator pipe here */)  msg: string): void {
-        this.wss.emit(msg);
+        
+        this.wss.emit("room-chat", msg, (data: string) => {
+            console.log("sendeando missatge: " + data); /* Error connection timed out */
+        });
     }
 }
