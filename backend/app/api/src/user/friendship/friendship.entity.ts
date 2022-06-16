@@ -4,14 +4,17 @@ import {
 	ManyToOne,
   Column,
   JoinColumn,
-  PrimaryColumn
+  PrimaryColumn,
+  OneToOne
 } from "typeorm";
+import { BlockEntity } from "../block/block.entity";
 import { UserEntity } from "../user.entity";
 
 export enum FriendshipStatus {
 	PENDING = "pending",
 	CONFIRMED = "confirmed",
-  REFUSED = "refused"
+  REFUSED = "refused",
+  BLOCKED = "blocked"
 }
 
 @Entity({
@@ -48,5 +51,10 @@ export class  FriendshipEntity {
 
   @CreateDateColumn()
   since : Date
+
+  @OneToOne(() => BlockEntity, (block) => block.friendship, {
+    cascade: true
+  })
+  block: BlockEntity
 
 }
