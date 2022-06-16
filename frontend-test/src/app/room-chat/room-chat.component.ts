@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { RoomChatService } from './room-chat.service';
 
 @Component({
   selector: 'app-room-chat',
@@ -6,8 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./room-chat.component.css']
 })
 export class RoomChatComponent implements OnInit {
-
-  constructor() { }
+  constructor(
+    private roomChatService: RoomChatService,
+  ) { }
 
   ngOnInit(): void { }
 
