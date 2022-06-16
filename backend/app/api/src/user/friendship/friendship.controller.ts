@@ -48,17 +48,6 @@ export class    FriendshipController {
     }
 
     /*
-    **  Changes a friendship's status from PENDING to REFUSED
-    **  if username of the request matches the receiverId in friendship.
-    */
-
-    @Patch('refuse/:id')
-    async refuseFriend( @Req() req, @Param('id') id: string )
-                        : Promise<UpdateResult> {
-        return this.friendshipService.refuseFriend(req.user.data, id);
-    }
-
-    /*
     **  IMPORTANT!
     **
     **  A Friendship is deleted only when at least one of the two users'

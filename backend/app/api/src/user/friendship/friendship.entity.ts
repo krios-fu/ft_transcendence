@@ -13,7 +13,6 @@ import { UserEntity } from "../user.entity";
 export enum FriendshipStatus {
 	PENDING = "pending",
 	CONFIRMED = "confirmed",
-  REFUSED = "refused",
   BLOCKED = "blocked"
 }
 

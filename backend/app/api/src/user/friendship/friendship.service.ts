@@ -141,21 +141,4 @@ export class    FriendshipService {
         );
     }
 
-    /*
-    **  Update the status from PENDING to REFUSED of a friendship
-    **  where sender and receiver usernames match senderId and receiverId.
-    */
-
-    async refuseFriend(receiverId: string, senderId: string)
-                        :  Promise<UpdateResult> {
-        return await this.friendRepository.update(
-            {
-                senderId: senderId,
-                receiverId: receiverId,
-                status: FriendshipStatus.PENDING
-            },
-            { status: FriendshipStatus.REFUSED }
-        );
-    }
-
 }
