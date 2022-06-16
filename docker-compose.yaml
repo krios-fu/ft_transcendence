@@ -16,6 +16,7 @@ services:
     working_dir: /usr/src/app/api
     command: sh -c "npm install  && npm run start:dev"
     restart: unless-stopped
+
   db:
     container_name: db
     image: postgres:14.2
@@ -30,6 +31,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWD}
     restart: unless-stopped
+
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
@@ -45,6 +47,19 @@ services:
       - webapp-network
     ports:
       - 5050:80
+
+  angular-app:
+    container_name: angular-app
+    image: node:18-alpine
+    ports:
+      - 4200:4200
+    restart: unless-stopped
+    volumes:
+      - ./frontend-test/:/usr/src/app
+    working_dir: /usr/src/app
+    command: sh -c "npm install && npm install -g @angular/cli && ng serve --host=0.0.0.0"
+    networks:
+      - webapp-network
 
 networks:
   webapp-network:

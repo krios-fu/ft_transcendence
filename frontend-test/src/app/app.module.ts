@@ -9,9 +9,6 @@ import { FormsModule } from '@angular/forms';
 
 const config: SocketIoConfig = {
   url: 'http://localhost:3000/room-chat',
-/*  options: {
-    transports: ['websocket']
-  }*/
 }
 
 @NgModule({
