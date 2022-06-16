@@ -136,3 +136,25 @@ then
 	fi
 	exit
 fi
+
+if [ $1 = "block-friend" ]
+then
+	if [ -n "$2" ]
+	then
+		curl -i -s -X POST $HOST/block/$2 \
+			-H "Authorization: Bearer $TOKEN42" \
+			| tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
+	else
+		echo "Pass a username as second argument"
+	fi
+	exit
+fi
+
+if [ $1 = "get-blocked-friends" ]
+then
+	curl -i -s $HOST/block -H "Authorization: Bearer $TOKEN42" \
+		| tee /dev/tty | grep -q "401 Unauthorized"
+	check_invalid_token
+	exit
+fi
