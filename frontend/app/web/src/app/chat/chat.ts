@@ -8,8 +8,10 @@ export class Chat {
   constructor( private socket : Socket ) {
   }
 
-  sendMessage( msg : string ){
-    this.socket.emit(msg);
+  sendMessage( msg : string )  {
+
+    this.socket.emit("message", msg);
+
   }
 
   getMessage() {

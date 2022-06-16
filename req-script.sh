@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOST=http://localhost:3000
+HOST=http://10.13.5.2:3000
 
 #Check if TOKEN42 environment variable is set
 

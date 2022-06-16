@@ -34,7 +34,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
+  handleMessage(client: any, payload: any) {
     console.log('new connection');
     return 'Hello world!';
   }

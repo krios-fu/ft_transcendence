@@ -5,8 +5,7 @@ import {LoginModule} from "./login/login.module";
 
 const routes: Routes = [
   { path: 'login', component : LoginComponent },
-
-
+  { path: 'chat', loadChildren : () => import('./chat/chat.module').then((m)=> m.ChatModule) },
 ];
 
 @NgModule({

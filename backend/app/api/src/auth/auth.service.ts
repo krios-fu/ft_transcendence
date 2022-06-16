@@ -28,8 +28,9 @@ export class AuthService {
         );
         const isInDb = await this.userService.findOne(userProfile.username);
 
-        if (isInDb === undefined) {
-            await this.userService.postUser(userProfile);
+        if (isInDb === null) {
+           let user =  await this.userService.postUser(userProfile);
+
         }
         return { 'accessToken': accessToken };
     }

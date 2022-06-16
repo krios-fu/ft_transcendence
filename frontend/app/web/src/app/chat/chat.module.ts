@@ -9,6 +9,14 @@ import {Chat} from "./chat";
   imports: [
     CommonModule
   ],
-  providers: [Chat]
+  providers: [Chat],
 })
-export class ChatModule { }
+export class ChatModule {
+
+  constructor( private chat : Chat) {
+
+
+    this.chat.sendMessage("pepe");
+    this.chat.getMessage();
+  }
+}

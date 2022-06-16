@@ -6,5 +6,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'web';
+
+   i : number = 0;
+
+   public inc() : number {
+     return  ++this.i;
+   }
+
+   public dec() : number {
+     return --this.i;
+   }
 }
+

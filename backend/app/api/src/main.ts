@@ -8,8 +8,6 @@ async function bootstrap() {
     app.useGlobalPipes(new ValidationPipe());
     let data =  await app.listen(3000);
 
-    console.log(data);
-
 }
 
 bootstrap();
