@@ -7,11 +7,14 @@ import {
     OnGatewayInit, 
     SubscribeMessage, 
     WebSocketGateway, 
-    WebSocketServer } from '@nestjs/websockets';
+    WebSocketServer
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
-    namespace: 'room/chat',
+   // transports: ['websockets'],
+    namespace: 'room-chat',
+    cors: true, /* esto está MUY mal */
 })
 export class RoomChatGateway implements 
     OnGatewayInit,
@@ -34,7 +37,7 @@ export class RoomChatGateway implements
         this.logger.log(`Connection ${cl.id} closed`);0
     }
 
-    /* ** ***        *** ** */
+    /*                         */
 
     @WebSocketServer()
     private wss: Server;
@@ -43,6 +46,9 @@ export class RoomChatGateway implements
     handleMessage(
         @ConnectedSocket() client: Socket, 
         @MessageBody(/*validator pipe here */)  msg: string): void {
-        this.wss.emit(msg);
+        
+        this.wss.emit("room-chat", msg, (data: string) => {
+            console.log("sendeando missatge: " + data); /* Error connection timed out */
+        });
     }
 }
