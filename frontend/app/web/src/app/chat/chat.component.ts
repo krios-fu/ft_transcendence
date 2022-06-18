@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+
+import {FormControl, FormGroup} from '@angular/forms'; //
 import {Chat} from "./chat";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-chat',
@@ -8,17 +11,33 @@ import {Chat} from "./chat";
 })
 export class ChatComponent implements OnInit {
 
-  constructor( private chat : Chat) {
+  public formMessage= new FormGroup({
+    message : new FormControl('')
+  })
+
+
+  constructor( private chat : Chat, private route: ActivatedRoute ) {
   }
 
 
   ngOnInit(): void {
+    const room = this.route.snapshot.paramMap.get('id');
+    this.formMessage.patchValue({ room } );
+  }
+
+
+  sendMessage() : boolean {
+    const { message, room } = this.formMessage.value;
+    console.log( message, room)
+    if(message.trim() == '')
+      return false;
+    this.chat.sendMessage( message );
+    this.formMessage.controls['message'].reset();
+    return true;
 
   }
 
-  sendMessage() {
-    this.chat.sendMessage("hello world!!!!!");
-  }
+
 
   viewMessage() {
     return this.chat.getMessage();
