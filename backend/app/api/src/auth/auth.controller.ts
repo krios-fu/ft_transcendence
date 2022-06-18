@@ -27,9 +27,9 @@ export class AuthController {
     @Get("42/redirect")
     @Public()
     @UseGuards(FortyTwoAuthGuard)
-    @Redirect('http://localhost:4200')
     async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
         const user = req.user;
+        console.log(user);
         return this.authService.authUser(user);
     }
 }

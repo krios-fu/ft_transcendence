@@ -1,9 +1,11 @@
 import {
+    ConnectedSocket,
+    MessageBody,
     OnGatewayConnection, OnGatewayDisconnect,
     OnGatewayInit,
     SubscribeMessage,
     WebSocketGateway,
-    WebSocketServer
+    WebSocketServer, WsResponse
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import {Public} from "../decorators/public.decorator";
@@ -19,13 +21,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(Server : any)
   {
-    console.log( 'Start Chat Gateway' );
+    console.log( 'Start Chat Gatewey' );
   }
 
 
   handleConnection(client: any, ...args): any {
       console.log('Join connection ');
-      console.log(client.id);
+      console.log(args);
   }
 
   handleDisconnect( client: any ){
@@ -34,8 +36,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    console.log('new connection');
-    return 'Hello world!';
+  handleMessage(@MessageBody() data : any, @ConnectedSocket() client : Socket) {
+     this.server.emit( 'message', data );
   }
 }

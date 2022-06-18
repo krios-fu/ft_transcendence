@@ -6,8 +6,11 @@ import { AppComponent } from './app.component';
 import {LoginModule} from "./login/login.module";
 
 import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io'
+import {HttpClientModule} from "@angular/common/http";
+import {Chat} from "./chat/chat";
+import {ChatModule} from "./chat/chat.module";
 
-const config: SocketIoConfig = { url:'http://localhost:3001', options: {} }
+const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
 
 @NgModule({
   declarations: [
@@ -15,12 +18,14 @@ const config: SocketIoConfig = { url:'http://localhost:3001', options: {} }
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     LoginModule,
+    ChatModule,
     SocketIoModule.forRoot(config),
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {
+
 }
