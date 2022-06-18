@@ -10,8 +10,8 @@ import { UserEntity } from "../user.entity";
 
 export enum FriendshipStatus {
 	PENDING = "pending",
-	CONFIRMED = "confirmed",
-  REFUSED = "refused"
+    CONFIRMED = "confirmed",
+    REFUSED = "refused"
 }
 
 @Entity({

@@ -19,7 +19,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(Server : any)
   {
-    console.log( 'Start Chat Gatewey' );
+    console.log( 'Start Chat Gateway' );
   }
 
 
