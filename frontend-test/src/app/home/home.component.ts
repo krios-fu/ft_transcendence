@@ -1,5 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+<<<<<<< HEAD
+=======
+import { UsersService } from '../services/users.service';
+>>>>>>> 5bd0d345904cf0bd53f22413a09180cd193e1a99
 
 @Component({
   selector: 'app-home',
@@ -7,6 +11,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+<<<<<<< HEAD
 
   constructor(
     private http: HttpClient,
@@ -20,3 +25,16 @@ export class HomeComponent implements OnInit {
   }
 
 }
+=======
+  constructor(
+    private usersService: UsersService
+  ) { }
+
+  ngOnInit(): void { }
+
+  user: string = "";
+  getUser() {
+    this.usersService.getUser(/* user id */)
+  }
+}
+>>>>>>> 5bd0d345904cf0bd53f22413a09180cd193e1a99
