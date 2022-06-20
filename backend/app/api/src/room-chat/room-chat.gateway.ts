@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import { 
     ConnectedSocket, 
     MessageBody, 
@@ -10,9 +10,10 @@ import {
     WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { RoomMsgDto } from './room-msg.dto';
 
 @WebSocketGateway({
-   // transports: ['websockets'],
     namespace: 'room-chat',
     cors: true, /* esto está MUY mal */
 })
@@ -42,13 +43,25 @@ export class RoomChatGateway implements
     @WebSocketServer()
     private wss: Server;
 
+    @SubscribeMessage('join-room')
+    joinRoom(
+        @ConnectedSocket() client: Socket,
+        room: string
+    ): void {
+        client.join(room);
+    }
+
+    @SubscribeMessage('leave-room')
+
     @SubscribeMessage('room-chat')
     handleMessage(
         @ConnectedSocket() client: Socket, 
-        @MessageBody(/*validator pipe here */)  msg: string): void {
-        
-        this.wss.emit("room-chat", msg, (data: string) => {
-            console.log("sendeando missatge: " + data); /* Error connection timed out */
+        @MessageBody(/*validator pipe here */)  roomMsgDto: RoomMsgDto
+    ): void {
+        const { room, message } = roomMsgDto;
+
+        this.wss.to(room).emit("room-chat", message, (data: string) => {
+            console.log("missatge: " + data); /* Error connection timed out */
         });
     }
 }

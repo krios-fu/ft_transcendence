@@ -4,7 +4,7 @@
         <button type="button" (click)="roomChatService.sendMessage(roomChatService.message)">send</button>
     </form>
 </div>
-{{ roomChatService.messages.length }}
+
 <div *ngIf="roomChatService.messages.length">
     <li *ngFor="let msg of roomChatService.messages">
         {{msg}}

@@ -7,7 +7,9 @@ import { Socket } from 'ngx-socket-io';
 export class RoomChatService {
   constructor(
     private socket: Socket,
-  ) { }
+  ) { 
+    this.recvMessage();
+  }
   messages: string[] = [];
   message: string = "";
 

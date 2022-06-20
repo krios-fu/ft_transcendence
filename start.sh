@@ -10,8 +10,16 @@ fi
 
 if [ "$1" = "purge" ]; then
     docker rm $(docker ps -a -q)
-    docker rmi --force $(docker images -q)
+    docker rmi $(docker images -q)
     docker volume rm $(docker volume ls -q)
+
+    exit 0
+fi
+
+if [ "$1" = "violence" ]; then
+    docker rm --force $(docker ps -a -q)
+    docker rmi --force $(docker images -q )
+    docker volume rm --force $(docker volume ls -q)
 
     exit 0
 fi
