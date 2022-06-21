@@ -1,6 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 export interface IUser {
   username: string;
@@ -15,20 +16,32 @@ export interface IUser {
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(
-    private http: HttpClient,
-  ) { }
+    constructor(
+      private http: HttpClient,
+    ) { }
 
-  getUser(username: string): Observable/*<IUser>/* {
-    /* username = username.trim() */
-    const userParam = new HttpParams().set('id', username);
+    handleError(error: HttpErrorResponse): Observable<never> {
+        if (error.status === 0) {
+            console.error('Network error: ' + error.error);
+        } else {
+            console.error('Backend threw following error: ' + JSON.stringify(error.error))
+        }
+        return throwError(() => {
+            new Error('service returned with an error status');
+        })
+    }
+    getUser(username: string): Observable<IUser> {
+      /* username = username.trim() */
+      const userParam = new HttpParams().set('id', username);
 
-    const userOptions = {
-      observe: 'body',
-      params: new HttpParams().set('id', username),
-      responseType: 'json'
-    };
-
-    return this.http.get/*<IUser>*/( 'http://localhost:3000/users/', userOptions);
-  } 
+      return this.http.get<IUser>( 
+        'http://localhost:3000/users/', {
+          observe: 'body',
+          params: userParam,
+          responseType: 'json',
+        }).pipe(
+          tap(console.log),
+          catchError(this.handleError)
+        );
+    }
 }
