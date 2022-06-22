@@ -3,17 +3,29 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
+  HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { Route, Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
         private authService: AuthService,
-    ) { }  
+        private router: Router,
+    ) { }
+
+    private handleHttpError(error: HttpErrorResponse): Observable<never> {
+        if (error.status === 401) {
+            this.router.navigate(['login']);
+        }
+        return throwError(() => {
+            return new Error('resource unauthorized');
+        });
+    }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
         const authToken = 'Bearer ' + this.authService.getAuthToken();
@@ -25,8 +37,8 @@ export class AuthInterceptor implements HttpInterceptor {
         const reqWithAuth = request.clone({
             headers: request.headers.set('Authorizaton', authToken),
         });
-        console.log(reqWithAuth.headers.get('Authorization'));
 
-        return next.handle(reqWithAuth);    
+        return next.handle(reqWithAuth)
+            .pipe(catchError(this.handleHttpError));
   } 
 }

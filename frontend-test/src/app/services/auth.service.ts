@@ -19,7 +19,7 @@ export class AuthService {
             console.error('Backend returned status ' + error.status + ': ' + error.error);
         }
         return throwError(() => {
-            new Error('Failed to get client response');
+            return new Error('Failed to get client response');
         });
     }
 

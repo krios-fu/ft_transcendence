@@ -7,7 +7,10 @@ async function bootstrap() {
 
     app.useGlobalPipes(new ValidationPipe());
     app.enableCors({
-        origin: 'http://localhost:4200',
+        origin: [
+            'https://api.intra.42.fr',
+            'http://localhost:4200',
+        ]
     });
     await app.listen(3000);
 }
