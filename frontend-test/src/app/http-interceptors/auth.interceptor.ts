@@ -16,15 +16,16 @@ export class AuthInterceptor implements HttpInterceptor {
     ) { }  
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-        console.log('placeholding');    
-        const authToken = this.authService.getAuthToken();
+        const authToken = 'Bearer ' + this.authService.getAuthToken();
 
+        console.log(authToken);
         if (authToken === null) {
             return next.handle(request);
         }
         const reqWithAuth = request.clone({
-            headers: request.headers.set('Authorizaton', 'Bearer: ' + authToken),
+            headers: request.headers.set('Authorizaton', authToken),
         });
+        console.log(reqWithAuth.headers.get('Authorization'));
 
         return next.handle(reqWithAuth);    
   } 

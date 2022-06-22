@@ -7,8 +7,9 @@ import { RoomChatComponent } from './routes/room-chat/room-chat.component';
 import { SocketIoModule, SocketIoConfig } from 'ngx-socket-io';
 import { FormsModule } from '@angular/forms';
 import { HomeComponent } from './routes/home/home.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NotFoundComponent } from './routes/not-found/not-found.component';
+import { AuthInterceptor } from './http-interceptors/auth.interceptor';
 
 const config: SocketIoConfig = {
   url: 'http://localhost:3000/room-chat',
@@ -28,7 +29,11 @@ const config: SocketIoConfig = {
     FormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true,
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,11 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs';
-
-export interface ITokenDto {
-    auth_token: string;
-};
+import { IAuthInfo } from '../interfaces/iauth-info';
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +23,15 @@ export class AuthService {
         });
     }
 
-    authorizeUser(): Observable<ITokenDto> {
+    authorizeUser(): Observable<IAuthInfo> {
+        /* CORS testing ... */
+        //const headers = new HttpHeaders().set('Access-Control-Allow-Origin', '*');
+
         const httpAuthGet = 'http://localhost:3000/auth/42';
-        const auth$ = this.http.get<ITokenDto>(httpAuthGet, {
+        const auth$ = this.http.get<IAuthInfo>(httpAuthGet, {
             observe: 'body',
             responseType: 'json',
+        //    headers: headers,
         }).pipe(
             catchError(this.handleAuthError),
         )

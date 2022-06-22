@@ -22,7 +22,7 @@ export class UsersService {
 
     handleError(error: HttpErrorResponse): Observable<never> {
         if (error.status === 0) {
-            console.error('Network error: ' + error.error);
+            console.error('Network error: ' + JSON.stringify(error.error));
         } else {
             console.error('Backend threw following error: ' + JSON.stringify(error.error))
         }
