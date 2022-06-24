@@ -28,14 +28,14 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-        const authToken = 'Bearer ' + this.authService.getAuthToken();
+        const authToken = this.authService.getAuthToken();
 
         console.log(authToken);
         if (authToken === null) {
             return next.handle(request);
         }
         const reqWithAuth = request.clone({
-            headers: request.headers.set('Authorizaton', authToken),
+            headers: request.headers.set('Authorizaton', `Bearer ${authToken}`),
         });
 
         return next.handle(reqWithAuth)

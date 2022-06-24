@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
         }
     }
 
-    mock_token: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiZGFucm9kcmkiLCJpYXQiOjE2NTU5MDkzODMsImV4cCI6MTY1NTkxNTM4M30.gS5-FRKZYVYU_4FXc8n-VV9QhuB1_m7ra9hcUKxuHSM';
+    mock_token: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiZGFucm9kcmkiLCJpYXQiOjE2NTU5ODkzNzksImV4cCI6MTY1NTk5NTM3OX0.lRsyhZCDw3oe-Ib2tmUlpE8a2azTY0YyEfz6vreiBGk';
     mock_user: string = 'danrodri';
     mockLogin() {
         localStorage.setItem('auth_token', this.mock_token);
