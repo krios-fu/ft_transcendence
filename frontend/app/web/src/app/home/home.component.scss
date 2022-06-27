@@ -1,0 +1,59 @@
+* {  box-sizing: border-box;
+}
+body {  font-family: Arial, Helvetica, sans-serif; }
+
+/* Estilo del encabezado */
+.header {
+  background-color: #FFD700;
+  padding: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Create 3 columnas*/
+.column1  {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+background-color:#becdfe;
+}
+
+.column3 {
+  float: right;
+  width: 20%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+  background-color: #ff6347;
+}
+
+.column2 {
+  float: left;
+  width: 60%;
+  padding: 10px;
+    height: 300px; /* Should be removed. Only for demonstration */
+  background-color: #BDB76B;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Style the footer */
+.footer {
+  background-color: #FA8072;
+  padding: 19px;
+  text-align: center;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+
+@media (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+
+}
