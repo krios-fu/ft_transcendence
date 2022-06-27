@@ -10,7 +10,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {Chat} from "./chat/chat";
 import {ChatModule} from "./chat/chat.module";
 
-const config: SocketIoConfig = { url:'http://192.168.0.221:3001/private', options: {} }
+const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
 
 @NgModule({
   declarations: [

@@ -36,41 +36,23 @@ body {
   height: 100%;
 }
 
-body {
-  background: linear-gradient(135deg, #044f48, #2a7561);
-  background-size: cover;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 12px;
-  line-height: 1.3;
-  overflow: hidden;
-}
-
-.bg {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  background: url('https://images.unsplash.com/photo-1451186859696-371d9477be93?crop=entropy&fit=crop&fm=jpg&h=975&ixjsv=2.1.0&ixlib=rb-0.3.5&q=80&w=1925') no-repeat 0 0;
-  filter: blur(80px);
-  transform: scale(1.2);
-}
-
 
 /*--------------------
 Chat
 --------------------*/
+
 .chat {
-  @include center;
-  width: 300px;
-  height: 80vh;
+
+  width: 150vh;
+  height: 100vh;
+  float: left;
+  display: flex;
   max-height: 500px;
   z-index: 2;
   overflow: hidden;
   box-shadow: 0 5px 30px rgba(0, 0, 0, .2);
   background: rgba(0, 0, 0, .5);
   border-radius: 20px;
-  display: flex;
   justify-content: space-between;
   flex-direction: column;
 }
@@ -91,7 +73,7 @@ Chat Title
 
   h1, h2 {
     font-weight: normal;
-    font-size: 10px;
+    font-size: 14px;
     margin: 0;
     padding: 0;
   }
@@ -137,6 +119,7 @@ Messages
     position: absolute;
     top: 0;
     left: 0;
+
     height: 101%;
     width: 100%;
   }
@@ -148,10 +131,10 @@ Messages
     padding: 6px 10px 7px;
     border-radius: 10px 10px 10px 0;
     background: rgba(0, 0, 0, .3);
-    margin: 8px 0;
-    font-size: 11px;
-    line-height: 1.4;
-    margin-left: 35px;
+    margin: 3px 0;
+    font-size: 14px;
+    line-height: 2;
+
     position: relative;
     text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 
@@ -177,8 +160,8 @@ Messages
       bottom: -15px;
       left: -35px;
       border-radius: 30px;
-      width: 200px;
-      height: 200px;
+      width: 30px;
+      height: 30px;
       overflow: hidden;
       margin: 0;
       padding: 0;
@@ -186,7 +169,7 @@ Messages
 
       img {
         width: 100%;
-        height: 100%;
+        height: auto;
       }
     }
 
@@ -194,7 +177,7 @@ Messages
       float: right;
       color: #fff;
       text-align: right;
-      background: linear-gradient(120deg, #248A52, #257287);
+      background: linear-gradient(120deg, pink, purple);
       border-radius: 10px 10px 0 10px;
 
       &::before {
@@ -208,13 +191,17 @@ Messages
     }
 
     &:last-child {
-      margin-bottom: 30px;
+      margin-bottom: 7px;
+      margin-top: 7px;
     }
 
     &.new {
       transform: scale(0);
       transform-origin: 0 0;
       animation: bounce 500ms linear both;
+      color: #fff;
+      background: linear-gradient(120deg, orange, purple);
+
     }
 
     &.loading {
@@ -308,7 +295,7 @@ Custom Srollbar
 }
 
 .mCSB_inside > .mCSB_container {
-  margin-right: 0px;
+  margin-right: 0;
   padding: 0 10px;
 }
 
