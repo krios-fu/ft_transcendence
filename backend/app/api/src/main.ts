@@ -6,12 +6,10 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     app.useGlobalPipes(new ValidationPipe());
-    app.enableCors({
-        origin: [
-            'https://api.intra.42.fr',
-            'http://localhost:4200',
-        ]
-    });
+//    app.enableCors({
+//        origin: ['http://localhost:4200'],
+//        credentials: true,
+//    });
     await app.listen(3000);
 }
 

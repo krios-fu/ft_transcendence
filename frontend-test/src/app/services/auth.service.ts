@@ -31,6 +31,7 @@ export class AuthService {
         const auth$ = this.http.get<IAuthInfo>(httpAuthGet, {
             observe: 'body',
             responseType: 'json',
+            withCredentials : true,
         //    headers: headers,
         }).pipe(
             catchError(this.handleAuthError),

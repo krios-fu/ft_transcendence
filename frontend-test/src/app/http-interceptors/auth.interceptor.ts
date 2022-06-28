@@ -22,8 +22,8 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error.status === 401) {
             this.router.navigate(['login']);
         }
-        return throwError(() => {
-            return new Error('resource unauthorized');
+        return throwError((err: HttpErrorResponse) => {
+          return err;
         });
     }
 

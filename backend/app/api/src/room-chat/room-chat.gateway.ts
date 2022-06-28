@@ -13,6 +13,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RoomMsgDto } from './room-msg.dto';
 
+//@UseGuards(JwtAuthGuard)
 @WebSocketGateway({
     namespace: 'room-chat',
     cors: true, /* esto está MUY mal */

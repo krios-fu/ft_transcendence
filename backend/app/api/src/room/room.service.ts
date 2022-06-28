@@ -91,7 +91,7 @@ export class RoomService {
             }
         });
 
-        if (roomEntity === undefined) {
+        if (roomEntity === null) {
             throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
         }
         if (roomEntity.password === null) {

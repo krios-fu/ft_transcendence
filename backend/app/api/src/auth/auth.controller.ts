@@ -5,7 +5,8 @@ import {
     Controller,
     Get,
     UseGuards,
-    Req,
+  Req,
+  Redirect,
 } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
 
@@ -22,7 +23,8 @@ export class AuthController {
     @UseGuards(FortyTwoAuthGuard)
     authFromFT() { /* no */ }
 
-    @Get("42/redirect")
+  @Get("42/redirect")
+  @Redirect("http://localhost:4200/home")
     @Public()
     @UseGuards(FortyTwoAuthGuard)
     async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
