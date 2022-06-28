@@ -12,6 +12,7 @@ import {
     FriendshipStatus
 } from '../friendship/friendship.entity';
 import { BlockEntity } from "../block/block.entity";
+import { BlockRepository } from './block.repository';
 
 @Injectable()
 export class    BlockService {
@@ -19,6 +20,8 @@ export class    BlockService {
         @InjectRepository(FriendshipEntity)
         private friendRepository: FriendshipRepository,
         private friendMapper: FriendMapper,
+        @InjectRepository(BlockEntity)
+        private blockRepository: BlockRepository,
     ) {
         console.log("BlockService inicializado");
     }
@@ -58,6 +61,42 @@ export class    BlockService {
         friendship.status = FriendshipStatus.BLOCKED;
         friendship.block = blockEntity;
         return await this.friendRepository.save(friendship);
+    }
+
+    /*
+    **  Searches for a BLOCKED friendship where the blockSenderId
+    **  appears as the blockSender in the BlockEntity associated
+    **  to the friendship.
+    */
+
+    async unblockFriend(blockSenderId: string, blockReceiverId: string)
+                        : Promise<void> {
+        const   blockFriendship = await this.friendRepository.findOne({
+            relations: {
+                block: true
+            },
+            where: [
+                {
+                    senderId: blockReceiverId,
+                    block: {
+                        blockSender: {
+                            username: blockSenderId
+                        }
+                    },
+                    status: FriendshipStatus.BLOCKED
+                },
+                {
+                    receiverId: blockReceiverId,
+                    block: {
+                        blockSender: {
+                            username: blockSenderId
+                        }
+                    },
+                    status: FriendshipStatus.BLOCKED
+                }
+            ]
+        });
+        await this.blockRepository.remove(blockFriendship.block);
     }
 
     async getBlockedFriends(userId: string): Promise<FriendDto[]> {

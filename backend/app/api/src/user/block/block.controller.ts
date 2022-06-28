@@ -4,6 +4,7 @@ import {
     Post,
     Param,
     Req,
+    Delete,
 } from "@nestjs/common";
 import { BlockService } from "./block.service";
 import { FriendshipEntity } from '../friendship/friendship.entity';
@@ -31,6 +32,16 @@ export class    BlockController {
     async blockFriend( @Req() req, @Param('id') id: string )
                         : Promise<FriendshipEntity> {
         return this.blockService.blockFriend(req.user.data, id);
+    }
+
+    /*
+    **  The friendship blocker requests to unblock the friendship.
+    */
+
+    @Delete(':id')
+    async unblockFriend( @Req() req, @Param('id') id: string )
+                        : Promise<void> {
+        return this.blockService.unblockFriend(req.user.data, id);
     }
 
 }

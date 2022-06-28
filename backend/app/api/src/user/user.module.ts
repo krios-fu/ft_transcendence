@@ -12,10 +12,12 @@ import { FriendMapper } from './friendship/friendship.mapper';
 import { FriendshipEntity } from './friendship/friendship.entity';
 import { BlockController } from './block/block.controller';
 import { BlockService } from './block/block.service';
+import { BlockRepository } from './block/block.repository';
+import { BlockEntity } from './block/block.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity, FriendshipEntity])
+        TypeOrmModule.forFeature([UserEntity, FriendshipEntity, BlockEntity])
     ],
     exports: [UserService], //Usado por el módulo externo AuthModule
     controllers: [UserController, FriendshipController, BlockController],
@@ -26,7 +28,8 @@ import { BlockService } from './block/block.service';
         FriendshipService,
         FriendshipRepository,
         FriendMapper,
-        BlockService
+        BlockService,
+        BlockRepository
     ]
 })
 export class UserModule {
