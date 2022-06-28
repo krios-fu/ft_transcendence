@@ -26,6 +26,7 @@ export class AuthController {
 
     @Get("42/redirect")
     @Public()
+    @Redirect("http://localhost:4200/chat")
     @UseGuards(FortyTwoAuthGuard)
     async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
         const user = req.user;
