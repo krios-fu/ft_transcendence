@@ -16,7 +16,7 @@ export class    FriendshipService {
         @InjectRepository(FriendshipEntity)
         private friendRepository: FriendshipRepository,
         private friendMapper: FriendMapper,
-        private datasorce: DataSource,
+        private datasource: DataSource,
     ) {
         console.log("FriendshipService inicializado");
     }
@@ -37,7 +37,7 @@ export class    FriendshipService {
     async addFriend(senderId : string, receiverId : string)
                     : Promise<FriendshipEntity> {
         const   friendship = new FriendshipEntity();
-        const   queryRunner = this.datasorce.createQueryRunner();
+        const   queryRunner = this.datasource.createQueryRunner();
         let     users: UserEntity[];
 
         //Start transaction
