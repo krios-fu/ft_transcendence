@@ -13,6 +13,7 @@ import {
 } from '../friendship/friendship.entity';
 import { BlockEntity } from "../block/block.entity";
 import { BlockRepository } from './block.repository';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class    BlockService {
@@ -22,6 +23,7 @@ export class    BlockService {
         private friendMapper: FriendMapper,
         @InjectRepository(BlockEntity)
         private blockRepository: BlockRepository,
+        private datasource: DataSource,
     ) {
         console.log("BlockService inicializado");
     }
@@ -67,36 +69,60 @@ export class    BlockService {
     **  Searches for a BLOCKED friendship where the blockSenderId
     **  appears as the blockSender in the BlockEntity associated
     **  to the friendship.
+    **
+    **  Need to include the two operations (update FriendshipEntity
+    **  status and remove BlockEntity) in a transaction to perform
+    **  both operations or none of them.
     */
 
     async unblockFriend(blockSenderId: string, blockReceiverId: string)
                         : Promise<void> {
-        const   blockFriendship = await this.friendRepository.findOne({
-            relations: {
-                block: true
-            },
-            where: [
-                {
-                    senderId: blockReceiverId,
-                    block: {
-                        blockSender: {
-                            username: blockSenderId
-                        }
-                    },
-                    status: FriendshipStatus.BLOCKED
+        const   queryRunner = this.datasource.createQueryRunner();
+        let     blockFriendship: FriendshipEntity;
+
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            blockFriendship = await queryRunner.manager.findOne(FriendshipEntity, {
+                relations: {
+                    block: true
                 },
-                {
-                    receiverId: blockReceiverId,
-                    block: {
-                        blockSender: {
-                            username: blockSenderId
-                        }
+                where: [
+                    {
+                        senderId: blockReceiverId,
+                        block: {
+                            blockSender: {
+                                username: blockSenderId
+                            }
+                        },
+                        status: FriendshipStatus.BLOCKED
                     },
-                    status: FriendshipStatus.BLOCKED
-                }
-            ]
-        });
-        await this.blockRepository.remove(blockFriendship.block);
+                    {
+                        receiverId: blockReceiverId,
+                        block: {
+                            blockSender: {
+                                username: blockSenderId
+                            }
+                        },
+                        status: FriendshipStatus.BLOCKED
+                    }
+                ]
+            });
+            if (!blockFriendship)
+                throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
+            blockFriendship.status = FriendshipStatus.CONFIRMED;
+            await queryRunner.manager.save(FriendshipEntity, blockFriendship);
+            await queryRunner.manager.remove(BlockEntity, blockFriendship.block);
+            await queryRunner.commitTransaction();
+        }
+        catch (err) {
+            console.log(err);
+            await queryRunner.rollbackTransaction();
+            throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            await queryRunner.release();
+        }
     }
 
     async getBlockedFriends(userId: string): Promise<FriendDto[]> {
