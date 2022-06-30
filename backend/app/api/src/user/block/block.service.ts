@@ -83,7 +83,8 @@ export class    BlockService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            blockFriendship = await queryRunner.manager.findOne(FriendshipEntity, {
+            blockFriendship = await queryRunner.manager
+                                    .findOne(FriendshipEntity, {
                 relations: {
                     block: true
                 },
@@ -112,13 +113,15 @@ export class    BlockService {
                 throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
             blockFriendship.status = FriendshipStatus.CONFIRMED;
             await queryRunner.manager.save(FriendshipEntity, blockFriendship);
-            await queryRunner.manager.remove(BlockEntity, blockFriendship.block);
+            await queryRunner.manager.remove(BlockEntity,
+                                                blockFriendship.block);
             await queryRunner.commitTransaction();
         }
         catch (err) {
             console.log(err);
             await queryRunner.rollbackTransaction();
-            throw new HttpException("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException("Internal Server Error",
+                                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
             await queryRunner.release();
@@ -156,7 +159,8 @@ export class    BlockService {
 
         for (let i = 0; i < blockedFriendships.length; ++i)
         {
-            friends.push(this.friendMapper.toBlockedFriendDto(userId, blockedFriendships[i]));
+            friends.push(this.friendMapper.toBlockedFriendDto(userId,
+                            blockedFriendships[i]));
         }
         return (friends);
     }
