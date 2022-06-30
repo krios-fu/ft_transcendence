@@ -1,7 +1,6 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { IAuthInfo } from '../interfaces/iauth-info';
 
 @Injectable({
@@ -12,32 +11,24 @@ export class AuthService {
         private http: HttpClient,
     ) { }
 
-    private handleAuthError(error: HttpErrorResponse): Observable<never> {
-        if (error.status === 0) {
-            console.error('Network error: ' + error.error);
-        } else {
-            console.error('Backend returned status ' + error.status + ': ' + error.error);
-        }
-        return throwError(() => {
-            return new Error('Failed to get client response');
-        });
+    authUser(authCode: string): Observable<HttpResponse<IAuthInfo>> {
+        const httpAuthGet = 'http://localhost:3000/auth/42';
+        const auth$ = this.http.get<IAuthInfo>(
+            httpAuthGet, {
+                params: {
+                    code: authCode,
+                },
+                observe: 'response',
+                responseType: 'json'
+            }
+        );
+
+        return auth$;
     }
 
-    authorizeUser(): Observable<IAuthInfo> {
-        /* CORS testing ... */
-        //const headers = new HttpHeaders().set('Access-Control-Allow-Origin', '*');
-
-        const httpAuthGet = 'http://localhost:3000/auth/42';
-        const auth$ = this.http.get<IAuthInfo>(httpAuthGet, {
-            observe: 'body',
-            responseType: 'json',
-            withCredentials : true,
-        //    headers: headers,
-        }).pipe(
-            catchError(this.handleAuthError),
-        )
-        
-        return auth$;
+    setAuth(token: string): void {
+        console.log(token);
+        localStorage.setItem('auth_token', token);
     }
 
     getAuthToken(): string | null {

@@ -27,7 +27,7 @@ export class AuthService {
         if (isInDb === null) {
             await this.userService.postUser(userProfile);
         }
-        return { 
+        return {
             'accessToken': accessToken,
             // 'user': username,
             // 'expiresIn': new Date() + 100m

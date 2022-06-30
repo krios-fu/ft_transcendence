@@ -57,9 +57,16 @@ services:
     volumes:
       - ./frontend-test/:/usr/src/app
     working_dir: /usr/src/app
-    command: sh -c "npm install && npm install -g @angular/cli && ng serve --host=0.0.0.0"
+    command: sh -c "npm install && npm install -g @angular/cli && ng serve --host=0.0.0.0 "
     networks:
       - webapp-network
+
+#  frontend:
+#    container_name: frontend
+#    build: ./frontend-app/
+#    ports:
+#      - "8080:80"
+#      - "443:443"
 
 networks:
   webapp-network:

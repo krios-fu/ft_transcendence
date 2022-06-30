@@ -1,14 +1,13 @@
 import { AuthService } from './auth.service';
-import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Payload } from '../user/user.dto';
 import {
-    Controller,
-    Get,
-    UseGuards,
+  Controller,
+  Get,
   Req,
-  Redirect,
+  UseGuards,
 } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
+import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 
 interface IRequestPayload extends Request {
     user: Payload;
@@ -18,18 +17,12 @@ interface IRequestPayload extends Request {
 export class AuthController {
     constructor(private authService: AuthService) { }
 
-    @Get("42")
-    @Public()
-    @UseGuards(FortyTwoAuthGuard)
-    authFromFT() { /* no */ }
+  @Get('42')
+  @UseGuards(FortyTwoAuthGuard)
+  @Public()
+  async authFromFT(@Req() req: IRequestPayload) { 
+    const user = req.user;
 
-  @Get("42/redirect")
-  @Redirect("http://localhost:4200/home")
-    @Public()
-    @UseGuards(FortyTwoAuthGuard)
-    async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
-        const user = req.user;
-        return this.authService.authUser(user);
-    }
-
+    return this.authService.authUser(user);
+  }
 }

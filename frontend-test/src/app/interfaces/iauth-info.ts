@@ -1,5 +1,5 @@
 export interface IAuthInfo {
-    auth_token: string;
-    user_id: string;
-    expires_in: Date;
+    accessToken: string;
+    userId: string;
+    expiresIn: Date;
 };

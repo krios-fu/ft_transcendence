@@ -22,9 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
         if (error.status === 401) {
             this.router.navigate(['login']);
         }
-        return throwError((err: HttpErrorResponse) => {
-          return err;
-        });
+        return throwError(() => error);
     }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
@@ -35,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
             return next.handle(request);
         }
         const reqWithAuth = request.clone({
-            headers: request.headers.set('Authorizaton', `Bearer ${authToken}`),
+            headers: request.headers.set('Authorization', `Bearer ${authToken}`),
         });
 
         return next.handle(reqWithAuth)

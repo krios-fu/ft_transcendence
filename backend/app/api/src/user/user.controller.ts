@@ -5,7 +5,7 @@ import {
     Delete,
     Param,
     Body,
-    Patch
+    Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
@@ -51,5 +51,4 @@ export class UserController {
 	async remove( @Param('id') id: string ): Promise<void> {
 		return this.userService.deleteUser(id);
 	}
-
 }
