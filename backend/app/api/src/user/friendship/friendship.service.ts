@@ -1,4 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import {
+    Injectable,
+    HttpException,
+    HttpStatus
+} from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from '../user.repository';
 import { UserEntity } from '../user.entity';
@@ -44,30 +48,31 @@ export class    FriendshipService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            users = await this.userRepository.find({
+            users = await queryRunner.manager.find(UserEntity, {
                 where: [
                     { username: senderId },
                     { username: receiverId }
                 ]
             });
             if (users.length != 2)
-                throw new Error("Users not found.");
+                throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
             friendship.sender = users[0].username === senderId
                 ? users[0] : users[1];
             friendship.receiver = users[0].username === receiverId
                 ? users[0] : users[1];
-            if ( (await this.friendRepository.find({
+            if ( (await queryRunner.manager.find(FriendshipEntity, {
                 where: {
                     senderId: receiverId,
                     receiverId: senderId
                 }
             })).length != 0 )
-                throw new Error("Inverse friendship found.");
-            await this.friendRepository.insert(friendship);
+                throw new HttpException("Conflict", HttpStatus.CONFLICT);
+            await queryRunner.manager.insert(FriendshipEntity, friendship);
             await queryRunner.commitTransaction();
         } catch (err) {
             console.log(err);
-            return new FriendshipEntity();
+            throw new HttpException("Internal Server Error",
+                                    HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             await queryRunner.release();
         }
