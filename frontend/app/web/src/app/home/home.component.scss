@@ -1,11 +1,16 @@
 * {  box-sizing: border-box;
 }
-body {  font-family: Arial, Helvetica, sans-serif; }
+
 
 /* Estilo del encabezado */
 .header {
   background-color: #FFD700;
-  padding: 15px;
+  //padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+  box-sizing: border-box;
   text-align: center;
   font-size: 14px;
 }
@@ -15,38 +20,42 @@ body {  font-family: Arial, Helvetica, sans-serif; }
   float: left;
   width: 20%;
   padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
 background-color:#becdfe;
+  height: 100%;
 }
 
 .column3 {
   float: right;
   width: 20%;
   padding: 10px;
-  height: 300px; /* Should be removed. Only for demonstration */
   background-color: #ff6347;
+  height: 100%;
 }
 
 .column2 {
   float: left;
   width: 60%;
   padding: 10px;
-    height: 300px; /* Should be removed. Only for demonstration */
   background-color: #BDB76B;
+  height: 100%;
 }
 
 /* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
+.row {
+  height: 80vh;
+  display: flex;
   clear: both;
 }
 
 /* Style the footer */
 .footer {
   background-color: #FA8072;
-  padding: 19px;
+  height: 10vh;
   text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
