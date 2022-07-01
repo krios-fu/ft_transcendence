@@ -27,8 +27,8 @@ background-color:#becdfe;
 .column3 {
   float: right;
   width: 20%;
-  padding: 10px;
-  background-color: #ff6347;
+  padding: 0;
+  background: white;
   height: 100%;
 }
 
@@ -36,7 +36,7 @@ background-color:#becdfe;
   float: left;
   width: 60%;
   padding: 10px;
-  background-color: #BDB76B;
+  background-color: silver;
   height: 100%;
 }
 
@@ -60,7 +60,7 @@ background-color:#becdfe;
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 
-@media (max-width: 600px) {
+@media (max-width: 1200px) {
   .column {
     width: 100%;
   }

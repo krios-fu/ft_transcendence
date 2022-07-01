@@ -50,12 +50,10 @@ Chat
  // max-height: 500px;
   z-index: 2;
   overflow: hidden;
-  box-shadow: 0 5px 30px rgba(0, 0, 0, .2);
-  background: rgba(0, 0, 0, .5);
-  border-radius: 20px;
+  box-shadow: 0 5px 30px rebeccapurple;
+  background: rebeccapurple;
   justify-content: space-between;
   flex-direction: column;
-
 }
 
 
@@ -89,7 +87,7 @@ Chat Title
     position: absolute;
     z-index: 1;
     top: 8px;
-    left: 9px;
+    left: 6px;
     border-radius: 30px;
     width: 30px;
     height: 30px;
@@ -97,6 +95,7 @@ Chat Title
     margin: 0;
     padding: 0;
     border: 2px solid rgba(255, 255, 255, 0.24);
+
 
     img {
       width: 100%;
@@ -137,11 +136,11 @@ Messages
     padding: 6px 10px 7px;
     border-radius: 10px 10px 10px 0;
     background: rgba(0, 0, 0, .3);
-    margin: 3px 0;
-    font-size: 14px;
+    font-size: 11px;
+    margin: 3px 0 3px 35px;
+    position: relative;
     line-height: 2;
 
-    position: relative;
     text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 
     .timestamp {
@@ -151,20 +150,12 @@ Messages
       color: rgba(255, 255, 255, .3);
     }
 
-    &::before {
-      content: '';
-      position: absolute;
-      bottom: -6px;
-      border-top: 6px solid rgba(0, 0, 0, .3);
-      left: 0;
-      border-right: 7px solid transparent;
-    }
 
     .avatar {
       position: absolute;
       z-index: 1;
       bottom: -15px;
-      left: -35px;
+      left: -30px;
       border-radius: 30px;
       width: 30px;
       height: 30px;
@@ -183,7 +174,7 @@ Messages
       float: right;
       color: #fff;
       text-align: right;
-      background: linear-gradient(120deg, pink, purple);
+      background: brown;
       border-radius: 10px 10px 0 10px;
 
       &::before {
@@ -206,8 +197,7 @@ Messages
       transform-origin: 0 0;
       animation: bounce 500ms linear both;
       color: #fff;
-      background: linear-gradient(120deg, orange, purple);
-
+      background: brown;
     }
 
     &.loading {
@@ -274,9 +264,9 @@ Message Box
     z-index: 1;
     top: 9px;
     right: 10px;
-    color: #fff;
+    color: rebeccapurple;
     border: none;
-    background: #248A52;
+    background: whitesmoke;
     font-size: 10px;
     text-transform: uppercase;
     line-height: 1;
@@ -286,7 +276,8 @@ Message Box
     transition: background .2s ease;
 
     &:hover {
-      background: #1D7745;
+      background: rebeccapurple;
+      color: whitesmoke;
     }
   }
 }
