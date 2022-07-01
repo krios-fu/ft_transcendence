@@ -41,10 +41,7 @@ export class ChatComponent implements OnInit{
   getSocketId(){
     return this.chat.getSocketId();
   }
-
   viewMessage() {
     return this.chat.getMessage();
   }
-
-
 }
