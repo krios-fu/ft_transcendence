@@ -10,11 +10,14 @@ import {ReactiveFormsModule} from "@angular/forms";
   declarations: [
     ChatComponent,
   ],
-    imports: [
-        CommonModule,
-        ReactiveFormsModule
-    ],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
   providers: [Chat],
+  exports: [
+    ChatComponent
+  ]
 })
 export class ChatModule {
 }
