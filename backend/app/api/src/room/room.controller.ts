@@ -37,19 +37,28 @@ export class RoomController {
         return await this.roomService.createRoom(roomLogin);
     }
 
-    @Get(':name')
-    async getRoom(@Param() name: string): Promise<RoomEntity> {
-        return await this.roomService.findOne(name);
-    }
-
     @Get()
     async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomService.getAllRooms();
     }
 
-    /*
+    @Get(':name')
+    async getRoom(@Param() name: string): Promise<RoomEntity> {
+        return await this.roomService.findOne(name);
+    }
+
+    @Get(':name/users')
+    async getRoomUsers() {
+
+    }
+
+    @Get(':name/messages')
+    async getRoomMessages() {
+
+    }
+
     @Delete()
-    //@UseGuards(Role.Owner)
-    async removeRoom
-    */
+    async removeRoom() {
+
+    }
 }

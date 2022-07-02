@@ -28,10 +28,10 @@ export class AuthService {
 
     setAuth(token: string): void {
         console.log(token);
-        localStorage.setItem('auth_token', token);
+        sessionStorage.setItem('auth_token', token);
     }
 
     getAuthToken(): string | null {
-        return localStorage.getItem('auth_token');
+        return sessionStorage.getItem('auth_token');
     }
 }

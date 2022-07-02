@@ -13,10 +13,13 @@ import { Server, Socket } from 'socket.io';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { RoomMsgDto } from './room-msg.dto';
 
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @WebSocketGateway({
     namespace: 'room-chat',
-    cors: true, /* esto está MUY mal */
+    cors: {
+        origin: 'http://localhost:4200',
+        credentials: true,
+    }
 })
 export class RoomChatGateway implements 
     OnGatewayInit,
@@ -53,6 +56,12 @@ export class RoomChatGateway implements
     }
 
     @SubscribeMessage('leave-room')
+    leaveRoom(
+        @ConnectedSocket() client: Socket,
+        room: string
+    ): void {
+        client.leave(room);
+    }
 
     @SubscribeMessage('room-chat')
     handleMessage(
