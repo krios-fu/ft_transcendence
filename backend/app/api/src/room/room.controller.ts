@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nes
 import { RoomDto } from "./dto/room.dto";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomService } from "./room.service";
-import { IRequestUser } from "src/interfaces/request-user.interface";
+import { IRequestPayload } from "src/interfaces/request-payload.interface";
 import { PrivateRoomGuard } from "./guard/private-room.guard";
 import { Roles } from "./roles.enum";
 import { RoomRolesGuard } from "./guard/room-roles.guard";
@@ -25,11 +25,11 @@ export class RoomController {
 
     @Post('new')
     async createRoom(
-        @Req()  req: IRequestUser,
+        @Req()  req: IRequestPayload,
         @Body() roomDto: RoomDto,
     ): Promise<RoomEntity> {
         const roomLogin: LoginInfoDto = {
-            "user": req.username,
+            "user": req.jwtPayload.username,
             "name": roomDto.name,
             "password": roomDto.password,
         };

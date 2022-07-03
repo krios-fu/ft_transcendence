@@ -10,6 +10,7 @@ import { HomeComponent } from './routes/home/home.component';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NotFoundComponent } from './routes/not-found/not-found.component';
 import { AuthInterceptor } from './http-interceptors/auth.interceptor';
+import { CookieService } from 'ngx-cookie-service';
 
 const config: SocketIoConfig = {
   url: 'http://localhost:3000/room-chat',
@@ -34,7 +35,9 @@ const config: SocketIoConfig = {
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,
     multi: true,
-  }],
+  },
+  CookieService
+],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

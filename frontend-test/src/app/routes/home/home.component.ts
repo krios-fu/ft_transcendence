@@ -1,12 +1,9 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { IAuthInfo } from 'src/app/interfaces/iauth-info';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from '../../services/users.service';
-import { RoomChatComponent } from '../room-chat/room-chat.component';
 
 export class UserDto {
     username: string;
@@ -61,7 +58,6 @@ export class HomeComponent implements OnInit {
           this.router.navigate(['/login']);
           return ;
         }
-        this.authService.setAuth(resp.body.accessToken);
       },
       error: (err: HttpErrorResponse) => {
         console.error('Invalid or non existent authentication token');
@@ -69,9 +65,6 @@ export class HomeComponent implements OnInit {
       }
     }
 
-    if (this.authService.getAuthToken() != null) {
-      return ;
-    }
     this.activatedRoute.queryParams
       .subscribe(params => {code = params['code'];});
     if (code === undefined) {

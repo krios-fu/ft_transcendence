@@ -28,10 +28,6 @@ export class RoomService {
     }
 
     async findOne(name: string): Promise<RoomEntity> {
-        /*const test = this.roomRepository.find({
-
-        })*/
-
         return await this.roomRepository.findOne({
             where: {
                 name: name,

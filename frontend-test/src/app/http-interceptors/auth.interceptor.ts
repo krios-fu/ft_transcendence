@@ -5,38 +5,52 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpErrorResponse,
+  HttpResponse,
+  HttpStatusCode,
 } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, Observable, retryWhen, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { IAccessToken } from '../interfaces/iaccess-token.interface';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
         private authService: AuthService,
+        private cookieService: CookieService,
         private router: Router,
     ) { }
 
-    private handleHttpError(error: HttpErrorResponse): Observable<never> {
-        if (error.status === 401) {
-            this.router.navigate(['login']);
+    intercept(req: HttpRequest<unknown>, next: HttpHandler)
+        : Observable<HttpEvent<unknown>> {
+        return next.handle(req)
+            .pipe
+            (
+                catchError((err: HttpErrorResponse) => {
+                    if (err.status === 401) {
+                        return this.handleAuthError(req, next, err);
+                    }
+                    throw err;
+                })
+            )
+    } 
+
+    private handleAuthError(req: HttpRequest<unknown>, next: HttpHandler, err: HttpErrorResponse) {
+        let accessToken: string;
+        const requestForToken$ = this.authService.refreshToken();
+        const observeToken = {
+            next: (res: HttpResponse<IAccessToken>) => {
+                if (res.body === null ) {
+                    throw new HttpErrorResponse({
+                        status: HttpStatusCode.Unauthorized,
+                        statusText: 'User unauthorized',
+                    });
+                }
+                accessToken = res.body.accessToken;
+               this.cookieService.set('access_token', req.body.accessToken);
+            }
         }
-        return throwError(() => error);
     }
-
-    intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-        const authToken = this.authService.getAuthToken();
-
-        console.log(authToken);
-        if (authToken === null) {
-            return next.handle(request);
-        }
-        const reqWithAuth = request.clone({
-            headers: request.headers.set('Authorization', `Bearer ${authToken}`),
-        });
-
-        return next.handle(reqWithAuth)
-            .pipe(catchError(this.handleHttpError));
-  } 
 }

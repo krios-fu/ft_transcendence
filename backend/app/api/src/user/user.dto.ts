@@ -8,10 +8,3 @@ export class UserDto {
     photoUrl: string;
 
 }
-
-export type Payload = {
-
-    userProfile: UserDto;
-    accessToken: string;
-
-};
