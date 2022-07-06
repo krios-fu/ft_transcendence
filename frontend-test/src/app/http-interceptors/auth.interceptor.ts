@@ -10,47 +10,59 @@ import {
 } from '@angular/common/http';
 import { catchError, Observable, retryWhen, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
-import { IAccessToken } from '../interfaces/iaccess-token.interface';
-import { CookieService } from 'ngx-cookie-service';
+import { IAuthPayload } from '../interfaces/iauth-payload.interface';
+
+/* implementamos aqui la logica de refresco y redireccion,
+    las peticiones de authentificacion deben pasar limpias */
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
         private authService: AuthService,
-        private cookieService: CookieService,
-        private router: Router,
     ) { }
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler)
         : Observable<HttpEvent<unknown>> {
-        return next.handle(req)
-            .pipe
-            (
-                catchError((err: HttpErrorResponse) => {
-                    if (err.status === 401) {
-                        return this.handleAuthError(req, next, err);
-                    }
-                    throw err;
-                })
-            )
-    } 
+        const accessToken: string | null = this.authService.getAuthToken();
+        const reqAuth: HttpRequest<unknown> = req.clone({
+           headers: req.headers.set('Authorization', `Bearer ${accessToken}`),
+        });
 
-    private handleAuthError(req: HttpRequest<unknown>, next: HttpHandler, err: HttpErrorResponse) {
-        let accessToken: string;
-        const requestForToken$ = this.authService.refreshToken();
-        const observeToken = {
-            next: (res: HttpResponse<IAccessToken>) => {
-                if (res.body === null ) {
-                    throw new HttpErrorResponse({
-                        status: HttpStatusCode.Unauthorized,
-                        statusText: 'User unauthorized',
+        return next.handle(reqAuth)
+            .pipe(catchError((err => this.handleHttpError(err))));
+    }
+
+    private handleHttpError(error: HttpErrorResponse): Observable<never> {
+        if (error.status === 401) {
+            const tokenPetition$ = this.authService.refreshToken();
+
+            tokenPetition$.subscribe({
+                next: (res: HttpResponse<IAuthPayload>) => {
+                    console.log('oof!3');
+                    if (res.body === null) {
+                        throw new HttpErrorResponse({
+                            status: HttpStatusCode.InternalServerError,
+                            statusText:'Successful refresh token petition did not return body',
+                        });
+                    }
+                    this.authService.setAuthInfo({
+                        'accessToken': res.body.accessToken,
+                        'username': res.body.username
                     });
-                }
-                accessToken = res.body.accessToken;
-               this.cookieService.set('access_token', req.body.accessToken);
-            }
+                    /* retry here */
+                },
+                error: (error: HttpErrorResponse) => {
+                    if (error.status === 401) {
+                        this.authService.logout();
+                    }
+                    return throwError(() => error);
+                },
+            }); 
+        } else {
+            this.authService.logout();
         }
+        console.log('oof!5');
+        return throwError(() => error);
     }
 }

@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { UserDto } from 'src/user/user.dto';
 import { UserEntity } from 'src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IJwtPayload } from 'src/interfaces/request-payload.interface';
+import { TokenError } from './enum/tokenerror.enum';
 
 @Injectable()
 export class AuthService {
@@ -17,17 +19,17 @@ export class AuthService {
         private readonly refreshTokenRepository: RefreshTokenRepository,
     ) { }
 
+
+
     private signJwt(username: string): string {
         return this.jwtService.sign({ 
-            data: {
-                username: username,
-                expiresIn: new Date(Date.now() + (60 * 5)),
-                /* si gestionamos roles por token, aqui toca */
-            }
+            data: { username: username },
+            expiresIn: 5,
+            /* test private key */
         });
     }
 
-    async authUser(userProfile: UserDto, res: Response): Promise<void> {
+    async authUser(userProfile: UserDto, res: Response): Promise<IJwtPayload> {
 
         if (!userProfile) {
             throw new HttpException
@@ -46,56 +48,61 @@ export class AuthService {
             newUser,
             new Date(Date.now() + (60 * 5)),
         );
+        /* esto está mal */
         const refreshToken = await this.refreshTokenRepository.save(tokenEntity);
 
         console.log(new Date(Date.now() + (3600 * 24 * 7)));
 
-        res.cookie('session_token', this.signJwt(username), {
-            httpOnly: true,
-            maxAge: 60 * 5,
-            /* secure: true cuando tengamos ssl implementado */
-        });
         res.cookie('refresh_token', refreshToken.token, {
             httpOnly: true,
             maxAge: 3600 * 24 * 7,
+            sameSite: 'none',
+            secure: true,
         })
+        return {
+            'accessToken': this.signJwt(username),
+            'username': username,
+        };
     }
 
-    async refreshToken(username: string, req: Request, res: Response)/*: Promise<void>*/ {
-        /* la sesión de usuario no tiene token */
-        const refreshToken = req.cookies['refresh_cookie'];
-        if (refreshToken === null) {
-            throw new HttpException('User not authorized', HttpStatus.UNAUTHORIZED);
+    async refreshToken(refreshToken: string, username: string): Promise<IJwtPayload> {
+        const tokenEntity = await this.getTokenByUsername(username);
+
+        if (tokenEntity.token != refreshToken) {
+            throw TokenError.TOKEN_INVALID;
         }
-        /* el usuario no está autentificado en la base de dates */
-        const userEntity: UserEntity = await this.userService.findOne(username);
+        if (tokenEntity.expiresIn.getTime() < Date.now()) {
+            await this.refreshTokenRepository.delete(tokenEntity);
+            throw TokenError.TOKEN_EXPIRED;
+        }
+        return {
+            'accessToken': this.signJwt(username),
+            'username': username,
+        }
+    }
+
+    async logout(username: string, res: Response): Promise<void> {
+        const tokenEntity = await this.getTokenByUsername(username);
+
+        await this.refreshTokenRepository.delete(tokenEntity);
+        res.clearCookie('refresh_cookie');
+    }
+
+    private async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
+        const userEntity = await this.userService.findOne(username);
 
         if (userEntity === null) {
-            throw new HttpException('User not authorized', HttpStatus.UNAUTHORIZED);
+            throw TokenError.NO_TOKEN_OR_USER;
         }
-        const tokenInfo: RefreshTokenEntity = await this.refreshTokenRepository.findOne({
+        const tokenEntity = await this.refreshTokenRepository.findOne({
             where: {
-                authUser: userEntity,
+                authUser: userEntity
             }
         });
-        /* el usuario no tiene asignado un token */
-        if (tokenInfo === null) {
-            throw new HttpException('User not authorized', HttpStatus.UNAUTHORIZED);
+
+        if (tokenEntity === null) {
+            throw TokenError.NO_TOKEN_OR_USER;
         }
-        /* el usuario usa un token expirado o inválido */
-        if (
-            tokenInfo.expiresIn.getTime() < Date.now() ||
-            tokenInfo.token != refreshToken
-        ) {
-            res.clearCookie('refresh_cookie');
-            throw new HttpException('User not authorized', HttpStatus.UNAUTHORIZED);
-        }
-        /*res.cookie('session_token', this.signJwt(username), {
-            httpOnly: true,
-            maxAge: 60 * 5,
-        })*/
-        return {
-            'accessToken'
-        }
+        return tokenEntity;
     }
 }

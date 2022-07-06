@@ -20,16 +20,6 @@ export class UsersService {
       private http: HttpClient,
     ) { }
 
-    handleError(error: HttpErrorResponse): Observable<never> {
-        if (error.status === 0) {
-            console.error('Network error: ' + JSON.stringify(error.error));
-        } else {
-            console.error('Backend threw following error: ' + JSON.stringify(error.error))
-        }
-        return throwError(() => {
-            new Error('service returned with an error status');
-        })
-    }
     getUser(username: string): Observable<IUser> {
       /* username = username.trim() */
       const userParam = new HttpParams().set('id', username);
@@ -39,9 +29,6 @@ export class UsersService {
           observe: 'body',
           params: userParam,
           responseType: 'json',
-        }).pipe(
-          tap(console.log),
-          catchError(this.handleError)
-        );
+        });
     }
 }

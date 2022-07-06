@@ -102,5 +102,8 @@
       }
     }
   },
-  "defaultProject": "frontend-test"
+  "defaultProject": "frontend-test",
+  "cli": {
+    "analytics": false
+  }
 }

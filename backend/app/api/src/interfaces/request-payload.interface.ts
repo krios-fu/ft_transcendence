@@ -1,6 +1,14 @@
 import { Request } from "express";
-import { IJwtPayload } from "./ijwt-payload.interface";
+
+export interface IJwtPayload {
+    accessToken: string;
+    username: string;
+}
 
 export interface IRequestPayload extends Request {
     jwtPayload: IJwtPayload;
+}
+
+export interface IRequestUser extends Request {
+    username: string;
 }

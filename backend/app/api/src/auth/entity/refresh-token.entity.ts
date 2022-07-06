@@ -1,5 +1,5 @@
 import { UserEntity } from "src/user/user.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'refreshToken' })
 export class RefreshTokenEntity {
@@ -12,6 +12,7 @@ export class RefreshTokenEntity {
             cascade: true,
         }
     )
+    @JoinColumn({ name: 'token_user' })
     authUser: UserEntity;
 
     @Column({

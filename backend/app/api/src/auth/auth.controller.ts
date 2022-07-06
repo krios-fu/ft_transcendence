@@ -13,7 +13,7 @@ import { Public } from '../decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
 import { UserDto } from 'src/user/user.dto';
-import { JwtService } from '@nestjs/jwt';
+import { IJwtPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
 
 interface IRequestProfile extends Request {
     user: UserDto;
@@ -21,11 +21,7 @@ interface IRequestProfile extends Request {
 
 @Controller('auth')
 export class AuthController {
-    constructor
-    (
-      private authService: AuthService,
-      private jwtService: JwtService,
-    ) { }
+    constructor(private authService: AuthService) { }
 
   @Public()
   @Get('42')
@@ -41,19 +37,33 @@ export class AuthController {
   }
 
   @Public()
-  @Post('token')
+  @Get('token')
   refreshToken
   (
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ) {
-    /* obtener user manualmente del token */
-    const accessToken = req.cookies['access_token'];
-    const jwtPayload = this.jwtService.decode(accessToken);
-    
-    if (jwtPayload === null) {
+    const refreshToken: string = req.cookies['refresh_cookie'];
+    const authUser: string = req.query.user as string;
+
+    if (authUser === null || refreshToken === null) {
       throw new HttpException('User not authenticated', HttpStatus.UNAUTHORIZED);
     }
-    return this.authService.refreshToken(jwtPayload['authToken'], req, res);
+    this.authService.refreshToken(refreshToken, authUser)
+      .then((authPayload: IJwtPayload) => { 
+        return authPayload;
+      }).catch((error) => {
+        res.clearCookie('refresh_cookie');
+        throw new HttpException(error, HttpStatus.UNAUTHORIZED);
+      });
+  }
+
+  @Post('logout')
+  logout
+  (
+    @Req() req: IRequestUser, 
+    @Res({ passthrough: true }) res: Response
+  ) {
+    this.authService.logout(req.username, res);
   }
 }

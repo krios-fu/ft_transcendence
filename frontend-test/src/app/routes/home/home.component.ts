@@ -1,7 +1,8 @@
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { IAuthInfo } from 'src/app/interfaces/iauth-info';
+import { ActivatedRoute } from '@angular/router';
+import { catchError, Observable, throwError } from 'rxjs';
+import { IAuthPayload } from 'src/app/interfaces/iauth-payload.interface';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from '../../services/users.service';
 
@@ -38,53 +39,54 @@ export class UserDto {
 export class HomeComponent implements OnInit {
   constructor(
     public  usersService: UsersService,
-    private router: Router,
     private activatedRoute: ActivatedRoute,
     private authService: AuthService,
   ) { }
 
-  ngOnInit(): void { 
-
-    /* check if token exists as cookie in user-agent */
-    /* if not: login logic:
-          check if query param is code (if not then login redir)
-          http request to backend endpoint 
-    */
+  ngOnInit(): void {
     let code: string | undefined;
-    const authObserver = {
-      next: (resp: HttpResponse<IAuthInfo>) => {
-        if (resp.body === null) { /* Esto es trabajo de validation pipe */
-          console.error('Invalid or non existent authentication token');
-          this.router.navigate(['/login']);
-          return ;
-        }
-      },
-      error: (err: HttpErrorResponse) => {
-        console.error('Invalid or non existent authentication token');
-        this.router.navigate(['/login']);
-      }
-    }
 
-    this.activatedRoute.queryParams
-      .subscribe(params => {code = params['code'];});
-    if (code === undefined) {
-      this.router.navigate(['/login']);
+    if (this.authService.getAuthToken() != null) {
       return ;
     }
+    this.activatedRoute.queryParams
+        .subscribe(params => {code = params['code'];});
+    if (code === undefined) {
+        this.authService.logout();
+        return ;
+    }
     this.authService.authUser(code)
-      .subscribe(authObserver);
-  }
+        .subscribe({
+            next: (res: HttpResponse<IAuthPayload>) => {
+                if (res.body === null) {
+                    throw new HttpErrorResponse({
+                        statusText: 'successful login never returned credentials',
+                        status: HttpStatusCode.InternalServerError,
+                    }) 
+                }
+                this.authService.setAuthInfo({
+                    "accessToken": res.body.accessToken,
+                    "username": res.body.username,
+                });
+            },
+            error: (err: HttpErrorResponse) => {
+                if (err.status === 401) {
+                    this.authService.logout();
+                }
+                return throwError(() => err);
+            }
+        });
+    }
 
   /* test auth */
   user: string = "";
   getUser(username: string): string {
-    const optionsUser = {
-        next: (userDto: UserDto) => { this.user = userDto.username },
-        error: (err: Error) => { console.error(err + " sdasdalsjl") }
-    };
-
     this.usersService.getUser(username)
-      .subscribe(optionsUser);
+        .subscribe((userDto: UserDto) => {
+              this.user = userDto.username;
+        });
     return this.user;
   }
+
+  logout() { this.authService.logout(); }
 }
