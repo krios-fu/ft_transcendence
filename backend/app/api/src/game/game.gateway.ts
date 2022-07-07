@@ -33,12 +33,12 @@ export class    GameGateway implements OnGatewayInit,
           client.join("PlayerA");
           client.emit("role", "PlayerA");
         }
-        else if (sockLen === 2)
+        /*else if (sockLen === 2)
         {
           console.log("Player B joined");
           client.join("PlayerB");
           client.emit("role", "PlayerB");
-        }
+        }*/
         else
         {
           console.log("Spectator joined");
@@ -50,12 +50,12 @@ export class    GameGateway implements OnGatewayInit,
 
     async handleDisconnect(client: Socket) {
         const playerA = this.server.in("PlayerA").fetchSockets();
-        const PlayerB = this.server.in("PlayerB").fetchSockets();
+        //const PlayerB = this.server.in("PlayerB").fetchSockets();
 
         if (!(await playerA).length)
           console.log("Player A disconnected");
-        else if (!(await PlayerB).length)
-          console.log("Player B disconnected");
+        /*else if (!(await PlayerB).length)
+          console.log("Player B disconnected");*/
         else
           console.log("A spectator disconnected");
         console.log("With id: ", client.id);
@@ -71,13 +71,4 @@ export class    GameGateway implements OnGatewayInit,
       client.broadcast.emit('paddle', data);
     }
 
-    /*@SubscribeMessage('game')
-    findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
-      return from([1, 2, 3]).pipe(map(item => ({ event: 'events', data: item })));
-    }
-  
-    @SubscribeMessage('identity')
-    async identity(@MessageBody() data: number): Promise<number> {
-      return data;
-    }*/
   }
