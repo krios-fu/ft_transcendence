@@ -5,10 +5,10 @@ import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { UserDto } from 'src/user/user.dto';
-import { UserEntity } from 'src/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IJwtPayload } from 'src/interfaces/request-payload.interface';
-import { TokenError } from './enum/tokenerror.enum';
+import { TokenError } from './enum/token-error.enum';
+import { UserEntity } from 'src/user/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -24,35 +24,41 @@ export class AuthService {
     private signJwt(username: string): string {
         return this.jwtService.sign({ 
             data: { username: username },
-            expiresIn: 5,
+            expiresIn: 2 * 60,
             /* test private key */
         });
     }
 
     async authUser(userProfile: UserDto, res: Response): Promise<IJwtPayload> {
-
-        if (!userProfile) {
-            throw new HttpException
-            (
-                'fortytwo strategy did not provide user profile to auth service', 
-                HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        };
-        const username = userProfile.username;
-        let   newUser = await this.userService.findOne(username);
-
-        if (newUser === null) {
-            newUser = await this.userService.postUser(userProfile);
-        }
-        const tokenEntity = new RefreshTokenEntity(
-            newUser,
-            new Date(Date.now() + (60 * 5)),
-        );
-        /* esto está mal */
-        const refreshToken = await this.refreshTokenRepository.save(tokenEntity);
-
-        console.log(new Date(Date.now() + (3600 * 24 * 7)));
-
+        const username: string = userProfile.username;
+        let   loggedUser: UserEntity;
+        let   refreshToken: RefreshTokenEntity;
+        
+        this.userService.findOne(username).then((newUser: UserEntity | null) => {
+            if (newUser === null) {
+                this.userService.postUser(userProfile).then((savedUser: UserEntity) => {
+                    loggedUser = savedUser;
+                });
+            } else {
+                loggedUser = newUser;
+            }
+        });
+        this.refreshTokenRepository.findOne({
+            where: {
+                authUser: loggedUser,
+            }
+        }).then((token: RefreshTokenEntity | null) => {
+            if (token === null) {
+                this.refreshTokenRepository.save({
+                    authUser: loggedUser,
+                    expiresIn: Date.now() + (3600 * 24 * 7),
+                }).then((newToken: RefreshTokenEntity) => {
+                    refreshToken = newToken;
+                })
+            } else {
+                refreshToken = token;
+            }
+        })
         res.cookie('refresh_token', refreshToken.token, {
             httpOnly: true,
             maxAge: 3600 * 24 * 7,
@@ -67,6 +73,7 @@ export class AuthService {
 
     async refreshToken(refreshToken: string, username: string): Promise<IJwtPayload> {
         const tokenEntity = await this.getTokenByUsername(username);
+        console.log('ping');
 
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
@@ -88,21 +95,23 @@ export class AuthService {
         res.clearCookie('refresh_cookie');
     }
 
-    private async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
-        const userEntity = await this.userService.findOne(username);
+    async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
+        let token: RefreshTokenEntity;
 
-        if (userEntity === null) {
-            throw TokenError.NO_TOKEN_OR_USER;
-        }
-        const tokenEntity = await this.refreshTokenRepository.findOne({
-            where: {
-                authUser: userEntity
-            }
+        this.userService.findOne(username)
+            .then((user: UserEntity) => {
+                if (user === null) {
+                    throw TokenError.NO_TOKEN_OR_USER;
+                }
+                this.refreshTokenRepository.findOne({
+                    where: { authUser: user }
+                }).then((savedToken: RefreshTokenEntity) => {
+                    if (savedToken === null) {
+                        throw TokenError.NO_TOKEN_OR_USER;
+                    }
+                    token = savedToken;
+            });
         });
-
-        if (tokenEntity === null) {
-            throw TokenError.NO_TOKEN_OR_USER;
-        }
-        return tokenEntity;
+        return token;
     }
 }

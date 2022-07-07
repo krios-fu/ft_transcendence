@@ -2,6 +2,7 @@ import { AuthService } from './auth.service';
 import {
   Controller,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Post,
@@ -30,10 +31,15 @@ export class AuthController {
   (
     @Req() req: IRequestProfile,
     @Res({ passthrough: true }) res: Response
-  ) { 
-    const user = req.user;
-
-    return this.authService.authUser(user, res);
+  ) {
+    if (req.user === null ) {
+      throw new HttpException
+      (
+        'fortytwo strategy did not provide user profile to auth service', 
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    return this.authService.authUser(req.user, res);
   }
 
   @Public()
@@ -43,6 +49,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
   ) {
+    console.log('backend ping(refreshToken');
     const refreshToken: string = req.cookies['refresh_cookie'];
     const authUser: string = req.query.user as string;
 
@@ -66,4 +73,8 @@ export class AuthController {
   ) {
     this.authService.logout(req.username, res);
   }
+
+  @Get('is_authenticated')
+  @HttpCode(HttpStatus.OK)
+  isAuthenticated() { }
 }

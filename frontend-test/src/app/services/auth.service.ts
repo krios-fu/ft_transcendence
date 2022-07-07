@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 
 @Injectable({
@@ -12,6 +12,13 @@ export class AuthService {
         private http: HttpClient,
         private router: Router,
     ) { }
+
+    isAuthorized(): Observable<HttpResponse<any>> {
+        const httpUrl = 'http://localhost:3000/auth/is_authenticated';
+        const isAuth$ = this.http.get<any>(httpUrl, { });
+
+        return isAuth$;
+    }
 
     authUser(authCode: string): Observable<HttpResponse<any>> {
         const httpAuthGet = 'http://localhost:3000/auth/42';
@@ -30,6 +37,7 @@ export class AuthService {
     }
 
     refreshToken(): Observable<HttpResponse<IAuthPayload>> {
+        console.log('frontend ping(refreshToken)');
         const tokenEndpoint = 'http://localhost:3000/auth/token?user=' + this.getAuthUser();
         const token$ = this.http.get<IAuthPayload>
         (
@@ -37,10 +45,13 @@ export class AuthService {
                 observe: 'response',
                 responseType: 'json',
             },
+        ).pipe(
+            tap(res => { console.log('tapado: ' + res)})
         );
         return token$;
     }
 
+    /* Solo permite ejecución a usuarios logeados */
     logout(): void {
         const logoutEndpoint = 'http://localhost:3000/auth/logout';
         this.http.post<any>(logoutEndpoint, { })
@@ -50,21 +61,21 @@ export class AuthService {
                 }
             });
         
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('username');
+        sessionStorage.removeItem('access_token');
+        sessionStorage.removeItem('username');
         this.router.navigate(['/login']);
     }
 
     setAuthInfo(authPayload: IAuthPayload): void {
-        localStorage.setItem('access_token', authPayload.accessToken);
-        localStorage.setItem('username', authPayload.username);
+        sessionStorage.setItem('access_token', authPayload.accessToken);
+        sessionStorage.setItem('username', authPayload.username);
     }
 
     getAuthToken(): string | null {
-        return localStorage.getItem('access_token');
+        return sessionStorage.getItem('access_token');
     }
 
     getAuthUser(): string | null {
-        return localStorage.getItem('username');
+        return sessionStorage.getItem('username');
     }
 }

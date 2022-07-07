@@ -3,7 +3,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { Roles } from "../roles.enum";
 import { RoomEntity } from "./room.entity";
 
-@Entity({  name: "roles" })
+@Entity({ name: "roles" })
 export class RolesEntity {
     @PrimaryColumn()
     role_user: string;

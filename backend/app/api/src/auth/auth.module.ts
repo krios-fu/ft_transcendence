@@ -12,11 +12,11 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
 
 @Module({
     imports: [
+        TypeOrmModule.forFeature([
+            RefreshTokenEntity, 
+         ]),
         UserModule,
         PassportModule,
-        TypeOrmModule.forFeature([
-           RefreshTokenEntity, 
-        ]),
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
         }),

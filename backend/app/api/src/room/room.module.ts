@@ -28,9 +28,6 @@ import { RoomMsgEntity } from './entities/room-msg.entity';
     RolesRepository,
     RoomMsgRepository,
   ],
-  exports: [
-//    RoomService,
-  ]
 })
 export class RoomModule {}
 

@@ -9,8 +9,8 @@ import { RoomChatModule } from './room-chat/room-chat.module';
 
 @Module({
     imports: [
-        AuthModule,
         UserModule,
+        AuthModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,

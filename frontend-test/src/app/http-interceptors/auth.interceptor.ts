@@ -24,22 +24,18 @@ export class AuthInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<unknown>, next: HttpHandler)
         : Observable<HttpEvent<unknown>> {
-        const accessToken: string | null = this.authService.getAuthToken();
-        const reqAuth: HttpRequest<unknown> = req.clone({
-           headers: req.headers.set('Authorization', `Bearer ${accessToken}`),
-        });
+        const reqAuth = this.setAuthHeaders(req);
 
         return next.handle(reqAuth)
-            .pipe(catchError((err => this.handleHttpError(err))));
+            .pipe(catchError((((err/*, caught*/) => this.handleHttpError(err/*, caught, req*/, next)))));
     }
 
-    private handleHttpError(error: HttpErrorResponse): Observable<never> {
+    private handleHttpError(error: HttpErrorResponse, /*catch failed request here */ next: HttpHandler): Observable<never> {
         if (error.status === 401) {
             const tokenPetition$ = this.authService.refreshToken();
 
             tokenPetition$.subscribe({
                 next: (res: HttpResponse<IAuthPayload>) => {
-                    console.log('oof!3');
                     if (res.body === null) {
                         throw new HttpErrorResponse({
                             status: HttpStatusCode.InternalServerError,
@@ -50,19 +46,33 @@ export class AuthInterceptor implements HttpInterceptor {
                         'accessToken': res.body.accessToken,
                         'username': res.body.username
                     });
+                    /*
+                    const reqValidAuth = this.setAuthHeaders(req);
+                    return next.handle(reqValidAuth); ????
+
+                    */
                     /* retry here */
+                    
                 },
                 error: (error: HttpErrorResponse) => {
                     if (error.status === 401) {
-                        this.authService.logout();
+                        //this.authService.logout();
                     }
                     return throwError(() => error);
                 },
             }); 
         } else {
-            this.authService.logout();
+        //    this.authService.logout();
+            /* aquí van redirecciones a páginas de error personalizadas (foribidden, ise, ...) */
         }
-        console.log('oof!5');
         return throwError(() => error);
+    }
+
+    private setAuthHeaders(req: HttpRequest<any>): HttpRequest<any> {
+        const accessToken = this.authService.getAuthToken();
+
+        return req.clone({
+            headers: req.headers.set('Authorization', `Bearer ${accessToken}`)
+        });
     }
 }

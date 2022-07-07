@@ -1,7 +1,12 @@
 import { UserEntity } from "src/user/user.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'refreshToken' })
+export interface RefreshTokenOptions {
+    authUser: UserEntity;
+    expiresIn: Date;
+}
+
+@Entity({ name: 'refresh_token' })
 export class RefreshTokenEntity {
     @PrimaryGeneratedColumn('uuid')
     token: string;
@@ -20,11 +25,10 @@ export class RefreshTokenEntity {
     })
     expiresIn: Date;
 
-    constructor(
-        authUser: UserEntity,
-        expiresIn: Date,
-    ) {
-        this.authUser = authUser;
-        this.expiresIn = expiresIn;
+    constructor(refreshToken?: RefreshTokenOptions) {
+        if (refreshToken != undefined) {
+            this.authUser = refreshToken.authUser;
+            this.expiresIn = refreshToken.expiresIn;
+        }
     }
 }

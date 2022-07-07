@@ -37,46 +37,50 @@ export class UserDto {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  constructor(
-    public  usersService: UsersService,
-    private activatedRoute: ActivatedRoute,
-    private authService: AuthService,
-  ) { }
+    constructor
+    (
+        public  usersService: UsersService,
+        private activatedRoute: ActivatedRoute,
+        private authService: AuthService,
+    ) { }
 
-  ngOnInit(): void {
-    let code: string | undefined;
+    ngOnInit(): void {
+    this.authService.isAuthorized()
+        .subscribe({ error: () => this.loginUser });
+    }
 
-    if (this.authService.getAuthToken() != null) {
-      return ;
-    }
-    this.activatedRoute.queryParams
-        .subscribe(params => {code = params['code'];});
-    if (code === undefined) {
-        this.authService.logout();
-        return ;
-    }
-    this.authService.authUser(code)
-        .subscribe({
-            next: (res: HttpResponse<IAuthPayload>) => {
-                if (res.body === null) {
-                    throw new HttpErrorResponse({
-                        statusText: 'successful login never returned credentials',
-                        status: HttpStatusCode.InternalServerError,
-                    }) 
+    private loginUser() {
+        let code: string | undefined;
+
+        console.log('ping');
+        this.activatedRoute.queryParams
+            .subscribe(params => { code = params['code']; });
+        if (code === undefined) {
+            this.authService.logout();
+            return ;
+        }
+        this.authService.authUser(code)
+            .subscribe({
+                next: (res: HttpResponse<IAuthPayload>) => {
+                    if (res.body === null) {
+                        throw new HttpErrorResponse({
+                            statusText: 'successful login never returned credentials',
+                            status: HttpStatusCode.InternalServerError,
+                        }) 
+                    }
+                    this.authService.setAuthInfo({
+                        "accessToken": res.body.accessToken,
+                        "username": res.body.username,
+                    });
+                },
+                error: (err: HttpErrorResponse) => {
+                    if (err.status === 401) {
+                        this.authService.logout();
+                    }
+                    return throwError(() => err);
                 }
-                this.authService.setAuthInfo({
-                    "accessToken": res.body.accessToken,
-                    "username": res.body.username,
-                });
-            },
-            error: (err: HttpErrorResponse) => {
-                if (err.status === 401) {
-                    this.authService.logout();
-                }
-                return throwError(() => err);
-            }
-        });
-    }
+            });
+        }
 
   /* test auth */
   user: string = "";
