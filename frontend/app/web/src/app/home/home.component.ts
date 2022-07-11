@@ -19,7 +19,7 @@ import {FormControl, FormGroup} from '@angular/forms'; //
 })
 export class HomeComponent implements OnInit {
 
-  private profile : Payload;
+  private profile = {};
 
   private code = '';
 
