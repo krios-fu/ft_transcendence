@@ -2,135 +2,127 @@
 }
 
 
-
-
 /* Estilo del encabezado */
 .header {
-  //padding: 15px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  height: 3rem;
-  text-align: center;
-  font-size: 14px;
+  justify-content: space-between;
+  height: 4rem;
+  font-size: 10px;
   color: white;
   background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+  width: 100%;
 
-
-  
   flex: 0 1 45px;
   position: relative;
-  z-index: 2;
-  //background: linear-gradient(180deg, rgba(2,0,3,1) 0%, rgba(27,33,94,1) 100%);
-  text-transform: uppercase;
-  text-align: left;
-  padding: 10px 10px 10px 50px;
+  //z-index: 2;
+  h1 {
+    position: relative;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2rem;
+    transform: skew(-15deg);
+    letter-spacing: 0.03em;
 
-  h1, h2 {
-    font-weight: normal;
-    font-size: 14px;
-    margin: 0;
-    padding: 0;
-    color: black;
-  }
+    &::after {
+      content: '';
+      position: absolute;
+      top: -0.1em;
+      right: 0.05em;
+      width: 0.4em;
+      height: 0.4em;
+      background: radial-gradient(white 3%, rgba(white, 0.3) 15%, rgba(white, 0.05) 60%, transparent 80%), radial-gradient(rgba(white, 0.2) 50%, transparent 60%), radial-gradient(rgba(white, 0.2) 50%, transparent 60%) no-repeat 50% 50%;
+    }
 
-  h2 {
-    color: rgba(255, 255, 255, .5);
-    font-size: 8px;
-    letter-spacing: 1px;
+    span:first-child {
+      display: block;
+      text-shadow: 0 0 0.1em #8ba2d0, 0 0 0.2em black,  0 0 5em #165ff3;
+      -webkit-text-stroke: 0.06em rgba(black, 0.5);
+    }
+
+    span:last-child {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background-image: linear-gradient(#032d50 25%, #00a1ef 35%, white 50%, #20125f 50%, #8313e7 55%, #fc1689 75%);
+      -webkit-text-stroke: 0.01em #94a0b9;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   }
 
 
   .avatar{
-    position: absolute;
-    z-index: 1;
-    //top: 25%;
+    position: relative;
+    background: lawngreen;
+    //z-index: 1;
     left: 6px;
     border-radius: 50%;
-    width: 45px;
-    height: 45px;
+    width: 55px;
+    height: 55px;
     overflow: hidden;
     margin: 0;
     padding: 0;
     border: 2px solid rgba(255, 255, 255, 0.24);
-    //border: 3px solid var(--status);
-
 
     img {
       width: 100%;
       height: auto;
     }
   }
-}
-
-/* Create 3 columnas*/
-.column1  {
-  float: left;
-  width: 21rem;
-  padding: 0;
-
-  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
-
-  height: auto;
-
   .search-box {
-    flex: 0 1 45px;
-    width: 100%;
-    background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
-    padding: 12px;
-    position: relative;
-  
+    width: 20vw;
+    min-width: 20vh;
+
+    background: whitesmoke;
+    padding: 14px;
+    border-radius:25px;
+    border: none;
+    box-shadow: 0 10px 30px black;
+
     & .search-input {
       background: none;
       border: none;
       outline: none!important;
       resize: none;
-      color: rgba(255, 255, 255, 255);
+      color: black;
       font-size: 14px;
-      //height: 17px;
       margin: 0;
-     // padding-right: 20px;
-     // width: 265px;
     }
-  
+
     textarea:focus:-webkit-placeholder{
       color: transparent;
     }
-  
-    & .search-submit {
-      position: absolute;
-      z-index: 1;
-      top: 9px;
-      right: 10px;
-      color: rebeccapurple;
-      border: none;
-      background: whitesmoke;
-      font-size: 10px;
-      text-transform: uppercase;
-      line-height: 1;
-      padding: 6px 10px;
-      border-radius: 10px;
-      outline: none!important;
-      transition: background .2s ease;
-  
-      &:hover {
-        background: rebeccapurple;
-        color: whitesmoke;
-      }
-    }
+
   }
+
+}
+
+
+
+/* Create 3 columnas*/
+.column1  {
+  float: left;
+  width: 20%;
+  padding: 0;
+  height: auto;
+  background: inherit;
+  //box-shadow: 0 px 30px black;
+
+
 }
 
 .column3 {
   float: right;
-  width: 21rem;
+  width: 20%;
+  min-width: 21rem;
+  min-height: 21rem;
   padding: 0;
   background: inherit;
 
   border-color:rgba(39,39,42, 1);
 
 
-  height: 100%;
+  height: auto;
 }
 
 .column2 {
@@ -139,19 +131,19 @@
   padding: 10px;
   align-items: center;
   text-align: center;
- 
+  box-shadow: 0 10px 30px black;
 
   //box-shadow: 0 0 50px black ;
   //border-radius: 10%;
 
 
-  background-color: whitesmoke;
-  height: 100%;
+  background-color: inherit;
+  height: auto;
 }
 
 /* Clear floats after the columns */
 .row {
-  height: 95vh;
+  height: calc(100vh - 4rem);
   display: flex;
   clear: both;
 }

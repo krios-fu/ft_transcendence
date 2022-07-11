@@ -1,22 +1,35 @@
-<div class="header ">
+<div class="header">
+
+  <div style="display: flex; position: relative; align-items: center; width: auto">
    <figure  class="avatar">
     <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+    </figure>
+   <div style=" padding: 13px; bottom: initial">
+     {{getName()}}
+   </div>
+  </div>
 
-  </figure>
-  {{getName()}}
+  <div style="position: center; padding: 10px">
+    <h1>
+      <span>PING PONG</span>
+      <span>PING PONG</span>
+    </h1>
+  </div>
+
+  <div class="search-box">
+    <form (ngSubmit)="search()" [formGroup]="formMessage">
+      <input formControlName="message" type="text" class="search-input" placeholder="Search">
+    </form>
+  </div>
+
+
 </div>
 
 <div class="row">
 
-  <div class="column1" >
-    <div class="search-box">
-      <form (ngSubmit)="search()" [formGroup]="formMessage">
-        <input formControlName="message" type="text" class="search-input" placeholder="Search">
-      </form>
-    </div>
-  </div>
+  <div class="column1"> </div>
 
-  <div class="column2" >Contenido<br>(Columna 2)</div>
+  <div class="column2" ><h1>hola mundo</h1></div>
   <div class="column3"><app-chat ></app-chat></div>
 
 

@@ -46,17 +46,18 @@ export class HomeComponent implements OnInit {
     this.http.get('http://localhost:3000/auth/42/redirect'+this.code)
       .subscribe( dto  =>  {  this.profile = dto as Payload;
         console.log(this.profile) ;} );
-      
-   
+
+
   }
 
    getName()  {
     try {
       const pp = this.profile as Payload;
+      console.log("----> " + pp.userProfile.username);
       return pp.userProfile.username;
     }
     catch {}
-    return "";
+     return "marvin";
   }
 
   search(){

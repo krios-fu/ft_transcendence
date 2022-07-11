@@ -48,8 +48,10 @@ Chat
   overflow: hidden;
   box-shadow: 0 10px 30px black;
   //background: transparent;
-  background-image: url('https://i.pinimg.com/564x/96/8b/4c/968b4cdd9c2f9266d2eb3dbf5ff980ca.jpg');
+  //background-image: url('https://i.pinimg.com/564x/96/8b/4c/968b4cdd9c2f9266d2eb3dbf5ff980ca.jpg');
+  background-size: cover;
   background-position: center;
+
   justify-content: space-between;
   flex-direction: column;
 }
