@@ -13,7 +13,7 @@ import {
 
 @WebSocketGateway(3001, {
     cors: {
-      origin: '*',
+        origin: '*',
     },
 })
 export class    GameGateway implements OnGatewayInit,
@@ -29,46 +29,66 @@ export class    GameGateway implements OnGatewayInit,
         const sockLen: Number = sockets.length;
         if (sockLen < 2)
         {
-          console.log("Player A joined");
-          client.join("PlayerA");
-          client.emit("role", "PlayerA");
+            console.log("Player A joined");
+            client.join("PlayerA");
+            client.emit("role", "PlayerA");
         }
-        /*else if (sockLen === 2)
+        else if (sockLen === 2)
         {
-          console.log("Player B joined");
-          client.join("PlayerB");
-          client.emit("role", "PlayerB");
-        }*/
+            console.log("Player B joined");
+            client.join("PlayerB");
+            client.emit("role", "PlayerB");
+        }
         else
         {
-          console.log("Spectator joined");
-          client.join("Spectator");
-          client.emit("role", "Spectator");
+            console.log("Spectator joined");
+            client.join("Spectator");
+            client.emit("role", "Spectator");
         }
         console.log("With id: ", client.id);
     }
 
     async handleDisconnect(client: Socket) {
         const playerA = this.server.in("PlayerA").fetchSockets();
-        //const PlayerB = this.server.in("PlayerB").fetchSockets();
+        const PlayerB = this.server.in("PlayerB").fetchSockets();
 
         if (!(await playerA).length)
-          console.log("Player A disconnected");
-        /*else if (!(await PlayerB).length)
-          console.log("Player B disconnected");*/
+            console.log("Player A disconnected");
+        else if (!(await PlayerB).length)
+            console.log("Player B disconnected");
         else
-          console.log("A spectator disconnected");
+            console.log("A spectator disconnected");
         console.log("With id: ", client.id);
     }
 
-    @SubscribeMessage('paddle')
-    async paddleUpdate(
-      @ConnectedSocket() client: Socket,
-      @MessageBody() data: string
+    @SubscribeMessage('paddleA')
+    async paddleAUpdate(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
     ) {
-      console.log("Paddle update received:");
-      console.log(data);
-      client.broadcast.emit('paddle', data);
+        console.log("PaddleA update received:");
+        console.log(data);
+        client.broadcast.emit('paddleA', data);
+    }
+
+    @SubscribeMessage('paddleB')
+    async paddleBUpdate(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        console.log("PaddleB update received:");
+        console.log(data);
+        client.broadcast.emit('paddleB', data);
+    }
+
+    @SubscribeMessage('ball')
+    async ballUpdate(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        console.log("Ball update received:");
+        console.log(data);
+        client.broadcast.emit('ball', data);
     }
 
   }
