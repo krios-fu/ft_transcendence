@@ -32,16 +32,18 @@ constructor
             Invalidamos petición manualmente
     */
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        this.authService.getTokenByUsername(jwtPayload.username)
+        console.log('lanzas desde aqui');
+        await this.authService.getTokenByUsername(jwtPayload.username)
             .then(() => {
                 /* possible blacklisted token logic here */
-            }).catch(() => {
+            })
+            .catch(() => {
                 throw new HttpException
                 (
                     'User has been logged out in another device',
                     HttpStatus.UNAUTHORIZED
                 )
-        });
+            })
         return jwtPayload;
     }
 }

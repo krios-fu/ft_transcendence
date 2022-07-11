@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ConsoleLogger, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -32,7 +32,7 @@ export class AuthService {
     async authUser(userProfile: UserDto, res: Response): Promise<IJwtPayload> {
         const username: string = userProfile.username;
         let   loggedUser: UserEntity;
-        let   refreshToken: RefreshTokenEntity;
+        let   token: string;
         
         this.userService.findOne(username).then((newUser: UserEntity | null) => {
             if (newUser === null) {
@@ -43,23 +43,24 @@ export class AuthService {
                 loggedUser = newUser;
             }
         });
-        this.refreshTokenRepository.findOne({
+        await this.refreshTokenRepository.findOne({
             where: {
                 authUser: loggedUser,
             }
-        }).then((token: RefreshTokenEntity | null) => {
-            if (token === null) {
-                this.refreshTokenRepository.save({
+        }).then(async (tokenEntity: RefreshTokenEntity | null) => {
+            if (tokenEntity === null) {
+                await this.refreshTokenRepository.save({
                     authUser: loggedUser,
-                    expiresIn: Date.now() + (3600 * 24 * 7),
-                }).then((newToken: RefreshTokenEntity) => {
-                    refreshToken = newToken;
+                    expiresIn: new Date(Date.now() + (3600 * 24 * 7)),
+                }).then((newTokenEntity: RefreshTokenEntity) => {
+                    token = newTokenEntity.token;
                 })
             } else {
-                refreshToken = token;
+                token = tokenEntity.token;
             }
-        })
-        res.cookie('refresh_token', refreshToken.token, {
+            console.log('hemos guardado un refresh-token de la forma: ' + JSON.stringify(tokenEntity));
+        });
+        res.cookie('refresh_token', token, {
             httpOnly: true,
             maxAge: 3600 * 24 * 7,
             sameSite: 'none',
@@ -72,16 +73,15 @@ export class AuthService {
     }
 
     async refreshToken(refreshToken: string, username: string): Promise<IJwtPayload> {
-        const tokenEntity = await this.getTokenByUsername(username);
-        console.log('ping');
-
-        if (tokenEntity.token != refreshToken) {
-            throw TokenError.TOKEN_INVALID;
-        }
-        if (tokenEntity.expiresIn.getTime() < Date.now()) {
-            await this.refreshTokenRepository.delete(tokenEntity);
-            throw TokenError.TOKEN_EXPIRED;
-        }
+        await this.getTokenByUsername(username)
+            .then(async (tokenEntity: RefreshTokenEntity) => {
+                if (tokenEntity.token != refreshToken) {
+                    throw TokenError.TOKEN_INVALID;
+                } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
+                    await this.refreshTokenRepository.delete(tokenEntity);
+                    throw TokenError.TOKEN_EXPIRED;
+                }
+            });
         return {
             'accessToken': this.signJwt(username),
             'username': username,
@@ -89,28 +89,33 @@ export class AuthService {
     }
 
     async logout(username: string, res: Response): Promise<void> {
-        const tokenEntity = await this.getTokenByUsername(username);
-
-        await this.refreshTokenRepository.delete(tokenEntity);
+        await this.getTokenByUsername(username)
+            .then(async (tokenEntity: RefreshTokenEntity) => {
+                await this.refreshTokenRepository.delete(tokenEntity);
+            })
+            .catch(() => {
+                console.error('user logged out without valid session');
+            });
         res.clearCookie('refresh_cookie');
     }
 
     async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
         let token: RefreshTokenEntity;
 
-        this.userService.findOne(username)
-            .then((user: UserEntity) => {
+        await this.userService.findOne(username)
+            .then(async (user: UserEntity) => {
                 if (user === null) {
                     throw TokenError.NO_TOKEN_OR_USER;
                 }
-                this.refreshTokenRepository.findOne({
+                console.log('estamos comprobando user de la forma: ' + JSON.stringify(user));
+                await this.refreshTokenRepository.findOne({
                     where: { authUser: user }
                 }).then((savedToken: RefreshTokenEntity) => {
                     if (savedToken === null) {
                         throw TokenError.NO_TOKEN_OR_USER;
                     }
                     token = savedToken;
-            });
+            })
         });
         return token;
     }

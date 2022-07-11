@@ -13,13 +13,6 @@ export class AuthService {
         private router: Router,
     ) { }
 
-    isAuthorized(): Observable<HttpResponse<any>> {
-        const httpUrl = 'http://localhost:3000/auth/is_authenticated';
-        const isAuth$ = this.http.get<any>(httpUrl, { });
-
-        return isAuth$;
-    }
-
     authUser(authCode: string): Observable<HttpResponse<any>> {
         const httpAuthGet = 'http://localhost:3000/auth/42';
         const auth$ = this.http.get<any>
@@ -29,7 +22,8 @@ export class AuthService {
                     code: authCode,
                 },
                 observe: 'response',
-                responseType: 'json'
+                responseType: 'json',
+                withCredentials: true,
             }
         );
 
@@ -46,9 +40,17 @@ export class AuthService {
                 responseType: 'json',
             },
         ).pipe(
-            tap(res => { console.log('tapado: ' + res)})
+            tap(res => { console.log('tapado: ' + JSON.stringify(res))})
         );
         return token$;
+    }
+
+    redirectHome(): void {
+        this.router.navigate(['/home']);
+    }
+
+    redirectLogin(): void {
+        this.router.navigate(['/login']);
     }
 
     /* Solo permite ejecución a usuarios logeados */
@@ -64,6 +66,13 @@ export class AuthService {
         sessionStorage.removeItem('access_token');
         sessionStorage.removeItem('username');
         this.router.navigate(['/login']);
+    }
+
+    isAuthenticated(): boolean {
+        return (
+            this.getAuthToken() != null &&
+            this.getAuthUser() != null
+        );
     }
 
     setAuthInfo(authPayload: IAuthPayload): void {

@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, Observable, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { IAuthPayload } from 'src/app/interfaces/iauth-payload.interface';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from '../../services/users.service';
@@ -37,6 +37,11 @@ export class UserDto {
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+    user:      string = "";
+    firstName: string = "";
+    lastName:  string = "";
+
+
     constructor
     (
         public  usersService: UsersService,
@@ -44,21 +49,46 @@ export class HomeComponent implements OnInit {
         private authService: AuthService,
     ) { }
 
+    /* auth flow: 
+        comprobamos que la petición a home contiene un
+        parámetro en el query de la forma {code, error}.
+        Si es el caso, dirigimos la petición hacia /auth/42,
+        de lo contrario, intentamos mostrar la página de home
+    */
+
     ngOnInit(): void {
-    this.authService.isAuthorized()
-        .subscribe({ error: () => this.loginUser });
-    }
-
-    private loginUser() {
         let code: string | undefined;
+        let error: string | undefined;
 
-        console.log('ping');
         this.activatedRoute.queryParams
-            .subscribe(params => { code = params['code']; });
-        if (code === undefined) {
-            this.authService.logout();
+            .subscribe(params => { 
+                code = params['code'];
+                error = params['error']
+        });
+        if (code != undefined || error != undefined) {
+            if (code === undefined) {
+                code = error as string;
+            }
+            this.loginUser(code);
             return ;
         }
+        if (this.authService.isAuthenticated() === false) {
+            this.authService.redirectLogin();
+        }
+
+        /* user petition std test */
+        const username: string = this.authService.getAuthUser() as string;
+        this.usersService.getUser(username)
+            .subscribe({
+                next: (userDto: UserDto) => {
+                    this.user = userDto.username;
+                    this.firstName = userDto.firstName;
+                    this.lastName = userDto.lastName;
+                }
+        });
+    }
+
+    loginUser(code: string) {
         this.authService.authUser(code)
             .subscribe({
                 next: (res: HttpResponse<IAuthPayload>) => {
@@ -72,6 +102,7 @@ export class HomeComponent implements OnInit {
                         "accessToken": res.body.accessToken,
                         "username": res.body.username,
                     });
+                    this.authService.redirectHome();
                 },
                 error: (err: HttpErrorResponse) => {
                     if (err.status === 401) {
@@ -81,16 +112,6 @@ export class HomeComponent implements OnInit {
                 }
             });
         }
-
-  /* test auth */
-  user: string = "";
-  getUser(username: string): string {
-    this.usersService.getUser(username)
-        .subscribe((userDto: UserDto) => {
-              this.user = userDto.username;
-        });
-    return this.user;
-  }
 
   logout() { this.authService.logout(); }
 }
