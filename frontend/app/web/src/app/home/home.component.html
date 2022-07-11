@@ -1,15 +1,24 @@
-<div class="header">
-  <h2>Encabezado de pagina</h2>
+<div class="header ">
+   <figure  class="avatar">
+    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+
+  </figure>
+  {{getName()}}
 </div>
+
 <div class="row">
 
-  <div class="column1" >Menu<br>(Columna 1)</div>
+  <div class="column1" >
+    <div class="search-box">
+      <form (ngSubmit)="search()" [formGroup]="formMessage">
+        <input formControlName="message" type="text" class="search-input" placeholder="Search">
+      </form>
+    </div>
+  </div>
 
   <div class="column2" >Contenido<br>(Columna 2)</div>
   <div class="column3"><app-chat ></app-chat></div>
 
 
-</div>
-<div class="footer">
-  <p>Pie de pagina</p>
+
 </div>

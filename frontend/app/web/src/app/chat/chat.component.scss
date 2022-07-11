@@ -31,10 +31,6 @@ Body
   box-sizing: border-box;
 }
 
-html,
-body {
-  height: 100%;
-}
 
 
 /*--------------------
@@ -50,8 +46,10 @@ Chat
  // max-height: 500px;
   z-index: 2;
   overflow: hidden;
-  box-shadow: 0 5px 30px rebeccapurple;
-  background: rebeccapurple;
+  box-shadow: 0 10px 30px black;
+  //background: transparent;
+  background-image: url('https://i.pinimg.com/564x/96/8b/4c/968b4cdd9c2f9266d2eb3dbf5ff980ca.jpg');
+  background-position: center;
   justify-content: space-between;
   flex-direction: column;
 }
@@ -64,7 +62,8 @@ Chat Title
   flex: 0 1 45px;
   position: relative;
   z-index: 2;
-  background: rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+
   color: #fff;
   text-transform: uppercase;
   text-align: left;
@@ -110,7 +109,7 @@ Messages
 --------------------*/
 .messages {
   flex: 1 1 auto;
-  color: rgba(255, 255, 255, .5);
+  color: rgb(255, 255, 255);
   position: relative;
   width: 100%;
   overflow: scroll;
@@ -136,7 +135,7 @@ Messages
     padding: 6px 10px 7px;
     border-radius: 10px 10px 10px 0;
     background: rgba(0, 0, 0, .3);
-    font-size: 11px;
+    font-size: 10px;
     margin: 3px 0 3px 35px;
     position: relative;
     line-height: 2;
@@ -197,7 +196,7 @@ Messages
       transform-origin: 0 0;
       animation: bounce 500ms linear both;
       color: #fff;
-      background: brown;
+      background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
     }
 
     &.loading {
@@ -238,7 +237,7 @@ Message Box
 .message-box {
   flex: 0 1 40px;
   width: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
   padding: 10px;
   position: relative;
 
@@ -247,7 +246,7 @@ Message Box
     border: none;
     outline: none!important;
     resize: none;
-    color: rgba(255, 255, 255, .7);
+    color: rgba(255, 255, 255, 255);
     font-size: 11px;
     height: 17px;
     margin: 0;

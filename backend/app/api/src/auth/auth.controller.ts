@@ -30,6 +30,7 @@ export class AuthController {
     async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
         const user = req.user;
         console.log(user);
-        return await this.authService.authUser(user);
+         await this.authService.authUser(user);
+         return user;
     }
 }

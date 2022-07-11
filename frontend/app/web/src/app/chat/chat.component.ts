@@ -1,4 +1,4 @@
-import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ElementRef,  OnInit, ViewChild} from '@angular/core';
 
 import {FormControl, FormGroup} from '@angular/forms'; //
 import {Chat} from "./chat";
@@ -15,8 +15,7 @@ export class ChatComponent implements OnInit{
     message : new FormControl('')
   })
 
-  @Input()
-  profile = {}
+ 
 
   constructor( private chat : Chat, private route: ActivatedRoute )  {
   }

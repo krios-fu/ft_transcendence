@@ -3,6 +3,13 @@ import {ActivatedRoute} from "@angular/router";
 
 import {HttpClient} from "@angular/common/http";
 import {ChatComponent} from "../chat/chat.component";
+import { Chat } from '../chat/chat';
+import { Payload } from '../dtos/user.dto';
+import { Observable } from 'rxjs';
+import {FormControl, FormGroup} from '@angular/forms'; //
+
+
+
 
 
 @Component({
@@ -12,12 +19,23 @@ import {ChatComponent} from "../chat/chat.component";
 })
 export class HomeComponent implements OnInit {
 
+  private profile : Payload;
 
   private code = '';
-  constructor( private route : ActivatedRoute, private http : HttpClient ) { }
+
+  public formMessage= new FormGroup({
+    message : new FormControl('')
+  })
+
+  constructor( private route : ActivatedRoute, private http : HttpClient, private chatPrivate : Chat ) {
+    const room = this.route.snapshot.paramMap.get('id');
+    this.formMessage.patchValue({ room } );
+   }
 
   ngOnInit(): void {
 
+    const room = this.route.snapshot.paramMap.get('id');
+    this.formMessage.patchValue({ room } );
 
     this.route.queryParams
       .subscribe(params => {
@@ -26,8 +44,28 @@ export class HomeComponent implements OnInit {
       })
 
     this.http.get('http://localhost:3000/auth/42/redirect'+this.code)
-      .subscribe( dta => console.log(dta) );
+      .subscribe( dto  =>  {  this.profile = dto as Payload;
+        console.log(this.profile) ;} );
+      
+   
+  }
 
+   getName()  {
+    try {
+      const pp = this.profile as Payload;
+      return pp.userProfile.username;
+    }
+    catch {}
+    return "";
+  }
+
+  search(){
+    const { message, room } = this.formMessage.value;
+    console.log( message, room)
+    if( message.trim() == '' )
+      return false;
+    this.formMessage.controls['message'].reset();
+    return true;
   }
 
 }

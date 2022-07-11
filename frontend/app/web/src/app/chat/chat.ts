@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable,  Input} from "@angular/core";
 import {Socket} from "ngx-socket-io";
 import {map} from "rxjs";
 import {newArray} from "@angular/compiler/src/util";
@@ -17,6 +17,8 @@ export class Chat {
 
   public msg : message [] = [];
   public id : string;
+  @Input()
+  profile = {}
 
   constructor( private socket : Socket ) {
 

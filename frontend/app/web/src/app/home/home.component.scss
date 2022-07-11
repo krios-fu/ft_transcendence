@@ -2,33 +2,134 @@
 }
 
 
+
+
 /* Estilo del encabezado */
 .header {
-  background-color: #FFD700;
   //padding: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 10vh;
-  box-sizing: border-box;
+  height: 3rem;
   text-align: center;
   font-size: 14px;
+  color: white;
+  background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+
+
+  
+  flex: 0 1 45px;
+  position: relative;
+  z-index: 2;
+  //background: linear-gradient(180deg, rgba(2,0,3,1) 0%, rgba(27,33,94,1) 100%);
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 10px 10px 50px;
+
+  h1, h2 {
+    font-weight: normal;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    color: black;
+  }
+
+  h2 {
+    color: rgba(255, 255, 255, .5);
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+
+
+  .avatar{
+    position: absolute;
+    z-index: 1;
+    //top: 25%;
+    left: 6px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 2px solid rgba(255, 255, 255, 0.24);
+    //border: 3px solid var(--status);
+
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
 }
 
 /* Create 3 columnas*/
 .column1  {
   float: left;
-  width: 20%;
-  padding: 10px;
-background-color:#becdfe;
-  height: 100%;
+  width: 21rem;
+  padding: 0;
+
+  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+
+  height: auto;
+
+  .search-box {
+    flex: 0 1 45px;
+    width: 100%;
+    background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+    padding: 12px;
+    position: relative;
+  
+    & .search-input {
+      background: none;
+      border: none;
+      outline: none!important;
+      resize: none;
+      color: rgba(255, 255, 255, 255);
+      font-size: 14px;
+      //height: 17px;
+      margin: 0;
+     // padding-right: 20px;
+     // width: 265px;
+    }
+  
+    textarea:focus:-webkit-placeholder{
+      color: transparent;
+    }
+  
+    & .search-submit {
+      position: absolute;
+      z-index: 1;
+      top: 9px;
+      right: 10px;
+      color: rebeccapurple;
+      border: none;
+      background: whitesmoke;
+      font-size: 10px;
+      text-transform: uppercase;
+      line-height: 1;
+      padding: 6px 10px;
+      border-radius: 10px;
+      outline: none!important;
+      transition: background .2s ease;
+  
+      &:hover {
+        background: rebeccapurple;
+        color: whitesmoke;
+      }
+    }
+  }
 }
 
 .column3 {
   float: right;
-  width: 20%;
+  width: 21rem;
   padding: 0;
-  background: white;
+  background: inherit;
+
+  border-color:rgba(39,39,42, 1);
+
+
   height: 100%;
 }
 
@@ -36,27 +137,26 @@ background-color:#becdfe;
   float: left;
   width: 60%;
   padding: 10px;
-  background-color: silver;
+  align-items: center;
+  text-align: center;
+ 
+
+  //box-shadow: 0 0 50px black ;
+  //border-radius: 10%;
+
+
+  background-color: whitesmoke;
   height: 100%;
 }
 
 /* Clear floats after the columns */
 .row {
-  height: 80vh;
+  height: 95vh;
   display: flex;
   clear: both;
 }
 
-/* Style the footer */
-.footer {
-  background-color: #FA8072;
-  height: 10vh;
-  text-align: center;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 
