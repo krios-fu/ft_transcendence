@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChatComponent } from './chat.component';
 import {Chat} from "./chat";
 import {ReactiveFormsModule} from "@angular/forms";
+import {MatExpansionModule} from "@angular/material/expansion";
 
 
 
@@ -10,10 +11,11 @@ import {ReactiveFormsModule} from "@angular/forms";
   declarations: [
     ChatComponent,
   ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatExpansionModule
+    ],
   providers: [Chat],
   exports: [
     ChatComponent

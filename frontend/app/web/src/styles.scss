@@ -19,3 +19,6 @@ body, html {
 :root{
   --status: rgba(39, 234, 9, 0.956);
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

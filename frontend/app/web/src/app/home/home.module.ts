@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 import {ChatModule} from "../chat/chat.module";
 import {ReactiveFormsModule} from "@angular/forms";
+import {MatExpansionModule} from "@angular/material/expansion";
 
 
 
@@ -10,12 +11,13 @@ import {ReactiveFormsModule} from "@angular/forms";
   declarations: [
     HomeComponent
   ],
-  imports: [
-    CommonModule,
-    ChatModule,
-    ReactiveFormsModule
+    imports: [
+        CommonModule,
+        ChatModule,
+        ReactiveFormsModule,
+        MatExpansionModule
 
-    
-  ]
+
+    ]
 })
 export class HomeModule { }

@@ -10,6 +10,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {ChatModule} from "./chat/chat.module";
 import { HomeComponent } from './home/home.component';
 import {HomeModule} from "./home/home.module";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
 
@@ -25,6 +26,7 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
     ChatModule,
     HomeModule,
     SocketIoModule.forRoot(config),
+    BrowserAnimationsModule,
   ],
   bootstrap: [AppComponent]
 })

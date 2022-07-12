@@ -1,33 +1,62 @@
- <div class="chat">
-    <div class="chat-title">
-      <h1>krios-fu</h1>
-      <h2>Sensei</h2>
-      <a href="#" class="avatar" >
-        <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>
-      
-    </div>
+
+<div class="chat">
+  <div class="chat-title">
+    <h1>krios-fu</h1>
+  <h2>Sensei</h2>
+  <a href="#" class="avatar" >
+    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>
+</div>
 
    <div #update class="messages"  [scrollTop]="update.scrollHeight + 10">
 
      <div *ngFor="let msg of viewMessage()" >
-     <div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.msg}}</div>
-      <ng-template #other> <div class="message">
+       <div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.msg}}</div>
+       <ng-template #other> <div class="message">
          <figure class="avatar">
-          <img src="https://cdn.intra.42.fr/users/krios-fu.jpg">
+           <img src="https://cdn.intra.42.fr/users/krios-fu.jpg">
          </figure> {{msg.msg}}
-     </div></ng-template>
+       </div></ng-template>
      </div>
    </div>
-
-    <div class="message-box">
-      <form (ngSubmit)="sendMessage()" [formGroup]="formMessage" class="users-type">
-        <input formControlName="message" type="text" class="message-input" placeholder="Type message...">
-      <button type="submit" class="message-submit">Send</button>
-      </form>
-    </div>
-  </div>
-  <div class="bg"></div>
+   <div class="message-box">
+     <form (ngSubmit)="sendMessage()" [formGroup]="formMessage" class="users-type">
+       <input formControlName="message" type="text" class="message-input" placeholder="Type message...">
+       <button type="submit" class="message-submit">Send</button>
+     </form>
+   </div>
+</div>
 
 
+<!--<mat-accordion >-->
+<!--  <mat-expansion-panel >-->
+
+<!--    <mat-expansion-panel-header>-->
+<!--     <mat-panel-title class="chat-title">-->
+<!--       <h1>krios-fu</h1>-->
+<!--         <h2>Sensei</h2>-->
+<!--          <a href="#" class="avatar" >-->
+<!--         <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>-->
+<!--     </mat-panel-title>-->
+<!--   </mat-expansion-panel-header>-->
+
+<!--       <div #update class="messages"  [scrollTop]="update.scrollHeight + 10">-->
+
+<!--         <div *ngFor="let msg of viewMessage()" >-->
+<!--           <div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.msg}}</div>-->
+<!--           <ng-template #other> <div class="message">-->
+<!--             <figure class="avatar">-->
+<!--               <img src="https://cdn.intra.42.fr/users/krios-fu.jpg">-->
+<!--             </figure> {{msg.msg}}-->
+<!--           </div></ng-template>-->
+<!--         </div>-->
+<!--       </div>-->
+<!--    <mat-action-row class="message-box" style="align-items: center">-->
+<!--         <form (ngSubmit)="sendMessage()" [formGroup]="formMessage" class="users-type">-->
+<!--           <input formControlName="message" type="text" class="message-input" placeholder="Type message...">-->
+<!--           <button type="submit" class="message-submit">Send</button>-->
+<!--         </form>-->
+<!--    </mat-action-row>-->
+<!--  </mat-expansion-panel>-->
+<!--</mat-accordion>-->
 
 

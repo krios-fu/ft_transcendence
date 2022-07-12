@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 
 import {HttpClient} from "@angular/common/http";
-import {ChatComponent} from "../chat/chat.component";
+import {MatExpansionModule} from '@angular/material/expansion';
 import { Chat } from '../chat/chat';
 import { Payload } from '../dtos/user.dto';
 import { Observable } from 'rxjs';
