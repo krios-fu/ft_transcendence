@@ -39,16 +39,20 @@ Chat
 
 .chat {
 
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 50%;
   float: left;
   display: flex;
  // max-height: 500px;
+  position:absolute;
+  bottom: 0%;
   z-index: 2;
   overflow: hidden;
+  border-radius: 25px;
+  border: solid 1px;
   box-shadow: 0 10px 30px black;
   //background: transparent;
-  //background-image: url('https://i.pinimg.com/564x/96/8b/4c/968b4cdd9c2f9266d2eb3dbf5ff980ca.jpg');
+  background-image: url('https://www.roadtovr.com/wp-content/uploads/2016/08/new-retro-arcade-neon-menu.jpg');
   background-size: cover;
   background-position: center;
 
@@ -103,6 +107,7 @@ Chat Title
       height: auto;
     }
   }
+
 }
 
 
@@ -115,6 +120,7 @@ Messages
   position: relative;
   width: 100%;
   overflow: scroll;
+  
 
   & .messages-content {
     position: absolute;
@@ -136,7 +142,7 @@ Messages
     float: left;
     padding: 6px 10px 7px;
     border-radius: 10px 10px 10px 0;
-    background: rgba(0, 0, 0, .3);
+    background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
     font-size: 10px;
     margin: 3px 0 3px 35px;
     position: relative;
@@ -175,7 +181,9 @@ Messages
       float: right;
       color: #fff;
       text-align: right;
-      background: brown;
+      background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+	   // -webkit-background-clip: text;
+	    //-webkit-text-fill-color: transparent;
       border-radius: 10px 10px 0 10px;
 
       &::before {
@@ -198,7 +206,7 @@ Messages
       transform-origin: 0 0;
       animation: bounce 500ms linear both;
       color: #fff;
-      background: linear-gradient(90deg, #d53369 0%, #daae51 100%);
+      background: linear-gradient(90deg, #FC466B 0%, #3F5EFB 100%);
     }
 
     &.loading {
