@@ -1,10 +1,29 @@
 
-<div class="chat">
+<div [ngClass]="state" >
   <div class="chat-title">
-    <h1>krios-fu</h1>
-  <h2>Sensei</h2>
-  <a href="#" class="avatar" >
+    <a href="#" class="avatar" >
     <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>
+
+    <h1>krios-fu</h1>
+    <button mat-icon-button style="align-items: center" (click)="chatMin()">
+      <mat-icon>cloasefullscreen</mat-icon>
+    </button>
+
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <!--disabled option -->
+      <button mat-menu-item >
+        <mat-icon>block</mat-icon>
+        <span>Block</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>notifications_off</mat-icon>
+        <span>Disable alerts</span>
+      </button>
+    </mat-menu>
+
 </div>
 
    <div #update class="messages"  [scrollTop]="update.scrollHeight + 10">
@@ -26,6 +45,28 @@
    </div>
 </div>
 
+<!--<div style=" position: absolute; width: 95%; bottom: 0; z-index: 2; flex-direction: column;" >-->
+<!--<div class="chat-title">-->
+<!--  <a href="#" class="avatar" >-->
+<!--        <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>-->
+
+<!--        <h1>krios-fu</h1>-->
+<!--        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" >-->
+<!--          <mat-icon>more_vert</mat-icon>-->
+<!--        </button>-->
+<!--        <mat-menu #menu="matMenu">-->
+<!--          &lt;!&ndash;disabled option &ndash;&gt;-->
+<!--          <button mat-menu-item >-->
+<!--            <mat-icon>block</mat-icon>-->
+<!--            <span>Block</span>-->
+<!--          </button>-->
+<!--          <button mat-menu-item>-->
+<!--            <mat-icon>notifications_off</mat-icon>-->
+<!--            <span>Disable alerts</span>-->
+<!--          </button>-->
+<!--        </mat-menu>-->
+<!--</div>-->
+<!--</div>-->
 
 <!--<mat-accordion >-->
 <!--  <mat-expansion-panel >-->

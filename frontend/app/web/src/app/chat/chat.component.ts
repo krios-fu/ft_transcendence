@@ -11,13 +11,19 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class ChatComponent implements OnInit{
 
+  state = {
+    'chat' : true,
+    'chat-min' : false
+  };
+
   public formMessage= new FormGroup({
     message : new FormControl('')
   })
 
- 
 
-  constructor( private chat : Chat, private route: ActivatedRoute )  {
+
+  constructor( private chat : Chat, private route: ActivatedRoute)  {
+
   }
 
 
@@ -38,6 +44,10 @@ export class ChatComponent implements OnInit{
     return true;
   }
 
+  chatMin(){
+     this.state["chat"] = !this.state["chat"];
+    this.state["chat-min"] = !this.state["chat-min"];
+  }
 
   getSocketId(){
     return this.chat.getSocketId();

@@ -36,6 +36,19 @@ Body
 /*--------------------
 Chat
 --------------------*/
+.chat-min
+{
+  position: absolute;
+  width: 95%;
+  bottom: 0;
+  z-index: 2;
+  flex-direction: column;
+
+  .message-box {
+    display: none;
+  }
+
+}
 
 .chat {
 
@@ -45,7 +58,7 @@ Chat
   display: flex;
  // max-height: 500px;
   position:absolute;
-  bottom: 0%;
+  bottom: 0;
   z-index: 2;
   overflow: hidden;
   border-radius: 25px;
@@ -56,7 +69,6 @@ Chat
   background-size: cover;
   background-position: center;
 
-  justify-content: space-between;
   flex-direction: column;
 }
 
@@ -65,16 +77,19 @@ Chat
 Chat Title
 --------------------*/
 .chat-title {
-  flex: 0 1 45px;
+  //flex: 0 1 45px;
   position: relative;
   z-index: 2;
+  display: flex;
   background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
 
   color: #fff;
   text-transform: uppercase;
-  text-align: left;
-  padding: 10px 10px 10px 50px;
-
+  text-align: center;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 50px;
+  height: 3rem;
   h1, h2 {
     font-weight: normal;
     font-size: 14px;
@@ -91,7 +106,7 @@ Chat Title
   .avatar {
     position: absolute;
     z-index: 1;
-    top: 8px;
+    top: 50vm;
     left: 6px;
     border-radius: 30px;
     width: 30px;
