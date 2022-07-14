@@ -1,20 +1,19 @@
 
+<ng-container *ngIf="!close">
+
 <div [ngClass]="state" >
   <div class="chat-title">
     <a href="#" class="avatar" >
     <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>
-
     <h1>krios-fu</h1>
     <div class="icon" style="color : rgb(111, 255, 0); ">
       <button mat-icon-button (click)="chatMin()">
         <mat-icon>{{unfold}}</mat-icon>
       </button>
-      <button mat-icon-button >
+      <button mat-icon-button (click)="chatClose()">
         <mat-icon>close</mat-icon>
       </button>
-
-
-      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1;">
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
        <mat-icon>more_vert</mat-icon>
       </button>
      <mat-menu #menu="matMenu">
@@ -29,7 +28,7 @@
       </button>
     </mat-menu>
   </div>
-    
+
 </div>
 
    <div #update class="messages"  [scrollTop]="update.scrollHeight + 10">
@@ -51,6 +50,7 @@
    </div>
 </div>
 
+</ng-container>
 <!--<div style=" position: absolute; width: 95%; bottom: 0; z-index: 2; flex-direction: column;" >-->
 <!--<div class="chat-title">-->
 <!--  <a href="#" class="avatar" >-->

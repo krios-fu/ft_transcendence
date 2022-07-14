@@ -13,9 +13,10 @@ export class ChatComponent implements OnInit{
 
   state = {
     'chat' : true,
-    'chat-min' : false
+    'chat-min' : false,
   };
-  unfold : string ;
+  unfold : string;
+  close : boolean;
 
   public formMessage= new FormGroup({
     message : new FormControl('')
@@ -25,6 +26,7 @@ export class ChatComponent implements OnInit{
 
   constructor( private chat : Chat, private route: ActivatedRoute)  {
     this.unfold = 'unfold_less';
+    this.close = false;
   }
 
 
@@ -50,7 +52,10 @@ export class ChatComponent implements OnInit{
     this.state["chat"] = !this.state["chat"];
     this.state["chat-min"] = !this.state["chat-min"];
     this.unfold =  (this.state["chat-min"]) ? 'unfold_more' : 'unfold_less';
+  }
 
+  chatClose() :  void {
+      this.close = !this.close;
   }
 
   getSocketId(){
