@@ -45,7 +45,7 @@ export class ChatComponent implements OnInit{
   }
 
   chatMin(){
-     this.state["chat"] = !this.state["chat"];
+    this.state["chat"] = !this.state["chat"];
     this.state["chat-min"] = !this.state["chat-min"];
   }
 
