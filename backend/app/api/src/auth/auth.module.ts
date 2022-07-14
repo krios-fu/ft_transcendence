@@ -19,6 +19,9 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
         PassportModule,
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
+            signOptions: {
+                expiresIn: 60 * 2,
+            }
         }),
     ],
     controllers: [AuthController],

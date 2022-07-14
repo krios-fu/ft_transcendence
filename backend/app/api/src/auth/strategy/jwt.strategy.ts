@@ -32,12 +32,12 @@ constructor
             Invalidamos petición manualmente
     */
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        console.log('lanzas desde aqui');
-        await this.authService.getTokenByUsername(jwtPayload.username)
-            .then(() => {
-                /* possible blacklisted token logic here */
-            })
+        console.log('Payload: ' + JSON.stringify(jwtPayload));
+        console.log(`validating with payload ${jwtPayload.data.username}`);
+        await this.authService.getTokenByUsername(jwtPayload.data.username)
+            .then(() => { })
             .catch(() => {
+                console.error(`failed to acquire refresh token for user ${jwtPayload.data.username}`);
                 throw new HttpException
                 (
                     'User has been logged out in another device',

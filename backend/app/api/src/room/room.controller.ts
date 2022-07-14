@@ -29,7 +29,7 @@ export class RoomController {
         @Body() roomDto: RoomDto,
     ): Promise<RoomEntity> {
         const roomLogin: LoginInfoDto = {
-            "user": req.jwtPayload.username,
+            "user": req.jwtPayload.data.username,
             "name": roomDto.name,
             "password": roomDto.password,
         };

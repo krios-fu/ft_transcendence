@@ -15,7 +15,7 @@ import { Public } from '../decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
 import { UserDto } from 'src/user/user.dto';
-import { IJwtPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
+import { IAuthPayload, IJwtPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
 
 interface IRequestProfile extends Request {
     user: UserDto;
@@ -59,7 +59,7 @@ export class AuthController {
         }
         console.log('refresh token point');
         await this.authService.refreshToken(refreshToken, authUser)
-            .then((authPayload: IJwtPayload) => {
+            .then((authPayload: IAuthPayload) => {
                 return authPayload;
             }).catch((error) => {
                 res.clearCookie('refresh_cookie');

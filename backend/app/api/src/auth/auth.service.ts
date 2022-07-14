@@ -6,7 +6,7 @@ import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { UserDto } from 'src/user/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IJwtPayload } from 'src/interfaces/request-payload.interface';
+import { IAuthPayload, IJwtPayload } from 'src/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
 import { UserEntity } from 'src/user/user.entity';
 
@@ -24,12 +24,10 @@ export class AuthService {
     private signJwt(username: string): string {
         return this.jwtService.sign({ 
             data: { username: username },
-            expiresIn: 2 * 60,
-            /* test private key */
         });
     }
 
-    async authUser(userProfile: UserDto, res: Response): Promise<IJwtPayload> {
+    async authUser(userProfile: UserDto, res: Response): Promise<IAuthPayload> {
         const username: string = userProfile.username;
         let   loggedUser: UserEntity;
         let   token: string;
@@ -49,13 +47,18 @@ export class AuthService {
             }
         }).then(async (tokenEntity: RefreshTokenEntity | null) => {
             if (tokenEntity === null) {
-                await this.refreshTokenRepository.save({
+                const newToken = new RefreshTokenEntity({
                     authUser: loggedUser,
-                    expiresIn: new Date(Date.now() + (3600 * 24 * 7)),
-                }).then((newTokenEntity: RefreshTokenEntity) => {
+                    expiresIn: new Date(Date.now() + (3600 * 24 * 7))
+                });
+                console.log('new token entity: ' + JSON.stringify(newToken));
+                await this.refreshTokenRepository.save(newToken)
+                    .then((newTokenEntity: RefreshTokenEntity) => {
+                    console.log('created token: ' + JSON.stringify(newTokenEntity));
                     token = newTokenEntity.token;
                 })
             } else {
+                console.log('found token: ' + JSON.stringify(tokenEntity));
                 token = tokenEntity.token;
             }
             console.log('hemos guardado un refresh-token de la forma: ' + JSON.stringify(tokenEntity));
@@ -72,7 +75,7 @@ export class AuthService {
         };
     }
 
-    async refreshToken(refreshToken: string, username: string): Promise<IJwtPayload> {
+    async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
         await this.getTokenByUsername(username)
             .then(async (tokenEntity: RefreshTokenEntity) => {
                 if (tokenEntity.token != refreshToken) {
@@ -109,9 +112,17 @@ export class AuthService {
                 }
                 console.log('estamos comprobando user de la forma: ' + JSON.stringify(user));
                 await this.refreshTokenRepository.findOne({
-                    where: { authUser: user }
+                    relations: {
+                        authUser: true,
+                    },
+                    where: { 
+                        authUser: {
+                            username: user.username
+                        }
+                    }
                 }).then((savedToken: RefreshTokenEntity) => {
                     if (savedToken === null) {
+                        console.error(`no token in database for user ${username}`);
                         throw TokenError.NO_TOKEN_OR_USER;
                     }
                     token = savedToken;
