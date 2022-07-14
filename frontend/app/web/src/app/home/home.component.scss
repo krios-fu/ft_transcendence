@@ -59,6 +59,7 @@
       height: auto;
     }
   }
+
   .search-box {
     width: 20vw;
     min-width: 20vh;
@@ -77,8 +78,10 @@
       color: black;
       font-size: 14px;
       margin: 0;
-    }
 
+    }
+    
+     
     textarea:focus:-webkit-placeholder{
       color: transparent;
     }
@@ -110,6 +113,8 @@
   background: inherit;
   border-color:rgba(39,39,42, 1);
   font-family: 'Press Start 2P', cursive;
+  
+
 
   position: relative;
 

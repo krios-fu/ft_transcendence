@@ -39,12 +39,44 @@ Chat
 .chat-min
 {
   position: absolute;
-  width: 95%;
+  width: 55%;
   bottom: 0;
   z-index: 2;
+  overflow: hidden;
   flex-direction: column;
+  display: flex;
+  border-radius: 25px;
+  border: solid 1px;
+  box-shadow: 0 10px 30px black;
+  right: 0;
+  animation: bounce-in 2s ease;
+  .icon{
+    display: none;
+  }
+  
+  &:hover{
+    width: 95%;
+    .icon{
+      display: flex;
+    }
+  }
 
-  .message-box {
+
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% { transform: scale(.9); }
+    100% { transform: scale(1); }
+  }
+
+
+  .message, .message-box {
     display: none;
   }
 
@@ -70,6 +102,12 @@ Chat
   background-position: center;
 
   flex-direction: column;
+    animation: fade-in 2s linear both;
+  
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 }
 
 

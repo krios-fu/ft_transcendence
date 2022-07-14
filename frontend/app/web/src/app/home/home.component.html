@@ -15,10 +15,12 @@
     </h1>
   </div>
 
-  <div class="search-box">
-    <form (ngSubmit)="search()" [formGroup]="formMessage">
-      <input formControlName="message" type="text" class="search-input" placeholder="Search">
-    </form>
+  <div style="width: 20vw;">
+    <div class="search-box">
+      <form (ngSubmit)="search()" [formGroup]="formMessage">
+        <input formControlName="message" type="text" class="search-input" placeholder="Search">
+      </form>
+  </div>
   </div>
 
 
