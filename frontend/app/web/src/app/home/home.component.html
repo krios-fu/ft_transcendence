@@ -28,10 +28,16 @@
 
 <div class="row">
 
-  <div class="column1"> </div>
+  <div class="column1">
+    <a routerLink="/home/chat" routerLinkActive="active">
+    chat
+    </a>
+  </div>
 
   <div class="column2" ><h1>hola mundo</h1></div>
-  <div class="column3"><app-chat ></app-chat></div>
+  <div class="column3">
+    <router-outlet></router-outlet>
+  </div>
 
 
 

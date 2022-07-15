@@ -4,6 +4,9 @@ import { HomeComponent } from './home.component';
 import {ChatModule} from "../chat/chat.module";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatExpansionModule} from "@angular/material/expansion";
+import {Router, RouterModule} from "@angular/router";
+import {ChatComponent} from "../chat/chat.component";
+import {HomeRoutingModule} from "./home-routing.module";
 
 
 
@@ -15,9 +18,11 @@ import {MatExpansionModule} from "@angular/material/expansion";
         CommonModule,
         ChatModule,
         ReactiveFormsModule,
-        MatExpansionModule
-
-
+        MatExpansionModule,
+        HomeRoutingModule
     ]
 })
-export class HomeModule { }
+export class HomeModule {
+  constructor( router : Router ) {
+  }
+}
