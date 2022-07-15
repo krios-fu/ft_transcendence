@@ -27,6 +27,7 @@ export class    GameGateway implements OnGatewayInit,
     async handleConnection(client: Socket, ...args: any[]) {
         const sockets = await this.server.fetchSockets();
         const sockLen: Number = sockets.length;
+
         if (sockLen < 2)
         {
             console.log("Player A joined");
@@ -38,6 +39,8 @@ export class    GameGateway implements OnGatewayInit,
             console.log("Player B joined");
             client.join("PlayerB");
             client.emit("role", "PlayerB");
+            //Send start to PlayerA to start serving the ball
+            (await this.server.in("PlayerA").fetchSockets())[0].emit("start", "start");
         }
         else
         {
@@ -89,6 +92,16 @@ export class    GameGateway implements OnGatewayInit,
         console.log("Ball update received:");
         console.log(data);
         client.broadcast.emit('ball', data);
+    }
+
+    @SubscribeMessage('score')
+    async scoreUpdate(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        console.log("Score update received:");
+        console.log(data);
+        client.broadcast.emit('score', data);
     }
 
   }
