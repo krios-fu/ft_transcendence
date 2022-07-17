@@ -7,6 +7,7 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
+import {RouterModule} from "@angular/router";
 
 
 
@@ -20,7 +21,8 @@ import {MatButtonModule} from "@angular/material/button";
     MatExpansionModule,
     MatMenuModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    RouterModule
   ],
   providers: [Chat],
   exports: [

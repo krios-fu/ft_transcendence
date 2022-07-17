@@ -5,21 +5,22 @@ import {ChatModule} from "../chat/chat.module";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {Router, RouterModule} from "@angular/router";
-import {ChatComponent} from "../chat/chat.component";
 import {HomeRoutingModule} from "./home-routing.module";
+import {ChatComponent} from "../chat/chat.component";
 
 
 
 @NgModule({
   declarations: [
-    HomeComponent
+    HomeComponent,
   ],
     imports: [
         CommonModule,
         ChatModule,
         ReactiveFormsModule,
         MatExpansionModule,
-        HomeRoutingModule
+        HomeRoutingModule,
+
     ]
 })
 export class HomeModule {

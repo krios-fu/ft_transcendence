@@ -6,7 +6,9 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { Chat } from '../chat/chat';
 import { Payload } from '../dtos/user.dto';
 import { Observable } from 'rxjs';
-import {FormControl, FormGroup} from '@angular/forms'; //
+import {FormControl, FormGroup} from '@angular/forms';
+import {ChatComponent} from "../chat/chat.component";
+import {ChatModule} from "../chat/chat.module";
 
 
 
@@ -27,7 +29,7 @@ export class HomeComponent implements OnInit {
     message : new FormControl('')
   })
 
-  constructor( private route : ActivatedRoute, private http : HttpClient, private chatPrivate : Chat ) {
+  constructor( private route : ActivatedRoute, private http : HttpClient) {
     const room = this.route.snapshot.paramMap.get('id');
     this.formMessage.patchValue({ room } );
    }
@@ -41,19 +43,16 @@ export class HomeComponent implements OnInit {
       .subscribe(params => {
         this.code+= '?code='+params['code'];
         console.log(this.code);
-      })
+      });
 
     this.http.get('http://localhost:3000/auth/42/redirect'+this.code)
       .subscribe( dto  =>  {  this.profile = dto as Payload;
         console.log(this.profile) ;} );
-
-
   }
 
    getName()  {
     try {
       const pp = this.profile as Payload;
-      console.log("----> " + pp.userProfile.username);
       return pp.userProfile.username;
     }
     catch {}
@@ -68,5 +67,7 @@ export class HomeComponent implements OnInit {
     this.formMessage.controls['message'].reset();
     return true;
   }
+
+
 
 }

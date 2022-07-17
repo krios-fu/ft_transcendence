@@ -29,14 +29,26 @@
 <div class="row">
 
   <div class="column1">
-    <a routerLink="/home/chat" routerLinkActive="active">
+    <div style="padding: 5px;">
+
+    <a [routerLink]="[{ outlets: { chat: ['chat'] } }]" style="color: white;" >
+
     chat
     </a>
+    </div>
+    <div style="padding: 5px;">
+    <a  [routerLink]="[{ outlets: { center: ['login'] } }]" style="color: white;">
+      login
+    </a>
+    </div>
   </div>
 
-  <div class="column2" ><h1>hola mundo</h1></div>
+  <div class="column2" >
+    <h1 style="color: white">hola mundo</h1>
+    <router-outlet name="center"></router-outlet>
+  </div>
   <div class="column3">
-    <router-outlet></router-outlet>
+    <router-outlet name="chat"></router-outlet>
   </div>
 
 
