@@ -40,7 +40,7 @@ export class    GameGateway implements OnGatewayInit,
             client.join("PlayerB");
             client.emit("role", "PlayerB");
             //Send start to PlayerA to start serving the ball
-            (await this.server.in("PlayerA").fetchSockets())[0].emit("start", "start");
+            this.server.to("PlayerA").emit("start", "start");
         }
         else
         {
@@ -110,7 +110,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         console.log("serve completed");
         //Send serve completed event to PlayerB to hide init text
-        (await this.server.in("PlayerB").fetchSockets())[0].emit("serve", "serve");
+        this.server.to("PlayerB").emit("serve", "serve");
     }
 
   }
