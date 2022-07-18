@@ -28,12 +28,13 @@
 
 <div class="row">
 
-  <div class="column1">
-    <div style="padding: 5px;">
+  <div class="column1" >
+    <div style="padding: 5px; border-bottom: solid #d1d2d380; padding: 21px 0 21px 0px; justify-content: center; text-align: center;">
 
     <a [routerLink]="[{ outlets: { chat: ['chat'] } }]" style="color: white;" >
-
-    chat
+    <h1>
+      chat
+    </h1>
     </a>
     </div>
     <div style="padding: 5px;">
@@ -44,7 +45,9 @@
   </div>
 
   <div class="column2" >
-    <h1 style="color: white">hola mundo</h1>
+    <div style="padding: 5px;  padding: 21px 0 21px 0px; justify-content: center; text-align: center;">
+      <h1 style="color: white">hola mundo</h1>
+    </div>
     <router-outlet name="center"></router-outlet>
   </div>
   <div class="column3">

@@ -1,6 +1,4 @@
 
-<ng-container *ngIf="!close">
-
 <div [ngClass]="state" >
   <div class="chat-title">
     <a href="#" class="avatar" >
@@ -10,7 +8,7 @@
       <button mat-icon-button (click)="chatMin()">
         <mat-icon>{{unfold}}</mat-icon>
       </button>
-      <button mat-icon-button (click)="chatClose()">
+      <button mat-icon-button routerLink="../">
         <mat-icon>close</mat-icon>
       </button>
       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
@@ -50,7 +48,6 @@
    </div>
 </div>
 
-</ng-container>
 <!--<div style=" position: absolute; width: 95%; bottom: 0; z-index: 2; flex-direction: column;" >-->
 <!--<div class="chat-title">-->
 <!--  <a href="#" class="avatar" >-->
