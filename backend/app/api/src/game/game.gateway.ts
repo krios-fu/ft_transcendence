@@ -104,4 +104,13 @@ export class    GameGateway implements OnGatewayInit,
         client.broadcast.emit('score', data);
     }
 
+    @SubscribeMessage('serve')
+    async serveCompleted(
+        @ConnectedSocket() client: Socket,
+    ) {
+        console.log("serve completed");
+        //Send serve completed event to PlayerB to hide init text
+        (await this.server.in("PlayerB").fetchSockets())[0].emit("serve", "serve");
+    }
+
   }
