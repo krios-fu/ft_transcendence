@@ -10,6 +10,7 @@ import {
     ConnectedSocket,
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
+  import { Game } from './Game'
 
 @WebSocketGateway(3001, {
     cors: {
@@ -19,9 +20,11 @@ import {
 export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
+    games: Map<string, Game>;
   
     afterInit(server: any) {
         console.log("Game Gateway initiated");
+        this.games = new Map<string, Game>();
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
