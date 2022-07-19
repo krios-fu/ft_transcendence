@@ -47,6 +47,11 @@ export class    GameGateway implements OnGatewayInit,
             console.log("Spectator joined");
             client.join("Spectator");
             client.emit("role", "Spectator");
+            /*
+            **  Send event to PlayerB to get the latest game data
+            **  and then pass it to this Spectator.
+            */
+            this.server.to("PlayerB").emit('latestGameData', client.id);
         }
         console.log("With id: ", client.id);
     }
@@ -111,6 +116,15 @@ export class    GameGateway implements OnGatewayInit,
         console.log("serve completed");
         //Send serve completed event to PlayerB to hide init text
         this.server.to("PlayerB").emit("serve", "serve");
+    }
+
+    @SubscribeMessage('latestGameData')
+    async initSpectator(
+        @MessageBody() data: any
+    ) {
+        console.log("init data for new Spectator:");
+        console.log(data);
+        this.server.to(data.spectatorId).emit('initGameData', data.gameData);
     }
 
   }
