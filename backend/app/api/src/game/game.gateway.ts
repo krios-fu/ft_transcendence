@@ -74,8 +74,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        console.log("PaddleA update received:");
-        console.log(data);
         client.broadcast.emit('paddleA', data);
     }
 
@@ -84,8 +82,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        console.log("PaddleB update received:");
-        console.log(data);
         client.broadcast.emit('paddleB', data);
     }
 
@@ -94,8 +90,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        console.log("Ball update received:");
-        console.log(data);
         client.broadcast.emit('ball', data);
     }
 
@@ -104,8 +98,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        console.log("Score update received:");
-        console.log(data);
         client.broadcast.emit('score', data);
     }
 
@@ -113,8 +105,6 @@ export class    GameGateway implements OnGatewayInit,
     async serveCompleted(
         @ConnectedSocket() client: Socket,
     ) {
-        console.log("serve completed");
-        //Send serve completed event to PlayerB to hide init text
         this.server.to("PlayerB").emit("serve", "serve");
     }
 
@@ -122,8 +112,6 @@ export class    GameGateway implements OnGatewayInit,
     async initSpectator(
         @MessageBody() data: any
     ) {
-        console.log("init data for new Spectator:");
-        console.log(data);
         this.server.to(data.spectatorId).emit('initGameData', data.gameData);
     }
 
