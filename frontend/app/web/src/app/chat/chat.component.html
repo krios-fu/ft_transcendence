@@ -1,13 +1,36 @@
 
-<div [ngClass]="state" >
-  <div class="chat-title">
-    <a href="#" class="avatar" >
-    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>
-    <h1>krios-fu</h1>
+<div [ngClass]="state">
+  <div  class="chat-title">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
+
+    <div class="badge">
+
+    <button class="avatar" href="#"  >
+    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+    </button>
+    </div >
+
+      <div matBadge="42"
+           matBadgeOverlap="true"
+           matBadgeSize="small"
+           matBadgePosition="after"
+           matBadgeColor="warn"
+           [matBadgeHidden]="hidden"
+           style="position: absolute; left: 32px; bottom: 6px ; "></div>
+    <span >krios-fu</span>
+    </div>
+
+
+<!--    <mat-icon matBadge="15" matBadgeColor="warn" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">message</mat-icon>-->
+
+
     <div class="icon" style="color : rgb(111, 255, 0); ">
-      <button mat-icon-button (click)="chatMin()">
+      <button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()" >
         <mat-icon>{{unfold}}</mat-icon>
       </button>
+
+
       <button mat-icon-button routerLink="../">
         <mat-icon>close</mat-icon>
       </button>
@@ -47,60 +70,4 @@
      </form>
    </div>
 </div>
-
-<!--<div style=" position: absolute; width: 95%; bottom: 0; z-index: 2; flex-direction: column;" >-->
-<!--<div class="chat-title">-->
-<!--  <a href="#" class="avatar" >-->
-<!--        <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>-->
-
-<!--        <h1>krios-fu</h1>-->
-<!--        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" >-->
-<!--          <mat-icon>more_vert</mat-icon>-->
-<!--        </button>-->
-<!--        <mat-menu #menu="matMenu">-->
-<!--          &lt;!&ndash;disabled option &ndash;&gt;-->
-<!--          <button mat-menu-item >-->
-<!--            <mat-icon>block</mat-icon>-->
-<!--            <span>Block</span>-->
-<!--          </button>-->
-<!--          <button mat-menu-item>-->
-<!--            <mat-icon>notifications_off</mat-icon>-->
-<!--            <span>Disable alerts</span>-->
-<!--          </button>-->
-<!--        </mat-menu>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<mat-accordion >-->
-<!--  <mat-expansion-panel >-->
-
-<!--    <mat-expansion-panel-header>-->
-<!--     <mat-panel-title class="chat-title">-->
-<!--       <h1>krios-fu</h1>-->
-<!--         <h2>Sensei</h2>-->
-<!--          <a href="#" class="avatar" >-->
-<!--         <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" /></a>-->
-<!--     </mat-panel-title>-->
-<!--   </mat-expansion-panel-header>-->
-
-<!--       <div #update class="messages"  [scrollTop]="update.scrollHeight + 10">-->
-
-<!--         <div *ngFor="let msg of viewMessage()" >-->
-<!--           <div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.msg}}</div>-->
-<!--           <ng-template #other> <div class="message">-->
-<!--             <figure class="avatar">-->
-<!--               <img src="https://cdn.intra.42.fr/users/krios-fu.jpg">-->
-<!--             </figure> {{msg.msg}}-->
-<!--           </div></ng-template>-->
-<!--         </div>-->
-<!--       </div>-->
-<!--    <mat-action-row class="message-box" style="align-items: center">-->
-<!--         <form (ngSubmit)="sendMessage()" [formGroup]="formMessage" class="users-type">-->
-<!--           <input formControlName="message" type="text" class="message-input" placeholder="Type message...">-->
-<!--           <button type="submit" class="message-submit">Send</button>-->
-<!--         </form>-->
-<!--    </mat-action-row>-->
-<!--  </mat-expansion-panel>-->
-<!--</mat-accordion>-->
-
 

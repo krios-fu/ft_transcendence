@@ -16,6 +16,8 @@ export class ChatComponent implements OnInit{
     'chat-min' : false,
   };
   unfold : string;
+  hidden = true;
+
 
   public formMessage= new FormGroup({
     message : new FormControl('')
@@ -32,7 +34,6 @@ export class ChatComponent implements OnInit{
     this.formMessage.patchValue({ room } );
 
   }
-
 
   sendMessage() : boolean {
     const { message, room } = this.formMessage.value;
@@ -55,5 +56,10 @@ export class ChatComponent implements OnInit{
   }
   viewMessage() {
     return this.chat.getMessage();
+  }
+
+  toggleBadgeVisibility() {
+    this.hidden = !this.hidden;
+    // this.state["chat"] =  true;
   }
 }

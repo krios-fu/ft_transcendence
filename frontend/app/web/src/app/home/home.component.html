@@ -1,5 +1,5 @@
-<div class="header">
-  <div style="display: flex; position: relative; align-items: center;">
+<nav class="header">
+  <div style="display: flex; position: relative; align-items: center; width: 20%; min-width: 21rem">
    <figure  class="avatar">
     <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
     </figure>
@@ -8,14 +8,23 @@
      </div>
   </div>
 
-  <div style="position: center;">
+  <div class="header" style="background: none">
+  <div style="right: 0; min-width: 21rem">
     <h1>
       <span>PING PONG</span>
       <span>PING PONG</span>
     </h1>
   </div>
 
-  <div style="width: 20vw;">
+  <mat-icon matBadge="15" matBadgeColor="warn" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">message</mat-icon>
+  </div>
+
+  <!-- Include text description of the icon's meaning for screen-readers -->
+  <span class="cdk-visually-hidden">
+      Example with a home icon with overlaid badge showing the number 15
+    </span>
+
+  <div style="width: 20%; right: 0;">
     <div class="search-box">
       <form (ngSubmit)="search()" [formGroup]="formMessage">
         <input formControlName="message" type="text" class="search-input" placeholder="Search">
@@ -24,36 +33,39 @@
   </div>
 
 
-</div>
+</nav>
 
 <div class="row">
 
-  <div class="column1" >
-    <div style="padding: 5px; border-bottom: solid #d1d2d380; padding: 21px 0 21px 0px; justify-content: center; text-align: center;">
+  <div class="column1">
 
-    <a [routerLink]="[{ outlets: { chat: ['chat'] } }]" style="color: white;" >
-    <h1>
-      chat
-    </h1>
-    </a>
-    </div>
+
+
     <div style="padding: 5px;">
     <a  [routerLink]="[{ outlets: { center: ['login'] } }]" style="color: white;">
       login
     </a>
-    </div>
+ </div>
   </div>
 
   <div class="column2" >
-    <div style="padding: 5px;  padding: 21px 0 21px 0px; justify-content: center; text-align: center;">
-      <h1 style="color: white">hola mundo</h1>
-    </div>
+    <nav>
+      <div class="title" >
+        <a [routerLink]="[{ outlets: { chat: ['chat'] } }]"  >
+          <h1>
+            PLAY
+          </h1>
+        </a>
+      </div>
+    </nav>
     <router-outlet name="center"></router-outlet>
   </div>
-  <div class="column3">
+  <div class="column3" >
     <router-outlet name="chat"></router-outlet>
   </div>
 
 
 
 </div>
+
+<div class="grid"></div>

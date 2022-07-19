@@ -7,6 +7,8 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {Router, RouterModule} from "@angular/router";
 import {HomeRoutingModule} from "./home-routing.module";
 import {ChatComponent} from "../chat/chat.component";
+import {MatIconModule} from "@angular/material/icon";
+import {MatBadgeModule} from "@angular/material/badge";
 
 
 
@@ -14,14 +16,16 @@ import {ChatComponent} from "../chat/chat.component";
   declarations: [
     HomeComponent,
   ],
-    imports: [
-        CommonModule,
-        ChatModule,
-        ReactiveFormsModule,
-        MatExpansionModule,
-        HomeRoutingModule,
+  imports: [
+    CommonModule,
+    ChatModule,
+    ReactiveFormsModule,
+    MatExpansionModule,
+    HomeRoutingModule,
+    MatIconModule,
+    MatBadgeModule,
 
-    ]
+  ]
 })
 export class HomeModule {
   constructor( router : Router ) {

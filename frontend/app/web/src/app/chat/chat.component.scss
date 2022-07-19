@@ -39,8 +39,7 @@ Chat
 .chat-min
 {
   position: absolute;
-  width: 55%;
-  bottom: 0;
+  width: 100%;
   z-index: 2;
   overflow: hidden;
   flex-direction: column;
@@ -48,18 +47,23 @@ Chat
   border-radius: 25px;
   border: solid 1px;
   box-shadow: 0 10px 30px black;
-  right: 0;
+  right: 1vw;
+  bottom: 1vh;
+
+
   animation: bounce-in 2s ease;
-  .icon{
-    display: none;
-  }
-  
-  &:hover{
-    width: 95%;
+  //.icon{
+  //  display: none;
+  //}
+
+  //&:hover{
+  //  width: 75%;
     .icon{
       display: flex;
+      z-index: 10;
+      padding: 0;
     }
-  }
+  //}
 
 
   @keyframes bounce-in {
@@ -82,15 +86,17 @@ Chat
 
 }
 
+
 .chat {
 
-  width: 95%;
+  width: 100%;
   height: 50%;
   float: left;
   display: flex;
  // max-height: 500px;
   position:absolute;
-  bottom: 0;
+  bottom: 1vh;
+  right: 0;
   z-index: 2;
   overflow: hidden;
   border-radius: 25px;
@@ -103,7 +109,7 @@ Chat
 
   flex-direction: column;
     animation: fade-in 2s linear both;
-  
+
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -117,7 +123,7 @@ Chat Title
 .chat-title {
   //flex: 0 1 45px;
   position: relative;
-  z-index: 2;
+  z-index: 10;
   display: flex;
   background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
 
@@ -126,9 +132,9 @@ Chat Title
   text-align: center;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0 0 50px;
+  padding:0;
   height: 3rem;
-  h1, h2 {
+  h1, h2, span {
     font-weight: normal;
     font-size: 14px;
     margin: 0;
@@ -141,24 +147,31 @@ Chat Title
     letter-spacing: 1px;
   }
 
+  .badge{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    overflow: initial;
+
+
   .avatar {
-    position: absolute;
-    z-index: 1;
-    top: 50vm;
-    left: 6px;
+    //left: 4px;
     border-radius: 30px;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     overflow: hidden;
+    //left: 10px;
     margin: 0;
     padding: 0;
     border: 2px solid rgba(255, 255, 255, 0.24);
-
-
     img {
       width: 100%;
       height: auto;
     }
+  }
   }
 
 }

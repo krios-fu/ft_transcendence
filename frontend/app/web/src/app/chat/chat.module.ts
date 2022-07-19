@@ -8,6 +8,7 @@ import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {RouterModule} from "@angular/router";
+import {MatBadgeModule} from "@angular/material/badge";
 
 
 
@@ -22,7 +23,8 @@ import {RouterModule} from "@angular/router";
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    MatBadgeModule
   ],
   providers: [Chat],
   exports: [

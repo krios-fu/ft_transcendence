@@ -25,6 +25,10 @@ export class HomeComponent implements OnInit {
 
   private code = '';
 
+  hidden = false;
+
+
+
   public formMessage= new FormGroup({
     message : new FormControl('')
   })
@@ -66,6 +70,10 @@ export class HomeComponent implements OnInit {
       return false;
     this.formMessage.controls['message'].reset();
     return true;
+  }
+
+  toggleBadgeVisibility() {
+    this.hidden = !this.hidden;
   }
 
 
