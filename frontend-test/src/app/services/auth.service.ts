@@ -1,6 +1,7 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 import { Observable, tap } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 
@@ -11,6 +12,7 @@ export class AuthService {
     constructor(
         private http: HttpClient,
         private router: Router,
+        private cookies: CookieService,
     ) { }
 
     authUser(authCode: string): Observable<HttpResponse<any>> {
@@ -53,14 +55,7 @@ export class AuthService {
 
     /* Solo permite ejecución a usuarios logeados */
     logout(): void {
-        const logoutEndpoint = 'http://localhost:3000/auth/logout';
-        this.http.post<any>(logoutEndpoint, { })
-            .subscribe({
-                error: (err: any) => {
-                    console.error('User already logged out');
-                }
-            });
-        
+        this.cookies.delete('request_token');
         sessionStorage.removeItem('access_token');
         sessionStorage.removeItem('username');
         this.router.navigate(['/login']);

@@ -20,7 +20,7 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: {
-                expiresIn:  2,
+                expiresIn:  60 * 2,
             }
         }),
     ],

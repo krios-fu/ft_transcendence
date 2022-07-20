@@ -6,7 +6,7 @@ import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { UserDto } from 'src/user/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IAuthPayload, IJwtPayload } from 'src/interfaces/request-payload.interface';
+import { IAuthPayload } from 'src/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
 import { UserEntity } from 'src/user/user.entity';
 
@@ -64,7 +64,6 @@ export class AuthService {
     async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
         let tokenEntity: RefreshTokenEntity;
 
-        await new Promise<any>(r => setTimeout(r, 3000));
         try {  
             tokenEntity = await this.getTokenByUsername(username);
         } catch (err) {

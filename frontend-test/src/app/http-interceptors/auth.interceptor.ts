@@ -8,7 +8,7 @@ import {
   HttpResponse,
   HttpStatusCode,
 } from '@angular/common/http';
-import { catchError, Observable, switchMap, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { Router } from '@angular/router';
@@ -19,11 +19,11 @@ import { Router } from '@angular/router';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
     isRequestingNewCreds: boolean = false;
-    failedQueue: HttpRequest<any>[] = [];
+    newCredsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     constructor(
         private authService: AuthService,
-        private router: Router,
+        //private router: Router,
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
@@ -45,9 +45,6 @@ export class AuthInterceptor implements HttpInterceptor {
                                     statusText: 'Internal Server Error',
                                 });
                             }
-                            if (err.status === 401) {
-                                this.router.navigate(['/login']);
-                            }
                             return err;
                         });
                     }
@@ -61,9 +58,18 @@ export class AuthInterceptor implements HttpInterceptor {
         next: HttpHandler
     ): Observable<any> {
         if (this.isRequestingNewCreds == true) {
-            return next.handle(this.setAuthHeaders(req));
+            return this.newCredsSubject
+                .pipe
+                (
+                    take(1),
+                    filter((state: boolean) => state == false),
+                    switchMap(() => {
+                        return next.handle(this.setAuthHeaders(req));
+                    })
+                )
         }
         this.isRequestingNewCreds = true;
+        this.newCredsSubject.next(true);
         return this.authService.refreshToken()
             .pipe
             (
@@ -80,17 +86,19 @@ export class AuthInterceptor implements HttpInterceptor {
                         'accessToken': res.body.accessToken,
                         'username': res.body.username
                     });
-                    this.isRequestingNewCreds = false;
-                    const reqValidAuth = this.setAuthHeaders(req);
-                    return next.handle(reqValidAuth);
+                    return next.handle(this.setAuthHeaders(req));
                 }),
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401) {
                         window.sessionStorage.removeItem('access_token');;
                         window.sessionStorage.removeItem('username');
-                        this.router.navigate(['/login']);
+                        this.authService.redirectLogin();
                     }
                     return throwError(() => err);
+                }),
+                finalize(() => {
+                    this.isRequestingNewCreds = false;
+                    this.newCredsSubject.next(false);
                 })
             )
     }
