@@ -1,7 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, tap, throwError } from 'rxjs';
 
 export interface IUser {
   username: string;
@@ -29,6 +28,6 @@ export class UsersService {
           observe: 'body',
           params: userParam,
           responseType: 'json',
-        });
+        }).pipe(tap((user) => console.log('tapped: ' + JSON.stringify(user))))
     }
 }

@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpException,
     HttpStatus,
+    Logger,
     Post,
     Redirect,
     Req,
@@ -23,7 +24,10 @@ interface IRequestProfile extends Request {
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private readonly logger: Logger
+    ) { }
 
     @Public()
     @Get('42')
@@ -50,21 +54,22 @@ export class AuthController {
             @Req() req: Request,
             @Res({ passthrough: true }) res: Response
         ) {
-        console.log('backend ping(refreshToken');
-        const refreshToken: string = req.cookies['refresh_cookie'];
+        const refreshToken: string = req.cookies['refresh_token'];
         const authUser: string = req.query.user as string;
+        let authPayload: IAuthPayload;
 
         if (authUser === null || refreshToken === null) {
             throw new HttpException('User not authenticated', HttpStatus.UNAUTHORIZED);
         }
-        console.log('refresh token point');
-        await this.authService.refreshToken(refreshToken, authUser)
-            .then((authPayload: IAuthPayload) => {
-                return authPayload;
-            }).catch((error) => {
-                res.clearCookie('refresh_cookie');
-                throw new HttpException(error, HttpStatus.UNAUTHORIZED);
-            });
+        console.log('refresh token point with token: ' + refreshToken);
+        try {
+            authPayload = await this.authService.refreshToken(refreshToken, authUser);
+        } catch (err) {
+            this.logger.error(`Caught exception in refreshToken controller: ${err}`);
+            res.clearCookie('refresh_cookie');
+            throw new HttpException(err, HttpStatus.UNAUTHORIZED);
+        }
+        return authPayload;
     }
 
     @Post('logout')

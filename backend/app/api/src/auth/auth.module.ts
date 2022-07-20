@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
@@ -20,7 +20,7 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: {
-                expiresIn: 60 * 2,
+                expiresIn:  2,
             }
         }),
     ],
@@ -30,6 +30,7 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
         JwtStrategy,
         FortyTwoStrategy,
         RefreshTokenRepository,
+        Logger,
     ],
     exports: [
         PassportModule,

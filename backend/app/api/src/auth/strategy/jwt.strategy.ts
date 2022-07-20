@@ -3,7 +3,7 @@ import {
     Strategy,
     ExtractJwt,
 } from 'passport-jwt';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { IJwtPayload } from 'src/interfaces/request-payload.interface';
 import { AuthService } from '../auth.service';
 
@@ -12,6 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 constructor
 (
     private authService: AuthService,
+    private readonly logger: Logger,
 ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -32,18 +33,16 @@ constructor
             Invalidamos petición manualmente
     */
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        console.log('Payload: ' + JSON.stringify(jwtPayload));
-        console.log(`validating with payload ${jwtPayload.data.username}`);
-        await this.authService.getTokenByUsername(jwtPayload.data.username)
-            .then(() => { })
-            .catch(() => {
-                console.error(`failed to acquire refresh token for user ${jwtPayload.data.username}`);
-                throw new HttpException
-                (
-                    'User has been logged out in another device',
-                    HttpStatus.UNAUTHORIZED
-                )
-            })
+        try {
+            await this.authService.getTokenByUsername(jwtPayload.data.username);
+        } catch(err) {
+            this.logger.error(`failed to acquire refresh token for user ${jwtPayload.data.username}`);
+            throw new HttpException
+            (
+                'User has been logged out in another device',
+                HttpStatus.UNAUTHORIZED
+            );
+        }
         return jwtPayload;
     }
 }

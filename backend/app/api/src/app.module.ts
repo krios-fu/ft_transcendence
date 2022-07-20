@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -29,7 +29,7 @@ import { RoomChatModule } from './room-chat/room-chat.module';
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,
-        }
+        },
     ],
 })
 export class AppModule { }

@@ -31,16 +31,14 @@ export class AuthService {
     }
 
     refreshToken(): Observable<HttpResponse<IAuthPayload>> {
-        console.log('frontend ping(refreshToken)');
         const tokenEndpoint = 'http://localhost:3000/auth/token?user=' + this.getAuthUser();
         const token$ = this.http.get<IAuthPayload>
         (
             tokenEndpoint, {
                 observe: 'response',
                 responseType: 'json',
+                withCredentials: true,
             },
-        ).pipe(
-            tap(res => { console.log('tapado: ' + JSON.stringify(res))})
         );
         return token$;
     }
