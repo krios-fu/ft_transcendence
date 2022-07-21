@@ -2,12 +2,10 @@ import { AuthService } from './auth.service';
 import {
     Controller,
     Get,
-    HttpCode,
     HttpException,
     HttpStatus,
     Logger,
     Post,
-    Redirect,
     Req,
     Res,
     UseGuards,
@@ -61,7 +59,6 @@ export class AuthController {
         if (authUser === null || refreshToken === null) {
             throw new HttpException('User not authenticated', HttpStatus.UNAUTHORIZED);
         }
-        console.log('refresh token point with token: ' + refreshToken);
         try {
             authPayload = await this.authService.refreshToken(refreshToken, authUser);
         } catch (err) {

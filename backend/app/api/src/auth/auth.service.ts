@@ -1,4 +1,4 @@
-import { ConsoleLogger, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -85,18 +85,13 @@ export class AuthService {
     async logout(username: string, res: Response): Promise<void> {
         let tokenEntity: RefreshTokenEntity;
 
-        console.log('1');
         try {
             tokenEntity = await this.getTokenByUsername(username);
         } catch(err) {
-            console.log('1e');
             this.logger.error(`Caught exception in logout: ${err} \
                 (user logged out without a valid session)`);
-            /*throw new HttpException('Internal Server Error', HttpStatus.INTERNAL_SERVER_ERROR);*/
         }
-        console.log('2');
         await this.refreshTokenRepository.delete(tokenEntity);
-        console.log('3');
         res.clearCookie('refresh_token');
     }
 

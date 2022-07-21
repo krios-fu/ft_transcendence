@@ -11,7 +11,6 @@ import {
 import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
-import { Router } from '@angular/router';
 
 /* implementamos aqui la logica de refresco y redireccion,
     las peticiones de authentificacion deben pasar limpias */
@@ -23,7 +22,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
         private authService: AuthService,
-        //private router: Router,
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
