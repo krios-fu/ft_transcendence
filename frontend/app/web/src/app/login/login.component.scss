@@ -1,111 +1,36 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Mr+Dafoe&display=swap');
+.container{
+  height: 100vh;
+  display: flex;
+  clear: both;
+  vertical-align:middle;
+}
 
+.login{
+  background-image: url("http://8bitters.com/wp-content/themes/8bitters/images/load_btn_bg.svg");
+  background-position-x: center;
+  background-position-y: center;
+  background-size: initial;
+  background-repeat-x: no-repeat;
+  background-attachment: initial;
+  background-origin: initial;
+  background-clip: initial;
+  padding: 21px 0 21px 0; justify-content: center; text-align: center;
+ 
 
-h1 {
-  position: relative;
-  font-family: 'Press Start 2P';
-  font-size: 7em;
-  /*  margin: 0;*/
-  transform: skew(-15deg);
-  letter-spacing: 0.03em;
-
-  span:first-child {
+  a{
     display: block;
-    -webkit-text-stroke: 0.06em rgba(black, 0.5);
-  }
-
-  span:last-child {
-    position: absolute;
-    left: 0;
-    top: 0;
-    background-image: linear-gradient(#032d50 25%, #00a1ef 35%, white 50%, #20125f 50%, #8313e7 55%, #ff61af 75%);
-    -webkit-text-stroke: 0.01em #94a0b9;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: white;
+    h1:hover{
+      color: purple;
+    }
+    text-decoration: none;
   }
 }
-
-h2 {
-  font-family: 'Mr Dafoe', cursive;
-  letter-spacing:3.5px;
-  position: relative;
-  font-size: 2.5em;
-  margin-top: -3em;
-  color: white;
-  text-shadow: 0 0 0.05em #fff, 0 0 0.2em #fe05e1, 0 0 0.3em #fe05e1;
-  transform: translateY(6.1rem);
+.pulse {
+  animation: pulse 1s infinite ease-in-out alternate;
 }
-
-
-.btn-neon{
-  z-index: 10;
-  position:relative;
-  display:inline-block;
-  padding:15px 30px;
-  color:#fff;
-  font-size:42px;
-  text-decoration:none;
-  letter-spacing:1px;
-  overflow:hidden;
-  transition:0.2s;
-  font-family: 'Press Start 2P', serif;
-
-}
-.btn-neon:hover{
-  background-color: #fe05e1;
-  box-shadow:0 0 10px #fe05e1, 0 0 40px #fe05e1, 0 0 80px #fe05e1;
-  transition-delay:1s;
-}
-.btn-neon span{
-  position:absolute;
-  display:block;
-}
-.span1{
-  top:0;
-  left:-100px;
-  width:100px;
-  height:2px;
-  background:linear-gradient(90deg,transparent,#fe05e1 )
-}
-.btn-neon:hover .span1{
-  left:100%;
-  transition:1s;
-}
-.span3{
-  bottom:0;
-  right:-100px;
-  width:100px;
-  height:2px;
-  background:linear-gradient(270deg,transparent,#fe05e1 )
-}
-.btn-neon:hover .span3{
-  right:100%;
-  transition:1s;
-  transition-delay:0.5s;
-}
-.span2{
-  top:-100%;
-  right:0;
-  width:2px;
-  height:100%;
-  background:linear-gradient(180deg,transparent,#fe05e1 )
-}
-.btn-neon:hover .span2{
-  top:100%;
-  transition:1s;
-  transition-delay:0.25s;
-}
-.span4{
-  bottom:-100%;
-  left:0;
-  width:2px;
-  height:100%;
-  background:linear-gradient(360deg,transparent,#fe05e1 )
-}
-.btn-neon:hover .span4{
-  bottom:100%;
-  transition:1s;
-  transition-delay:0.75s;
+@keyframes pulse {
+  from { transform: scale(0.8); }
+  to { transform: scale(1.2); }
 }
