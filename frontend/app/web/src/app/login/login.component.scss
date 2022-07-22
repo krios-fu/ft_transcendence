@@ -1,34 +1,29 @@
 
 .container{
-  height: 100vh;
+  height: 100%;
   display: flex;
-  clear: both;
-  vertical-align:middle;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.login{
-  background-image: url("http://8bitters.com/wp-content/themes/8bitters/images/load_btn_bg.svg");
-  background-position-x: center;
-  background-position-y: center;
-  background-size: initial;
-  background-repeat-x: no-repeat;
-  background-attachment: initial;
-  background-origin: initial;
-  background-clip: initial;
-  padding: 21px 0 21px 0; justify-content: center; text-align: center;
- 
 
+
+.login{
   a{
     display: block;
     color: white;
+
+    font-size: 11px;
     h1:hover{
-      color: purple;
+      color: coral;
     }
     text-decoration: none;
   }
 }
 .pulse {
   animation: pulse 1s infinite ease-in-out alternate;
+
 }
 @keyframes pulse {
   from { transform: scale(0.8); }
