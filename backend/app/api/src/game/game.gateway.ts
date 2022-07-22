@@ -9,8 +9,10 @@ import {
     WsResponse,
     ConnectedSocket,
   } from '@nestjs/websockets';
-  import { Server, Socket } from 'socket.io';
-  import { Game } from './Game'
+import { Server, Socket } from 'socket.io';
+import { Game } from './Game'
+import { Ball } from './Ball';
+import { Player } from './Player';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -34,27 +36,36 @@ export class    GameGateway implements OnGatewayInit,
         if (sockLen < 2)
         {
             console.log("Player A joined");
-            client.join("PlayerA");
-            client.emit("role", "PlayerA");
+            client.join("PlayerA"); //Provisional
+            client.join("Game1"); //Provisional
+            client.emit("role", {
+                role: "PlayerA",
+                room: "Game1"
+            });
+            this.games.set("Game1", new Game()); //Provisional
         }
         else if (sockLen === 2)
         {
             console.log("Player B joined");
-            client.join("PlayerB");
-            client.emit("role", "PlayerB");
+            client.join("PlayerB"); //Provisional
+            client.join("Game1"); //Provisional
+            client.emit("role", {
+                role: "PlayerB",
+                room: "Game1"
+            });
             //Send start to PlayerA to start serving the ball
             this.server.to("PlayerA").emit("start", "start");
         }
         else
         {
             console.log("Spectator joined");
-            client.join("Spectator");
-            client.emit("role", "Spectator");
-            /*
-            **  Send event to PlayerB to get the latest game data
-            **  and then pass it to this Spectator.
-            */
-            this.server.to("PlayerB").emit('latestGameData', client.id);
+            client.emit("role", {
+                role: "Spectator",
+                room: "Game1",
+                //Send latest game data
+                initData: this.games.get("Game1")
+            });
+            client.join("Game1"); //Provisional
         }
         console.log("With id: ", client.id);
     }
@@ -72,12 +83,30 @@ export class    GameGateway implements OnGatewayInit,
         console.log("With id: ", client.id);
     }
 
+    /*
+    **  client.rooms returns a Set with the socket id as first element,
+    **  and the next ones, the ids of the rooms it is currently in.
+    */
+    
     @SubscribeMessage('paddleA')
     async paddleAUpdate(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        client.broadcast.emit('paddleA', data);
+        let playerA: Player;
+
+        playerA = this.games.get(data.room).playerA;
+        playerA.xPosition = data.x;
+        playerA.yPosition = data.y;
+        /*
+        **  volatile will not send events if the connection is not available.
+        **  Works more or less like UDP.
+        **  Only using it for updating paddle and ball positions, as only
+        **  the latest data is useful, and does not make sense to store the
+        **  past data to be sent when the connection is available again.
+        */
+       //In paddles does not work well
+        this.server/*.volatile*/.to(data.room).emit('paddleA', data);
     }
 
     @SubscribeMessage('paddleB')
@@ -85,7 +114,20 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        client.broadcast.emit('paddleB', data);
+        let playerB: Player;
+
+        playerB = this.games.get(data.room).playerB;
+        playerB.xPosition = data.x;
+        playerB.yPosition = data.y;
+        /*
+        **  volatile will not send events if the connection is not available.
+        **  Works more or less like UDP.
+        **  Only using it for updating paddle and ball positions, as only
+        **  the latest data is useful, and does not make sense to store the
+        **  past data to be sent when the connection is available again.
+        */
+        //In paddles does not work well
+        this.server/*.volatile*/.to(data.room).emit('paddleB', data);
     }
 
     @SubscribeMessage('ball')
@@ -93,7 +135,19 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        client.broadcast.emit('ball', data);
+        let ball: Ball;
+
+        ball = this.games.get(data.room).ball;
+        ball.xPosition = data.x;
+        ball.yPosition = data.y;
+        /*
+        **  volatile will not send events if the connection is not available.
+        **  Works more or less like UDP.
+        **  Only using it for updating paddle and ball positions, as only
+        **  the latest data is useful, and does not make sense to store the
+        **  past data to be sent when the connection is available again.
+        */
+        this.server.volatile.to(data.room).emit('ball', data);
     }
 
     @SubscribeMessage('score')
@@ -101,21 +155,18 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        client.broadcast.emit('score', data);
+        if (data.player == "playerA")
+            this.games.get(data.room).playerA.score = data.score;
+        else
+            this.games.get(data.room).playerB.score = data.score;
+        this.server.to(data.room).emit('score', data);
     }
 
     @SubscribeMessage('serve')
     async serveCompleted(
         @ConnectedSocket() client: Socket,
     ) {
-        this.server.to("PlayerB").emit("serve", "serve");
-    }
-
-    @SubscribeMessage('latestGameData')
-    async initSpectator(
-        @MessageBody() data: any
-    ) {
-        this.server.to(data.spectatorId).emit('initGameData', data.gameData);
+        this.server.to("PlayerB").emit("serve", "serve"); //Provisional
     }
 
   }
