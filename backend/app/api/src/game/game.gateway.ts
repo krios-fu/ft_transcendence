@@ -55,7 +55,6 @@ export class    GameGateway implements OnGatewayInit,
                 room: "Game1",
                 initData: this.games.get("Game1")
             });
-            //Send start to PlayerA to start serving the ball
             this.server.to("Game1").emit("start", "start");
         }
         else
@@ -90,16 +89,19 @@ export class    GameGateway implements OnGatewayInit,
     **  and the next ones, the ids of the rooms it is currently in.
     */
     
-    @SubscribeMessage('paddleA')
-    async paddleAUpdate(
+    @SubscribeMessage('paddleAUp')
+    async paddleAUp(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        let playerA: Player;
+        const   game: Game = this.games.get(data.room);
+        const   playerA: Player = game.playerA;
+        const   playerAHalfHeight: number = playerA.height / 2;
 
-        playerA = this.games.get(data.room).playerA;
-        playerA.xPosition = data.x;
-        playerA.yPosition = data.y;
+        if (playerA.yPosition - 8 < playerAHalfHeight)
+            playerA.yPosition = playerAHalfHeight;
+        else
+            playerA.yPosition -= 8;
         /*
         **  volatile will not send events if the connection is not available.
         **  Works more or less like UDP.
@@ -108,20 +110,50 @@ export class    GameGateway implements OnGatewayInit,
         **  past data to be sent when the connection is available again.
         */
        //In paddles does not work well
-        this.server.volatile.to(data.room).emit('paddleA', data);
+        this.server/*.volatile*/.to(data.room).emit('paddleA', {
+            y: playerA.yPosition
+        });
     }
 
-    @SubscribeMessage('paddleUpB')
+    @SubscribeMessage('paddleADown')
+    async paddleADown(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   game: Game = this.games.get(data.room);
+        const   playerA: Player = game.playerA;
+        const   playerAHalfHeight: number = playerA.height / 2;
+
+        if (playerA.yPosition + 8 > game.height - playerAHalfHeight)
+            playerA.yPosition = game.height - playerAHalfHeight;
+        else
+            playerA.yPosition += 8;
+        /*
+        **  volatile will not send events if the connection is not available.
+        **  Works more or less like UDP.
+        **  Only using it for updating paddle and ball positions, as only
+        **  the latest data is useful, and does not make sense to store the
+        **  past data to be sent when the connection is available again.
+        */
+       //In paddles does not work well
+        this.server/*.volatile*/.to(data.room).emit('paddleA', {
+            y: playerA.yPosition
+        });
+    }
+
+    @SubscribeMessage('paddleBUp')
     async paddleBUp(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        let playerB: Player;
-        let newPos: number;
+        const   game: Game = this.games.get(data.room);
+        const   playerB: Player = game.playerB;
+        const   playerBHalfHeight = playerB.height / 2;
 
-        playerB = this.games.get(data).playerB;
-        newPos = playerB.yPosition - 8;
-        playerB.yPosition = newPos < 25 ? 25 : newPos;
+        if (playerB.yPosition - 8 < playerBHalfHeight)
+            playerB.yPosition = playerBHalfHeight;
+        else
+            playerB.yPosition -= 8;
         /*
         **  volatile will not send events if the connection is not available.
         **  Works more or less like UDP.
@@ -130,20 +162,24 @@ export class    GameGateway implements OnGatewayInit,
         **  past data to be sent when the connection is available again.
         */
         //In paddles does not work well
-        this.server/*.volatile*/.to(data).emit('paddleB', playerB.yPosition);
+        this.server/*.volatile*/.to(data.room).emit('paddleB', {
+            y: playerB.yPosition
+        });
     }
 
-    @SubscribeMessage('paddleDownB')
+    @SubscribeMessage('paddleBDown')
     async paddleBDown(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        let playerB: Player;
-        let newPos: number;
+        const   game: Game = this.games.get(data.room);
+        const   playerB: Player = game.playerB;
+        const   playerBHalfHeight = playerB.height / 2;
 
-        playerB = this.games.get(data).playerB;
-        newPos = playerB.yPosition + 8;
-        playerB.yPosition = newPos > 575 ? 575 : newPos;
+        if (playerB.yPosition + 8 > game.height - playerBHalfHeight)
+            playerB.yPosition = game.height - playerBHalfHeight;
+        else
+            playerB.yPosition += 8;
         /*
         **  volatile will not send events if the connection is not available.
         **  Works more or less like UDP.
@@ -152,7 +188,9 @@ export class    GameGateway implements OnGatewayInit,
         **  past data to be sent when the connection is available again.
         */
         //In paddles does not work well
-        this.server/*.volatile*/.to(data).emit('paddleB', playerB.yPosition);
+        this.server/*.volatile*/.to(data.room).emit('paddleB', {
+            y: playerB.yPosition
+        });
     }
 
     @SubscribeMessage('ball')
@@ -160,13 +198,71 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        let ball: Ball;
+        const   game: Game = this.games.get(data.room);
+        const   playerA: Player = game.playerA;
+        const   playerB: Player = game.playerB;
+        const   ball: Ball = game.ball;
+        const   currentUpdate: number = Date.now();
+        const   secondsElapsed: number = (currentUpdate - game.lastUpdate) / 1000;
+        const   xDisplacement: number = ball.displacement('x', secondsElapsed);
+        const   yDisplacement: number = ball.displacement('y', secondsElapsed);
 
-        ball = this.games.get(data.room).ball;
-        if (ball.xPosition == data.x) //Already updated
-            return ;
-        ball.xPosition = data.x;
-        ball.yPosition = data.y;
+        if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
+            && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
+            && ball.yPosition + ball.radius <= playerA.yPosition + (playerA.height / 2)
+            && ball.yPosition - ball.radius >= playerA.yPosition - (playerA.height / 2))
+        {//Collision PlayerA
+            ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
+            ball.xVelocity *= -1;
+        }
+        else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
+                && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
+                && ball.yPosition + ball.radius <= playerB.yPosition + (playerB.height / 2)
+                && ball.yPosition - ball.radius >= playerB.yPosition - (playerB.height / 2))
+        {//Collision PlayerB
+            ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
+            ball.xVelocity *= -1;
+        }
+        else if (ball.yPosition - ball.radius + yDisplacement <= 0)
+        {// Collision Upper border
+            ball.yPosition = 0 + ball.radius;
+            ball.yVelocity *= -1;
+        }
+        else if (ball.yPosition + ball.radius + yDisplacement >= 600)
+        {// Collision Lower border
+            ball.yPosition = 600 - ball.radius;
+            ball.yVelocity *= -1;
+        }
+        else if (ball.xPosition + ball.radius + xDisplacement >= 800)
+        {//Collision Right border
+            ball.xVelocity = 0;
+            ball.yVelocity = 0;
+            ball.xPosition = (game.width / 2) - ball.radius;
+            ball.yPosition = (game.height / 2) - ball.radius;
+            playerA.score += 1;
+            this.server.to(data.room).emit('score', {
+                a: playerA.score,
+                b: playerB.score
+            });
+        }
+        else if (ball.xPosition - ball.radius + xDisplacement <= 0)
+        {//Collision Left border
+            ball.xVelocity = 0;
+            ball.yVelocity = 0;
+            ball.xPosition = (game.width / 2) - ball.radius;
+            ball.yPosition = (game.height / 2) - ball.radius;
+            playerB.score += 1;
+            this.server.to(data.room).emit('score', {
+                a: playerA.score,
+                b: playerB.score
+            });
+        }
+        else
+        {
+            ball.xPosition += xDisplacement;
+            ball.yPosition += yDisplacement;
+        }
+        game.lastUpdate = currentUpdate;
         /*
         **  volatile will not send events if the connection is not available.
         **  Works more or less like UDP.
@@ -174,19 +270,10 @@ export class    GameGateway implements OnGatewayInit,
         **  the latest data is useful, and does not make sense to store the
         **  past data to be sent when the connection is available again.
         */
-        //this.server.volatile.to(data.room).emit('ball', data);
-    }
-
-    @SubscribeMessage('score')
-    async scoreUpdate(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        if (data.player == "playerA")
-            this.games.get(data.room).playerA.score = data.score;
-        else
-            this.games.get(data.room).playerB.score = data.score;
-        this.server.to(data.room).emit('score', data);
+        this.server.volatile.to(data.room).emit('ball', {
+            x: ball.xPosition,
+            y: ball.yPosition
+        });
     }
 
     @SubscribeMessage('serve')
@@ -194,29 +281,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        let game: Game = this.games.get(data.room);
+        const   game: Game = this.games.get(data.room);
 
-        if ((data.xVel > 0 && game.serveSide > 0)
-            ||
-            (data.xVel < 0 && game.serveSide < 0))
-            return ;
-        game.serveSide = data.xVel > 0 ? 1 : -1;
-        this.server.to(data.room).emit("serve", data); //Provisional
-    }
-
-    @SubscribeMessage('smash')
-    async smashUpdate(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        let game: Game = this.games.get(data.room);
-
-        if ((data.xVel > 0 && game.smashSide > 0)
-            ||
-            (data.xVel < 0 && game.smashSide < 0))
-            return ;
-        game.smashSide = data.xVel > 0 ? 1 : -1;
-        this.server.to(data.room).emit("smash", data); //Provisional
+        if (!game.ball.xVelocity)
+            game.serveBall();
+        this.server.to(data.room).emit("served", "served");
     }
 
   }
