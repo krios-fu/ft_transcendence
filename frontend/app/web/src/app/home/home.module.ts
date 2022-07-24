@@ -9,6 +9,8 @@ import {HomeRoutingModule} from "./home-routing.module";
 import {ChatComponent} from "../chat/chat.component";
 import {MatIconModule} from "@angular/material/icon";
 import {MatBadgeModule} from "@angular/material/badge";
+import {MatTreeModule} from "@angular/material/tree";
+import {MatButtonModule} from "@angular/material/button";
 
 
 
@@ -24,6 +26,8 @@ import {MatBadgeModule} from "@angular/material/badge";
     HomeRoutingModule,
     MatIconModule,
     MatBadgeModule,
+    MatTreeModule,
+    MatButtonModule,
 
   ]
 })

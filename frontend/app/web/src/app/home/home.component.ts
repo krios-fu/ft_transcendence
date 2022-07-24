@@ -9,8 +9,47 @@ import { Observable } from 'rxjs';
 import {FormControl, FormGroup} from '@angular/forms';
 import {ChatComponent} from "../chat/chat.component";
 import {ChatModule} from "../chat/chat.module";
+import {MatTreeNestedDataSource} from "@angular/material/tree";
+import {NestedTreeControl} from "@angular/cdk/tree";
 
 
+interface FoodNode {
+  name: string;
+  children?: FoodNode[];
+}
+
+const TREE_DATA: FoodNode[] = [
+  {
+    name: 'Rooms',
+    children: [
+      {
+        name: 'private',
+        children: [{name: '#metropolis'}, {name: '#wakanda'}, {name: '#atlantis'}
+        ],
+      },
+      {
+        name: 'public',
+        children: [{name: '#42'}
+        ],
+      },
+    ],
+  },
+  {
+    name: 'Dm',
+    children: [{name: 'onapoli-'}, {name: 'danrodri'} ],
+
+    // children: [
+    //   // {
+    //   //   name: 'Green',
+    //   //   children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
+    //   // },
+    //   {
+    //     name: 'Orange',
+    //     children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
+    //   },
+    // ],
+  },
+];
 
 
 
@@ -27,7 +66,12 @@ export class HomeComponent implements OnInit {
 
   hidden = false;
 
+  treeControl = new NestedTreeControl<FoodNode>(node => node.children);
+  dataSource = new MatTreeNestedDataSource<FoodNode>();
 
+
+
+  hasChild = (_: number, node: FoodNode) => !!node.children && node.children.length > 0;
 
   public formMessage= new FormGroup({
     message : new FormControl('')
@@ -36,6 +80,7 @@ export class HomeComponent implements OnInit {
   constructor( private route : ActivatedRoute, private http : HttpClient) {
     const room = this.route.snapshot.paramMap.get('id');
     this.formMessage.patchValue({ room } );
+    this.dataSource.data = TREE_DATA;
    }
 
   ngOnInit(): void {

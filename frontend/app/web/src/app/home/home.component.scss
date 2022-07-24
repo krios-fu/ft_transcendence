@@ -11,10 +11,11 @@
   height: 4rem;
   font-size: 10px;
   color: white;
-  background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+  background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
   width: 100%;
   flex: 0 1 45px;
   position: relative;
+  padding: 4px 15px 0 12px;
 
 
   .avatar{
@@ -72,14 +73,45 @@
 .column1  {
   float: left;
   width: 20%;
-  padding: 0;
+  padding: 21px;
   color: white;
-
   height: auto;
-  //background: inherit;
+  background: none;
   overflow: hidden;
-  //border: 1px solid #ffffff;
+  border: 1px solid #464444;
+  border-top: none;
+  //box-shadow: 0 10px 4px #818181;
 
+
+  .example-tree-invisible {
+    display: none;
+  }
+
+  .example-tree ul,
+  .example-tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+  }
+
+  /*
+   * This padding sets alignment of the nested nodes.
+   */
+  .example-tree .mat-nested-tree-node div[role=group] {
+    padding-left: 20px;
+    //color: white;
+
+  }
+
+  /*
+   * Padding for leaf nodes.
+   * Leaf nodes need to have padding so as to align with other non-leaf nodes
+   * under the same parent.
+   */
+  .example-tree div[role=group] > .mat-tree-node {
+    padding-left:20px;
+    //color: white;
+  }
 
 
 }
