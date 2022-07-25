@@ -1,12 +1,5 @@
 <nav class="header">
-<!--  <div style="display: flex; position: relative; align-items: center; width: 20%; min-width: 21rem">-->
-<!--   <figure  class="avatar">-->
-<!--    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />-->
-<!--    </figure>-->
-<!--    <div style=" padding: 13px; bottom: initial">-->
-<!--      {{getName()}}-->
-<!--     </div>-->
-<!--  </div>-->
+
 
   <div class="logo" style="right: 0; min-width: 21rem">
     <h1>
@@ -16,11 +9,13 @@
   </div>
 
 
-  <mat-icon matBadge="15"
-            matBadgeColor="warn"
-            [matBadgeHidden]="hidden"
-            (click)="toggleBadgeVisibility()">message
-  </mat-icon>
+<!--  <mat-icon matBadge="15"-->
+<!--            matBadgeColor="warn"-->
+<!--            [matBadgeHidden]="hidden"-->
+<!--            (click)="toggleBadgeVisibility()">message-->
+<!--  </mat-icon>-->
+
+
 
 
   <!-- Include text description of the icon's meaning for screen-readers -->
@@ -49,29 +44,71 @@
 
 <!-- </div>-->
 
+    <div style="display: flex; position: relative; align-items: center; width: 100%; min-width: 21rem; justify-content: space-between;
+  ">
+       <figure  class="avatar">
+        <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+        </figure>
+        <div style=" padding: 21px; bottom: initial; border-bottom: none; border-top: none;">
+          {{getName()}}
+         </div>
+      <a mat-icon-button href="/login">
+        <mat-icon matBadge="15"
+                  matBadgeColor="warn"
+                  matBadgeSize="small"
+                  [matBadgeHidden]="hidden"
+                  (click)="toggleBadgeVisibility()">people
+        </mat-icon>
+      </a>
+      <a mat-icon-button href="/login" >
+        <mat-icon>manage_accounts</mat-icon>
+      </a>
+      <a mat-icon-button href="/login" >
+        <mat-icon>logout</mat-icon>
+      </a>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 21px" >
+      <span>
+        <mat-icon>emoji_events</mat-icon>
+        <h3 style="color : goldenrod;">42</h3>
+      </span>
+      <span>
+        <mat-icon>leaderboard</mat-icon>
+        <h3 style="color : rgb(0,149,255);">1</h3>
+      </span>
+      <span>
+        <mat-icon>trending_down</mat-icon>
+        <h3 style="color : rgb(255,0,47);">42</h3>
+      </span>
+    </div>
+    <br>
+
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree" style="background: none; color: white">
       <!-- This is the tree node template for leaf nodes -->
       <!-- There is inline padding applied to this node using styles.
         This padding value depends on the mat-icon-button width. -->
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle style="color: white;">
-        {{node.name}}
+       <a href="/login"> {{node.name}}</a>
+        <br>
       </mat-tree-node>
+
       <!-- This is the tree node template for expandable nodes -->
       <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" style="color: white">
         <div class="mat-tree-node" style="color: white; font-family: 'Super Mario World Text Box', sans-serif; font-size: 12px " >
           <button mat-icon-button matTreeNodeToggle
-                  [attr.aria-label]="'Toggle ' + node.name">
+                  [attr.aria-label]="'Toggle ' + node.name  ">
             <mat-icon class="mat-icon-rtl-mirror">
               {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
             </mat-icon>
           </button>
-          {{node.name}}
+       {{node.name}}
         </div>
         <!-- There is inline padding applied to this div using styles.
             This padding value depends on the mat-icon-button width.  -->
         <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
              role="group" >
-          <ng-container matTreeNodeOutlet ></ng-container>
+            <ng-container matTreeNodeOutlet></ng-container>
         </div>
       </mat-nested-tree-node>
     </mat-tree>
@@ -79,17 +116,19 @@
   </div>
 
   <div class="column2" >
-    <nav>
-      <div class="title" >
-        <a [routerLink]="[{ outlets: { chat: ['chat'] } }]"  >
-          <h1>
-            PLAY
-          </h1>
-        </a>
-      </div>
-    </nav>
+<!--    <nav>-->
+<!--      <div class="title" >-->
+<!--        <a [routerLink]="[{ outlets: { chat: ['chat'] } }]"  >-->
+<!--          <h1>-->
+<!--            PLAY-->
+<!--          </h1>-->
+<!--        </a>-->
+<!--      </div>-->
+<!--    </nav>-->
     <router-outlet name="center"></router-outlet>
   </div>
+
+
   <div class="column3" >
     <router-outlet name="chat"></router-outlet>
   </div>
