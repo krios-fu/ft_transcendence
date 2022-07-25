@@ -207,6 +207,13 @@ export class    GameGateway implements OnGatewayInit,
         const   xDisplacement: number = ball.displacement('x', secondsElapsed);
         const   yDisplacement: number = ball.displacement('y', secondsElapsed);
 
+        /*
+        **  IMPORTANT!!!
+        **
+        **  playerA.width / 2, playerA.height / 2, ball.radius, etc
+        **  Are calculated because the origin coordinates of the position
+        **  of players and ball are at the center of the object.
+        */
         if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
             && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
             && (
@@ -216,7 +223,12 @@ export class    GameGateway implements OnGatewayInit,
             ))
         {//Collision PlayerA
             ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
-            ball.xVelocity *= -1;
+            ball.xVelocity = 300;
+            if (ball.yPosition < playerA.yPosition)
+                ball.yVelocity = Math.random() * (0 + 300) - 300;
+            else
+                ball.yVelocity = Math.random() * (300 - 0) + 0;
+            //ball.xVelocity *= -1;
         }
         else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
                 && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
@@ -227,6 +239,11 @@ export class    GameGateway implements OnGatewayInit,
                 ))
         {//Collision PlayerB
             ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
+            ball.xVelocity = 300;
+            if (ball.yPosition < playerB.yPosition)
+                ball.yVelocity = Math.random() * (0 + 300) - 300;
+            else
+                ball.yVelocity = Math.random() * (300 - 0) + 0;
             ball.xVelocity *= -1;
         }
         else if (ball.yPosition - ball.radius + yDisplacement <= 0)
