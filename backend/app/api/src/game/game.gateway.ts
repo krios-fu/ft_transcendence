@@ -209,16 +209,22 @@ export class    GameGateway implements OnGatewayInit,
 
         if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
             && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
-            && ball.yPosition + ball.radius <= playerA.yPosition + (playerA.height / 2)
-            && ball.yPosition - ball.radius >= playerA.yPosition - (playerA.height / 2))
+            && (
+                (ball.yPosition - ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition - ball.radius >= playerA.yPosition - (playerA.height / 2))
+                ||
+                (ball.yPosition + ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition + ball.radius >= playerA.yPosition - (playerA.height / 2))
+            ))
         {//Collision PlayerA
             ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
             ball.xVelocity *= -1;
         }
         else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
                 && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
-                && ball.yPosition + ball.radius <= playerB.yPosition + (playerB.height / 2)
-                && ball.yPosition - ball.radius >= playerB.yPosition - (playerB.height / 2))
+                && (
+                    (ball.yPosition + ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition + ball.radius >= playerB.yPosition - (playerB.height / 2))
+                    ||
+                    (ball.yPosition - ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition - ball.radius >= playerB.yPosition - (playerB.height / 2))
+                ))
         {//Collision PlayerB
             ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
             ball.xVelocity *= -1;
