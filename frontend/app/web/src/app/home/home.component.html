@@ -44,8 +44,7 @@
 
 <!-- </div>-->
 
-    <div style="display: flex; position: relative; align-items: center; width: 100%; min-width: 21rem; justify-content: space-between;
-  ">
+    <div style="display: flex; position: relative; align-items: center;  justify-content: space-between;">
        <figure  class="avatar">
         <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
         </figure>
@@ -83,12 +82,13 @@
       </span>
     </div>
     <br>
-
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree" style="background: none; color: white">
-      <!-- This is the tree node template for leaf nodes -->
-      <!-- There is inline padding applied to this node using styles.
-        This padding value depends on the mat-icon-button width. -->
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle style="color: white;">
+    <div style="overflow-y: scroll;">
+      
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree" style="background: none; color: white">
+        <!-- This is the tree node template for leaf nodes -->
+        <!-- There is inline padding applied to this node using styles.
+          This padding value depends on the mat-icon-button width. -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle style="color: whitesmoke; font-size: 11px;">
        <a href="/login"> {{node.name}}</a>
         <br>
       </mat-tree-node>
@@ -98,23 +98,24 @@
         <div class="mat-tree-node" style="color: white; font-family: 'Super Mario World Text Box', sans-serif; font-size: 12px " >
           <button mat-icon-button matTreeNodeToggle
                   [attr.aria-label]="'Toggle ' + node.name  ">
-            <mat-icon class="mat-icon-rtl-mirror">
+                  <mat-icon class="mat-icon-rtl-mirror" style="color:greenyellow;">
               {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
             </mat-icon>
           </button>
-       {{node.name}}
+          {{node.name}}
         </div>
         <!-- There is inline padding applied to this div using styles.
-            This padding value depends on the mat-icon-button width.  -->
-        <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
-             role="group" >
-            <ng-container matTreeNodeOutlet></ng-container>
+          This padding value depends on the mat-icon-button width.  -->
+          <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
+          role="group">
+          <ng-container matTreeNodeOutlet></ng-container>
         </div>
       </mat-nested-tree-node>
     </mat-tree>
-
+    
   </div>
-
+  </div>
+  
   <div class="column2" >
 <!--    <nav>-->
 <!--      <div class="title" >-->

@@ -54,14 +54,15 @@
 .column1  {
   float: left;
   width: 20%;
-  padding: 21px;
+  padding: 10px;
   color: white;
   height: auto;
   background: none;
   overflow: hidden;
   border: 3px groove rgba(245, 245, 245, 0.29);
   text-transform: uppercase;
-
+  min-width: 21rem;
+ // min-height: 21rem;
   //border-top: none;
   //box-shadow: 0 10px 4px #818181;
 
@@ -69,10 +70,10 @@
     position: relative;
     background: lawngreen;
     //z-index: 1;
-    left: 6px;
+    left: 3px;
     border-radius: 50%;
-    width: 55px;
-    height: 55px;
+    width: 42px;
+    height: 42px;
     overflow: hidden;
     margin: 0;
     padding: 0;
@@ -105,6 +106,7 @@
     margin-top: 0;
     margin-bottom: 0;
     list-style-type: none;
+    //color: red;
   }
 
   /*
@@ -123,7 +125,6 @@
    */
   .example-tree div[role=group] > .mat-tree-node {
     padding-left:20px;
-    //color: white;
   }
 
 
