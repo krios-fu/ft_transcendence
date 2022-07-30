@@ -206,6 +206,10 @@ export class    GameGateway implements OnGatewayInit,
         const   secondsElapsed: number = (currentUpdate - game.lastUpdate) / 1000;
         const   xDisplacement: number = ball.displacement('x', secondsElapsed);
         const   yDisplacement: number = ball.displacement('y', secondsElapsed);
+        const   ballXIntersectionPlayerA: number = playerA.xPosition + (playerA.width / 2) + ball.radius;
+        const   ballYIntersectionPlayerA: number = (((ballXIntersectionPlayerA - ball.xPosition) * (yDisplacement - ball.yPosition)) / (xDisplacement - ball.xPosition)) + ball.yPosition;
+        const   ballXIntersectionPlayerB: number = playerB.xPosition - (playerB.width / 2) - ball.radius;
+        const   ballYIntersectionPlayerB: number = (((ballXIntersectionPlayerB - ball.xPosition) * (yDisplacement - ball.yPosition)) / (xDisplacement - ball.xPosition)) + ball.yPosition;
 
         /*
         **  IMPORTANT!!!
@@ -217,12 +221,14 @@ export class    GameGateway implements OnGatewayInit,
         if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
             && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
             && (
-                (ball.yPosition - ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition - ball.radius >= playerA.yPosition - (playerA.height / 2))
+                (ballYIntersectionPlayerA - ball.radius <= playerA.yPosition + (playerA.height / 2) && ballYIntersectionPlayerA - ball.radius >= playerA.yPosition - (playerA.height / 2))
                 ||
-                (ball.yPosition + ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition + ball.radius >= playerA.yPosition - (playerA.height / 2))
+                (ballYIntersectionPlayerA + ball.radius <= playerA.yPosition + (playerA.height / 2) && ballYIntersectionPlayerA + ball.radius >= playerA.yPosition - (playerA.height / 2))
             ))
         {//Collision PlayerA
-            ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
+            //ball.yPosition calculated with the equation of a line given two points, and knowing x
+            ball.yPosition = ballYIntersectionPlayerA;
+            ball.xPosition = ballXIntersectionPlayerA;
             ball.xVelocity = 300;
             if (ball.yPosition < playerA.yPosition)
                 ball.yVelocity = Math.random() * (0 + 300) - 300;
@@ -233,12 +239,14 @@ export class    GameGateway implements OnGatewayInit,
         else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
                 && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
                 && (
-                    (ball.yPosition + ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition + ball.radius >= playerB.yPosition - (playerB.height / 2))
+                    (ballYIntersectionPlayerB + ball.radius <= playerB.yPosition + (playerB.height / 2) && ballYIntersectionPlayerB + ball.radius >= playerB.yPosition - (playerB.height / 2))
                     ||
-                    (ball.yPosition - ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition - ball.radius >= playerB.yPosition - (playerB.height / 2))
+                    (ballYIntersectionPlayerB - ball.radius <= playerB.yPosition + (playerB.height / 2) && ballYIntersectionPlayerB - ball.radius >= playerB.yPosition - (playerB.height / 2))
                 ))
         {//Collision PlayerB
-            ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
+            //ball.yPosition calculated with the equation of a line given two points, and knowing x
+            ball.yPosition = ballYIntersectionPlayerB;
+            ball.xPosition = ballXIntersectionPlayerB;
             ball.xVelocity = 300;
             if (ball.yPosition < playerB.yPosition)
                 ball.yVelocity = Math.random() * (0 + 300) - 300;
