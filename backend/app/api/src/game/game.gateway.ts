@@ -207,6 +207,7 @@ export class    GameGateway implements OnGatewayInit,
         const   xDisplacement: number = ball.displacement('x', secondsElapsed);
         const   yDisplacement: number = ball.displacement('y', secondsElapsed);
         const   ballXIntersectionPlayerA: number = playerA.xPosition + (playerA.width / 2) + ball.radius;
+        //ballYIntersectionPlayer calculated with the equation of a line given two points, and knowing x
         const   ballYIntersectionPlayerA: number = (((ballXIntersectionPlayerA - ball.xPosition) * (yDisplacement - ball.yPosition)) / (xDisplacement - ball.xPosition)) + ball.yPosition;
         const   ballXIntersectionPlayerB: number = playerB.xPosition - (playerB.width / 2) - ball.radius;
         const   ballYIntersectionPlayerB: number = (((ballXIntersectionPlayerB - ball.xPosition) * (yDisplacement - ball.yPosition)) / (xDisplacement - ball.xPosition)) + ball.yPosition;
@@ -226,7 +227,6 @@ export class    GameGateway implements OnGatewayInit,
                 (ballYIntersectionPlayerA + ball.radius <= playerA.yPosition + (playerA.height / 2) && ballYIntersectionPlayerA + ball.radius >= playerA.yPosition - (playerA.height / 2))
             ))
         {//Collision PlayerA
-            //ball.yPosition calculated with the equation of a line given two points, and knowing x
             ball.yPosition = ballYIntersectionPlayerA;
             ball.xPosition = ballXIntersectionPlayerA;
             ball.xVelocity = 300;
@@ -244,7 +244,6 @@ export class    GameGateway implements OnGatewayInit,
                     (ballYIntersectionPlayerB - ball.radius <= playerB.yPosition + (playerB.height / 2) && ballYIntersectionPlayerB - ball.radius >= playerB.yPosition - (playerB.height / 2))
                 ))
         {//Collision PlayerB
-            //ball.yPosition calculated with the equation of a line given two points, and knowing x
             ball.yPosition = ballYIntersectionPlayerB;
             ball.xPosition = ballXIntersectionPlayerB;
             ball.xVelocity = 300;
