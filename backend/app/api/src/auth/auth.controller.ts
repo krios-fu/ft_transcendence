@@ -14,7 +14,7 @@ import { Public } from '../decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
 import { UserDto } from 'src/user/user.dto';
-import { IAuthPayload, IJwtPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
+import { IAuthPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
 
 interface IRequestProfile extends Request {
     user: UserDto;

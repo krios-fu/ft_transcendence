@@ -11,6 +11,8 @@ import * as bcrypt from "bcrypt";
 import { Roles } from "./roles.enum";
 import { RoleInfoDto } from "./dto/role-info.dto";
 import { LoginInfoDto } from "./dto/login-info.dto";
+import { Not } from "typeorm";
+import { UserEntity } from "src/user/user.entity";
 
 @Injectable()
 export class RoomService {
@@ -80,6 +82,33 @@ export class RoomService {
         return roomEntity;
     }
 
+    async getRoomUsers(roomName: string): Promise<UserEntity[]>
+    {
+        const roomEntity: RoomEntity = await this.roomRepository.findOne({
+            where: { name: roomName }
+        });
+
+        if (roomEntity === null)
+        {
+            throw new HttpException('Room does not exist', HttpStatus.NOT_FOUND);
+        }
+        return this.rolesRepository.find({ /* select column user from roles */
+            relations: { 
+                role_user: true,
+                role_room: true,
+            },
+            where: { role: Not(Roles.BANNED) }
+        });
+    }
+
+    async removeRoom(roomName: string): Promise<void> {
+        await this.roomRepository.remove({
+            where: { name: roomName }  /* wrong format */
+        });
+        return 
+    }
+
+    /**************** room auth services *****************/
     async loginToRoom(loginInfo: LoginInfoDto): Promise<boolean> {
         const roomEntity = await this.roomRepository.findOne({
             where: {
@@ -97,6 +126,18 @@ export class RoomService {
             return false;
         }
         return await bcrypt.compare(loginInfo.password, roomEntity.password);
+    }
+
+    async isOwner(loginInfo: LoginInfoDto): Promise<boolean> {
+        const ownerRoom: RoomEntity = await this.roomRepository.findOne({
+            relations: { owner: true },
+            where: { 
+                name: loginInfo.name,
+                owner: loginInfo.user, /* ??? */
+            }
+        });
+
+        return (ownerRoom != null);
     }
 
     async getUserRole(user: string, room: string): Promise<Roles> {
@@ -123,4 +164,5 @@ export class RoomService {
 
         return (userRole >= allowedRole);
     }
+    /**************** ****************** *****************/
 }

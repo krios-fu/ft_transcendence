@@ -26,13 +26,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
-        const reqAuth = this.setAuthHeaders(req);
-
-        return next.handle(reqAuth)
+        return next.handle(this.setAuthHeaders(req))
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    console.error(JSON.stringify(err));
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
                     } else {

@@ -8,6 +8,8 @@ import { Roles } from "./roles.enum";
 import { RoomRolesGuard } from "./guard/room-roles.guard";
 import { MinRoleAllowed } from "src/decorators/roles.decorator";
 import { LoginInfoDto } from "./dto/login-info.dto";
+import { OwnerGuard } from "./guard/owner.guard";
+import { UserEntity } from "src/user/user.entity";
 
 @Controller('room')
 export class RoomController {
@@ -48,17 +50,31 @@ export class RoomController {
     }
 
     @Get(':name/users')
-    async getRoomUsers() {
+    async getRoomUsers(@Param() name: string): Promise<UserEntity[]> {
+        return await this.roomService.getRoomUsers(name);
+    }
+
+    @UseGuards(OwnerGuard)
+    @Delete(':name/remove')
+    async removeRoom(@Param() name: string): Promise<void> {
+        return await this.roomService.removeRoom(name);
+    }
+
+    @MinRoleAllowed(Roles.MOD)
+    @UseGuards(RoomRolesGuard)
+    @Post()
+    async muteUser() {
+    
+    }
+
+    @Post()
+    async unmuteUser() {
 
     }
 
-    @Get(':name/messages')
-    async getRoomMessages() {
-
-    }
-
-    @Delete()
-    async removeRoom() {
+    @UseGuards(OwnerGuard)
+    @Post()
+    async makeUserMod() {
 
     }
 }
