@@ -23,10 +23,110 @@ export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     games: Map<string, Game>;
+    updateInterval: NodeJS.Timer;
   
     afterInit(server: any) {
         console.log("Game Gateway initiated");
         this.games = new Map<string, Game>();
+    }
+
+    gameUpdate(game: Game, room: string) {
+        const   playerA: Player = game.playerA;
+        const   playerB: Player = game.playerB;
+        const   ball: Ball = game.ball;
+        const   currentUpdate: number = Date.now();
+        const   secondsElapsed: number = (currentUpdate - game.lastUpdate) / 1000;
+        const   xDisplacement: number = ball.displacement('x', secondsElapsed);
+        const   yDisplacement: number = ball.displacement('y', secondsElapsed);
+        /*
+        **  IMPORTANT!!!
+        **
+        **  playerA.width / 2, playerA.height / 2, ball.radius, etc
+        **  Are calculated because the origin coordinates of the position
+        **  of players and ball are at the center of the object.
+        */
+        if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
+            && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
+            && (
+                (ball.yPosition - ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition - ball.radius >= playerA.yPosition - (playerA.height / 2))
+                ||
+                (ball.yPosition + ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition + ball.radius >= playerA.yPosition - (playerA.height / 2))
+            ))
+        {//Collision PlayerA
+            ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
+            ball.xVelocity = 300;
+            if (ball.yPosition < playerA.yPosition)
+                ball.yVelocity = Math.random() * (0 + 300) - 300;
+            else
+                ball.yVelocity = Math.random() * (300 - 0) + 0;
+        }
+        else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
+                && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
+                && (
+                    (ball.yPosition + ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition + ball.radius >= playerB.yPosition - (playerB.height / 2))
+                    ||
+                    (ball.yPosition - ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition - ball.radius >= playerB.yPosition - (playerB.height / 2))
+                ))
+        {//Collision PlayerB
+            ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
+            ball.xVelocity = 300;
+            if (ball.yPosition < playerB.yPosition)
+                ball.yVelocity = Math.random() * (0 + 300) - 300;
+            else
+                ball.yVelocity = Math.random() * (300 - 0) + 0;
+            ball.xVelocity *= -1;
+        }
+        else if (ball.yPosition - ball.radius + yDisplacement <= 0)
+        {// Collision Upper border
+            ball.yPosition = 0 + ball.radius;
+            ball.yVelocity *= -1;
+        }
+        else if (ball.yPosition + ball.radius + yDisplacement >= 600)
+        {// Collision Lower border
+            ball.yPosition = 600 - ball.radius;
+            ball.yVelocity *= -1;
+        }
+        else if (ball.xPosition + ball.radius + xDisplacement >= 800)
+        {//Collision Right border
+            ball.xVelocity = 0;
+            ball.yVelocity = 0;
+            ball.xPosition = (game.width / 2) - ball.radius;
+            ball.yPosition = (game.height / 2) - ball.radius;
+            playerA.score += 1;
+            this.server.to(room).emit('score', {
+                a: playerA.score,
+                b: playerB.score
+            });
+        }
+        else if (ball.xPosition - ball.radius + xDisplacement <= 0)
+        {//Collision Left border
+            ball.xVelocity = 0;
+            ball.yVelocity = 0;
+            ball.xPosition = (game.width / 2) - ball.radius;
+            ball.yPosition = (game.height / 2) - ball.radius;
+            playerB.score += 1;
+            this.server.to(room).emit('score', {
+                a: playerA.score,
+                b: playerB.score
+            });
+        }
+        else
+        {
+            ball.xPosition += xDisplacement;
+            ball.yPosition += yDisplacement;
+        }
+        game.lastUpdate = currentUpdate;
+        /*
+        **  volatile will not send events if the connection is not available.
+        **  Works more or less like UDP.
+        **  Only using it for updating paddle and ball positions, as only
+        **  the latest data is useful, and does not make sense to store the
+        **  past data to be sent when the connection is available again.
+        */
+        this.server.volatile.to(room).emit('ball', {
+            x: ball.xPosition,
+            y: ball.yPosition
+        });
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
@@ -56,6 +156,15 @@ export class    GameGateway implements OnGatewayInit,
                 initData: this.games.get("Game1")
             });
             this.server.to("Game1").emit("start", "start");
+            if (this.games.size === 1) {
+                this.updateInterval = setInterval(() => {
+                        this.games.forEach(
+                            (game, room) => { this.gameUpdate(game, room) }
+                        );
+                    },
+                    16
+                );
+            }
         }
         else
         {
@@ -81,6 +190,20 @@ export class    GameGateway implements OnGatewayInit,
             console.log("Player B disconnected");
         else
             console.log("A spectator disconnected");
+        /*
+        **  Check if there's any game room without socket connections
+        **  and delete its respective game class if that is the case.
+        **
+        **  Keep in mind that a disconnected socket might have left
+        **  more than one game room at the same time.
+        */
+        for (const [room] of this.games)
+        {
+            if ((await this.server.in(room).fetchSockets()).length === 0)
+                this.games.delete(room);
+        }
+        if (this.games.size === 0)
+            clearInterval(this.updateInterval);
         console.log("With id: ", client.id);
     }
 
@@ -190,119 +313,6 @@ export class    GameGateway implements OnGatewayInit,
         //In paddles does not work well
         this.server/*.volatile*/.to(data.room).emit('paddleB', {
             y: playerB.yPosition
-        });
-    }
-
-    @SubscribeMessage('ball')
-    async ballUpdate(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        const   game: Game = this.games.get(data.room);
-        const   playerA: Player = game.playerA;
-        const   playerB: Player = game.playerB;
-        const   ball: Ball = game.ball;
-        const   currentUpdate: number = Date.now();
-        const   secondsElapsed: number = (currentUpdate - game.lastUpdate) / 1000;
-        const   xDisplacement: number = ball.displacement('x', secondsElapsed);
-        const   yDisplacement: number = ball.displacement('y', secondsElapsed);
-        const   ballXIntersectionPlayerA: number = playerA.xPosition + (playerA.width / 2) + ball.radius;
-        //ballYIntersectionPlayer calculated with the equation of a line given two points, and knowing x
-        const   ballYIntersectionPlayerA: number = (((ballXIntersectionPlayerA - ball.xPosition) * (yDisplacement - ball.yPosition)) / (xDisplacement - ball.xPosition)) + ball.yPosition;
-        const   ballXIntersectionPlayerB: number = playerB.xPosition - (playerB.width / 2) - ball.radius;
-        const   ballYIntersectionPlayerB: number = (((ballXIntersectionPlayerB - ball.xPosition) * (yDisplacement - ball.yPosition)) / (xDisplacement - ball.xPosition)) + ball.yPosition;
-
-        /*
-        **  IMPORTANT!!!
-        **
-        **  playerA.width / 2, playerA.height / 2, ball.radius, etc
-        **  Are calculated because the origin coordinates of the position
-        **  of players and ball are at the center of the object.
-        */
-        if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
-            && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
-            && (
-                (ballYIntersectionPlayerA - ball.radius <= playerA.yPosition + (playerA.height / 2) && ballYIntersectionPlayerA - ball.radius >= playerA.yPosition - (playerA.height / 2))
-                ||
-                (ballYIntersectionPlayerA + ball.radius <= playerA.yPosition + (playerA.height / 2) && ballYIntersectionPlayerA + ball.radius >= playerA.yPosition - (playerA.height / 2))
-            ))
-        {//Collision PlayerA
-            ball.yPosition = ballYIntersectionPlayerA;
-            ball.xPosition = ballXIntersectionPlayerA;
-            ball.xVelocity = 300;
-            if (ball.yPosition < playerA.yPosition)
-                ball.yVelocity = Math.random() * (0 + 300) - 300;
-            else
-                ball.yVelocity = Math.random() * (300 - 0) + 0;
-            //ball.xVelocity *= -1;
-        }
-        else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
-                && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
-                && (
-                    (ballYIntersectionPlayerB + ball.radius <= playerB.yPosition + (playerB.height / 2) && ballYIntersectionPlayerB + ball.radius >= playerB.yPosition - (playerB.height / 2))
-                    ||
-                    (ballYIntersectionPlayerB - ball.radius <= playerB.yPosition + (playerB.height / 2) && ballYIntersectionPlayerB - ball.radius >= playerB.yPosition - (playerB.height / 2))
-                ))
-        {//Collision PlayerB
-            ball.yPosition = ballYIntersectionPlayerB;
-            ball.xPosition = ballXIntersectionPlayerB;
-            ball.xVelocity = 300;
-            if (ball.yPosition < playerB.yPosition)
-                ball.yVelocity = Math.random() * (0 + 300) - 300;
-            else
-                ball.yVelocity = Math.random() * (300 - 0) + 0;
-            ball.xVelocity *= -1;
-        }
-        else if (ball.yPosition - ball.radius + yDisplacement <= 0)
-        {// Collision Upper border
-            ball.yPosition = 0 + ball.radius;
-            ball.yVelocity *= -1;
-        }
-        else if (ball.yPosition + ball.radius + yDisplacement >= 600)
-        {// Collision Lower border
-            ball.yPosition = 600 - ball.radius;
-            ball.yVelocity *= -1;
-        }
-        else if (ball.xPosition + ball.radius + xDisplacement >= 800)
-        {//Collision Right border
-            ball.xVelocity = 0;
-            ball.yVelocity = 0;
-            ball.xPosition = (game.width / 2) - ball.radius;
-            ball.yPosition = (game.height / 2) - ball.radius;
-            playerA.score += 1;
-            this.server.to(data.room).emit('score', {
-                a: playerA.score,
-                b: playerB.score
-            });
-        }
-        else if (ball.xPosition - ball.radius + xDisplacement <= 0)
-        {//Collision Left border
-            ball.xVelocity = 0;
-            ball.yVelocity = 0;
-            ball.xPosition = (game.width / 2) - ball.radius;
-            ball.yPosition = (game.height / 2) - ball.radius;
-            playerB.score += 1;
-            this.server.to(data.room).emit('score', {
-                a: playerA.score,
-                b: playerB.score
-            });
-        }
-        else
-        {
-            ball.xPosition += xDisplacement;
-            ball.yPosition += yDisplacement;
-        }
-        game.lastUpdate = currentUpdate;
-        /*
-        **  volatile will not send events if the connection is not available.
-        **  Works more or less like UDP.
-        **  Only using it for updating paddle and ball positions, as only
-        **  the latest data is useful, and does not make sense to store the
-        **  past data to be sent when the connection is available again.
-        */
-        this.server.volatile.to(data.room).emit('ball', {
-            x: ball.xPosition,
-            y: ball.yPosition
         });
     }
 
