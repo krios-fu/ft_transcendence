@@ -13,6 +13,7 @@ import { Server, Socket } from 'socket.io';
 import { Game } from './Game'
 import { Ball } from './Ball';
 import { Player } from './Player';
+import { Updater } from './Updater';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -23,14 +24,16 @@ export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     games: Map<string, Game>;
+    updater: Updater;
     updateInterval: NodeJS.Timer;
   
     afterInit(server: any) {
         console.log("Game Gateway initiated");
         this.games = new Map<string, Game>();
+        this.updater = new Updater();
     }
 
-    gameUpdate(game: Game, room: string) {
+    gameUpdate(game: Game, room: string): void {
         const   playerA: Player = game.playerA;
         const   playerB: Player = game.playerB;
         const   ball: Ball = game.ball;
@@ -45,66 +48,33 @@ export class    GameGateway implements OnGatewayInit,
         **  Are calculated because the origin coordinates of the position
         **  of players and ball are at the center of the object.
         */
-        if (ball.xPosition - ball.radius > playerA.xPosition + (playerA.width / 2)
-            && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition + (playerA.width / 2)
-            && (
-                (ball.yPosition - ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition - ball.radius >= playerA.yPosition - (playerA.height / 2))
-                ||
-                (ball.yPosition + ball.radius <= playerA.yPosition + (playerA.height / 2) && ball.yPosition + ball.radius >= playerA.yPosition - (playerA.height / 2))
-            ))
+        if (this.updater.checkPlayerACollision(ball, playerA, xDisplacement))
         {//Collision PlayerA
-            ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
-            ball.xVelocity = 300;
-            if (ball.yPosition < playerA.yPosition)
-                ball.yVelocity = Math.random() * (0 + 300) - 300;
-            else
-                ball.yVelocity = Math.random() * (300 - 0) + 0;
+            this.updater.collisionPlayerA(ball, playerA);
         }
-        else if (ball.xPosition + ball.radius < playerB.xPosition - (playerB.width / 2)
-                && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition - (playerB.width / 2)
-                && (
-                    (ball.yPosition + ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition + ball.radius >= playerB.yPosition - (playerB.height / 2))
-                    ||
-                    (ball.yPosition - ball.radius <= playerB.yPosition + (playerB.height / 2) && ball.yPosition - ball.radius >= playerB.yPosition - (playerB.height / 2))
-                ))
+        else if (this.updater.checkPlayerBCollision(ball, playerB, xDisplacement))
         {//Collision PlayerB
-            ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
-            ball.xVelocity = 300;
-            if (ball.yPosition < playerB.yPosition)
-                ball.yVelocity = Math.random() * (0 + 300) - 300;
-            else
-                ball.yVelocity = Math.random() * (300 - 0) + 0;
-            ball.xVelocity *= -1;
+            this.updater.collisionPlayerB(ball, playerB);
         }
-        else if (ball.yPosition - ball.radius + yDisplacement <= 0)
+        else if (this.updater.checkCollisionUp(ball, yDisplacement))
         {// Collision Upper border
-            ball.yPosition = 0 + ball.radius;
-            ball.yVelocity *= -1;
+            this.updater.collisionUp(ball);
         }
-        else if (ball.yPosition + ball.radius + yDisplacement >= 600)
+        else if (this.updater.checkCollisionDown(ball, yDisplacement))
         {// Collision Lower border
-            ball.yPosition = 600 - ball.radius;
-            ball.yVelocity *= -1;
+            this.updater.collisionDown(ball);
         }
-        else if (ball.xPosition + ball.radius + xDisplacement >= 800)
+        else if (this.updater.checkCollisionRight(ball, xDisplacement))
         {//Collision Right border
-            ball.xVelocity = 0;
-            ball.yVelocity = 0;
-            ball.xPosition = (game.width / 2) - ball.radius;
-            ball.yPosition = (game.height / 2) - ball.radius;
-            playerA.score += 1;
+            this.updater.collisionRight(game, ball, playerA);
             this.server.to(room).emit('score', {
                 a: playerA.score,
                 b: playerB.score
             });
         }
-        else if (ball.xPosition - ball.radius + xDisplacement <= 0)
+        else if (this.updater.checkCollisionLeft(ball, xDisplacement))
         {//Collision Left border
-            ball.xVelocity = 0;
-            ball.yVelocity = 0;
-            ball.xPosition = (game.width / 2) - ball.radius;
-            ball.yPosition = (game.height / 2) - ball.radius;
-            playerB.score += 1;
+            this.updater.collisionLeft(game, ball, playerB);
             this.server.to(room).emit('score', {
                 a: playerA.score,
                 b: playerB.score
