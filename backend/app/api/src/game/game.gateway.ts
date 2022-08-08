@@ -71,6 +71,10 @@ export class    GameGateway implements OnGatewayInit,
                 a: playerA.score,
                 b: playerB.score
             });
+            setTimeout(() => {
+                game.serveBall();
+                this.server.to("Game1").emit("served", "served");
+            }, 3000);
         }
         else if (this.updater.checkCollisionLeft(ball, xDisplacement))
         {//Collision Left border
@@ -79,6 +83,10 @@ export class    GameGateway implements OnGatewayInit,
                 a: playerA.score,
                 b: playerB.score
             });
+            setTimeout(() => {
+                game.serveBall();
+                this.server.to("Game1").emit("served", "served");
+            }, 3000);
         }
         else
         {
@@ -125,7 +133,10 @@ export class    GameGateway implements OnGatewayInit,
                 room: "Game1",
                 initData: this.games.get("Game1")
             });
-            this.server.to("Game1").emit("start", "start");
+            setTimeout(() => {
+                this.games.get("Game1").serveBall();
+                this.server.to("Game1").emit("served", "served");
+            }, 3000);
             if (this.games.size === 1) {
                 this.updateInterval = setInterval(() => {
                         this.games.forEach(
@@ -284,18 +295,6 @@ export class    GameGateway implements OnGatewayInit,
         this.server/*.volatile*/.to(data.room).emit('paddleB', {
             y: playerB.yPosition
         });
-    }
-
-    @SubscribeMessage('serve')
-    async serveCompleted(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        const   game: Game = this.games.get(data.room);
-
-        if (!game.ball.xVelocity)
-            game.serveBall();
-        this.server.to(data.room).emit("served", "served");
     }
 
   }
