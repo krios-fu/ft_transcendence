@@ -48,12 +48,12 @@ export class    Updater {
         return (ball.yPosition - ball.radius + yDisplacement <= 0);
     }
 
-    checkCollisionDown(ball: Ball, yDisplacement: number): boolean {
-        return (ball.yPosition + ball.radius + yDisplacement >= 600);
+    checkCollisionDown(game: Game, yDisplacement: number): boolean {
+        return (game.ball.yPosition + game.ball.radius + yDisplacement >= game.height);
     }
 
-    checkCollisionRight(ball: Ball, xDisplacement: number): boolean {
-        return (ball.xPosition + ball.radius + xDisplacement >= 800);
+    checkCollisionRight(game: Game, xDisplacement: number): boolean {
+        return (game.ball.xPosition + game.ball.radius + xDisplacement >= game.width);
     }
 
     checkCollisionLeft(ball: Ball, xDisplacement: number): boolean {
@@ -84,24 +84,24 @@ export class    Updater {
         ball.yVelocity *= -1;
     }
 
-    collisionDown(ball: Ball): void {
-        ball.yPosition = 600 - ball.radius;
-        ball.yVelocity *= -1;
+    collisionDown(game: Game): void {
+        game.ball.yPosition = game.height - game.ball.radius;
+        game.ball.yVelocity *= -1;
     }
 
-    collisionRight(game: Game, ball: Ball, playerA: Player): void {
-        ball.xVelocity = 0;
-        ball.yVelocity = 0;
-        ball.xPosition = (game.width / 2) - ball.radius;
-        ball.yPosition = (game.height / 2) - ball.radius;
+    collisionRight(game: Game, playerA: Player): void {
+        game.ball.xVelocity = 0;
+        game.ball.yVelocity = 0;
+        game.ball.xPosition = (game.width / 2) - game.ball.radius;
+        game.ball.yPosition = (game.height / 2) - game.ball.radius;
         playerA.score += 1;
     }
 
-    collisionLeft(game: Game, ball: Ball, playerB: Player): void {
-        ball.xVelocity = 0;
-        ball.yVelocity = 0;
-        ball.xPosition = (game.width / 2) - ball.radius;
-        ball.yPosition = (game.height / 2) - ball.radius;
+    collisionLeft(game: Game, playerB: Player): void {
+        game.ball.xVelocity = 0;
+        game.ball.yVelocity = 0;
+        game.ball.xPosition = (game.width / 2) - game.ball.radius;
+        game.ball.yPosition = (game.height / 2) - game.ball.radius;
         playerB.score += 1;
     }
 

@@ -60,13 +60,13 @@ export class    GameGateway implements OnGatewayInit,
         {// Collision Upper border
             this.updater.collisionUp(ball);
         }
-        else if (this.updater.checkCollisionDown(ball, yDisplacement))
+        else if (this.updater.checkCollisionDown(game, yDisplacement))
         {// Collision Lower border
-            this.updater.collisionDown(ball);
+            this.updater.collisionDown(game);
         }
-        else if (this.updater.checkCollisionRight(ball, xDisplacement))
+        else if (this.updater.checkCollisionRight(game, xDisplacement))
         {//Collision Right border
-            this.updater.collisionRight(game, ball, playerA);
+            this.updater.collisionRight(game, playerA);
             this.server.to(room).emit('score', {
                 a: playerA.score,
                 b: playerB.score
@@ -74,7 +74,7 @@ export class    GameGateway implements OnGatewayInit,
         }
         else if (this.updater.checkCollisionLeft(ball, xDisplacement))
         {//Collision Left border
-            this.updater.collisionLeft(game, ball, playerB);
+            this.updater.collisionLeft(game, playerB);
             this.server.to(room).emit('score', {
                 a: playerA.score,
                 b: playerB.score
