@@ -12,6 +12,7 @@ import {MatBadgeModule} from "@angular/material/badge";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatButtonModule} from "@angular/material/button";
 import { HeaderComponent } from './header/header.component';
+import {NavHeaderComponent} from "./navegation/header/navheader.component";
 
 
 
@@ -19,6 +20,7 @@ import { HeaderComponent } from './header/header.component';
   declarations: [
     HomeComponent,
     HeaderComponent,
+    NavHeaderComponent
   ],
   imports: [
     CommonModule,

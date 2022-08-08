@@ -1,0 +1,37 @@
+<div style="display: flex; position: relative; align-items: center;  justify-content: space-between;">
+  <figure  class="avatar">
+    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+  </figure>
+  <div style=" padding: 21px; bottom: initial; border-bottom: none; border-top: none;">
+    {{getName()}}
+  </div>
+  <a mat-icon-button href="/login">
+    <mat-icon matBadge="15"
+              matBadgeColor="warn"
+              matBadgeSize="small"
+              [matBadgeHidden]="hidden"
+              (click)="toggleBadgeVisibility()">people
+    </mat-icon>
+  </a>
+  <a mat-icon-button href="/login" >
+    <mat-icon>manage_accounts</mat-icon>
+  </a>
+  <a mat-icon-button href="/login" >
+    <mat-icon>logout</mat-icon>
+  </a>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 21px" >
+      <span>
+        <mat-icon>emoji_events</mat-icon>
+        <h3 style="color : goldenrod;">42</h3>
+      </span>
+  <span>
+        <mat-icon>leaderboard</mat-icon>
+        <h3 style="color : rgb(0,149,255);">1</h3>
+      </span>
+  <span>
+        <mat-icon>trending_down</mat-icon>
+        <h3 style="color : rgb(255,0,47);">42</h3>
+      </span>
+</div>

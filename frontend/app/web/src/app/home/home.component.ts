@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 
 import {HttpClient} from "@angular/common/http";
@@ -10,6 +10,7 @@ import {ChatComponent} from "../chat/chat.component";
 import {ChatModule} from "../chat/chat.module";
 import {MatTreeNestedDataSource} from "@angular/material/tree";
 import {NestedTreeControl} from "@angular/cdk/tree";
+import {NavHeaderComponent} from "./navegation/header/navheader.component";
 
 
 interface FoodNode {
@@ -57,13 +58,13 @@ const TREE_DATA: FoodNode[] = [
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, AfterViewInit {
 
-  private profile = {};
+  // private profile = {};
 
   private code = '';
 
-  hidden = false;
+  @ViewChild(NavHeaderComponent) navHeader : any;
 
   treeControl = new NestedTreeControl<FoodNode>(node => node.children);
   dataSource = new MatTreeNestedDataSource<FoodNode>();
@@ -81,6 +82,10 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
 
 
+
+  }
+
+  ngAfterViewInit(){
     this.route.queryParams
       .subscribe(params => {
         this.code+= '?code='+params['code'];
@@ -88,23 +93,8 @@ export class HomeComponent implements OnInit {
       });
 
     this.http.get('http://localhost:3000/auth/42/redirect'+this.code)
-      .subscribe( dto  =>  {  this.profile = dto as Payload;
-        console.log(this.profile) ;} );
-  }
-
-   getName()  {
-    try {
-      const pp = this.profile as Payload;
-      return pp.userProfile.username;
-    }
-    catch {}
-     return "marvin";
-  }
-
-
-
-  toggleBadgeVisibility() {
-    this.hidden = !this.hidden;
+      .subscribe( dto  =>  {  this.navHeader.profile = dto as Payload;
+        console.log(this.navHeader.profile); });
   }
 
 
