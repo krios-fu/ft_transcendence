@@ -11,12 +11,14 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatBadgeModule} from "@angular/material/badge";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatButtonModule} from "@angular/material/button";
+import { HeaderComponent } from './header/header.component';
 
 
 
 @NgModule({
   declarations: [
     HomeComponent,
+    HeaderComponent,
   ],
   imports: [
     CommonModule,

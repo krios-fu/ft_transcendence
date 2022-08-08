@@ -6,7 +6,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { Chat } from '../chat/chat';
 import { Payload } from '../dtos/user.dto';
 import { Observable } from 'rxjs';
-import {FormControl, FormGroup} from '@angular/forms';
 import {ChatComponent} from "../chat/chat.component";
 import {ChatModule} from "../chat/chat.module";
 import {MatTreeNestedDataSource} from "@angular/material/tree";
@@ -70,23 +69,17 @@ export class HomeComponent implements OnInit {
   dataSource = new MatTreeNestedDataSource<FoodNode>();
 
 
-
   hasChild = (_: number, node: FoodNode) => !!node.children && node.children.length > 0;
 
-  public formMessage= new FormGroup({
-    message : new FormControl('')
-  })
 
-  constructor( private route : ActivatedRoute, private http : HttpClient) {
-    const room = this.route.snapshot.paramMap.get('id');
-    this.formMessage.patchValue({ room } );
+
+  constructor( private route : ActivatedRoute,  private http : HttpClient) {
+
     this.dataSource.data = TREE_DATA;
    }
 
   ngOnInit(): void {
 
-    const room = this.route.snapshot.paramMap.get('id');
-    this.formMessage.patchValue({ room } );
 
     this.route.queryParams
       .subscribe(params => {
@@ -108,14 +101,7 @@ export class HomeComponent implements OnInit {
      return "marvin";
   }
 
-  search(){
-    const { message, room } = this.formMessage.value;
-    console.log( message, room)
-    if( message.trim() == '' )
-      return false;
-    this.formMessage.controls['message'].reset();
-    return true;
-  }
+
 
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;

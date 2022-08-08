@@ -1,38 +1,4 @@
-<nav class="header">
-
-
-  <div class="logo" style="right: 0; min-width: 21rem">
-    <h1>
-      <span>PING PONG</span>
-      <span>PING PONG</span>
-    </h1>
-  </div>
-
-
-<!--  <mat-icon matBadge="15"-->
-<!--            matBadgeColor="warn"-->
-<!--            [matBadgeHidden]="hidden"-->
-<!--            (click)="toggleBadgeVisibility()">message-->
-<!--  </mat-icon>-->
-
-
-
-
-  <!-- Include text description of the icon's meaning for screen-readers -->
-  <span class="cdk-visually-hidden">
-      Example with a home icon with overlaid badge showing the number 15
-    </span>
-
-  <div style="width: 20%; right: 0;">
-    <div class="search-box">
-      <form (ngSubmit)="search()" [formGroup]="formMessage">
-        <input formControlName="message" type="text" class="search-input" placeholder="Search">
-      </form>
-  </div>
-  </div>
-
-
-</nav>
+<app-header></app-header>
 
 <div class="row">
   <div class="column1 ">
@@ -83,7 +49,7 @@
     </div>
     <br>
     <div style="overflow-y: scroll;">
-      
+
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree" style="background: none; color: white">
         <!-- This is the tree node template for leaf nodes -->
         <!-- There is inline padding applied to this node using styles.
@@ -112,20 +78,20 @@
         </div>
       </mat-nested-tree-node>
     </mat-tree>
-    
+
   </div>
   </div>
-  
+
   <div class="column2" >
-<!--    <nav>-->
-<!--      <div class="title" >-->
-<!--        <a [routerLink]="[{ outlets: { chat: ['chat'] } }]"  >-->
-<!--          <h1>-->
-<!--            PLAY-->
-<!--          </h1>-->
-<!--        </a>-->
-<!--      </div>-->
-<!--    </nav>-->
+    <nav>
+      <div class="title" >
+        <a [routerLink]="[{ outlets: { chat: ['chat'] } }]"  >
+          <h1>
+            PLAY
+          </h1>
+        </a>
+      </div>
+    </nav>
     <router-outlet name="center"></router-outlet>
   </div>
 

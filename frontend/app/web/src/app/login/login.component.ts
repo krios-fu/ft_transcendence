@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
 
   login()
   {
-    window.location.href='https://api.intra.42.fr/oauth/authorize?client_id=da29a1641b122120ec79b52290574b666e345122ea7dc22b4b90440a3f8c7395&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fhome&response_type=code';
+    window.location.href='https://api.intra.42.fr/oauth/authorize?client_id=4fa51aeb8eafcafd00c2b72a70720daf534190b81adf41fb9874c83bb9563042&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fhome&response_type=code';
   }
 
 }

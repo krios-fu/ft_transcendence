@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @import url('http://fonts.cdnfonts.com/css/super-mario-world-text-box');
+* {  box-sizing: border-box;
+}
 body, html {
   font-family: 'Super Mario World Text Box', sans-serif;
   margin: 0;
