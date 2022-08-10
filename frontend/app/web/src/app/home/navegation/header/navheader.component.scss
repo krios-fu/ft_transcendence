@@ -16,3 +16,12 @@
     height: auto;
   }
 }
+
+div{
+  border: 1px solid rgba(245, 245, 245, 0.29);
+  //border-bottom: none;
+  &:last-child{
+    border-bottom: 1px solid rgba(245, 245, 245, 0.29);
+  }
+
+}
