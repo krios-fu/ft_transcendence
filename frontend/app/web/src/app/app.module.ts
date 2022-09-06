@@ -18,6 +18,7 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
 @NgModule({
   declarations: [
     AppComponent,
+
   ],
   imports: [
     BrowserModule,

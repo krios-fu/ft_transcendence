@@ -2,53 +2,10 @@
 
 <div class="row">
   <div class="column1 ">
-<!--    <div style="padding: 5px;">-->
-<!--    <a  [routerLink]="[{ outlets: { center: ['login'] } }]" style="color: white;">-->
-<!--      login-->
-<!--    </a>-->
-
-
-<!-- </div>-->
-
-<!-- app-nav-profile-->
-
     <app-navheader></app-navheader>
-
     <br>
-    <div style="overflow-y: scroll;">
-
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree" style="background: none; color: white">
-        <!-- This is the tree node template for leaf nodes -->
-        <!-- There is inline padding applied to this node using styles.
-          This padding value depends on the mat-icon-button width. -->
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle style="color: whitesmoke; font-size: 11px;">
-       <a href="/login"> {{node.name}}</a>
-        <br>
-      </mat-tree-node>
-
-      <!-- This is the tree node template for expandable nodes -->
-      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" style="color: white">
-        <div class="mat-tree-node" style="color: white; font-family: 'Super Mario World Text Box', sans-serif; font-size: 12px " >
-          <button mat-icon-button matTreeNodeToggle
-                  [attr.aria-label]="'Toggle ' + node.name  ">
-                  <mat-icon class="mat-icon-rtl-mirror" style="color:greenyellow;">
-              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-            </mat-icon>
-          </button>
-          {{node.name}}
-        </div>
-        <!-- There is inline padding applied to this div using styles.
-          This padding value depends on the mat-icon-button width.  -->
-          <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
-          role="group">
-          <ng-container matTreeNodeOutlet></ng-container>
-        </div>
-      </mat-nested-tree-node>
-    </mat-tree>
-
+    <app-room></app-room>
   </div>
-  </div>
-
   <div class="column2" >
     <nav>
       <div class="title" >
@@ -61,13 +18,8 @@
     </nav>
     <router-outlet name="center"></router-outlet>
   </div>
-
-
   <div class="column3" >
     <router-outlet name="chat"></router-outlet>
   </div>
-
-
-
 </div>
 

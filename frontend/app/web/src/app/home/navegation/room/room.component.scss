@@ -1,0 +1,17 @@
+
+.tree{
+  background: none;
+  border: 1px solid rgba(245, 245, 245, 0.29);
+  font-family: 'Super Mario World Text Box', sans-serif;
+  font-size: 12px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  font-size: 11px;
+
+  &:hover{
+    color: chartreuse;
+  }
+}

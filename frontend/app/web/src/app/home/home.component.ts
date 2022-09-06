@@ -13,46 +13,6 @@ import {NestedTreeControl} from "@angular/cdk/tree";
 import {NavHeaderComponent} from "./navegation/header/navheader.component";
 
 
-interface FoodNode {
-  name: string;
-  children?: FoodNode[];
-}
-
-const TREE_DATA: FoodNode[] = [
-  {
-    name: 'Rooms',
-    children: [
-      {
-        name: 'private',
-        children: [{name: '#metropolis'}, {name: '#wakanda'}, {name: '#atlantis'}
-        ],
-      },
-      {
-        name: 'public',
-        children: [{name: '#42'}
-        ],
-      },
-    ],
-  },
-  {
-    name: 'Dm',
-    children: [{name: 'onapoli-'}, {name: 'danrodri'} ],
-
-    // children: [
-    //   // {
-    //   //   name: 'Green',
-    //   //   children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
-    //   // },
-    //   {
-    //     name: 'Orange',
-    //     children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
-    //   },
-    // ],
-  },
-];
-
-
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -60,30 +20,12 @@ const TREE_DATA: FoodNode[] = [
 })
 export class HomeComponent implements OnInit, AfterViewInit {
 
-  // private profile = {};
-
   private code = '';
-
   @ViewChild(NavHeaderComponent) navHeader : any;
 
-  treeControl = new NestedTreeControl<FoodNode>(node => node.children);
-  dataSource = new MatTreeNestedDataSource<FoodNode>();
+  constructor( private route : ActivatedRoute,  private http : HttpClient) {}
 
-
-  hasChild = (_: number, node: FoodNode) => !!node.children && node.children.length > 0;
-
-
-
-  constructor( private route : ActivatedRoute,  private http : HttpClient) {
-
-    this.dataSource.data = TREE_DATA;
-   }
-
-  ngOnInit(): void {
-
-
-
-  }
+  ngOnInit(): void {}
 
   ngAfterViewInit(){
     this.route.queryParams

@@ -4,15 +4,15 @@ import { HomeComponent } from './home.component';
 import {ChatModule} from "../chat/chat.module";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatExpansionModule} from "@angular/material/expansion";
-import {Router, RouterModule} from "@angular/router";
+import {Router} from "@angular/router";
 import {HomeRoutingModule} from "./home-routing.module";
-import {ChatComponent} from "../chat/chat.component";
 import {MatIconModule} from "@angular/material/icon";
 import {MatBadgeModule} from "@angular/material/badge";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatButtonModule} from "@angular/material/button";
 import { HeaderComponent } from './header/header.component';
 import {NavHeaderComponent} from "./navegation/header/navheader.component";
+import { RoomComponent } from './navegation/room/room.component';
 
 
 
@@ -20,7 +20,8 @@ import {NavHeaderComponent} from "./navegation/header/navheader.component";
   declarations: [
     HomeComponent,
     HeaderComponent,
-    NavHeaderComponent
+    NavHeaderComponent,
+    RoomComponent
   ],
   imports: [
     CommonModule,
