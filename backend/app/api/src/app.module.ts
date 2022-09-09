@@ -6,6 +6,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RoomModule } from './room/room.module';
 import { RoomChatModule } from './room-chat/room-chat.module';
+import { BanModule } from './ban/ban.module';
+import { RolesUserModule } from './roles_user/roles_user.module';
+import { RolesRoomModule } from './roles_room/roles_room.module';
 
 @Module({
     imports: [
@@ -23,6 +26,9 @@ import { RoomChatModule } from './room-chat/room-chat.module';
         }),
         RoomModule,
         RoomChatModule,
+        BanModule,
+        RolesUserModule,
+        RolesRoomModule,
     ],
     controllers: [],
     providers: [
