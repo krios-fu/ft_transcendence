@@ -46,6 +46,20 @@ services:
       - webapp-network
     ports:
       - 5050:80
+  frontend:
+    container_name: frontend
+    image: node:18-alpine
+    ports:
+      - 4200:4200
+    networks:
+      - webapp-network
+    volumes:
+      - ./frontend:/usr/src/app
+    working_dir: /usr/src/app
+    # The first time, we entered the empty image,
+    # installed angular cli, and generated new workspace with "ng new"
+    command: sh -c "npm install && npm start"
+    restart: unless-stopped
 
 networks:
   webapp-network:
