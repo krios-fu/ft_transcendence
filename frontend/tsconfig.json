@@ -1,4 +1,8 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
+
+/*
+**  Need to add "ScriptHost" to lib so that phaser package compiles.
+*/
 {
   "compileOnSave": false,
   "compilerOptions": {
@@ -20,7 +24,8 @@
     "module": "es2020",
     "lib": [
       "es2020",
-      "dom"
+      "dom",
+      "ScriptHost"
     ]
   },
   "angularCompilerOptions": {
