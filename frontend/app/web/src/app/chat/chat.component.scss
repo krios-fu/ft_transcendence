@@ -39,32 +39,25 @@ Chat
 .chat-min
 {
   position: absolute;
-  width: 100%;
+  width: 21rem;
+
   z-index: 2;
   overflow: hidden;
   flex-direction: column;
   display: flex;
-  border-radius: 25px;
-  border: solid 1px;
+  border-radius: 20px;
+  border: 1px solid rgba(245, 245, 245, 0.29);
   box-shadow: 0 10px 30px black;
   right: 1vw;
   bottom: 1vh;
 
-
   animation: bounce-in 2s ease;
-  //.icon{
-  //  display: none;
-  //}
 
-  //&:hover{
-  //  width: 75%;
     .icon{
       display: flex;
       z-index: 10;
       padding: 0;
     }
-  //}
-
 
   @keyframes bounce-in {
     0% {
@@ -79,7 +72,6 @@ Chat
     100% { transform: scale(1); }
   }
 
-
   .message, .message-box {
     display: none;
   }
@@ -88,34 +80,26 @@ Chat
 
 
 .chat {
-
-  width: 100%;
+  width: 70%;
   height: 50%;
   float: left;
   display: flex;
- // max-height: 500px;
   position:absolute;
   bottom: 1vh;
   right: 0;
   z-index: 2;
   overflow: hidden;
-  border-radius: 25px;
-  border: solid 1px;
+  border-radius: 22px;
   box-shadow: 0 10px 30px black;
-  //background: transparent;
-  background-image: url('https://www.roadtovr.com/wp-content/uploads/2016/08/new-retro-arcade-neon-menu.jpg');
-  background-size: cover;
-  background-position: center;
-
+  border: 1px solid rgba(245, 245, 245, 0.29);
   flex-direction: column;
-    animation: fade-in 2s linear both;
+  animation: fade-in 2s linear both;
 
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
   }
 }
-
 
 /*--------------------
 Chat Title
@@ -125,7 +109,7 @@ Chat Title
   position: relative;
   z-index: 10;
   display: flex;
-  background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+  border: 1px solid rgba(245, 245, 245, 0.29);
 
   color: #fff;
   text-transform: uppercase;
@@ -158,7 +142,6 @@ Chat Title
 
 
   .avatar {
-    //left: 4px;
     border-radius: 30px;
     width: 40px;
     height: 40px;
@@ -246,7 +229,7 @@ Messages
       float: right;
       color: #fff;
       text-align: right;
-      background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+      //background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
 	   // -webkit-background-clip: text;
 	    //-webkit-text-fill-color: transparent;
       border-radius: 10px 10px 0 10px;
@@ -271,7 +254,7 @@ Messages
       transform-origin: 0 0;
       animation: bounce 500ms linear both;
       color: #fff;
-      background: linear-gradient(90deg, #FC466B 0%, #3F5EFB 100%);
+      //background: linear-gradient(90deg, #FC466B 0%, #3F5EFB 100%);
     }
 
     &.loading {
@@ -312,7 +295,10 @@ Message Box
 .message-box {
   flex: 0 1 40px;
   width: 100%;
-  background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+  //background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+  //background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+  border: 1px solid rgba(245, 245, 245, 0.29);
+
   padding: 10px;
   position: relative;
 

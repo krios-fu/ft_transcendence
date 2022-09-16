@@ -21,12 +21,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(Server : any)
   {
-    console.log( 'Start Chat Gatewey' );
+    console.log( this.server );
   }
 
 
   handleConnection(client: any, ...args): any {
       console.log('Join connection ');
+      console.log("---> " +  client.id)
       console.log(args);
   }
 
@@ -37,6 +38,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data : any, @ConnectedSocket() client : Socket) {
+      console.log(data)
+      console.log(this.server)
      this.server.emit( 'message', data );
   }
 }

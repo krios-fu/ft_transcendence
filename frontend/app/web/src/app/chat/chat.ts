@@ -24,6 +24,7 @@ export class Chat {
 
     this.id = this.socket.ioSocket.id;
     this.socket.on('message', (msg : message ) => {
+      console.log("---->", msg)
       if( msg.sender != this.getSocketId() )
         this.msg.push(msg);
     });
