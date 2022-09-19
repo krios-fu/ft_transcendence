@@ -1,23 +1,37 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { RolesUserEntity } from './entity/roles_user.entity';
+import { RolesUserRepository } from './repository/roles_user.repository';
 
 @Injectable()
 export class RolesUserService {
-    @InjectRepository()
+    constructor (
+        @InjectRepository(RolesUserEntity)
+        private readonly rolesUserRepository: RolesUserRepository,
+    ) { }
     
-    async getRoleUser() { 
-        /* from body { user_id, role_id }, return role_user key id */
+    async getRoleUser(id: string): Promise<RolesUserEntity> { 
+        return await this.rolesUserRepository.findOne({
+            where: { id: id },
+        });
     }
 
-    async getAllRolesFromUser() { 
-        /* from user id, return all role_user entities with it */
+    /* Returns all roles entities associated with user */
+    async getAllRolesFromUser(user_id: string): Promise<RolesUserEntity[]> { 
+        return await this.rolesUserRepository.find({
+            where: { user_id: user_id },
+        });
+    }
+    /* from role id, return all users with this id */
+    async getUsersWithRole(role_id: string): Promise<RolesUserEntity[]> { 
+        return await this.rolesUserRepository.find({
+            where: { role_id: role_id },
+        });
     }
 
-    async getUsersWithRole() { 
-        /* from role id, return all users with this id */
-    }
-
-    async assignRoleToUser() { 
+    async assignRoleToUser(): Promise<RolesUserEntity> { 
         /* create a new role entity with provided { user_id, role_id } */
+        return await ...;
     }
 
     async deleteRoleFromUser() { 
