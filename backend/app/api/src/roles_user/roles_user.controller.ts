@@ -10,27 +10,27 @@ export class RolesUserController {
         private readonly rolesUserService: RolesUserService
     ) { }
         @Get(':id')
-        async getRoleUser(@Param('id', ParseIntPipe) id: number): Promise<RolesUserEntity> {
+        async getRoleUser(@Param('id', ParseIntPipe) id: string): Promise<RolesUserEntity> {
             return this.rolesUserService.getRoleUser(id);
         }
 
         @Get('/users/:user_id')
-        async getAllRolesFromUser(@Param() user_id: string): Promise<RolesUserEntity[]> {
+        async getAllRolesFromUser(@Param() user_id: string ): Promise<RolesUserEntity[]> {
             return this.rolesUserService.getAllRolesFromUser(user_id);
         }
 
         @Get('/roles/:role_id')
-        async getUsersWithRole(@Param() role_id: string): Promise<RolesUserEntity[]> {
+        async getUsersWithRole(@Param() role_id: string ): Promise<RolesUserEntity[]> {
             return this.rolesUserService.getUsersWithRole(role_id);
         }
 
         @Post()
-        async assignRoleToUser( @Body() rolesUserDto: RolesUserDto): Promise<RolesUserEntity> { 
-            return this.rolesUserService.assignRoleToUser();
+        async assignRoleToUser(@Body() rolesUserDto: RolesUserDto ): Promise<RolesUserEntity> { 
+            return this.rolesUserService.assignRoleToUser(rolesUserDto);
         }
 
         @Delete(':id')
-        async deleteRoleFromUser(): Promise<void> { 
-            await this.rolesUserService.deleteRoleFromUser();
+        async deleteRoleFromUser(@Param() id: string ): Promise<void> { 
+            await this.rolesUserService.deleteRoleFromUser(id);
         }
 }

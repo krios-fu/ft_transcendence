@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RolesUserDto } from './dto/roles_user.dto';
 import { RolesUserEntity } from './entity/roles_user.entity';
 import { RolesUserRepository } from './repository/roles_user.repository';
 
@@ -8,6 +9,7 @@ export class RolesUserService {
     constructor (
         @InjectRepository(RolesUserEntity)
         private readonly rolesUserRepository: RolesUserRepository,
+        
     ) { }
     
     async getRoleUser(id: string): Promise<RolesUserEntity> { 
@@ -29,11 +31,14 @@ export class RolesUserService {
         });
     }
 
-    async assignRoleToUser(): Promise<RolesUserEntity> { 
-        /* create a new role entity with provided { user_id, role_id } */
+    /* Create a new role entity provided RoleUserDto { user_id, role_id } */
+    async assignRoleToUser(rolesUserDto: RolesUserDto): Promise<RolesUserEntity> {
+
+
         return await ...;
     }
 
+    /* Remove role entity by id */
     async deleteRoleFromUser() { 
         /* remove role_entity by id */
     }
