@@ -7,4 +7,10 @@ export class RolesEntity {
         unique: true
     })
     readonly role: string
+
+    constructor(
+        role: string
+    ) {
+        this.role = role;
+    }
 }

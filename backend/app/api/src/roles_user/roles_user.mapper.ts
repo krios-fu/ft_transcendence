@@ -1,18 +1,20 @@
 import { RolesUserDto } from "./dto/roles_user.dto";
-import { RolesUserEntity } from "./entity/roles_user.entity";
+import { RolesUserEntity } from "./entities/roles_user.entity";
+
 
 export class RolesUserMapper {
-    /* to entity */
     toEntity(rolesUserDto: RolesUserDto): RolesUserEntity {
         const { user_id, role_id } = rolesUserDto;
-        return {
-            user_id,
-            role_id
-        };
+        const rolesUserEntity = new RolesUserEntity(user_id, role_id);
+
+        return rolesUserEntity;
     }
 
-    toDto() {
-        
+    toDto(rolesUserEntity: RolesUserEntity): RolesUserDto {
+        const { user_id, role_id } = rolesUserEntity;
+        return {
+            user_id: user_id,
+            role_id: role_id,
+        };
     }
-    /* to dto */
 }

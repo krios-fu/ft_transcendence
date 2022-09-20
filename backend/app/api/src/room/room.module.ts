@@ -8,13 +8,11 @@ import { RoomMapper } from './room.mapper';
 import { RolesRepository } from './repositories/roles.repository';
 import { RoomMsgRepository } from './repositories/room-msg.repository';
 import { UserModule } from 'src/user/user.module';
-import { RolesEntity } from 'src/entity/roles.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       RoomEntity,
-      RolesEntity,
     ]),
     UserModule,
   ],
