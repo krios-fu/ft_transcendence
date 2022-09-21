@@ -1,10 +1,10 @@
+import { Injectable } from "@nestjs/common";
+import { RolesEntity } from "src/roles/entities/roles.entity";
+import { RoomEntity } from "src/room/entities/room.entity";
+import { Column, Generated, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
-import { RolesEntity } from 'src/roles/entities/roles.entity';
-import { UserEntity } from 'src/user/user.entity';
-import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-
-@Entity({ name: 'roles_user' })
-export class RolesUserEntity {
+@Injectable()
+export class RolesRoomEntity {
     @Column({
         unique: true,
         type: 'bigint',
@@ -15,14 +15,14 @@ export class RolesUserEntity {
     @PrimaryColumn({
         type: 'varchar',
     })
-    user_id: string;
+    room_id: string;
 
     @ManyToOne(
-        () => UserEntity,
+        () => RoomEntity,
         { cascade: true },
     )
     @JoinColumn({ name: 'user' })
-    user: UserEntity;
+    user: RoomEntity;
 
     @PrimaryColumn({
         type: 'varchar',
@@ -40,13 +40,4 @@ export class RolesUserEntity {
         type: Date,
     })
     date: Date;
-
-    constructor(
-        user: UserEntity,
-        role: RolesEntity,
-    ) {
-        this.user = user;
-        this.role = role;
-        this.date = new Date;
-    }
 }

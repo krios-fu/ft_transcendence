@@ -16,6 +16,6 @@ import { RolesMapper } from './roles.mapper';
     RolesRepository,
     RolesMapper,
   ],
-  exports: [],
+  exports: [RolesService],
 })
 export class RolesModule { }

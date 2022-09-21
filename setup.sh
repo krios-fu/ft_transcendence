@@ -1,6 +1,6 @@
 #!/bin/bash
 
-usage="usage: $(basename $0) [ up | down | purge | exec [ backend | db | pgadmin | frontend ] ]"
+usage="usage: $(basename $0) [ up | down | prune | exec [ backend | db | pgadmin | frontend ] ]"
 
 case $1 in
     "--help"|"-h")

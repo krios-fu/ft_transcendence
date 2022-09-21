@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from 'src/user/user.entity';
+import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
 import { RolesUserDto } from './dto/roles_user.dto';
 import { RolesUserEntity } from './entities/roles_user.entity';
@@ -14,6 +14,7 @@ export class RolesUserService {
         private readonly rolesUserRepository: RolesUserRepository,
         private readonly rolesUserMapper: RolesUserMapper,
         private readonly userService: UserService,
+        private readonly rolesService: RolesService,
     ) { }
     
     async getRoleUser(id: number): Promise<RolesUserEntity> { 
@@ -38,13 +39,24 @@ export class RolesUserService {
 
     /* Create a new role entity provided RoleUserDto { user_id, role_id } */
     async assignRoleToUser(rolesUserDto: RolesUserDto): Promise<RolesUserEntity> {  
-        
-        return await ...;
+        const { role_id, user_id } = rolesUserDto;
+
+        const roleEntity = await this.rolesService.findOne(role_id);
+        if (roleEntity === null) {
+            throw new HttpException('Role does not exist in db', HttpStatus.BAD_REQUEST);
+        }
+        const userEntity = await this.userService.findOne(user_id);
+        if (userEntity === null) {
+            throw new HttpException('User does not exist in db', HttpStatus.BAD_REQUEST);
+        }
+        const rolesUserEntity = this.rolesUserMapper.toEntity(roleEntity, userEntity);
+        return await this.rolesUserRepository.save(rolesUserEntity);
     }
 
     /* Remove role entity by id */
-    async deleteRoleFromUser() { 
-        /* remove role_entity by id */
+    async deleteRoleFromUser(id: number) { 
+        await this.rolesUserRepository.delete(id);
     }
+    /* Test if delete removes from non-primary key column */
 }
                                                           

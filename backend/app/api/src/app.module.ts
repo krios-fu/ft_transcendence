@@ -10,8 +10,6 @@ import { BanModule } from './ban/ban.module';
 import { RolesUserModule } from './roles_user/roles_user.module';
 import { RolesRoomModule } from './roles_room/roles_room.module';
 import { RolesModule } from './roles/roles.module';
-import { Roles.RepositoryService } from './roles.repository/roles.repository.service';
-import { RolesModule } from './roles/roles.module';
 
 @Module({
     imports: [
@@ -40,7 +38,6 @@ import { RolesModule } from './roles/roles.module';
             provide: APP_GUARD,
             useClass: JwtAuthGuard,
         },
-        Roles.RepositoryService,
     ],
 })
 export class AppModule { }

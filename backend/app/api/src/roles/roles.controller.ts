@@ -17,12 +17,12 @@ export class RolesController {
     return this.rolesService.findAll();
   }
 
-  @Get(':id')
+  @Get(':role_id')
   findOne(@Param('role_id') role_id: string): Promise<RolesEntity> {
     return this.rolesService.findOne(role_id);
   }
 
-  @Patch(':id')
+  @Patch(':role_id')
   update(@Param('role_id') role_id: string, @Body() updateRoleDto: RoleDto): Promise<RolesEntity> {
     return this.rolesService.update(role_id, updateRoleDto);
   }
