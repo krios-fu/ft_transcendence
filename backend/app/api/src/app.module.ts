@@ -10,6 +10,7 @@ import { BanModule } from './ban/ban.module';
 import { RolesUserModule } from './roles_user/roles_user.module';
 import { RolesRoomModule } from './roles_room/roles_room.module';
 import { RolesModule } from './roles/roles.module';
+import { UsersRoomModule } from './users_room/users_room.module';
 
 @Module({
     imports: [
@@ -31,6 +32,7 @@ import { RolesModule } from './roles/roles.module';
         RolesUserModule,
         RolesRoomModule,
         RolesModule,
+        UsersRoomModule,
     ],
     controllers: [],
     providers: [

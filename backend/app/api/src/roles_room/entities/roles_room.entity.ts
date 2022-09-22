@@ -22,7 +22,7 @@ export class RolesRoomEntity {
         { cascade: true },
     )
     @JoinColumn({ name: 'user' })
-    user: RoomEntity;
+    room: RoomEntity;
 
     @PrimaryColumn({
         type: 'varchar',
@@ -40,4 +40,13 @@ export class RolesRoomEntity {
         type: Date,
     })
     date: Date;
+
+    constructor(
+        role: RolesEntity,
+        room: RoomEntity,
+    ) {
+        this.role = role;
+        this.room = room;
+        this.date = new Date;
+    }
 }
