@@ -12,22 +12,22 @@ export class UsersRoomService {
     private readonly usersRoomRepository: UsersRoomRepository,
     private readonly usersRoomMapper: UsersRoomMapper
   ) { }
-  create(newUsersRoomDto: UsersRoomDto) {
+  async create(newUsersRoomDto: UsersRoomDto) {
       const userInRoom = this.usersRoomMapper.toEntity(newUsersRoomDto)
       return await this.usersRoomRepository.save(userInRoom);
   }
 
-  findAll() {
+  async findAll() {
 
   }
 
-  findOne(id: number) { 
+  async findOne(id: number) { 
 
   }
 
-  update(id: number, updateUsersRoomDto: UpdateUsersRoomDto) {
+  async update(id: number, updateUsersRoomDto: UpdateUsersRoomDto) {
   }
 
-  remove(id: number) {
+  async remove(id: number) {
   }
 }
