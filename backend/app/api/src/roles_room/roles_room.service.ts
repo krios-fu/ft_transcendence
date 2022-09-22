@@ -2,6 +2,7 @@ import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
+import { UserEntity } from 'src/user/user.entity';
 import { RolesRoomDto } from './dto/roles_room.dto';
 import { RolesRoomEntity } from './entities/roles_room.entity';
 import { RolesRoomRepository } from './repositories/roles_room.repository';
@@ -17,8 +18,8 @@ export class RolesRoomService {
         private readonly rolesService: RolesService,
     ) { }
 
-    async getRole(id: number) { 
-
+    async getRole(id: number): Promise<RolesRoomEntity> { 
+        return this.rolesRoomRepository.findOne(id);
     }
 
     async getRolesFromRoom(room_id: string): Promise<RolesRoomEntity[]> {
@@ -30,6 +31,10 @@ export class RolesRoomService {
             },
             where: { room_id: room_id }
         });
+    }
+
+    async getUsersInRoomByRole(): Promise<UserEntity> {
+
     }
 
     async postRoleInRoom(newRoleRoom: RolesRoomDto): Promise<RolesRoomEntity> { 
@@ -44,5 +49,9 @@ export class RolesRoomService {
         }
         const roleRoomEntity = this.rolesRoomMapper.toEntity(roleEntity, roomEntity);
         return await this.rolesRoomRepository.save(roleRoomEntity);
+    }
+
+    async remove(id: number): Promise<void> {
+        return await this.rolesRoomRepository.delete(id);
     }
 }

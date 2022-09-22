@@ -50,7 +50,8 @@ export class UsersRoomEntity {
     room: RoomEntity;
 
     @Column({
-        type: 'date'
+        type: 'date',
+        update: false,
     })
     created: Date
 }
