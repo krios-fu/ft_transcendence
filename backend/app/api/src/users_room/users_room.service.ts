@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUsersRoomDto } from './dto/create-users_room.dto';
-import { UpdateUsersRoomDto } from './dto/update-users_room.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UsersRoomDto } from './dto/users_room.dto';
+import { UsersRoomEntity } from './entities/users_room.entity';
+import { UsersRoomRepository } from './repositories/users_room.repository';
+import { UsersRoomMapper } from './users_room.mapper';
 
 @Injectable()
 export class UsersRoomService {
-  create(createUsersRoomDto: CreateUsersRoomDto) {
-    return 'This action adds a new usersRoom';
+  constructor (
+    @InjectRepository(UsersRoomEntity)
+    private readonly usersRoomRepository: UsersRoomRepository,
+    private readonly usersRoomMapper: UsersRoomMapper
+  ) { }
+  create(newUsersRoomDto: UsersRoomDto) {
+      const userInRoom = this.usersRoomMapper.toEntity(newUsersRoomDto)
+      return await this.usersRoomRepository.save(userInRoom);
   }
 
   findAll() {
-    return `This action returns all usersRoom`;
+
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usersRoom`;
+  findOne(id: number) { 
+
   }
 
   update(id: number, updateUsersRoomDto: UpdateUsersRoomDto) {
-    return `This action updates a #${id} usersRoom`;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} usersRoom`;
   }
 }
