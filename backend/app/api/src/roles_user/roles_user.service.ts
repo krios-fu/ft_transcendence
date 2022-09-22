@@ -26,6 +26,7 @@ export class RolesUserService {
     /* Returns all roles entities associated with user */
     async getAllRolesFromUser(user_id: string): Promise<RolesUserEntity[]> { 
         return await this.rolesUserRepository.find({
+            relations: { user: true },
             where: { user_id: user_id },
         });
     }
@@ -33,6 +34,7 @@ export class RolesUserService {
     /* from role id, return all users with this id */
     async getUsersWithRole(role_id: string): Promise<RolesUserEntity[]> { 
         return await this.rolesUserRepository.find({
+            relations: { role: true },
             where: { role_id: role_id },
         });
     }

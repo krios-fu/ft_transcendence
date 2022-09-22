@@ -5,10 +5,16 @@ import { UsersRoomEntity } from "./entities/users_room.entity";
 @Injectable()
 export class UsersRoomMapper {
     toEntity(usersRoomDto: UsersRoomDto): UsersRoomEntity {
-
+        return new UsersRoomEntity(
+            usersRoomDto.room_id, 
+            usersRoomDto.user_id
+            );
     }
 
-    toDto(UsersRoomEntity: UsersRoomEntity): UsersRoomDto {
-        
+    toDto(usersRoomEntity: UsersRoomEntity): UsersRoomDto {
+        return {
+            user_id: usersRoomEntity.user_id,
+            room_id: usersRoomEntity.room_id,
+        };
     }
 }
