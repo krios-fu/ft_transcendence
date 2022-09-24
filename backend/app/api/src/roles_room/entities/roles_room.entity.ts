@@ -1,5 +1,6 @@
+import { RolesEntity } from "src/roles/entities/roles.entity";
 import { UsersRoomEntity } from "src/users_room/entities/users_room.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TreeLevelColumn } from "typeorm";
 
 @Entity({ name: 'roles_room' })
 @Index(['user_room_id', 'role_id'], { unique: true })
@@ -37,6 +38,16 @@ export class RolesRoomEntity {
       update: false,
    })
    role_id: string;
+
+   @ManyToOne(
+      () => RolesEntity,
+      {
+         cascade: true,
+         eager: true,
+      }
+   )
+   @JoinColumn( {name: 'role'} )
+   role: string;
 
    @Column({
       type: 'date',

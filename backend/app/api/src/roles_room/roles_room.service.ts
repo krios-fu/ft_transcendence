@@ -1,8 +1,9 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
+import { UsersRoomService } from 'src/users_room/users_room.service';
 import { RolesRoomDto } from './dto/roles_room.dto';
 import { RolesRoomEntity } from './entities/roles_room.entity';
 import { RolesRoomRepository } from './repositories/roles_room.repository';
@@ -14,27 +15,40 @@ export class RolesRoomService {
         @InjectRepository(RolesRoomEntity)
         private readonly rolesRoomRepository: RolesRoomRepository,
         private readonly rolesRoomMapper: RolesRoomMapper,
+        private readonly usersRoomService: UsersRoomService,
         private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { }
 
     async getRole(id: number): Promise<RolesRoomEntity> { 
-        return this.rolesRoomRepository.findOne(id);
-    }
-
-    async getRolesFromRoom(room_id: string): Promise<RolesRoomEntity[]> {
-        const roomEntity = this.roomService.findOne(room_id);
-        return await this.rolesRoomRepository.find({
-            relations: {
-                role: true,
-                room: true,
-            },
-            where: { room_id: room_id }
+        return this.rolesRoomRepository.findOne({
+            where: { id: id }
         });
     }
 
-    async getUsersInRoomByRole(): Promise<UserEntity> {
+    async getRolesFromRoom(room_id: string): Promise<RolesRoomEntity[]> {
+        return this.rolesRoomRepository.find({
+            relations: {
+                user_in_room: true,
+                role_id: true,
+            },
+            where: { 
+                users_in_room: { room_id: room_id } 
+            }
+        });
+    }
 
+    async getUsersInRoomByRole(room_id: string, role_id: string): Promise<UserEntity[]> {
+        const rolesInRoom = this.rolesRoomRepository.find({
+            relations: {
+                user_in_room: true,
+                role: true,
+            },
+            select: { user_room_id: true },
+            where: { role: role_id }
+        });
+        const users = this.usersRoomService.getAllUsersInRoom(room_id);
+        return users;
     }
 
     async postRoleInRoom(newRoleRoom: RolesRoomDto): Promise<RolesRoomEntity> { 
@@ -52,6 +66,6 @@ export class RolesRoomService {
     }
 
     async remove(id: number): Promise<void> {
-        return await this.rolesRoomRepository.delete(id);
+        await this.rolesRoomRepository.delete(id);
     }
 }

@@ -23,7 +23,7 @@ export class RolesRoomController {
         @Param('room_id') room_id: string,
         @Param('role_id') role_id: string,
         ): Promise<UserEntity[]> {
-        return await this.rolesRoomService.getRolesFromRoom(room_id, role_id);
+        return await this.rolesRoomService.getUsersInRoomByRole(room_id, role_id);
     }
 
     @Post()
@@ -32,7 +32,7 @@ export class RolesRoomController {
     }
 
     @Delete(':id')
-    async remove(@Param(ParseIntPipe, 'id') id: number): Promise<void> {
+    async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return await this.remove(id);
     }
 }
