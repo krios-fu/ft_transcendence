@@ -3,14 +3,14 @@ import { RolesRoomService } from './roles_room.service';
 import { RolesRoomController } from './roles_room.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesRoomEntity } from './entities/roles_room.entity';
-import { RoomModule } from 'src/room/room.module';
-import { RolesModule } from 'src/roles/roles.module';
 import { RolesRoomMapper } from './roles_room.mapper';
+import { UsersRoomModule } from 'src/users_room/users_room.module';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([RolesRoomEntity]),
-    RoomModule,
+    UsersRoomModule,
     RolesModule,
   ],
   providers: [
@@ -18,6 +18,6 @@ import { RolesRoomMapper } from './roles_room.mapper';
     RolesRoomMapper,
   ],
   controllers: [RolesRoomController],
-  exports: [],
+  exports: [RolesRoomService],
 })
 export class RolesRoomModule { }

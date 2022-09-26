@@ -24,12 +24,12 @@ export class UsersRoomController {
     return await this.usersRoomService.findOne(id);
   }
 
-  @Get('/rooms/:room_id')
+  @Get('/rooms/:room_id/users')
   async getAllUsersInRoom(@Param(':room_id') room_id: string): Promise<UserEntity[]> {
       return await this.usersRoomService.getAllUsersInRoom(room_id);
   }
 
-  @Get('/users/:user_id')
+  @Get('/users/:user_id/rooms')
   async getAllRoomsWithUser(@Param(':user_id') user_id: string): Promise<RoomEntity[]> {
     return await this.usersRoomService.getAllRoomsWithUser(user_id);
   }

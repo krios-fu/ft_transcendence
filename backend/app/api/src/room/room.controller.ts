@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { RoomDto } from "./dto/room.dto";
+import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomService } from "./room.service";
-import { IRequestPayload } from "src/interfaces/request-payload.interface";
-import { LoginInfoDto } from "./dto/login-info.dto";
 import { UserEntity } from "src/user/user.entity";
+import { RoomDto } from "./dto/room.dto";
 
 @Controller('room')
 export class RoomController {
@@ -12,38 +10,35 @@ export class RoomController {
         private readonly roomService: RoomService,
     ) { }
 
-    @Post()
-    async joinRoom(@Body() loginInfo: LoginInfoDto): Promise<RoomEntity> {
-        return await this.roomService.joinRoom(loginInfo);
-    }
-
-    @Post('new')
-    async createRoom(
-        @Req()  req: IRequestPayload,
-        @Body() roomDto: RoomDto,
-    ): Promise<RoomEntity> {
-        const roomLogin: LoginInfoDto = {
-            "user": req.jwtPayload.data.username,
-            "room": roomDto.name,
-            "password": roomDto.password,
-        };
-        
-        return await this.roomService.createRoom(roomLogin);
-    }
-
     @Get()
     async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomService.getAllRooms();
     }
 
-    @Get(':name')
-    async getRoom(@Param() name: string): Promise<RoomEntity> {
-        return await this.roomService.findOne(name);
+    @Get(':room_id')
+    async getRoom(@Param('room_id') room_id: string): Promise<RoomEntity> {
+        return await this.roomService.findOne(room_id);
     }
 
-    @Get(':room_id/users')
-    async getRoomUsers(@Param('room_id') room_id: string): Promise<UserEntity[]> {
-        return await this.roomService.getRoomUsers(room_id);
+    @Get(':room_id/owner/:owner_id')
+    async getRoomOwner(
+        @Param('room_id') room_id: string,
+        @Param('owner_id') owner_id: string
+    ): Promise<UserEntity> {
+        return await this.roomService.getRoomOwner(room_id, owner_id)
+    }
+
+    @Put(':room_id/owner/:owner_id')
+    async updateRoomOwner(
+        @Param('room_id') room_id: string,
+        @Param('owner_id') new_owner_id: string
+    ): Promise<RoomEntity> {
+        return await this.updateRoomOwner(room_id, new_owner_id);
+    }
+
+    @Post()
+    async createRoom(@Body() dto: RoomDto): Promise<RoomEntity> {    
+        return await this.roomService.createRoom(dto);
     }
 
     @Delete(':room_id')

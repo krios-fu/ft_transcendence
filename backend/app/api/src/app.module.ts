@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -26,13 +26,13 @@ import { UsersRoomModule } from './users_room/users_room.module';
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
         }),
+        RolesModule,
         RoomModule,
         RoomChatModule,
-        BanModule,
+        UsersRoomModule,
         RolesUserModule,
         RolesRoomModule,
-        RolesModule,
-        UsersRoomModule,
+        BanModule,
     ],
     controllers: [],
     providers: [

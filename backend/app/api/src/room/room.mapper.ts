@@ -6,18 +6,20 @@ import { RoomEntity } from "./entities/room.entity";
 @Injectable()
 export class RoomMapper {
     toDto(roomEntity: RoomEntity): RoomDto {
-        const { name, password } = roomEntity;
+        const { room_id, password } = roomEntity;
+        const owner = roomEntity.owner.username;
 
         return {
-            "name": name,
+            "room_id": room_id,
+            "owner": owner,
             "password": password
         };
     }
 
     toEntity(roomDto: RoomDto, owner: UserEntity): RoomEntity {
-        const { name, password } = roomDto;
+        const { room_id, password } = roomDto;
         const roomEntity = new RoomEntity (
-            name,
+            room_id,
             owner,
             password,
         );

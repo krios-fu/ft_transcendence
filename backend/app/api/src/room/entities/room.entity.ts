@@ -32,7 +32,7 @@ export class RoomEntity {
     @ManyToOne(
         () => UserEntity, 
         { 
-            cascade: ['remove'],
+            cascade: true,
             eager: true
         }
     )
@@ -40,11 +40,11 @@ export class RoomEntity {
     owner: UserEntity;
 
     constructor(
-        name: string,
+        room_id: string,
         owner: UserEntity,
         password?: string,      
     ) {
-        this.name = name;
+        this.room_id = room_id;
         this.owner = owner;
         this.password = password;
         this.date = new Date();

@@ -1,16 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { RoomEntity } from "./entities/room.entity";
 import { RoomDto } from "./dto/room.dto";
-import * as bcrypt from "bcrypt";
-import { RoleInfoDto } from "./dto/role-info.dto";
-import { LoginInfoDto } from "./dto/login-info.dto";
-import { Not } from "typeorm";
-import { UserEntity } from "src/user/user.entity";
-import { RolesEntity } from "src/roles/entities/roles.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repositories/room.repository";
 import { UserService } from "src/user/user.service";
 import { RoomMapper } from "./room.mapper";
+import { UserEntity } from "src/user/user.entity";
 
 @Injectable()
 export class RoomService {
@@ -31,34 +26,47 @@ export class RoomService {
         });
     }
 
-    async createRoom(roomLogin: LoginInfoDto): Promise<RoomEntity> {
-        const { name, password, user } = roomLogin;
-        const roomDto: RoomDto = {
-            name: name,
-            password: password,
-        };
-        const ownerEntity = await this.userService.findOne(user);
-
-        if (ownerEntity === undefined) {
-            throw new HttpException('User currently not in db', HttpStatus.UNAUTHORIZED);
+    async getRoomOwner(room_id: string, owner_id: string): Promise<UserEntity> {
+        const room = this.findOne(room_id);
+        if (room === null) {
+            throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }
-        const roomEntity = this.roomMapper.toEntity(roomDto, ownerEntity);
-        const roomInDb = await this.roomRepository.findOne({ 
-            where: { name: name }
-        });
-        
-        if (roomInDb != undefined) {
-            throw new HttpException('Room already in db', HttpStatus.BAD_REQUEST);
-        }
-        await this.roomRepository.save(roomEntity);
-        return roomEntity;
+        return (await room).owner;
     }
 
-    async getRoomUsers(roomName: string): Promise<UserEntity[]> { /* */
+    async updateRoomOwner(room_id: string, new_owner_id: string): Promise<RoomEntity> {
+        const room = await this.findOne(room_id);
+        if (room === null) {
+            throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
+        }
+        const newOwner = await this.userService.findOne(new_owner_id);
+        if (newOwner === null) {
+            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+        }
+        return await this.roomRepository.preload({
+            room_id: room.room_id,
+            owner: newOwner,
+        });
+    }
+
+    async createRoom(dto: RoomDto): Promise<RoomEntity> {
+        const { room_id, password, owner } = dto;
+        const ownerEnt = await this.userService.findOne(owner);
+        if (ownerEnt === undefined) {
+            throw new HttpException('no user in db', HttpStatus.UNAUTHORIZED);
+        }
+        const newRoom = this.roomMapper.toEntity(dto, ownerEnt);
+        const roomInDb = await this.roomRepository.findOne({ 
+            where: { room_id: room_id }
+        });
+        if (roomInDb != undefined) {
+            throw new HttpException('room already in db', HttpStatus.BAD_REQUEST);
+        }
+        return await this.roomRepository.save(newRoom);
     }
 
     async removeRoom(room_id: string): Promise<void> {
-        await this.roomRepository.remove(room_id);
+        await this.roomRepository.delete(room_id);
     }
 
     ///**************** room auth services *****************/

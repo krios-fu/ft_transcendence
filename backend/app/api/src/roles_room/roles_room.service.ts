@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
-import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UsersRoomService } from 'src/users_room/users_room.service';
 import { RolesRoomDto } from './dto/roles_room.dto';
@@ -16,7 +15,6 @@ export class RolesRoomService {
         private readonly rolesRoomRepository: RolesRoomRepository,
         private readonly rolesRoomMapper: RolesRoomMapper,
         private readonly usersRoomService: UsersRoomService,
-        private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { }
 
@@ -52,17 +50,17 @@ export class RolesRoomService {
     }
 
     async postRoleInRoom(newRoleRoom: RolesRoomDto): Promise<RolesRoomEntity> { 
-        const { role_id, room_id } = newRoleRoom;
+        const { user_room_id, role_id } = newRoleRoom;
         const roleEntity = await this.rolesService.findOne(role_id);
         if (roleEntity === null) {
             throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
         }
-        const roomEntity = await this.roomService.findOne(room_id);
-        if (roomEntity === null) {
-            throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
+        const userInRoom = await this.usersRoomService.findOne(user_room_id);
+        if (userInRoom === null) {
+            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }
-        const roleRoomEntity = this.rolesRoomMapper.toEntity(roleEntity, roomEntity);
-        return await this.rolesRoomRepository.save(roleRoomEntity);
+        const roleInRoom = this.rolesRoomMapper.toEntity(newRoleRoom);
+        return await this.rolesRoomRepository.save(roleInRoom);
     }
 
     async remove(id: number): Promise<void> {

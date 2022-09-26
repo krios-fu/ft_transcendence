@@ -46,7 +46,7 @@ export class RolesRoomEntity {
          eager: true,
       }
    )
-   @JoinColumn( {name: 'role'} )
+   @JoinColumn({ name: 'role' })
    role: string;
 
    @Column({

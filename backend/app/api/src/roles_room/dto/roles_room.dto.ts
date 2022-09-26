@@ -1,9 +1,9 @@
-import { IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 export class RolesRoomDto {
-    @IsString()
-    role_id: string;
+    @IsNumber()
+    user_room_id: number;
 
     @IsString()
-    room_id: string;
+    role_id: string;
 }

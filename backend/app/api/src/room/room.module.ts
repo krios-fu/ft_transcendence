@@ -6,6 +6,7 @@ import { RoomEntity } from './entities/room.entity';
 import { RoomRepository } from './repositories/room.repository';
 import { RoomMapper } from './room.mapper';
 import { UserModule } from 'src/user/user.module';
+import { RolesRoomModule } from 'src/roles_room/roles_room.module';
 
 @Module({
   imports: [
@@ -19,9 +20,8 @@ import { UserModule } from 'src/user/user.module';
     RoomService, 
     RoomMapper,
     RoomRepository,
-    RolesRepository,
-    RoomMsgRepository,
   ],
+  exports: [RoomService]
 })
-export class RoomModule {}
+export class RoomModule { }
 

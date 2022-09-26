@@ -1,20 +1,21 @@
 import { Injectable } from "@nestjs/common";
-import { RolesEntity } from "src/roles/entities/roles.entity";
-import { RoomEntity } from "src/room/entities/room.entity";
 import { RolesRoomDto } from "./dto/roles_room.dto";
 import { RolesRoomEntity } from "./entities/roles_room.entity";
 
 @Injectable()
 export class RolesRoomMapper {
-    toEntity(roleEntity: RolesEntity, roomEntity: RoomEntity): RolesRoomEntity {
-        const rolesRoomEntity = new RolesRoomEntity(roleEntity, roomEntity);
-        return rolesRoomEntity;
+    toEntity(dto: RolesRoomDto): RolesRoomEntity {
+        const { user_room_id, role_id } = dto;
+        return new RolesRoomEntity(
+            user_room_id,
+            role_id,
+        );
     }
-    
-    toDto(rolesRoomEntity: RolesRoomEntity): RolesRoomDto {
+
+    toDto(entity: RolesRoomEntity): RolesRoomDto {
         return {
-            role_id: rolesRoomEntity.role_id,
-            room_id: rolesRoomEntity.room_id,
+            user_room_id: entity.user_room_id,
+            role_id: entity.role_id,
         };
     }
 }

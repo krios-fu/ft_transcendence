@@ -5,14 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersRoomEntity } from './entities/users_room.entity';
 import { UsersRoomRepository } from './repositories/users_room.repository';
 import { UsersRoomMapper } from './users_room.mapper';
-import { UserService } from 'src/user/user.service';
-import { RoomService } from 'src/room/room.service';
+import { UserModule } from 'src/user/user.module';
+import { RoomModule } from 'src/room/room.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UsersRoomEntity]),
-    UserService,
-    RoomService,
+    UserModule,
+    RoomModule,
   ],
   controllers: [UsersRoomController],
   providers: [
@@ -20,6 +20,6 @@ import { RoomService } from 'src/room/room.service';
     UsersRoomRepository,
     UsersRoomMapper,
   ],
-  exports: []
+  exports: [UsersRoomService]
 })
-export class UsersRoomModule {}
+export class UsersRoomModule { }
