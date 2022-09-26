@@ -24,7 +24,7 @@ export class RoomController {
     ): Promise<RoomEntity> {
         const roomLogin: LoginInfoDto = {
             "user": req.jwtPayload.data.username,
-            "name": roomDto.name,
+            "room": roomDto.name,
             "password": roomDto.password,
         };
         

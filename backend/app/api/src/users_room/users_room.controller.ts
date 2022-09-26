@@ -5,7 +5,7 @@ import { UsersRoomDto } from './dto/users_room.dto';
 import { UsersRoomEntity } from './entities/users_room.entity';
 import { RoomEntity } from 'src/room/entities/room.entity';
 
-@Controller('users-room')
+@Controller('users_room')
 export class UsersRoomController {
   constructor(private readonly usersRoomService: UsersRoomService) {}
 

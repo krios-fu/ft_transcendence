@@ -33,7 +33,7 @@ export class RolesRoomService {
                 role_id: true,
             },
             where: { 
-                users_in_room: { room_id: room_id } 
+                user_in_room: { room_id: room_id } 
             }
         });
     }

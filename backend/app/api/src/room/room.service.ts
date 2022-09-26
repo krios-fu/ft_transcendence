@@ -10,6 +10,7 @@ import { RolesEntity } from "src/roles/entities/roles.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repositories/room.repository";
 import { UserService } from "src/user/user.service";
+import { RoomMapper } from "./room.mapper";
 
 @Injectable()
 export class RoomService {
@@ -17,20 +18,17 @@ export class RoomService {
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
         private readonly userService: UserService,
+        private readonly roomMapper: RoomMapper,
     ) { }
 
     async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomRepository.find();
     }
 
-    async findOne(name: string): Promise<RoomEntity> {
+    async findOne(room_id: string): Promise<RoomEntity> {
         return await this.roomRepository.findOne({
-            where: { name: name }
+            where: { room_id: room_id }
         });
-    }
-
-    async joinRoom(roomLogin: LoginInfoDto): Promise<RoomEntity> { /* */
-        
     }
 
     async createRoom(roomLogin: LoginInfoDto): Promise<RoomEntity> {
@@ -61,7 +59,6 @@ export class RoomService {
 
     async removeRoom(room_id: string): Promise<void> {
         await this.roomRepository.remove(room_id);
-        return 
     }
 
     ///**************** room auth services *****************/

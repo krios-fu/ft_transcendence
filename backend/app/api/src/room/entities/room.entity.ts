@@ -9,7 +9,7 @@ export class RoomEntity {
         unique: true,
         length: 15,
     })
-    readonly name: string;
+    readonly room_id: string;
 
     @Column({
         type: "varchar",
