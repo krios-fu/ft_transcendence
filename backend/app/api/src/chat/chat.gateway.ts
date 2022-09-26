@@ -21,7 +21,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   afterInit(Server : any)
   {
-    console.log( this.server );
+    // console.log( this.server );
   }
 
 
@@ -39,7 +39,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('message')
   handleMessage(@MessageBody() data : any, @ConnectedSocket() client : Socket) {
       console.log(data)
-      console.log(this.server)
+      // console.log(this.server)
      this.server.emit( 'message', data );
   }
 }

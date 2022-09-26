@@ -1,4 +1,4 @@
-import {Injectable,  Input} from "@angular/core";
+import {Injectable, Input, OnInit} from "@angular/core";
 import {Socket} from "ngx-socket-io";
 import {map} from "rxjs";
 import {newArray} from "@angular/compiler/src/util";
@@ -24,12 +24,13 @@ export class Chat {
 
     this.id = this.socket.ioSocket.id;
     this.socket.on('message', (msg : message ) => {
-      console.log("---->", msg)
+      console.log("msg ---->", msg)
       if( msg.sender != this.getSocketId() )
         this.msg.push(msg);
     });
 
   }
+
 
   sendMessage( txt : string )  {
     this.id = this.socket.ioSocket.id;
