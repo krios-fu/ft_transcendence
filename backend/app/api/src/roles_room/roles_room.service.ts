@@ -4,8 +4,8 @@ import { RolesService } from 'src/roles/roles.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UsersRoomService } from 'src/users_room/users_room.service';
 import { RolesRoomDto } from './dto/roles_room.dto';
-import { RolesRoomEntity } from './entities/roles_room.entity';
-import { RolesRoomRepository } from './repositories/roles_room.repository';
+import { RolesRoomEntity } from './entity/roles_room.entity';
+import { RolesRoomRepository } from './repository/roles_room.repository';
 import { RolesRoomMapper } from './roles_room.mapper';
 
 @Injectable()

@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
 import { RolesUserDto } from './dto/roles_user.dto';
-import { RolesUserEntity } from './entities/roles_user.entity';
-import { RolesUserRepository } from './repositories/roles_user.repository';
+import { RolesUserEntity } from './entity/roles_user.entity';
+import { RolesUserRepository } from './repository/roles_user.repository';
 import { RolesUserMapper } from './roles_user.mapper';
 
 @Injectable()

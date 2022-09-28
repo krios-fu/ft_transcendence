@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { UserEntity } from 'src/user/user.entity';
 import { RolesRoomDto } from './dto/roles_room.dto';
-import { RolesRoomEntity } from './entities/roles_room.entity';
+import { RolesRoomEntity } from './entity/roles_room.entity';
 import { RolesRoomService } from './roles_room.service';
 
 @Controller('roles_room')
