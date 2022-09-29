@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoomEntity } from 'src/room/entities/room.entity';
+import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { UsersRoomDto } from './dto/users_room.dto';
-import { UsersRoomEntity } from './entities/users_room.entity';
-import { UsersRoomRepository } from './repositories/users_room.repository';
+import { UsersRoomEntity } from './entity/users_room.entity';
+import { UsersRoomRepository } from './repository/users_room.repository';
 import { UsersRoomMapper } from './users_room.mapper';
 
 @Injectable()
@@ -56,27 +56,54 @@ export class UsersRoomService {
   }
 
   async getAllRoomsWithUser(user_id: string): Promise<RoomEntity[]> {
-    var roomsFromUser: RoomEntity[] = [];
-    const roomList = this.usersRoomRepository.find({
-      select: { room_id: true},
-      relations: { 
-        room: true,
-        user: true,
-      },
-    where: { user_id: user_id },
+    //var roomsFromUser: RoomEntity[] = [];
+    //const roomList = this.usersRoomRepository.find({
+    //  select: { room_id: true },
+    //  relations: { 
+    //    room: true,
+    //    user: true,
+    //  },
+    //  where: { user_id: user_id },
+    //});
+//
+    ///* debug */
+    //console.log(roomList);
+//
+    ///* tmp */
+    //for (var room_name in roomList) {
+    //  const room = await this.roomService.findOne(room_name);
+    //  roomsFromUser.push(room);
+    //}
+    //return roomsFromUser;
+
+    let rooms: RoomEntity[] = [];
+
+    const userRooms = this.usersRoomRepository.find({
+      select:    { room: true }, /* WHYYYYY */
+      relations: { room: true },
+      where:     { user_id: user_id },
     });
 
-    /* debug */
-    console.log(roomList);
+    /* debugggg */
+    console.log(userRooms);
+    /* ........ */
 
-    /* tmp */
-    for (var room_name in roomList) {
-      const room = await this.roomService.findOne(room_name);
-      roomsFromUser.push(room);
+    for (let room in userRooms) {
+      rooms.push(room);
     }
-    return roomsFromUser;
+    return rooms;
   }
 
   async remove(id: number) {
+    const room = await this.usersRoomRepository.findOne({
+      select: { room_id: true },
+      where: { id: id },
+    });
+    await this.usersRoomRepository.delete(id);
+    /* need to check if room is removable */
+    const isEmpty = await this.getAllUsersInRoom(room.room_id);
+    if (isEmpty.length === 0) {
+      await this.roomService.removeRoom(room.room_id);
+    }
   }
 }

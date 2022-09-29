@@ -1,5 +1,5 @@
-import { RolesEntity } from "src/roles/entities/roles.entity";
-import { UsersRoomEntity } from "src/users_room/entities/users_room.entity";
+import { RolesEntity } from "src/roles/entity/roles.entity";
+import { UsersRoomEntity } from "src/users_room/entity/users_room.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TreeLevelColumn } from "typeorm";
 
 @Entity({ name: 'roles_room' })

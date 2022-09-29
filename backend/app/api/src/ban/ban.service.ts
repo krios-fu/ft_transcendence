@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoomEntity } from 'src/room/entities/room.entity';
+import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { BanMapper } from './ban.mapper';
-import { BanRepository } from './ban.repository';
 import { BanDto } from './dto/ban.dto';
 import { BanEntity } from './entity/ban.entity';
+import { BanRepository } from './repository/ban.repository';
 
 @Injectable()
 export class BanService {
@@ -49,10 +49,9 @@ export class BanService {
         return rooms;
     }
 
-    async createBan(dto: BanDto): Promise<BanDto> {
+    async createBan(dto: BanDto): Promise<BanEntity> {
         const entity = this.banMapper.toEntity(dto);
-        await this.banRepository.save(entity);
-        return this.banMapper.toDto(entity);
+        return await this.banRepository.save(entity);
     }
 
     async deleteBan(ban_id: number): Promise<void> {

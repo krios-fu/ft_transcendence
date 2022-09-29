@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { RoomEntity } from "./entities/room.entity";
+import { RoomEntity } from "./entity/room.entity";
 import { RoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { RoomRepository } from "./repositories/room.repository";
+import { RoomRepository } from "./repository/room.repository";
 import { UserService } from "src/user/user.service";
 import { RoomMapper } from "./room.mapper";
 import { UserEntity } from "src/user/user.entity";

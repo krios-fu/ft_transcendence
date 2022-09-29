@@ -1,4 +1,4 @@
-import { RoomEntity } from "src/room/entities/room.entity";
+import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/user.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
