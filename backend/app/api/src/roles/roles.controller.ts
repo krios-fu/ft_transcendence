@@ -26,6 +26,10 @@ export class RolesController {
   }
 
   /* Update a role */
+  /* 
+   * @UseGuard(RoleGuard)
+   * @Decorator(scope, role)
+   */
   @Patch(':role_id')
   update(@Param('role_id') role_id: string, @Body() updateRoleDto: RoleDto): Promise<RolesEntity> {
     return this.rolesService.update(role_id, updateRoleDto);

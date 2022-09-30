@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common';
-import { UsersRoomService } from './users_room.service';
+import { UsersRoomService } from './user_room.service';
 import { UserEntity } from 'src/user/user.entity';
-import { UsersRoomDto } from './dto/users_room.dto';
-import { UsersRoomEntity } from './entity/users_room.entity';
+import { UsersRoomDto } from './dto/user_room.dto';
+import { UsersRoomEntity } from './entity/user_room.entity';
 import { RoomEntity } from 'src/room/entity/room.entity';
 
-@Controller('users_room')
+@Controller('user_room')
 export class UsersRoomController {
   constructor(private readonly usersRoomService: UsersRoomService) {}
 

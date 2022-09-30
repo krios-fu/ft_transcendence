@@ -2,10 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
-import { RolesUserDto } from './dto/roles_user.dto';
-import { RolesUserEntity } from './entity/roles_user.entity';
-import { RolesUserRepository } from './repository/roles_user.repository';
-import { RolesUserMapper } from './roles_user.mapper';
+import { RolesUserDto } from './dto/user_roles.dto';
+import { RolesUserEntity } from './entity/user_roles.entity';
+import { RolesUserRepository } from './repository/user_roles.repository';
+import { RolesUserMapper } from './user_roles.mapper';
 
 @Injectable()
 export class RolesUserService {

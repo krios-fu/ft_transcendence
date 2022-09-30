@@ -1,35 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Patch } from '@nestjs/common';
+import { RoomEntity } from 'src/room/entity/room.entity';
+import { RoomRolesDto } from './dto/room_roles.dto';
+import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesService } from './room_roles.service';
-import { CreateRoomRoleDto } from './dto/create-room_role.dto';
-import { UpdateRoomRoleDto } from './dto/update-room_role.dto';
 
 @Controller('room-roles')
 export class RoomRolesController {
   constructor(private readonly roomRolesService: RoomRolesService) {}
 
   @Post()
-  create(@Body() createRoomRoleDto: CreateRoomRoleDto) {
-    return this.roomRolesService.create(createRoomRoleDto);
+  async create(@Body() dto: RoomRolesDto): Promise<RoomRolesEntity> {
+    return this.roomRolesService.create(dto);
   }
 
   @Get()
-  findAll() {
+  async findAll(): Promise<RoomRolesEntity[]> {
     return this.roomRolesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roomRolesService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoomRolesEntity> {
+    return this.roomRolesService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoomRoleDto: UpdateRoomRoleDto) {
-    return this.roomRolesService.update(+id, updateRoomRoleDto);
+  /* Get role of an specific room */
+  @Get('/rooms/:room_id')
+  async findRoleRoom(@Param('room_id') room_id: string): Promise<RoomEntity> {
+    return this.roomRolesService.findRoleRoom(room_id);
+  }
+
+  @Patch()
+  async updateRoomRole() {
+
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.roomRolesService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.roomRolesService.remove(id);
   }
 }
 

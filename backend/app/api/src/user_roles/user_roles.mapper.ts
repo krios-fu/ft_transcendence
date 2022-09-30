@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { UserEntity } from "src/user/user.entity";
-import { RolesUserDto } from "./dto/roles_user.dto";
-import { RolesUserEntity } from "./entity/roles_user.entity";
+import { RolesUserDto } from "./dto/user_roles.dto";
+import { RolesUserEntity } from "./entity/user_roles.entity";
 
 @Injectable()
 export class RolesUserMapper {

@@ -1,4 +1,3 @@
-import { EntityRepository } from "typeorm";
 import { BanDto } from "./dto/ban.dto";
 import { BanEntity } from "./entity/ban.entity";
 

@@ -1,10 +1,10 @@
 import { RolesEntity } from "src/roles/entity/roles.entity";
-import { UsersRoomEntity } from "src/users_room/entity/users_room.entity";
+import { UsersRoomEntity } from "src/user_room/entity/user_room.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TreeLevelColumn } from "typeorm";
 
 @Entity({ name: 'roles_room' })
 @Index(['user_room_id', 'role_id'], { unique: true })
-export class RolesRoomEntity {
+export class UserRoomRolesEntity {
    constructor(
       user_room_id: number,
       role_id: string,
@@ -30,7 +30,7 @@ export class RolesRoomEntity {
          eager: true,
       }
    )
-   @JoinColumn( {name: 'user_in_room'})
+   @JoinColumn( {name: 'user_in_room'}) /* ??? */
    user_in_room: UsersRoomEntity;
 
    @Column({

@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
-import { RolesRoomService } from './roles_room.service';
-import { RolesRoomController } from './roles_room.controller';
+import { UserRoomRolesService } from './user_room_roles.service';
+import { UserRoomRolesController } from './user_room_roles.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RolesRoomEntity } from './entity/roles_room.entity';
-import { RolesRoomMapper } from './roles_room.mapper';
-import { UsersRoomModule } from 'src/users_room/users_room.module';
+import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
+import { UserRoomRolesMapper } from './user_room_roles.mapper';
+import { UsersRoomModule } from 'src/user_room/user_room.module';
 import { RolesModule } from 'src/roles/roles.module';
-import { RolesRoomRepository } from './repository/roles_room.repository';
+import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RolesRoomEntity]),
+    TypeOrmModule.forFeature([UserRoomRolesEntity]),
     UsersRoomModule,
     RolesModule,
   ],
   providers: [
-    RolesRoomService,
-    RolesRoomRepository,
-    RolesRoomMapper,
+    UserRoomRolesService,
+    UserRoomRolesRepository,
+    UserRoomRolesMapper,
   ],
-  controllers: [RolesRoomController],
-  exports: [RolesRoomService],
+  controllers: [UserRoomRolesController],
+  exports: [UserRoomRolesService],
 })
-export class RolesRoomModule { }
+export class UserRoomRolesModule { }

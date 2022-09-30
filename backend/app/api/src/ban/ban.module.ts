@@ -7,11 +7,7 @@ import { BanMapper } from './ban.mapper';
 import { BanRepository } from './repository/ban.repository';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([BanEntity]),
-//    UserModule,
-//    RoomModule,
-  ],
+  imports: [ TypeOrmModule.forFeature([BanEntity]) ],
   providers: [
     BanService,
     BanRepository,

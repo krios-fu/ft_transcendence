@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { RolesRoomDto } from "./dto/roles_room.dto";
-import { RolesRoomEntity } from "./entity/roles_room.entity";
+import { RolesRoomDto } from "./dto/user_room_roles.dto";
+import { RolesRoomEntity } from "./entity/user_room_roles.entity";
 
 @Injectable()
 export class RolesRoomMapper {

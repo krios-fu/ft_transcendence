@@ -1,4 +1,4 @@
 import { Repository } from "typeorm";
-import { RolesRoomEntity } from "../entity/roles_room.entity";
+import { UserRoomRolesEntity } from "../entity/user_room_roles.entity";
 
-export class RolesRoomRepository extends Repository<RolesRoomEntity> { }
+export class UserRoomRolesRepository extends Repository<UserRoomRolesEntity> { }

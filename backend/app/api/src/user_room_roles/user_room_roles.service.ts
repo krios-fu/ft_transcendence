@@ -2,30 +2,30 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserEntity } from 'src/user/user.entity';
-import { UsersRoomService } from 'src/users_room/users_room.service';
-import { RolesRoomDto } from './dto/roles_room.dto';
-import { RolesRoomEntity } from './entity/roles_room.entity';
-import { RolesRoomRepository } from './repository/roles_room.repository';
-import { RolesRoomMapper } from './roles_room.mapper';
+import { UsersRoomService } from 'src/user_room/user_room.service';
+import { UserRoomRolesDto } from './dto/user_room_roles.dto';
+import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
+import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
+import { UserRoomRolesMapper } from './user_room_roles.mapper';
 
 @Injectable()
-export class RolesRoomService {
+export class UserRoomRolesService {
     constructor(
-        @InjectRepository(RolesRoomEntity)
-        private readonly rolesRoomRepository: RolesRoomRepository,
-        private readonly rolesRoomMapper: RolesRoomMapper,
+        @InjectRepository(UserRoomRolesEntity)
+        private readonly UserRoomRolesRepository: UserRoomRolesRepository,
+        private readonly UserRoomRolesMapper: UserRoomRolesMapper,
         private readonly usersRoomService: UsersRoomService,
         private readonly rolesService: RolesService,
     ) { }
 
-    async getRole(id: number): Promise<RolesRoomEntity> { 
-        return this.rolesRoomRepository.findOne({
+    async getRole(id: number): Promise<UserRoomRolesEntity> { 
+        return this.UserRoomRolesRepository.findOne({
             where: { id: id }
         });
     }
 
-    async getRolesFromRoom(room_id: string): Promise<RolesRoomEntity[]> {
-        return this.rolesRoomRepository.find({
+    async getRolesFromRoom(room_id: string): Promise<UserRoomRolesEntity[]> {
+        return this.UserRoomRolesRepository.find({
             relations: {
                 user_in_room: true,
                 role_id: true,
@@ -37,7 +37,7 @@ export class RolesRoomService {
     }
 
     async getUsersInRoomByRole(room_id: string, role_id: string): Promise<UserEntity[]> {
-        const rolesInRoom = this.rolesRoomRepository.find({
+        const rolesInRoom = this.UserRoomRolesRepository.find({
             relations: {
                 user_in_room: true,
                 role: true,
@@ -49,7 +49,7 @@ export class RolesRoomService {
         return users;
     }
 
-    async postRoleInRoom(newRoleRoom: RolesRoomDto): Promise<RolesRoomEntity> { 
+    async postRoleInRoom(newRoleRoom: UserRoomRolesDto): Promise<UserRoomRolesEntity> { 
         const { user_room_id, role_id } = newRoleRoom;
         const roleEntity = await this.rolesService.findOne(role_id);
         if (roleEntity === null) {
@@ -59,11 +59,11 @@ export class RolesRoomService {
         if (userInRoom === null) {
             throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }
-        const roleInRoom = this.rolesRoomMapper.toEntity(newRoleRoom);
-        return await this.rolesRoomRepository.save(roleInRoom);
+        const roleInRoom = this.UserRoomRolesMapper.toEntity(newRoleRoom);
+        return await this.UserRoomRolesRepository.save(roleInRoom);
     }
 
     async remove(id: number): Promise<void> {
-        await this.rolesRoomRepository.delete(id);
+        await this.UserRoomRolesRepository.delete(id);
     }
 }

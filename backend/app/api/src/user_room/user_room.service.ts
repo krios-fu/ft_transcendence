@@ -4,10 +4,10 @@ import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { UsersRoomDto } from './dto/users_room.dto';
-import { UsersRoomEntity } from './entity/users_room.entity';
-import { UsersRoomRepository } from './repository/users_room.repository';
-import { UsersRoomMapper } from './users_room.mapper';
+import { UsersRoomDto } from './dto/user_room.dto';
+import { UsersRoomEntity } from './entity/user_room.entity';
+import { UsersRoomRepository } from './repository/user_room.repository';
+import { UsersRoomMapper } from './user_room.mapper';
 
 @Injectable()
 export class UsersRoomService {
@@ -55,31 +55,10 @@ export class UsersRoomService {
     return usersInRoom;
   }
 
-  async getAllRoomsWithUser(user_id: string): Promise<RoomEntity[]> {
-    //var roomsFromUser: RoomEntity[] = [];
-    //const roomList = this.usersRoomRepository.find({
-    //  select: { room_id: true },
-    //  relations: { 
-    //    room: true,
-    //    user: true,
-    //  },
-    //  where: { user_id: user_id },
-    //});
-//
-    ///* debug */
-    //console.log(roomList);
-//
-    ///* tmp */
-    //for (var room_name in roomList) {
-    //  const room = await this.roomService.findOne(room_name);
-    //  roomsFromUser.push(room);
-    //}
-    //return roomsFromUser;
-
+  async getAllRoomsWithUser(user_id: string): Promise<RoomEntity[]>  {
     let rooms: RoomEntity[] = [];
 
-    const userRooms = this.usersRoomRepository.find({
-      select:    { room: true }, /* WHYYYYY */
+    const userRooms = await this.usersRoomRepository.find({
       relations: { room: true },
       where:     { user_id: user_id },
     });
@@ -88,8 +67,8 @@ export class UsersRoomService {
     console.log(userRooms);
     /* ........ */
 
-    for (let room in userRooms) {
-      rooms.push(room);
+    for (let userRoom of userRooms) {
+      rooms.push(userRoom.room);
     }
     return rooms;
   }
