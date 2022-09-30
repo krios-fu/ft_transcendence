@@ -28,13 +28,15 @@ export class RolesUserController {
             return this.rolesUserService.getUsersWithRole(role_id);
         }
 
-        /* Create a new role for a user */
+    /* Create a new role for a user */
+    /* at least web admin */
         @Post()
         async assignRoleToUser(@Body() rolesUserDto: RolesUserDto): Promise<RolesUserEntity> { 
             return this.rolesUserService.assignRoleToUser(rolesUserDto);
         }
 
-        /* Remove a role from a user */
+    /* Remove a role from a user */
+    /* at least web admin */
         @Delete(':id')
         async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> { 
             await this.rolesUserService.deleteRoleFromUser(id);

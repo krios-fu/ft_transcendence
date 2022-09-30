@@ -39,7 +39,8 @@ export class UsersRoomController {
     return await this.usersRoomService.getAllRoomsWithUser(user_id);
   }
 
-  /* Remove an user from a room */
+    /* Remove an user from a room */
+    /* at least room mod || me needed */
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return await this.usersRoomService.remove(id);

@@ -46,16 +46,8 @@ export class RoomController {
         return await this.roomService.createRoom(dto);
     }
 
-    /*
-    @Post()
-    @UseGuard(tal)
-    async createOfficialRoom() {
-
-    }
-
-    */
-
     /* Destroy a room */
+    /* required room owner || web admin */
     @Delete(':room_id')
     async removeRoom(@Param('room_id') name: string): Promise<void> {
         return await this.roomService.removeRoom(name);
