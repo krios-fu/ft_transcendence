@@ -1,6 +1,7 @@
 import { UserEntity } from "src/user/user.entity";
 import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
+import { Exclude } from "class-transformer";
 
 @Entity({ name: "room" })
 export class RoomEntity {
@@ -11,6 +12,7 @@ export class RoomEntity {
     })
     readonly room_id: string;
 
+    @Exclude()
     @Column({
         type: "varchar",
         nullable: true,

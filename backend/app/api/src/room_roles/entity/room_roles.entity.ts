@@ -5,6 +5,14 @@ import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TreeLevelColumn 
 
 @Entity({ name: 'room_role'})
 export class RoomRolesEntity {
+    constructor(
+        room: RoomEntity,
+        role: RolesEntity,
+    ) {
+        this.room = room;
+        this.role = role;
+    }
+    
     @PrimaryGeneratedColumn("increment")
     id: number;
 
