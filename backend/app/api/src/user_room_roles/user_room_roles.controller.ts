@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { UserEntity } from 'src/user/user.entity';
-import { UserRoomRolesDto } from './dto/user_room_roles.dto';
+import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
 
@@ -32,8 +32,8 @@ export class UserRoomRolesController {
     /* Create a new user with a role in a room */
     /* at least mod role required */
     @Post()
-    async postRoleInRoom(@Body() UserRoomRolesDto: UserRoomRolesDto): Promise<UserRoomRolesEntity> { 
-        return await this.UserRoomRolesService.postRoleInRoom(UserRoomRolesDto);
+    async postRoleInRoom(@Body() newDto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
+        return await this.UserRoomRolesService.postRoleInRoom(newDto);
     }
 
     /* Delete a user with role in a room */

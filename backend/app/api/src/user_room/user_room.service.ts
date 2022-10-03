@@ -4,37 +4,35 @@ import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { UsersRoomDto } from './dto/user_room.dto';
-import { UsersRoomEntity } from './entity/user_room.entity';
-import { UsersRoomRepository } from './repository/user_room.repository';
-import { UsersRoomMapper } from './user_room.mapper';
+import { UserRoomDto } from './dto/user_room.dto';
+import { UserRoomEntity } from './entity/user_room.entity';
+import { UserRoomRepository } from './repository/user_room.repository';
 
 @Injectable()
-export class UsersRoomService {
+export class UserRoomService {
   constructor (
-    @InjectRepository(UsersRoomEntity)
-    private readonly usersRoomRepository: UsersRoomRepository,
-    private readonly usersRoomMapper: UsersRoomMapper,
+    @InjectRepository(UserRoomEntity)
+    private readonly userRoomRepository: UserRoomRepository,
     private readonly roomService: RoomService,
     private readonly userService: UserService,
   ) { }
-  async create(newUsersRoomDto: UsersRoomDto) {
-      const userInRoom = this.usersRoomMapper.toEntity(newUsersRoomDto)
-      return await this.usersRoomRepository.save(userInRoom);
+  async create(newDto: UserRoomDto) {
+      const userInRoom = new UserRoomEntity(newDto);
+      return await this.userRoomRepository.save(userInRoom);
   }
 
-  async findAll(): Promise<UsersRoomEntity[]> {
-    return await this.usersRoomRepository.find();
+  async findAll(): Promise<UserRoomEntity[]> {
+    return await this.userRoomRepository.find();
   }
 
-  async findOne(id: number): Promise<UsersRoomEntity> { 
-    return await this.usersRoomRepository.findOne({
+  async findOne(id: number): Promise<UserRoomEntity> { 
+    return await this.userRoomRepository.findOne({
       where: { id: id },
     });
   }
 
   async getAllUsersInRoom(room_id: string): Promise<UserEntity[]> {
-    const userList = this.usersRoomRepository.find({
+    const userList = this.userRoomRepository.find({
       select: { user_id: true },
       relations: {
         room: true,
@@ -58,7 +56,7 @@ export class UsersRoomService {
   async getAllRoomsWithUser(user_id: string): Promise<RoomEntity[]>  {
     let rooms: RoomEntity[] = [];
 
-    const userRooms = await this.usersRoomRepository.find({
+    const userRooms = await this.userRoomRepository.find({
       relations: { room: true },
       where:     { user_id: user_id },
     });
@@ -74,11 +72,11 @@ export class UsersRoomService {
   }
 
   async remove(id: number) {
-    const room = await this.usersRoomRepository.findOne({
+    const room = await this.userRoomRepository.findOne({
       select: { room_id: true },
       where: { id: id },
     });
-    await this.usersRoomRepository.delete(id);
+    await this.userRoomRepository.delete(id);
     /* need to check if room is removable */
     const isEmpty = await this.getAllUsersInRoom(room.room_id);
     if (isEmpty.length === 0) {

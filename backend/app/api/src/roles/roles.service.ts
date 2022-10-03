@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoleDto } from './dto/role.dto';
+import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { RolesEntity } from './entity/roles.entity';
 import { RolesRepository } from './repository/roles.repository';
 import { RolesMapper } from './roles.mapper';
@@ -13,30 +13,30 @@ export class RolesService {
     private readonly rolesMapper: RolesMapper,
   ) { }
 
-  async create(createRoleDto: RoleDto): Promise<RolesEntity>{
-      const roleEntity = this.rolesMapper.toEntity(createRoleDto);
+  public async create(dto: CreateRoleDto): Promise<RolesEntity>{
+      const roleEntity = this.rolesMapper.toEntity(dto);
 
       return await this.rolesRepository.save(roleEntity);
   }
 
-  async findAll(): Promise<RolesEntity[]> {
+  public async findAll(): Promise<RolesEntity[]> {
       return await this.rolesRepository.find();
   }
 
-  async findOne(role_id: string): Promise<RolesEntity> {
+  public async findOne(role_id: string): Promise<RolesEntity> {
       return await this.rolesRepository.findOne({
         where: { role: role_id },
       });
   }
 
-  async update(role_id: string, updateRoleDto: RoleDto):Promise<RolesEntity> {
-      await this.rolesRepository.update(role_id, updateRoleDto);
+  public async update(role_id: string, dto: UpdateRoleDto): Promise<RolesEntity> {
+      await this.rolesRepository.update(role_id, dto);
       return this.rolesRepository.findOne({
         where: { role: role_id }
       });
   }
 
-  async remove(role_id: string): Promise<void> {
+  public async remove(role_id: string): Promise<void> {
       await this.rolesRepository.delete(role_id)
   }
 }

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestj
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { BanService } from './ban.service';
-import { BanDto } from './dto/ban.dto';
+import { CreateBanDto } from './dto/ban.dto';
 import { BanEntity } from './entity/ban.entity';
 
 @Controller('ban')
@@ -37,7 +37,7 @@ export class BanController {
 
     /* Create a ban */
     @Post()
-    async createBan(@Body() dto: BanDto): Promise<BanEntity> {
+    async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
         return await this.banService.createBan(dto);
     }
 

@@ -2,30 +2,28 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserEntity } from 'src/user/user.entity';
-import { UsersRoomService } from 'src/user_room/user_room.service';
-import { UserRoomRolesDto } from './dto/user_room_roles.dto';
+import { UserRoomService } from 'src/user_room/user_room.service';
+import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
-import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
-import { UserRoomRolesMapper } from './user_room_roles.mapper';
+import { userRoomRolesRepository } from './repository/user_room_roles.repository';
 
 @Injectable()
 export class UserRoomRolesService {
     constructor(
         @InjectRepository(UserRoomRolesEntity)
-        private readonly UserRoomRolesRepository: UserRoomRolesRepository,
-        private readonly UserRoomRolesMapper: UserRoomRolesMapper,
-        private readonly usersRoomService: UsersRoomService,
+        private readonly userRoomRolesRepository: userRoomRolesRepository,
+        private readonly userRoomService: UserRoomService,
         private readonly rolesService: RolesService,
     ) { }
 
     async getRole(id: number): Promise<UserRoomRolesEntity> { 
-        return this.UserRoomRolesRepository.findOne({
+        return this.userRoomRolesRepository.findOne({
             where: { id: id }
         });
     }
 
     async getRolesFromRoom(room_id: string): Promise<UserRoomRolesEntity[]> {
-        return this.UserRoomRolesRepository.find({
+        return this.userRoomRolesRepository.find({
             relations: {
                 user_in_room: true,
                 role_id: true,
@@ -37,7 +35,7 @@ export class UserRoomRolesService {
     }
 
     async getUsersInRoomByRole(room_id: string, role_id: string): Promise<UserEntity[]> {
-        const rolesInRoom = this.UserRoomRolesRepository.find({
+        const rolesInRoom = this.userRoomRolesRepository.find({
             relations: {
                 user_in_room: true,
                 role: true,
@@ -45,25 +43,25 @@ export class UserRoomRolesService {
             select: { user_room_id: true },
             where: { role: role_id }
         });
-        const users = this.usersRoomService.getAllUsersInRoom(room_id);
+        const users = this.userRoomService.getAllUsersInRoom(room_id);
         return users;
     }
 
-    async postRoleInRoom(newRoleRoom: UserRoomRolesDto): Promise<UserRoomRolesEntity> { 
-        const { user_room_id, role_id } = newRoleRoom;
+    async postRoleInRoom(newDto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
+        const { user_room_id, role_id } = newDto;
         const roleEntity = await this.rolesService.findOne(role_id);
         if (roleEntity === null) {
             throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
         }
-        const userInRoom = await this.usersRoomService.findOne(user_room_id);
+        const userInRoom = await this.userRoomService.findOne(user_room_id);
         if (userInRoom === null) {
             throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }
-        const roleInRoom = this.UserRoomRolesMapper.toEntity(newRoleRoom);
-        return await this.UserRoomRolesRepository.save(roleInRoom);
+        const roleInRoom = new UserRoomRolesEntity(/* no */);
+        return await this.userRoomRolesRepository.save(roleInRoom);
     }
 
     async remove(id: number): Promise<void> {
-        await this.UserRoomRolesRepository.delete(id);
+        await this.userRoomRolesRepository.delete(id);
     }
 }

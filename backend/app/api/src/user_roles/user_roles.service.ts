@@ -2,17 +2,15 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
-import { RolesUserDto } from './dto/user_roles.dto';
+import { CreateRolesUserDto } from './dto/user_roles.dto';
 import { RolesUserEntity } from './entity/user_roles.entity';
 import { RolesUserRepository } from './repository/user_roles.repository';
-import { RolesUserMapper } from './user_roles.mapper';
 
 @Injectable()
 export class RolesUserService {
     constructor (
         @InjectRepository(RolesUserEntity)
         private readonly rolesUserRepository: RolesUserRepository,
-        private readonly rolesUserMapper: RolesUserMapper,
         private readonly userService: UserService,
         private readonly rolesService: RolesService,
     ) { }
@@ -40,8 +38,8 @@ export class RolesUserService {
     }
 
     /* Create a new role entity provided RoleUserDto { user_id, role_id } */
-    async assignRoleToUser(rolesUserDto: RolesUserDto): Promise<RolesUserEntity> {  
-        const { role_id, user_id } = rolesUserDto;
+    async assignRoleToUser(dto: CreateRolesUserDto): Promise<RolesUserEntity> {  
+        const { role_id, user_id } = dto;
 
         const roleEntity = await this.rolesService.findOne(role_id);
         if (roleEntity === null) {
@@ -51,7 +49,7 @@ export class RolesUserService {
         if (userEntity === null) {
             throw new HttpException('User does not exist in db', HttpStatus.BAD_REQUEST);
         }
-        const rolesUserEntity = this.rolesUserMapper.toEntity(roleEntity, userEntity);
+        const rolesUserEntity = new RolesUserEntity(/* no */);
         return await this.rolesUserRepository.save(rolesUserEntity);
     }
 

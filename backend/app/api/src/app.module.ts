@@ -10,7 +10,7 @@ import { BanModule } from './ban/ban.module';
 import { UserRolesModule } from './user_roles/user_roles.module';
 import { UserRoomRolesModule } from './user_room_roles/user_room_roles.module';
 import { RolesModule } from './roles/roles.module';
-import { UsersRoomModule } from './user_room/user_room.module';
+import { UserRoomModule } from './user_room/user_room.module';
 import { RoomRolesModule } from './room_roles/room_roles.module';
 
 @Module({
@@ -30,7 +30,7 @@ import { RoomRolesModule } from './room_roles/room_roles.module';
         RolesModule,
         RoomModule,
         RoomChatModule,
-        UsersRoomModule,
+        UserRoomModule,
         UserRolesModule,
         UserRoomRolesModule,
         BanModule,

@@ -1,20 +1,18 @@
 import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/user.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { CreateBanDto } from "../dto/ban.dto";
 
 @Entity({ name: 'ban' })
 @Index(['user_id', 'room_id'], { unique: true })
 export class BanEntity {
-    constructor(
-        user_id: string,
-        room_id: string,
-    ) {
-        this.user_id = user_id;
-        this.room_id = room_id;
+    constructor(dto: CreateBanDto) {
+        this.user_id = dto.user_id;
+        this.room_id = dto.room_id;
         this.created = new Date;    
     }
 
-    @PrimaryGeneratedColumn('increment', { type: 'bigint'} )
+    @PrimaryGeneratedColumn('increment', { type: 'bigint' })
     id: number;
 
     @Column({

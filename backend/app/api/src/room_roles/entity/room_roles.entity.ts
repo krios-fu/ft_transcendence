@@ -1,23 +1,23 @@
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
-import { UserEntity } from "src/user/user.entity";
-import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TreeLevelColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 
 @Entity({ name: 'room_role'})
 export class RoomRolesEntity {
-    constructor(
-        room: RoomEntity,
-        role: RolesEntity,
-    ) {
-        this.room = room;
-        this.role = role;
+    constructor(dto: CreateRoomRolesDto) {
+        this.room_id = dto.room;
+        this.role_id = dto.role;
     }
     
     @PrimaryGeneratedColumn("increment")
     id: number;
 
+    @Column({ type: "varchar" })
+    room_id: string;
+
     @ManyToOne(
-        () => UserEntity,
+        () => RoomEntity,
         {
             cascade: true,
             eager: true,
@@ -25,6 +25,9 @@ export class RoomRolesEntity {
     )
     @JoinColumn({ name: "room_id" })
     room: RoomEntity;
+
+    @Column({ type: "varchar" })
+    role_id: string;
 
     @ManyToOne(
         () => RolesEntity,

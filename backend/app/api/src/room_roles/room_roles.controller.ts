@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Patch } from '@nestjs/common';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { RoomRolesDto } from './dto/room_roles.dto';
+import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesService } from './room_roles.service';
 
@@ -9,37 +9,37 @@ export class RoomRolesController {
   constructor(private readonly roomRolesService: RoomRolesService) {}
 
   @Post()
-  async create(@Body() dto: RoomRolesDto): Promise<RoomRolesEntity> {
+  public async create(@Body() dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
     return this.roomRolesService.create(dto);
   }
 
   @Get()
-  async findAll(): Promise<RoomRolesEntity[]> {
+  public async findAll(): Promise<RoomRolesEntity[]> {
     return this.roomRolesService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoomRolesEntity> {
+  public async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoomRolesEntity> {
     return this.roomRolesService.findOne(id);
   }
 
   /* Get role of an specific room */
   @Get('/rooms/:room_id')
-  async findRoleRoom(@Param('room_id') roomId: string): Promise<RolesEntity> {
+  public async findRoleRoom(@Param('room_id') roomId: string): Promise<RolesEntity> {
     return this.roomRolesService.findRoleRoom(roomId);
   }
 
   @Patch('/:id')
-  async updateRoomRole
+  public async updateRoomRole
   (
     @Param('id', ParseIntPipe) id: number,
-    @Body() dtoUpdate: /* no */
+    @Body() dto: UpdateRoomRolesDto,
   ): Promise<RoomRolesEntity> {
-    return this.roomRolesService.updateRoomRole(id, dtoUpdate);
+    return this.roomRolesService.updateRoomRole(id, dto);
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.roomRolesService.remove(id);
   }
 }

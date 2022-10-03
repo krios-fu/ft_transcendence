@@ -4,8 +4,7 @@ import { RolesUserService } from './user_roles.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from 'src/user/user.module';
 import { RolesUserEntity } from './entity/user_roles.entity';
-import { RolesModule } from 'src/roles/roles.module';
-import { RolesUserMapper } from './user_roles.mapper';
+import { RolesModule } from 'src/roles/roles.module';;
 
 @Module({
     imports: [
@@ -14,10 +13,7 @@ import { RolesUserMapper } from './user_roles.mapper';
         RolesModule,
     ],
     controllers: [RolesUserController],
-    providers: [
-        RolesUserService,
-        RolesUserMapper,
-    ],
+    providers: [RolesUserService],
     exports: [],
 })
 export class RolesUserModule { }

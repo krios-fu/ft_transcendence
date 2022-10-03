@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Post, Put, UseInterceptors } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
 import { UserEntity } from "src/user/user.entity";
-import { RoomDto } from "./dto/room.dto";
+import { CreateRoomDto } from "./dto/room.dto";
 
 @Controller('room')
+@UseInterceptors(ClassSerializerInterceptor)
 export class RoomController {
     constructor(
         private readonly roomService: RoomService,
@@ -12,28 +13,25 @@ export class RoomController {
 
     /* Get all created rooms */
     @Get()
-    async getAllRooms(): Promise<RoomEntity[]> {
+    public async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomService.getAllRooms();
     }
 
     /* Get a room by name */
     @Get(':room_id')
-    async getRoom(@Param('room_id') room_id: string): Promise<RoomEntity> {
+    public async getRoom(@Param('room_id') room_id: string): Promise<RoomEntity> {
         return await this.roomService.findOne(room_id);
     }
 
     /* Get owner of a room */
-    @Get(':room_id/owner/:owner_id')
-    async getRoomOwner(
-        @Param('room_id') room_id: string,
-        @Param('owner_id') owner_id: string
-    ): Promise<UserEntity> {
-        return await this.roomService.getRoomOwner(room_id, owner_id)
+    @Get(':room_id/owner')
+    public async getRoomOwner(@Param('room_id') room_id: string): Promise<UserEntity> {
+        return await this.roomService.getRoomOwner(room_id)
     }
 
     /* Give a room a new owner */
     @Put(':room_id/owner/:owner_id')
-    async updateRoomOwner(
+    public async updateRoomOwner(
         @Param('room_id') room_id: string,
         @Param('owner_id') new_owner_id: string
     ): Promise<RoomEntity> {
@@ -42,14 +40,16 @@ export class RoomController {
 
     /* Create a new room */
     @Post()
-    async createRoom(@Body() dto: RoomDto): Promise<RoomEntity> {    
+    public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {    
         return await this.roomService.createRoom(dto);
     }
+
+    /* Update a room password ?? */
 
     /* Destroy a room */
     /* required room owner || web admin */
     @Delete(':room_id')
-    async removeRoom(@Param('room_id') name: string): Promise<void> {
+    public async removeRoom(@Param('room_id') name: string): Promise<void> {
         return await this.roomService.removeRoom(name);
     }
 }

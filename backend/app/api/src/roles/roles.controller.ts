@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { RolesService } from './roles.service';
-import { RoleDto } from './dto/role.dto';
+import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { RolesEntity } from './entity/roles.entity';
 
 @Controller('roles')
@@ -9,20 +9,20 @@ export class RolesController {
 
   /* Create a new role */
   @Post()
-  create(@Body() createRoleDto: RoleDto): Promise<RolesEntity> {
-    return this.rolesService.create(createRoleDto);
+  public async create(@Body() createRoleDto: CreateRoleDto): Promise<RolesEntity> {
+    return await this.rolesService.create(createRoleDto);
   }
 
   /* Get all roles */
   @Get()
-  findAll(): Promise<RolesEntity[]> {
-    return this.rolesService.findAll();
+  public async findAll(): Promise<RolesEntity[]> {
+    return await this.rolesService.findAll();
   }
 
   /* Get a role */
   @Get(':role_id')
-  findOne(@Param('role_id') role_id: string): Promise<RolesEntity> {
-    return this.rolesService.findOne(role_id);
+  public async findOne(@Param('role_id') role_id: string): Promise<RolesEntity> {
+    return await this.rolesService.findOne(role_id);
   }
 
   /* Update a role */
@@ -31,13 +31,17 @@ export class RolesController {
    * @Decorator(scope, role)
    */
   @Patch(':role_id')
-  update(@Param('role_id') role_id: string, @Body() updateRoleDto: RoleDto): Promise<RolesEntity> {
-    return this.rolesService.update(role_id, updateRoleDto);
+  public async update
+  (
+    @Param('role_id') role_id: string, 
+    @Body() updateRoleDto: UpdateRoleDto
+  ): Promise<RolesEntity> {
+    return await this.rolesService.update(role_id, updateRoleDto);
   }
 
   /* Delete a role */
   @Delete(':role_id')
-  remove(@Param('role_id') role_id: string): Promise<void> {
-    return this.rolesService.remove(role_id);
+  public async remove(@Param('role_id') role_id: string): Promise<void> {
+    return await this.rolesService.remove(role_id);
   }
 }

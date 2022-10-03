@@ -1,16 +1,14 @@
 import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/user.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { CreateUserRoomDto } from "../dto/user_room.dto";
 
 @Entity({name: 'users_room'})
 @Index(['user_id', 'room_id'], {unique: true})
-export class UsersRoomEntity {
-    constructor (
-        user_id: string,
-        room_id: string,
-    ) {
-        this.user_id = user_id;
-        this.room_id = room_id;
+export class UserRoomEntity {
+    constructor (dto: CreateUserRoomDto) {
+        this.user_id = dto.user_id;
+        this.room_id = dto.room_id;
         this.created = new Date;
     }
 

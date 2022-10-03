@@ -1,6 +1,6 @@
 import { Body, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import { RolesUserDto } from './dto/user_roles.dto';
+import { CreateRolesUserDto } from './dto/user_roles.dto';
 import { RolesUserEntity } from './entity/user_roles.entity';
 import { RolesUserService } from './user_roles.service';
 
@@ -31,7 +31,7 @@ export class RolesUserController {
     /* Create a new role for a user */
     /* at least web admin */
         @Post()
-        async assignRoleToUser(@Body() rolesUserDto: RolesUserDto): Promise<RolesUserEntity> { 
+        async assignRoleToUser(@Body() rolesUserDto: CreateRolesUserDto): Promise<RolesUserEntity> { 
             return this.rolesUserService.assignRoleToUser(rolesUserDto);
         }
 
