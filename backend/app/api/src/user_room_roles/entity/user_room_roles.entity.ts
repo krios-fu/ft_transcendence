@@ -1,5 +1,5 @@
 import { RolesEntity } from "src/roles/entity/roles.entity";
-import { UsersRoomEntity } from "src/user_room/entity/user_room.entity";
+import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, TreeLevelColumn } from "typeorm";
 
 @Entity({ name: 'roles_room' })
@@ -24,14 +24,14 @@ export class UserRoomRolesEntity {
    user_room_id: number;
 
    @ManyToOne(
-      () => UsersRoomEntity,
+      () => UserRoomEntity,
       {
          cascade: true,
          eager: true,
       }
    )
    @JoinColumn( {name: 'user_in_room'}) /* ??? */
-   user_in_room: UsersRoomEntity;
+   user_in_room: UserRoomEntity;
 
    @Column({
       type: 'varchar',

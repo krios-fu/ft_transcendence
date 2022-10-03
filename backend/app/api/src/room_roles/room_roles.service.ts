@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PartialType } from '@nestjs/mapped-types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
@@ -41,8 +42,8 @@ export class RoomRolesService {
   }
 
   public async updateRoomRole(id: number, dto: UpdateRoomRolesDto): Promise<RoomRolesEntity> {
-    /* clean update */
-    return await this.roomRolesRepository.update(id, entity);
+    await this.roomRolesRepository.update(id, dto);
+    return await this.findOne(id);
   }
 
   public async remove(id: number): Promise<void> {

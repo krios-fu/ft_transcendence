@@ -2,43 +2,43 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserService } from 'src/user/user.service';
-import { CreateRolesUserDto } from './dto/user_roles.dto';
-import { RolesUserEntity } from './entity/user_roles.entity';
-import { RolesUserRepository } from './repository/user_roles.repository';
+import { CreateUserRolesDto } from './dto/user_roles.dto';
+import { UserRolesEntity } from './entity/user_roles.entity';
+import { UserRolesRepository } from './repository/user_roles.repository';
 
 @Injectable()
-export class RolesUserService {
+export class UserRolesService {
     constructor (
-        @InjectRepository(RolesUserEntity)
-        private readonly rolesUserRepository: RolesUserRepository,
+        @InjectRepository(UserRolesEntity)
+        private readonly UserRolesRepository: UserRolesRepository,
         private readonly userService: UserService,
         private readonly rolesService: RolesService,
     ) { }
     
-    async getRoleUser(id: number): Promise<RolesUserEntity> { 
-        return await this.rolesUserRepository.findOne({
+    public async getRoleUser(id: number): Promise<UserRolesEntity> { 
+        return await this.UserRolesRepository.findOne({
             where: { id: id },
         });
     }
 
     /* Returns all roles entities associated with user */
-    async getAllRolesFromUser(user_id: string): Promise<RolesUserEntity[]> { 
-        return await this.rolesUserRepository.find({
+    public async getAllRolesFromUser(user_id: string): Promise<UserRolesEntity[]> { 
+        return await this.UserRolesRepository.find({
             relations: { user: true },
             where: { user_id: user_id },
         });
     }
     
     /* from role id, return all users with this id */
-    async getUsersWithRole(role_id: string): Promise<RolesUserEntity[]> { 
-        return await this.rolesUserRepository.find({
+    public async getUsersWithRole(role_id: string): Promise<UserRolesEntity[]> { 
+        return await this.UserRolesRepository.find({
             relations: { role: true },
             where: { role_id: role_id },
         });
     }
 
     /* Create a new role entity provided RoleUserDto { user_id, role_id } */
-    async assignRoleToUser(dto: CreateRolesUserDto): Promise<RolesUserEntity> {  
+    public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {  
         const { role_id, user_id } = dto;
 
         const roleEntity = await this.rolesService.findOne(role_id);
@@ -49,13 +49,13 @@ export class RolesUserService {
         if (userEntity === null) {
             throw new HttpException('User does not exist in db', HttpStatus.BAD_REQUEST);
         }
-        const rolesUserEntity = new RolesUserEntity(/* no */);
-        return await this.rolesUserRepository.save(rolesUserEntity);
+        const UserRolesEntity = new UserRolesEntity(/* no */);
+        return await this.UserRolesRepository.save(UserRolesEntity);
     }
 
     /* Remove role entity by id */
-    async deleteRoleFromUser(id: number) { 
-        await this.rolesUserRepository.delete(id);
+    public async deleteRoleFromUser(id: number) { 
+        await this.UserRolesRepository.delete(id);
     }
     /* Test if delete removes from non-primary key column */
 }

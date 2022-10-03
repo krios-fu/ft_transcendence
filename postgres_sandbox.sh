@@ -7,4 +7,4 @@ docker run \
     -d \
     postgres
 
-docker exec -u postgres -it postgres-sandbox psql
+docker exec -it postgres-sandbox bash -c "psql -U postgres"

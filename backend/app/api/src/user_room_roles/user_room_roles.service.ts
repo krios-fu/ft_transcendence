@@ -5,13 +5,13 @@ import { UserEntity } from 'src/user/user.entity';
 import { UserRoomService } from 'src/user_room/user_room.service';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
-import { userRoomRolesRepository } from './repository/user_room_roles.repository';
+import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
 
 @Injectable()
 export class UserRoomRolesService {
     constructor(
         @InjectRepository(UserRoomRolesEntity)
-        private readonly userRoomRolesRepository: userRoomRolesRepository,
+        private readonly userRoomRolesRepository: UserRoomRolesRepository,
         private readonly userRoomService: UserRoomService,
         private readonly rolesService: RolesService,
     ) { }

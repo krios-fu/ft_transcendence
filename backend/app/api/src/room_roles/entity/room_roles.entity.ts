@@ -6,8 +6,8 @@ import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 @Entity({ name: 'room_role'})
 export class RoomRolesEntity {
     constructor(dto: CreateRoomRolesDto) {
-        this.room_id = dto.room;
-        this.role_id = dto.role;
+        this.room_id = dto.room_id;
+        this.role_id = dto.role_id;
     }
     
     @PrimaryGeneratedColumn("increment")

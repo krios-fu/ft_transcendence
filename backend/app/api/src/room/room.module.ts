@@ -4,7 +4,6 @@ import { RoomController } from './room.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomEntity } from './entity/room.entity';
 import { RoomRepository } from './repository/room.repository';
-import { RoomMapper } from './room.mapper';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
@@ -16,8 +15,7 @@ import { UserModule } from 'src/user/user.module';
   ],
   controllers: [RoomController],
   providers: [
-    RoomService, 
-    RoomMapper,
+    RoomService,
     RoomRepository,
   ],
   exports: [RoomService]
