@@ -4,7 +4,7 @@ import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { UserRoomDto } from './dto/user_room.dto';
+import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { UserRoomRepository } from './repository/user_room.repository';
 
@@ -16,7 +16,7 @@ export class UserRoomService {
     private readonly roomService: RoomService,
     private readonly userService: UserService,
   ) { }
-  async create(newDto: UserRoomDto) {
+  async create(newDto: CreateUserRoomDto) {
       const userInRoom = new UserRoomEntity(newDto);
       return await this.userRoomRepository.save(userInRoom);
   }

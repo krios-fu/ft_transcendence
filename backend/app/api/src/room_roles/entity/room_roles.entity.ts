@@ -3,7 +3,7 @@ import { RoomEntity } from "src/room/entity/room.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 
-@Entity({ name: 'room_role'})
+@Entity({ name: 'room_role' })
 export class RoomRolesEntity {
     constructor(dto: CreateRoomRolesDto) {
         this.room_id = dto.room_id;

@@ -39,18 +39,22 @@ export class UserRolesService {
 
     /* Create a new role entity provided RoleUserDto { user_id, role_id } */
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {  
-        const { role_id, user_id } = dto;
-
-        const roleEntity = await this.rolesService.findOne(role_id);
-        if (roleEntity === null) {
-            throw new HttpException('Role does not exist in db', HttpStatus.BAD_REQUEST);
-        }
-        const userEntity = await this.userService.findOne(user_id);
-        if (userEntity === null) {
-            throw new HttpException('User does not exist in db', HttpStatus.BAD_REQUEST);
-        }
-        const UserRolesEntity = new UserRolesEntity(/* no */);
-        return await this.UserRolesRepository.save(UserRolesEntity);
+        //const { role_id, user_id } = dto;
+//
+        //const roleEntity = await this.rolesService.findOne(role_id);
+        //if (roleEntity === null) {
+        //    throw new HttpException('Role does not exist in db', HttpStatus.BAD_REQUEST);
+        //}
+        //const userEntity = await this.userService.findOne(user_id);
+        //if (userEntity === null) {
+        //    throw new HttpException('User does not exist in db', HttpStatus.BAD_REQUEST);
+        //}
+        const newUserRole = new UserRolesEntity(dto);
+        return await this.UserRolesRepository.save(newUserRole);
+        /* To test:
+            -> if typeorm inserts relations with only id column present
+            -> if typeorm can insert entity with bad relations
+        */
     }
 
     /* Remove role entity by id */

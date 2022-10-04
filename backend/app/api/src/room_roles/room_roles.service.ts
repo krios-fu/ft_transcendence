@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PartialType } from '@nestjs/mapped-types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';

@@ -18,7 +18,7 @@ export class RoomEntity {
         unique: true,
         length: 15,
     })
-    readonly room_id: string;
+    room_id: string;
 
     @Exclude()
     @Column({

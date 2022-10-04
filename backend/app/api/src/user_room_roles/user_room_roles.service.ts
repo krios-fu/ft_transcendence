@@ -57,7 +57,7 @@ export class UserRoomRolesService {
         if (userInRoom === null) {
             throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }
-        const roleInRoom = new UserRoomRolesEntity(/* no */);
+        const roleInRoom = new UserRoomRolesEntity(newDto);
         return await this.userRoomRolesRepository.save(roleInRoom);
     }
 
