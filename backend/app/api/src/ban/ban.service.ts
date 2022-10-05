@@ -23,11 +23,11 @@ export class BanService {
         });
     }
 
-    public async getBannedUsersInRoom(room_id: string): Promise<UserEntity[]> {
+    public async getBannedUsersInRoom(roomId: string): Promise<UserEntity[]> {
         let users: UserEntity[] = [];
 
         const bansInRoom = await this.banRepository.find({
-            where: { room_id: room_id }
+            where: { roomId: roomId }
         });
         for (let ban of bansInRoom) {
             users.push(ban.user);
@@ -35,11 +35,11 @@ export class BanService {
         return users;
     }
 
-    public async getRoomsWithUserBanned(user_id: string): Promise<RoomEntity[]> {
+    public async getRoomsWithUserBanned(userId: string): Promise<RoomEntity[]> {
         let rooms: RoomEntity[] = [];
 
         const bansByUser = await this.banRepository.find({
-            where: { user_id: user_id }
+            where: { userId: userId }
         });
         for (let ban of bansByUser) {
             rooms.push(ban.room);

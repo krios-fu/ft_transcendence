@@ -11,8 +11,8 @@ export class UserRolesService {
     constructor (
         @InjectRepository(UserRolesEntity)
         private readonly UserRolesRepository: UserRolesRepository,
-        private readonly userService: UserService,
-        private readonly rolesService: RolesService,
+//        private readonly userService: UserService,
+//        private readonly rolesService: RolesService,
     ) { }
     
     public async getRoleUser(id: number): Promise<UserRolesEntity> { 
@@ -22,30 +22,30 @@ export class UserRolesService {
     }
 
     /* Returns all roles entities associated with user */
-    public async getAllRolesFromUser(user_id: string): Promise<UserRolesEntity[]> { 
+    public async getAllRolesFromUser(userId: string): Promise<UserRolesEntity[]> { 
         return await this.UserRolesRepository.find({
             relations: { user: true },
-            where: { user_id: user_id },
+            where: { userId: userId },
         });
     }
     
     /* from role id, return all users with this id */
-    public async getUsersWithRole(role_id: string): Promise<UserRolesEntity[]> { 
+    public async getUsersWithRole(roleId: string): Promise<UserRolesEntity[]> { 
         return await this.UserRolesRepository.find({
             relations: { role: true },
-            where: { role_id: role_id },
+            where: { roleId: roleId },
         });
     }
 
-    /* Create a new role entity provided RoleUserDto { user_id, role_id } */
+    /* Create a new role entity provided RoleUserDto { userId, roleId } */
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {  
-        //const { role_id, user_id } = dto;
+        //const { roleId, userId } = dto;
 //
-        //const roleEntity = await this.rolesService.findOne(role_id);
+        //const roleEntity = await this.rolesService.findOne(roleId);
         //if (roleEntity === null) {
         //    throw new HttpException('Role does not exist in db', HttpStatus.BAD_REQUEST);
         //}
-        //const userEntity = await this.userService.findOne(user_id);
+        //const userEntity = await this.userService.findOne(userId);
         //if (userEntity === null) {
         //    throw new HttpException('User does not exist in db', HttpStatus.BAD_REQUEST);
         //}

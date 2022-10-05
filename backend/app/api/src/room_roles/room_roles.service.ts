@@ -34,7 +34,7 @@ export class RoomRolesService {
         role: true,
       },
       where: { 
-        room: { room_id: roomId }
+        room: { roomId: roomId }
       }
     });
     return roomRole.role;

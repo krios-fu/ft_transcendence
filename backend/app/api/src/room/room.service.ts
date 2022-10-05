@@ -18,22 +18,22 @@ export class RoomService {
         return await this.roomRepository.find();
     }
 
-    public async findOne(room_id: string): Promise<RoomEntity> {
+    public async findOne(roomId: string): Promise<RoomEntity> {
         return await this.roomRepository.findOne({
-            where: { room_id: room_id }
+            where: { roomId: roomId }
         });
     }
 
-    public async getRoomOwner(room_id: string): Promise<UserEntity> {
-        const room = this.findOne(room_id);
+    public async getRoomOwner(roomId: string): Promise<UserEntity> {
+        const room = this.findOne(roomId);
         if (room === null) {
             throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }
         return (await room).owner;
     }
 
-    public async updateRoomOwner(room_id: string, new_owner_id: string): Promise<RoomEntity> {
-        const room = await this.findOne(room_id);
+    public async updateRoomOwner(roomId: string, new_owner_id: string): Promise<RoomEntity> {
+        const room = await this.findOne(roomId);
         if (room === null) {
             throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }
@@ -42,20 +42,20 @@ export class RoomService {
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }
         return await this.roomRepository.preload({
-            room_id: room.room_id,
+            roomId: room.roomId,
             owner: newOwner,
         });
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
-        const { room_id, password, owner } = dto;
+        const { roomId, password, owner } = dto;
         const ownerEnt = await this.userService.findOne(owner);
         if (ownerEnt === undefined) {
             throw new HttpException('no user in db', HttpStatus.UNAUTHORIZED);
         }
         const newRoom = new RoomEntity(dto);
         const roomInDb = await this.roomRepository.findOne({ 
-            where: { room_id: room_id }
+            where: { roomId: roomId }
         });
         if (roomInDb != undefined) {
             throw new HttpException('room already in db', HttpStatus.BAD_REQUEST);
@@ -63,8 +63,8 @@ export class RoomService {
         return await this.roomRepository.save(newRoom);
     }
 
-    public async removeRoom(room_id: string): Promise<void> {
-        await this.roomRepository.delete(room_id);
+    public async removeRoom(roomId: string): Promise<void> {
+        await this.roomRepository.delete(roomId);
     }
 
     ///**************** room auth services *****************/

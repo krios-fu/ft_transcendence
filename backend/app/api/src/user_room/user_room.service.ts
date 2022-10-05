@@ -31,14 +31,14 @@ export class UserRoomService {
     });
   }
 
-  async getAllUsersInRoom(room_id: string): Promise<UserEntity[]> {
+  async getAllUsersInRoom(roomId: string): Promise<UserEntity[]> {
     const userList = this.userRoomRepository.find({
-      select: { user_id: true },
+      select: { userId: true },
       relations: {
         room: true,
         user: true,
       },
-      where: { room_id: room_id },
+      where: { roomId: roomId },
     });
 
     /* debug */
@@ -53,12 +53,12 @@ export class UserRoomService {
     return usersInRoom;
   }
 
-  async getAllRoomsWithUser(user_id: string): Promise<RoomEntity[]>  {
+  async getAllRoomsWithUser(userId: string): Promise<RoomEntity[]>  {
     let rooms: RoomEntity[] = [];
 
     const userRooms = await this.userRoomRepository.find({
       relations: { room: true },
-      where:     { user_id: user_id },
+      where:     { userId: userId },
     });
 
     /* debugggg */
@@ -73,14 +73,14 @@ export class UserRoomService {
 
   async remove(id: number) {
     const room = await this.userRoomRepository.findOne({
-      select: { room_id: true },
+      select: { roomId: true },
       where: { id: id },
     });
     await this.userRoomRepository.delete(id);
     /* need to check if room is removable */
-    const isEmpty = await this.getAllUsersInRoom(room.room_id);
+    const isEmpty = await this.getAllUsersInRoom(room.roomId);
     if (isEmpty.length === 0) {
-      await this.roomService.removeRoom(room.room_id);
+      await this.roomService.removeRoom(room.roomId);
     }
   }
 }

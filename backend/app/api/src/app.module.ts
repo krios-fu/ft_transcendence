@@ -43,5 +43,6 @@ import { RoomRolesModule } from './room_roles/room_roles.module';
             useClass: JwtAuthGuard,
         },
     ],
+    exports: []
 })
 export class AppModule { }

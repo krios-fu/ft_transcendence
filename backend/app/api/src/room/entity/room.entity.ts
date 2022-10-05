@@ -1,31 +1,39 @@
 import { UserEntity } from "src/user/user.entity";
-import { BeforeInsert, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import { CreateRoomDto } from "../dto/room.dto";
+import { 
+    BeforeInsert, 
+    Column, 
+    Entity, 
+    JoinColumn, 
+    ManyToOne, 
+    PrimaryColumn 
+} from "typeorm";
 
 @Entity({ name: "room" })
 export class RoomEntity {
     constructor(dto: CreateRoomDto) {
-        this.room_id = dto.room_id;
-        this.owner_user = dto.owner;
-        this.password = dto.password;
-        this.date = new Date();
+        if (dto !== undefined) {
+            Object.assign(this, dto);
+        }
+        this.createdAt = new Date();
     }
 
     @PrimaryColumn({
-        type: "varchar",
+        type: 'varchar',
+        name: 'room_id',
         unique: true,
         length: 15,
     })
-    room_id: string;
+    roomId!: string;
 
     @Exclude()
     @Column({
         type: "varchar",
         nullable: true,
     })
-    password: string;
+    password?: string;
     
     @BeforeInsert()
     async encryptPassword(): Promise<void> {
@@ -35,11 +43,17 @@ export class RoomEntity {
         }
     }
 
-    @Column({ type: Date })
-    date: Date;
+    @Column({ 
+        type: 'date' ,
+        name: 'created_at'
+    })
+    createdAt: Date;
 
-    @Column({ type: "varchar" })
-    owner_user: string;
+    @Column({ 
+        type: 'varchar',
+        name: 'owner_user'
+    })
+    ownerUser!: string;
 
     @ManyToOne(
         () => UserEntity, 

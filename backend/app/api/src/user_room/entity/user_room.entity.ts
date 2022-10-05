@@ -4,12 +4,13 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } 
 import { CreateUserRoomDto } from "../dto/user_room.dto";
 
 @Entity({name: 'users_room'})
-@Index(['user_id', 'room_id'], {unique: true})
+@Index(['userId', 'roomId'], {unique: true})
 export class UserRoomEntity {
     constructor (dto: CreateUserRoomDto) {
-        this.user_id = dto.user_id;
-        this.room_id = dto.room_id;
-        this.created = new Date;
+        if (dto !== undefined) {
+            Object.assign(this, dto);
+        }
+        this.createdAt = new Date;
     }
 
     @PrimaryGeneratedColumn('increment', {type: 'bigint'})
@@ -17,9 +18,10 @@ export class UserRoomEntity {
 
     @Column({
         type: 'varchar',
+        name: 'user_id',
         update: false
     })
-    user_id: string;
+    userId: string;
 
     @ManyToOne(
         () => UserEntity,
@@ -33,9 +35,10 @@ export class UserRoomEntity {
 
     @Column({
         type: 'varchar',
+        name: 'room_id',
         update: false
     })
-    room_id: string;
+    roomId: string;
 
     @ManyToOne(
         () => RoomEntity,
@@ -49,7 +52,8 @@ export class UserRoomEntity {
 
     @Column({
         type: 'date',
+        name: 'created_at',
         update: false,
     })
-    created: Date
+    createdAt: Date
 }

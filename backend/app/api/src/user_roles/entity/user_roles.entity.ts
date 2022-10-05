@@ -1,15 +1,17 @@
 
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { UserEntity } from 'src/user/user.entity';
-import { Column, Entity, Generated, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 
 @Entity({ name: 'roles_user' })
+@Index(['roleId', 'userId'], { unique: true })
 export class UserRolesEntity {
     constructor (dto: CreateUserRolesDto) {
-        this.user_id = dto.user_id;
-        this.role_id = dto.role_id;
-        this.date = new Date;
+        if (dto !== undefined) {
+            Object.assign(this, dto);
+        }
+        this.createdAt = new Date;
     }
 
     @Column({
@@ -21,8 +23,9 @@ export class UserRolesEntity {
 
     @PrimaryColumn({
         type: 'varchar',
+        name: 'user_id'
     })
-    user_id: string;
+    userId: string;
 
     @ManyToOne(
         () => UserEntity,
@@ -33,8 +36,9 @@ export class UserRolesEntity {
 
     @PrimaryColumn({
         type: 'varchar',
+        name: 'role_id'
     })
-    role_id: string;
+    roleId: string;
 
     @ManyToOne(
         () => RolesEntity,
@@ -44,7 +48,8 @@ export class UserRolesEntity {
     role: RolesEntity;
 
     @Column({
-        type: Date,
+        type: 'date',
+        name: 'created_at'
     })
-    date: Date;
+    createdAt: Date;
 }

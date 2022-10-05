@@ -22,38 +22,38 @@ export class UserRoomRolesService {
         });
     }
 
-    async getRolesFromRoom(room_id: string): Promise<UserRoomRolesEntity[]> {
+    async getRolesFromRoom(roomId: string): Promise<UserRoomRolesEntity[]> {
         return this.userRoomRolesRepository.find({
             relations: {
-                user_in_room: true,
-                role_id: true,
+                userRoom: true,
+                role: true,
             },
             where: { 
-                user_in_room: { room_id: room_id } 
+                userRoom: { roomId: roomId } 
             }
         });
     }
 
-    async getUsersInRoomByRole(room_id: string, role_id: string): Promise<UserEntity[]> {
+    async getUsersInRoomByRole(room_id: string, roleId: string): Promise<UserEntity[]> {
         const rolesInRoom = this.userRoomRolesRepository.find({
             relations: {
-                user_in_room: true,
+                userRoom: true,
                 role: true,
             },
-            select: { user_room_id: true },
-            where: { role: role_id }
+            select: { userRoomId: true },
+            where: { role: roleId }
         });
         const users = this.userRoomService.getAllUsersInRoom(room_id);
         return users;
     }
 
     async postRoleInRoom(newDto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
-        const { user_room_id, role_id } = newDto;
-        const roleEntity = await this.rolesService.findOne(role_id);
+        const { userRoomId, roleId } = newDto;
+        const roleEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
             throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
         }
-        const userInRoom = await this.userRoomService.findOne(user_room_id);
+        const userInRoom = await this.userRoomService.findOne(userRoomId);
         if (userInRoom === null) {
             throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }

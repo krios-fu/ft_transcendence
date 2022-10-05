@@ -4,12 +4,13 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } 
 import { CreateUserRoomRolesDto } from "../dto/user_room_roles.dto";
 
 @Entity({ name: 'roles_room' })
-@Index(['user_room_id', 'role_id'], { unique: true })
+@Index(['userRoomId', 'roleId'], { unique: true })
 export class UserRoomRolesEntity {
    constructor(dto: CreateUserRoomRolesDto) {
-      this.user_room_id = dto.user_room_id;
-      this.role_id = dto.role_id;
-      this.created = new Date;
+      if (dto !== undefined) {
+         Object.assign(this, dto);
+     }
+     this.createdAt = new Date;
    }
    
    @PrimaryGeneratedColumn('increment')
@@ -17,9 +18,10 @@ export class UserRoomRolesEntity {
 
    @Column({
       type: 'bigint',
+      name: 'user_room_id',
       update: false,
    })
-   user_room_id: number;
+   userRoomId: number;
 
    @ManyToOne(
       () => UserRoomEntity,
@@ -28,14 +30,15 @@ export class UserRoomRolesEntity {
          eager: true,
       }
    )
-   @JoinColumn( {name: 'user_in_room'}) /* ??? */
-   user_in_room: UserRoomEntity;
+   @JoinColumn( {name: 'user_room_id'})
+   userRoom: UserRoomEntity;
 
    @Column({
       type: 'varchar',
+      name: 'role_id',
       update: false,
    })
-   role_id: string;
+   roleId: string;
 
    @ManyToOne(
       () => RolesEntity,
@@ -49,7 +52,8 @@ export class UserRoomRolesEntity {
 
    @Column({
       type: 'date',
+      name: 'created_at',
       update: false,
    })
-   created: Date;
+   createdAt: Date;
 }

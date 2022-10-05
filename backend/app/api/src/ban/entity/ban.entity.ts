@@ -4,12 +4,13 @@ import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } 
 import { CreateBanDto } from "../dto/ban.dto";
 
 @Entity({ name: 'ban' })
-@Index(['user_id', 'room_id'], { unique: true })
+@Index(['userId', 'roomId'], { unique: true })
 export class BanEntity {
     constructor(dto: CreateBanDto) {
-        this.user_id = dto.user_id;
-        this.room_id = dto.room_id;
-        this.created = new Date;    
+        if (dto !== undefined){
+            Object.assign(this, dto);
+        }
+        this.createdAt = new Date;    
     }
 
     @PrimaryGeneratedColumn('increment', { type: 'bigint' })
@@ -17,9 +18,10 @@ export class BanEntity {
 
     @Column({
         type: 'varchar',
-        update: false,
+        name: 'user_id',
+        update: false
     })
-    user_id: string;
+    userId: string;
 
     @ManyToOne(
         () => UserEntity,
@@ -33,9 +35,10 @@ export class BanEntity {
 
     @Column({
         type: 'varchar',
-        update: false,
+        name: 'room_id',
+        update: false
     })
-    room_id: string;
+    roomId: string;
 
     @ManyToOne(
         () => UserEntity,
@@ -49,7 +52,8 @@ export class BanEntity {
 
     @Column({
         type: 'date',
-        update: false,
+        name: 'created_at',
+        update: false
     })
-    created: Date;
+    createdAt: Date;
 }
