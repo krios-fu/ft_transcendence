@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserEntity } from 'src/user/user.entity';
@@ -11,7 +11,10 @@ export class BanService {
     constructor (
         @InjectRepository(BanEntity)
         private readonly banRepository: BanRepository,
-    ) { }
+    ) { 
+        this.banLogger = new Logger(BanService.name);
+    }
+    private readonly banLogger: Logger;
 
     public async getAllBans(): Promise<BanEntity[]> {
         return await this.banRepository.find();
@@ -49,7 +52,13 @@ export class BanService {
 
     public async createBan(dto: CreateBanDto): Promise<BanEntity> {
         const newBan = new BanEntity(dto);
-        return await this.banRepository.save(newBan); /* this needs to be tested */
+        try {
+            await this.banRepository.save(newBan);
+        } catch (err) {
+            this.banLogger.error(err);
+            throw new HttpException('no user or room in db', HttpStatus.BAD_REQUEST);
+        }
+        return newBan; /* this needs to be tested */
     }
 
     public async deleteBan(ban_id: number): Promise<void> {

@@ -16,7 +16,7 @@ import { RoomRolesModule } from './room_roles/room_roles.module';
 @Module({
     imports: [
         UserModule,
-        AuthModule,
+        //AuthModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
@@ -37,12 +37,12 @@ import { RoomRolesModule } from './room_roles/room_roles.module';
         RoomRolesModule,
     ],
     controllers: [],
-    providers: [
-        {
-            provide: APP_GUARD,
-            useClass: JwtAuthGuard,
-        },
-    ],
+    //providers: [
+    //    {
+    //        provide: APP_GUARD,
+    //        useClass: JwtAuthGuard,
+    //    },
+    //],
     exports: []
 })
 export class AppModule { }
