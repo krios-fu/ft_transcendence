@@ -73,6 +73,33 @@ export class    GameService {
         return (true);
     }
 
+    // Returns the probability of target winning rival
+    /*private calcExpectedScore(target: PlayerDto, rival: PlayerDto): number {
+        return (
+            1 / (1 + Math.pow(10, rival.ranking - target.ranking / 400))
+        );
+    }
+
+    // win = 0 | 1
+    private calcRankingUpdate(player: PlayerDto, win: number,
+                                expectedScore: number): number {
+        return (
+            player.ranking + 32 * (win - expectedScore)
+        );
+    }
+
+    // win = 0 | 1
+    updateRanking(playerA: PlayerDto, playerB: PlayerDto, win: number): void {
+        let expectA: number;
+        let expectB: number;
+    
+        expectA = this.calcExpectedScore(playerA, playerB);
+        expectB = this.calcExpectedScore(playerB, playerA);
+        if (!win)
+            playerA.ranking = this.calcRankingUpdate(playerA, 0, expectA);
+        playerB.ranking = this.calcRankingUpdate(playerB, 1, expectB);
+    }*/
+
     private async   updatePlayerScore(players: [UserEntity, UserEntity],
                                 gameData: Game)/*: Promise<UpdateResult>*/ {
         //Pending ...
