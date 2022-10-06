@@ -1,5 +1,10 @@
+import { MatchDto } from "src/match/match.dto";
+import { MatchEntity } from "src/match/match.entity";
+import { MatchService } from "src/match/match.service";
 import { UserEntity } from "src/user/user.entity";
 import { UserService } from "src/user/user.service";
+import { UpdateResult } from "typeorm";
+import { Game } from "./Game";
 
 /*
 **  Provisional
@@ -15,7 +20,8 @@ export class    GameService {
     gamePlayers: Map<string, [UserEntity, UserEntity]>;
 
     constructor(
-        private userService: UserService
+        private readonly userService: UserService,
+        private readonly matchService: MatchService
     ) {}
 
     private getPlayerLevel(player: UserEntity): Level {
@@ -62,17 +68,49 @@ export class    GameService {
         return (nextPlayers);
     }
 
-    private updatePlayerScore(user: UserEntity): void {
+    private isOfficial(gameId: string): boolean {
+        // Pending ...
+        return (true);
+    }
+
+    private async   updatePlayerScore(players: [UserEntity, UserEntity],
+                                gameData: Game)/*: Promise<UpdateResult>*/ {
         //Pending ...
     }
 
-    endGame(gameId: string): void {
-        let players: [UserEntity, UserEntity] = this.gamePlayers.get(gameId);
+    private async   saveMatch(players: [UserEntity, UserEntity],
+                                gameData: Game): Promise<MatchEntity> {
+        let matchDto: MatchDto;
 
-        this.updatePlayerScore(players[0]);
-        this.updatePlayerScore(players[1]);
+        /*
+        matchDto.winner = ;
+        matchDto.loser = ;
+        matchDto.winnerScore = ;
+        matchDto.loserScore = ;
+        matchDto.official = ;
+        */
+        return (await this.matchService.addMatch(matchDto));
+    }
+
+    /*
+    **  User ranking update and match insertion must be done in a transaction.
+    **  Determine failure handling.
+    **
+    **  User id (username) should be included in Player class in order to
+    **  link User instance to its respective Player instance.
+    */
+    async endGame(gameId: string, gameData: Game): Promise<void> {
+        const players: [UserEntity, UserEntity] = this.gamePlayers.get(gameId);
+
+        if (this.isOfficial(gameId))
+        {
+            /*if (!(await */this.updatePlayerScore(players, gameData);/*))*/
+        }
+        if (!(await this.saveMatch(players, gameData)))
+            console.log(`Failed database insertion for match: ${gameId}`);
         players[0] = undefined;
         players[1] = undefined;
+        return ;
     }
 
     private findByUsername(username: string, queue: UserEntity[]): number {
