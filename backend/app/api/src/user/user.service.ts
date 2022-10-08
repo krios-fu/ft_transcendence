@@ -38,7 +38,6 @@ export class UserService {
         try {
             await this.userRepository.insert(newEntity);
         } catch (err) {
-            console.log(err);
             throw new HttpException('User already exists',
                                     HttpStatus.BAD_REQUEST);
         }

@@ -10,12 +10,12 @@ export class RolesEntity {
         this.createdAt = new Date;
     }
 
-    @PrimaryColumn({
-        type: "varchar",
-        unique: true
-    })
+    @PrimaryColumn({ type: 'varchar' })
     readonly role: string
 
-    @Column({ type: "date" })
+    @Column({ 
+        type: 'date',
+        name: 'created_at',
+    })
     createdAt: Date;
 }

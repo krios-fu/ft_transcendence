@@ -15,7 +15,11 @@ export class UserRolesService {
 //        private readonly rolesService: RolesService,
     ) { }
     
-    public async getRoleUser(id: number): Promise<UserRolesEntity> { 
+    public async getAllUserRoles(): Promise<UserRolesEntity[]> {
+        return await this.UserRolesRepository.find();
+    }
+
+    public async getUserRole(id: number): Promise<UserRolesEntity> { 
         return await this.UserRolesRepository.findOne({
             where: { id: id },
         });

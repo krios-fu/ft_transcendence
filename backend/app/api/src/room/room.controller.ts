@@ -45,6 +45,12 @@ export class RoomController {
     }
 
     /* Update a room password ?? */
+    /* UseGuards(RoomOwner) ~~ check if user owns the room ~~
+       @Put(':room_id')
+       public async changePwd(@Body creds: RoomPasswordDto ~~ @IsString() oldPwd, @IsString() newPwd ~~) {
+         return await this.roomService.changePwd(); ~~ first checks oldPwd, then changes entity ~~
+       }
+    */
 
     /* Destroy a room */
     /* required room owner || web admin */

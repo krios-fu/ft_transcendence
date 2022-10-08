@@ -11,27 +11,53 @@ user_name='placeholder'
 
 
 # ~~ ban batch ~~ 
-echo -e $gr "[ GET /ban ]" $fn
+echo $gr "[ GET /ban ]" $fn
 ./aim.sh 'ban' 'getall'
-echo -e $gr '[ GET /ban/1 ]' $fn
+echo $gr '[ GET /ban/1 ]' $fn
 ./aim.sh 'ban' 'get' '1'
-echo -e $gr "[ GET /ban/rooms/$room_name ]" $fn
+echo $gr "[ GET /ban/rooms/$room_name ]" $fn
 ./aim.sh 'ban' 'getrooms' $room_name
-echo -e $gr "[ GET /ban/users/$user_name ]" $fn
+echo $gr "[ GET /ban/users/$user_name ]" $fn
 ./aim.sh 'ban' 'getusers' $user_name
-echo -e $bl "[ POST /ban ]" $fn
+echo $bl "[ POST /ban ]" $fn
 ./aim.sh 'ban' 'post' $room_name $user_name
-echo -e $rd "[ DELETE /ban ]" $fn
+echo $rd "[ DELETE /ban ]" $fn
 ./aim.sh 'ban' 'del' '1' 
 
 # ~~ user batch ~~
-echo -e $gr "[ GET /user ]" $fn
+echo $gr "[ GET /user ]" $fn
 ./aim.sh 'user' 'getall'
-echo -e $gr '[ GET /user/bobo ]' $fn
-./aim.sh 'user' 'get' 'bobo'
-echo -e $bl "[ POST /user ]" $fn
-./aim.sh 'user' 'post' 'bobo' 'bobo-fn' 'bobo-ln' 'bobo-pu' 'bobo-e' 'bobo-ph'
-echo -e $yl "[ PATCH /user/bobo ]" $fn
-./aim.sh 'user' 'patch' 'bobo' # ~~ tbc ~~
-echo -e $rd "[ DELETE /user/bobo ]" $fn
-./aim.sh 'user' 'del' 'bobo' 
+echo $gr "[ GET /user/$user_name ]" $fn
+./aim.sh 'user' 'get' "$user_name"
+echo $bl "[ POST /user/new ]" $fn
+./aim.sh 'user' 'post' "$user_name"
+echo $yl "[ PATCH /user/$user_name ]" $fn
+./aim.sh 'user' 'patch' "$user_name" # ~~ tbc ~~
+echo $rd "[ DELETE /user/$user_name ]" $fn
+./aim.sh 'user' 'del' "$user_name" 
+
+# ~~ room batch ~~ 
+echo $gr "[ GET /room ]" $fn
+./aim.sh 'room' 'getall'
+echo $gr "[ GET /room/$user_name ]" $fn
+./aim.sh 'room' 'get' "$room_name"
+echo $gr "[ GET /room/$room_name/owner ]" $fn
+./aim.sh 'room' 'getown' "$room_name"
+echo $bl "[ POST /room ]" $fn
+./aim.sh 'room' 'post' "$room_name" "$user_name"
+echo $yl "[ PATCH /$user_name ]" $fn
+./aim.sh 'user' 'patch' '$user_name' # ~~ tbc ~~
+echo $rd "[ DELETE /user/$user_name ]" $fn
+./aim.sh 'user' 'del' '$user_name'
+
+# ~~ roles batch ~~ PEND.
+echo $gr "[ GET /roles ]" $fn
+./aim.sh 'room' 'getall'
+echo $gr "[ GET /roles/$user_name ]" $fn
+./aim.sh 'room' 'get' "$room_name"
+echo $bl "[ POST /roles ]" $fn
+./aim.sh 'room' 'post' "$user_name" "$room_name"
+echo $yl "[ PATCH /roles/$user_name ]" $fn
+./aim.sh 'user' 'patch' '$user_name' # ~~ tbc ~~
+echo $rd "[ DELETE /roles/$user_name ]" $fn
+./aim.sh 'user' 'del' '$user_name'

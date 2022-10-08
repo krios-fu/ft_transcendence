@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -12,7 +12,10 @@ export class RoomService {
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
         private readonly userService: UserService,
-    ) { }
+    ) { 
+        this.roomLogger = new Logger(RoomService.name);
+    }
+    private readonly roomLogger: Logger;
 
     public async getAllRooms(): Promise<RoomEntity[]> {
         return await this.roomRepository.find();
@@ -32,13 +35,15 @@ export class RoomService {
         return (await room).owner;
     }
 
-    public async updateRoomOwner(roomId: string, new_owner_id: string): Promise<RoomEntity> {
+    public async updateRoomOwner(roomId: string, newOwnerId: string): Promise<RoomEntity> {
         const room = await this.findOne(roomId);
         if (room === null) {
+            this.roomLogger.error('no room with key ' + roomId + ' in database');
             throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }
-        const newOwner = await this.userService.findOne(new_owner_id);
+        const newOwner = await this.userService.findOne(newOwnerId);
         if (newOwner === null) {
+            this.roomLogger.error('no user with key ' + newOwnerId + ' in database');
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }
         return await this.roomRepository.preload({
@@ -48,16 +53,18 @@ export class RoomService {
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
-        const { roomId, password, owner } = dto;
-        const ownerEnt = await this.userService.findOne(owner);
-        if (ownerEnt === undefined) {
-            throw new HttpException('no user in db', HttpStatus.UNAUTHORIZED);
+        const { roomId, password, ownerUser } = dto; /* ??? */
+        const ownerEnt = await this.userService.findOne(ownerUser);
+        if (ownerEnt === null) {
+            this.roomLogger.error('no user with key ' + ownerUser + ' in database');
+            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }
         const newRoom = new RoomEntity(dto);
         const roomInDb = await this.roomRepository.findOne({ 
             where: { roomId: roomId }
         });
         if (roomInDb != undefined) {
+            this.roomLogger.error('room with key ' + roomId + ' already in database');
             throw new HttpException('room already in db', HttpStatus.BAD_REQUEST);
         }
         return await this.roomRepository.save(newRoom);

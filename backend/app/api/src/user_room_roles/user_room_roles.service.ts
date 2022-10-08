@@ -16,13 +16,17 @@ export class UserRoomRolesService {
         private readonly rolesService: RolesService,
     ) { }
 
-    async getRole(id: number): Promise<UserRoomRolesEntity> { 
+    public async getAllRoles(): Promise<UserRoomRolesEntity[]> {
+        return this.userRoomRolesRepository.find();
+    }
+
+    public async getRole(id: number): Promise<UserRoomRolesEntity> { 
         return this.userRoomRolesRepository.findOne({
             where: { id: id }
         });
     }
 
-    async getRolesFromRoom(roomId: string): Promise<UserRoomRolesEntity[]> {
+    public async getRolesFromRoom(roomId: string): Promise<UserRoomRolesEntity[]> {
         return this.userRoomRolesRepository.find({
             relations: {
                 userRoom: true,
@@ -34,7 +38,7 @@ export class UserRoomRolesService {
         });
     }
 
-    async getUsersInRoomByRole(room_id: string, roleId: string): Promise<UserEntity[]> {
+    public async getUsersInRoomByRole(room_id: string, roleId: string): Promise<UserEntity[]> {
         const rolesInRoom = this.userRoomRolesRepository.find({
             relations: {
                 userRoom: true,
@@ -47,7 +51,7 @@ export class UserRoomRolesService {
         return users;
     }
 
-    async postRoleInRoom(newDto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
+    public async postRoleInRoom(newDto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
         const { userRoomId, roleId } = newDto;
         const roleEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
@@ -61,7 +65,7 @@ export class UserRoomRolesService {
         return await this.userRoomRolesRepository.save(roleInRoom);
     }
 
-    async remove(id: number): Promise<void> {
+    public async remove(id: number): Promise<void> {
         await this.userRoomRolesRepository.delete(id);
     }
 }

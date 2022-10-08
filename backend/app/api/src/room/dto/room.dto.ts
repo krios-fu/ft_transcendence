@@ -1,10 +1,16 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateRoomDto {
-    @IsString() roomId: string;
-    @IsString() owner: string;
-    @IsString() password?: string;
+    @IsString() 
+    roomId: string;
+
+    @IsString() 
+    ownerUser: string;
+
+    @IsString() 
+    @IsOptional()
+    password?: string;
 }
 
 export class UpdateRoomDto extends PartialType(CreateRoomDto) { }
