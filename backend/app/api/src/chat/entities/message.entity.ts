@@ -9,13 +9,13 @@ export class MessageEntity {
     @PrimaryGeneratedColumn('uuid')
     id : number;
 
-    @Column()
+    @Column({name: 'content'})
     content : string;
 
     @ManyToOne( () => UserEntity, (user) => user.messages , {
         cascade : true,
     })
-    @JoinColumn({ name : 'author' } )
+    // @JoinColumn({ name : 'author' } )
     author : UserEntity;
 
     @ManyToOne( () => ChatEntity, {
