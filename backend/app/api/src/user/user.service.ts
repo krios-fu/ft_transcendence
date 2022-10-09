@@ -6,6 +6,7 @@ import {
     Injectable,
     HttpException,
     HttpStatus,
+    Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
@@ -17,18 +18,25 @@ export class UserService {
         @InjectRepository(UserEntity)
         private userRepository: UserRepository,
         private userMapper: UserMapper
-    ) { }
+    ) { 
+        this.userLogger = new Logger(UserService.name);
+    }
+    private readonly userLogger: Logger;
 
     async findAllUsers(): Promise<UserEntity[]> {
         return await this.userRepository.find();
     }
 
     async findOne(id: string): Promise<UserEntity> {
-        return await this.userRepository.findOne({
+        const user = await this.userRepository.findOne({
             where: {
                 username: id
             }
         });
+        if (user === null) {
+            this.userLogger.error('User with id ' + id + ' not found in database');
+        }
+        return user;
     }
 
     /* post new user */
@@ -38,6 +46,7 @@ export class UserService {
         try {
             await this.userRepository.insert(newEntity);
         } catch (err) {
+            this.userLogger.error('User with id ' + newUser.username + ' already exists in database');
             throw new HttpException('User already exists',
                                     HttpStatus.BAD_REQUEST);
         }

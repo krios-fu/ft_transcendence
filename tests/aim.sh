@@ -51,7 +51,7 @@ function room_opt() {
         "post")   curl -v $host/$1 -H "Content-Type: application/json" --data \
         '{
             "roomId":"'$3'",
-            "ownerUser":"'$4'"
+            "ownerId":"'$4'"
         }' ;;
         # post with pw: ~~ tba ~~
         "del")    curl -v -X DELETE $host/$1/$3 ;;

@@ -6,7 +6,7 @@ export class CreateRoomDto {
     roomId: string;
 
     @IsString() 
-    ownerUser: string;
+    ownerId: string;
 
     @IsString() 
     @IsOptional()

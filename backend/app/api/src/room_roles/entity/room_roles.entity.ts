@@ -54,3 +54,5 @@ export class RoomRolesEntity {
     })
     createdAt: Date;
 }
+
+/* aqui contrasenia 222 */

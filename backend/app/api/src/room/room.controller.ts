@@ -1,15 +1,21 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Post, Put, UseInterceptors } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, Patch, Post, Put, UseInterceptors } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
 import { UserEntity } from "src/user/user.entity";
 import { CreateRoomDto } from "./dto/room.dto";
+import { UserService } from "src/user/user.service";
+import { UpdateResult } from "typeorm";
 
 @Controller('room')
 @UseInterceptors(ClassSerializerInterceptor)
 export class RoomController {
     constructor(
         private readonly roomService: RoomService,
-    ) { }
+        private readonly userService: UserService,
+    ) { 
+        this.roomLogger = new Logger(RoomController.name);
+    }
+    private readonly roomLogger: Logger;
 
     /* Get all created rooms */
     @Get()
@@ -20,7 +26,11 @@ export class RoomController {
     /* Get a room by name */
     @Get(':room_id')
     public async getRoom(@Param('room_id') room_id: string): Promise<RoomEntity> {
-        return await this.roomService.findOne(room_id);
+        const room = await this.roomService.getRoom(room_id);
+        if (room === null) {
+            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+        }
+        return room;
     }
 
     /* Get owner of a room */
@@ -32,15 +42,29 @@ export class RoomController {
     /* Give a room a new owner */
     @Put(':room_id/owner/:owner_id')
     public async updateRoomOwner(
-        @Param('room_id') room_id: string,
-        @Param('owner_id') new_owner_id: string
-    ): Promise<RoomEntity> {
-        return await this.updateRoomOwner(room_id, new_owner_id);
+        @Param('room_id') roomId: string,
+        @Param('owner_id') newOwnerId: string
+    ): Promise<UpdateResult> {
+        if (await this.roomService.getRoom(roomId) === null) {
+            throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
+        }
+        if (await this.userService.findOne(newOwnerId) === null) {
+            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+        }
+        return await this.roomService.updateRoomOwner(roomId, newOwnerId);
     }
 
     /* Create a new room */
     @Post()
-    public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {    
+    public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
+        const { roomId, ownerId } = dto;
+        if (await this.userService.findOne(ownerId) === null) {
+            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+        }
+        if (await this.roomService.getRoom(roomId) !== null) {
+            this.roomLogger.error('room with key ' + roomId + ' already in database');
+            throw new HttpException('room already in db', HttpStatus.BAD_REQUEST);
+        }
         return await this.roomService.createRoom(dto);
     }
 

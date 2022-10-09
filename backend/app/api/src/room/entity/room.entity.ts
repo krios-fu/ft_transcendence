@@ -53,7 +53,7 @@ export class RoomEntity {
         type: 'varchar',
         name: 'owner_user'
     })
-    ownerUser!: string;
+    ownerId!: string;
 
     @ManyToOne(
         () => UserEntity, 
