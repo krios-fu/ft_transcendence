@@ -1,9 +1,11 @@
-import { UserEntity } from "src/user/user.entity";
+import { WinnerEntity } from "src/match/winner/winner.entity";
+import { LoserEntity } from "src/match/loser/loser.entity";
 import {
     Column,
     CreateDateColumn,
     Entity,
-    ManyToOne,
+    JoinColumn,
+    OneToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
 
@@ -15,30 +17,13 @@ export class    MatchEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    /*
-    **  https://typeorm.io/relations-faq#how-to-use-relation-id-without-joining-relation
-    */
-    @Column({
-        nullable: true
-    })
-    winnerId: string;
+    @OneToOne(() => WinnerEntity, (winner) => winner.match)
+    @JoinColumn()
+    winner: WinnerEntity;
 
-    @ManyToOne(() => UserEntity)
-    winner: UserEntity;
-
-    @Column({
-        nullable: true
-    })
-    loserId: string;
-
-    @ManyToOne(() => UserEntity)
-    loser: UserEntity;
-
-    @Column()
-    winnerScore: number;
-
-    @Column()
-    loserScore: number;
+    @OneToOne(() => LoserEntity, (loser) => loser.match)
+    @JoinColumn()
+    loser: LoserEntity;
 
     @Column()
     official: boolean;

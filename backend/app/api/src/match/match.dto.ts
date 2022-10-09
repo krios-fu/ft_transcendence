@@ -1,11 +1,10 @@
-import { UserEntity } from "src/user/user.entity";
+import { WinnerEntity } from "./winner/winner.entity";
+import { LoserEntity } from "./loser/loser.entity";
 
 export class    MatchDto {
 
-    winner: UserEntity;
-    loser: UserEntity;
-    winnerScore: number;
-    loserScore: number;
+    winner: WinnerEntity;
+    loser: LoserEntity;
     official: boolean;
 
 }

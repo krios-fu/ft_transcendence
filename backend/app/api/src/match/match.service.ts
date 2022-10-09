@@ -23,17 +23,33 @@ export class    MatchService {
         return await this.matchRepository.find({
             relations: {
                 winner: {
-                    nickName: true,
-                    photoUrl: true
+                    user: {
+                        nickName: true,
+                        photoUrl: true
+                    }
                 },
                 loser: {
-                    nickName: true,
-                    photoUrl: true
+                    user: {
+                        nickName: true,
+                        photoUrl: true
+                    }
                 }
             },
             where: [
-                { winnerId: userId },
-                { loserId: userId }
+                {
+                    winner: {
+                        user: {
+                            username: userId
+                        }
+                    }
+                },
+                {
+                    loser: {
+                        user: {
+                            username: userId
+                        }
+                    }
+                }
             ],
             order: {
                 playedAt: "DESC"
