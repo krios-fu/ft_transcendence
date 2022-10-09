@@ -17,11 +17,15 @@ export class    MatchEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => WinnerEntity, (winner) => winner.match)
+    @OneToOne(() => WinnerEntity, (winner) => winner.match, {
+        eager: true
+    })
     @JoinColumn()
     winner: WinnerEntity;
 
-    @OneToOne(() => LoserEntity, (loser) => loser.match)
+    @OneToOne(() => LoserEntity, (loser) => loser.match, {
+        eager: true
+    })
     @JoinColumn()
     loser: LoserEntity;
 

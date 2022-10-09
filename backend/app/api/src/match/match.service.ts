@@ -23,6 +23,14 @@ export class    MatchService {
         return await this.matchRepository.find({
             relations: {
                 winner: {
+                    user: true
+                },
+                loser: {
+                    user: true
+                }
+            },
+            select: {
+                winner: {
                     user: {
                         nickName: true,
                         photoUrl: true
