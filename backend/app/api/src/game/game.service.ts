@@ -1,6 +1,12 @@
+import { LoserDto } from "src/match/loser/loser.dto";
+import { LoserEntity } from "src/match/loser/loser.entity";
+import { LoserService } from "src/match/loser/loser.service";
 import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
+import { WinnerDto } from "src/match/winner/winner.dto";
+import { WinnerEntity } from "src/match/winner/winner.entity";
+import { WinnerService } from "src/match/winner/winner.service";
 import { UserEntity } from "src/user/user.entity";
 import { UserService } from "src/user/user.service";
 import { UpdateResult } from "typeorm";
@@ -21,7 +27,9 @@ export class    GameService {
 
     constructor(
         private readonly userService: UserService,
-        private readonly matchService: MatchService
+        private readonly matchService: MatchService,
+        private readonly winnerService: WinnerService,
+        private readonly loserService: LoserService
     ) {}
 
     private getPlayerLevel(player: UserEntity): Level {
@@ -105,17 +113,43 @@ export class    GameService {
         //Pending ...
     }
 
-    private async   saveMatch(players: [UserEntity, UserEntity],
-                                gameData: Game): Promise<MatchEntity> {
-        let matchDto: MatchDto;
+    private async   savePlayers(players: [UserEntity, UserEntity],
+                                gameData: Game)
+                                : Promise<[WinnerEntity, LoserEntity]> {
+        let winnerDto: WinnerDto;
+        let loserDto: LoserDto;
+        let winnerEntity: WinnerEntity;
+        let loserEntity: LoserEntity;
 
-        /*
-        matchDto.winner = ;
-        matchDto.loser = ;
-        matchDto.winnerScore = ;
-        matchDto.loserScore = ;
-        matchDto.official = ;
-        */
+        winnerDto.user = gameData.playerA.score > gameData.playerB.score
+                            ? players[0] : players[1];
+        winnerDto.score = gameData.playerA.score > gameData.playerB.score
+                            ? gameData.playerA.score : gameData.playerB.score;
+        winnerEntity = await this.winnerService.AddWinner(winnerDto);
+        loserDto.user = winnerDto.user === players[0]
+                        ? players[1] : players[0];
+        loserDto.score = winnerDto.user === players[0]
+                        ? gameData.playerB.score : gameData.playerA.score;
+        loserEntity = await this.loserService.AddLoser(loserDto);
+        return ([winnerEntity, loserEntity]);
+    }
+
+    private async   saveMatch(players: [UserEntity, UserEntity],
+                                gameData: Game, isOfficial: boolean)
+                                : Promise<MatchEntity> {
+        let matchDto: MatchDto;
+        let savedPlayers: [WinnerEntity, LoserEntity];
+        let winnerEntity: WinnerEntity;
+        let loserEntity: LoserEntity;
+    
+        savedPlayers = await this.savePlayers(players, gameData);
+        if (!savedPlayers[0] || !savedPlayers[1])
+            return (null);
+        winnerEntity = savedPlayers[0];
+        loserEntity = savedPlayers[1];
+        matchDto.winner = winnerEntity;
+        matchDto.loser = loserEntity;
+        matchDto.official = isOfficial;
         return (await this.matchService.addMatch(matchDto));
     }
 
@@ -127,13 +161,15 @@ export class    GameService {
     **  link User instance to its respective Player instance.
     */
     async endGame(gameId: string, gameData: Game): Promise<void> {
-        const players: [UserEntity, UserEntity] = this.gamePlayers.get(gameId);
+        const   players: [UserEntity, UserEntity] = this.gamePlayers.get(gameId);
+        let     isOfficial: boolean;
 
-        if (this.isOfficial(gameId))
+        isOfficial = this.isOfficial(gameId);
+        if (isOfficial)
         {
             /*if (!(await */this.updatePlayerScore(players, gameData);/*))*/
         }
-        if (!(await this.saveMatch(players, gameData)))
+        if (!(await this.saveMatch(players, gameData, isOfficial)))
             console.log(`Failed database insertion for match: ${gameId}`);
         players[0] = undefined;
         players[1] = undefined;
