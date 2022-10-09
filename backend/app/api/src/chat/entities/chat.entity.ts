@@ -1,4 +1,5 @@
 import {
+    Column,
     CreateDateColumn,
     Entity,
     JoinColumn,
@@ -20,7 +21,8 @@ export class ChatEntity {
     @CreateDateColumn()
     begin_at: Date;
 
-    @OneToMany(()=> MembershipEntity, (members) => members.chat)
+    @OneToMany(()=> MembershipEntity, (members) => members.chat,
+        {eager: true})
     membership : MembershipEntity[];
 
     @OneToMany(()=> MessageEntity, (messages)=> messages.chat)

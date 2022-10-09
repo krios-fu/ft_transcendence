@@ -4,6 +4,7 @@ import {ChatEntity} from "./entities/chat.entity";
 import {ChatRepository} from "./repository/chat.repository";
 import {ChatDto} from "./dtos/chat.dto";
 import {ChatMapper} from "./mapper/chat.mapper";
+import {MembershipEntity} from "./entities/membership.entity";
 
 @Injectable()
 export class ChatService {
@@ -22,9 +23,16 @@ export class ChatService {
 
     async findOne(id: number): Promise<ChatEntity>{
         return await this.chatRepository.findOne({
+            relations: {
+                membership: {
+                    user: {
+                        nickName: true
+                    }
+                },
+            },
             where: {
                     id: id
-            }
+            },
         });
     }
 
