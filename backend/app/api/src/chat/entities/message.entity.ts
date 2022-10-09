@@ -18,9 +18,9 @@ export class MessageEntity {
     // @JoinColumn({ name : 'author' } )
     author : UserEntity;
 
-    @ManyToOne( () => ChatEntity, {
+    @ManyToOne( () => ChatEntity, (chat)=> chat.messages,{
         cascade : true,
     })
-    @JoinColumn({ name : 'chatId' })
+    // @JoinColumn({ name : 'chatId' })
     chat : ChatEntity;
 }

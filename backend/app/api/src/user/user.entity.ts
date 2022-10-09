@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import {ChatEntity} from "../chat/entities/chat.entity";
 import {MessageEntity} from "../chat/entities/message.entity";
+import {MembershipEntity} from "../chat/entities/membership.entity";
 
 export enum UserStatus {
 	ONLINE = "online",
@@ -63,20 +64,11 @@ export class UserEntity {
 	@UpdateDateColumn()
 	lastConnection : Date;
 
-	@ManyToMany((type) => ChatEntity )
-	@JoinColumn()
-	chats : ChatEntity [];
 
 	@OneToMany((type) => MessageEntity, (message) => message.author )
-	@JoinColumn()
 	messages : MessageEntity[];
 
-	//Relations
-
-	/*@ManyToMany(() => Room, (room) => room.users)
-  rooms: Room[];
-
-	@OneToMany(() => Score, (score) => score.user)
-	scores: Score[];*/
+	@OneToMany(()=>MembershipEntity, (membership) => membership.user)
+	membership : MembershipEntity[];
 
 }

@@ -2,37 +2,27 @@ import {
     CreateDateColumn,
     Entity,
     JoinColumn,
-    ManyToOne, OneToMany,
+    OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
 import {UserEntity} from "../../user/user.entity";
 import {MessageEntity} from "./message.entity";
+import {MembershipEntity} from "./membership.entity";
 
 @Entity({
     name : 'chats'
     }
 )
 export class ChatEntity {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn()
     id : number;
 
     @CreateDateColumn()
-    createdAt: Date;
+    begin_at: Date;
 
-    // @ManyToOne( () => UserEntity )
-    // @JoinColumn( { name : 'userOne' } )
-    // userOne : UserEntity;
-    //
-    // @ManyToOne( () => UserEntity )
-    // @JoinColumn( { name : 'userTwo'} )
-    // userTwo : UserEntity;
+    @OneToMany(()=> MembershipEntity, (members) => members.chat)
+    membership : MembershipEntity[];
 
-    @OneToMany( ()=> UserEntity, (users) => users.chats )
-    @JoinColumn({name: "members" })
-    users : UserEntity[];
-
-
-    @OneToMany( (type) => MessageEntity, (messages) => messages.chat )
-    @JoinColumn({ name: 'messages'})
-    messages : MessageEntity[];
+    @OneToMany(()=> MessageEntity, (messages)=> messages.chat)
+    messages: MessageEntity[];
 }
