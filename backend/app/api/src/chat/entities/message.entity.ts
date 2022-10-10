@@ -13,13 +13,13 @@ export class MessageEntity {
     content : string;
 
     @ManyToOne( () => UserEntity, (user) => user.messages , {
-        cascade : true,
+        eager : true,
     })
     // @JoinColumn({ name : 'author' } )
     author : UserEntity;
 
     @ManyToOne( () => ChatEntity, (chat)=> chat.messages,{
-        cascade : true,
+        // eager : true,
     })
     // @JoinColumn({ name : 'chatId' })
     chat : ChatEntity;

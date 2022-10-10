@@ -25,6 +25,7 @@ export class ChatEntity {
         {eager: true})
     membership : MembershipEntity[];
 
-    @OneToMany(()=> MessageEntity, (messages)=> messages.chat)
+    @OneToMany(()=> MessageEntity, (messages)=> messages.chat,
+        {eager: true})
     messages: MessageEntity[];
 }

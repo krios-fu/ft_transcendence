@@ -25,14 +25,27 @@ export class ChatService {
         return await this.chatRepository.findOne({
             relations: {
                 membership: {
-                    user: {
-                        nickName: true
-                    }
+                    user: true,
+                },
+                messages: {
+                    author : true,
                 },
             },
             where: {
                     id: id
             },
+            select:{
+                membership:{
+                        user: {
+                            nickName : true
+                        },
+                },
+                messages: {
+                    author:{
+                        nickName: true
+                    },
+                },
+            }
         });
     }
 
