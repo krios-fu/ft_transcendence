@@ -14,6 +14,8 @@ import { Game } from './Game'
 import { Ball } from './Ball';
 import { Player } from './Player';
 import { Updater } from './Updater';
+import { GameService } from './game.service';
+import { UserEntity } from 'src/user/user.entity';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -26,11 +28,24 @@ export class    GameGateway implements OnGatewayInit,
     games: Map<string, Game>;
     updater: Updater;
     updateInterval: NodeJS.Timer;
+
+    constructor(
+        private readonly gameService: GameService
+    ) {}
   
     afterInit(server: any) {
         console.log("Game Gateway initiated");
         this.games = new Map<string, Game>();
         this.updater = new Updater();
+    }
+
+    emitToSocketId(socketId: string, gameId: string, role: string): void {
+        this.server.to(socketId).emit("role", {
+            role: role,
+            room: gameId,
+            initData: this.games.get(gameId)
+        });
+        return ;
     }
 
     gameUpdate(game: Game, room: string): void {
@@ -107,57 +122,45 @@ export class    GameGateway implements OnGatewayInit,
         });
     }
 
-    async handleConnection(client: Socket, ...args: any[]) {
-        const sockets = await this.server.fetchSockets();
-        const sockLen: Number = sockets.length;
+    startGame(gameId: string): void {
+        let players: [UserEntity, UserEntity] = this.gameService.startGame(gameId);
 
-        if (sockLen < 2)
-        {
-            console.log("Player A joined");
-            client.join("PlayerA"); //Provisional
-            client.join("Game1"); //Provisional
-            this.games.set("Game1", new Game()); //Provisional
-            client.emit("role", {
-                role: "PlayerA",
-                room: "Game1",
-                initData: this.games.get("Game1")
-            });
+        if (!players[0] || !players[1])
+            return ;
+        this.emitToSocketId(players[0].username, gameId, "PlayerA");
+        this.emitToSocketId(players[1].username, gameId, "PlayerB");
+        setTimeout(() => {
+            this.games.get("Game1").serveBall();
+            this.server.to("Game1").emit("served", "served");
+        }, 3000);
+        if (this.games.size === 1) {
+            this.updateInterval = setInterval(() => {
+                    this.games.forEach(
+                        (game, room) => { this.gameUpdate(game, room) }
+                    );
+                },
+                16
+            );
         }
-        else if (sockLen === 2)
-        {
-            console.log("Player B joined");
-            client.join("PlayerB"); //Provisional
-            client.join("Game1"); //Provisional
-            client.emit("role", {
-                role: "PlayerB",
-                room: "Game1",
-                initData: this.games.get("Game1")
-            });
-            setTimeout(() => {
-                this.games.get("Game1").serveBall();
-                this.server.to("Game1").emit("served", "served");
-            }, 3000);
-            if (this.games.size === 1) {
-                this.updateInterval = setInterval(() => {
-                        this.games.forEach(
-                            (game, room) => { this.gameUpdate(game, room) }
-                        );
-                    },
-                    16
-                );
-            }
-        }
-        else
-        {
-            console.log("Spectator joined");
-            client.emit("role", {
-                role: "Spectator",
-                room: "Game1",
-                //Send latest game data
-                initData: this.games.get("Game1")
-            });
-            client.join("Game1"); //Provisional
-        }
+    }
+
+    async handleConnection(client: Socket, ...args: any[]) {
+        const   sockets = await this.server.fetchSockets();
+        const   sockLen: Number = sockets.length;
+        let     gameData: Game;
+
+        console.log("User joined Game room");
+        client.join("Game1"); //Provisional
+        //client.join(userSession)
+        gameData = this.games.get("Game1");
+        if (!gameData) // Provisional
+            gameData = this.games.set("Game1", new Game()).get("Game1"); //Provisional
+        client.emit("role", {
+            role: "Spectator",
+            room: "Game1",
+            //Send latest game data
+            initData: gameData
+        });
         console.log("With id: ", client.id);
     }
 
@@ -186,6 +189,19 @@ export class    GameGateway implements OnGatewayInit,
         if (this.games.size === 0)
             clearInterval(this.updateInterval);
         console.log("With id: ", client.id);
+    }
+
+    @SubscribeMessage('addToGameQueue')
+    async addToGameQueue(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        if (!client.rooms.has(data.gameId))
+            return ;
+        //Need to implement user authentication
+        await this.gameService.addToQueue(data.gameId, data.username);
+        if (!this.gameService.gameStarted(data.gameId))
+            this.startGame(data.gameId);
     }
 
     /*

@@ -15,6 +15,7 @@ export class    GameComponent implements OnInit {
     private config: Phaser.Types.Core.GameConfig;
     private socket: SockIO.Socket;
     private game?: Phaser.Game;
+    private queueButtonClick: boolean;
 
     constructor () {
         this.config = {
@@ -29,6 +30,7 @@ export class    GameComponent implements OnInit {
             scene: undefined // Will be assigned afterwards
         };
         this.socket = SockIO.io("ws://localhost:3001");
+        this.queueButtonClick = false;
     }
 
     ngOnInit(): void {
@@ -52,5 +54,15 @@ export class    GameComponent implements OnInit {
             // Add else to handle invalid data.role ?
             this.game = new Phaser.Game(this.config);
         })
+    }
+
+    addToQueue() {
+        if (this.queueButtonClick)
+            return ;
+        this.socket.emit("addToGameQueue", {
+            gameId: "Game1",
+            username: "user"
+        });
+        this.queueButtonClick = true;
     }
 }

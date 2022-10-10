@@ -22,15 +22,18 @@ enum    Level {
 }
 
 export class    GameService {
-    gameQueue: Map<string, UserEntity[]>;
-    gamePlayers: Map<string, [UserEntity, UserEntity]>;
+    private gameQueue: Map<string, UserEntity[]>;
+    private gamePlayers: Map<string, [UserEntity, UserEntity]>;
 
     constructor(
         private readonly userService: UserService,
         private readonly matchService: MatchService,
         private readonly winnerService: WinnerService,
         private readonly loserService: LoserService
-    ) {}
+    ) {
+        this.gameQueue = new Map<string, UserEntity[]>;
+        this.gamePlayers = new Map<string, [UserEntity, UserEntity]>;
+    }
 
     private getPlayerLevel(player: UserEntity): Level {
         //Provisional
@@ -74,6 +77,12 @@ export class    GameService {
         this.removeFromQueue(gameId, nextPlayers[0].username);
         this.removeFromQueue(gameId, nextPlayers[1].username);
         return (nextPlayers);
+    }
+
+    gameStarted(gameId: string): boolean {
+        return (
+            this.gamePlayers.get(gameId)[0] != undefined
+        );
     }
 
     private isOfficial(gameId: string): boolean {
@@ -183,10 +192,13 @@ export class    GameService {
     }
 
     async addToQueue(gameId: string, username: string): Promise<void> {
-        let queue: UserEntity[] = this.gameQueue.get(gameId);
-        let targetIndex: number = this.findByUsername(username, queue);
+        let targetIndex: number;
         let userEntity: UserEntity = await this.userService.findOne(username);
-
+        let queue: UserEntity[] = this.gameQueue.get(gameId);
+    
+        if (!queue)
+            queue = this.gameQueue.set(gameId, []).get(gameId);
+        targetIndex = this.findByUsername(username, queue);
         if (targetIndex === -1
             && userEntity)
             queue.push(userEntity);
