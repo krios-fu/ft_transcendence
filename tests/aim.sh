@@ -27,7 +27,7 @@ function user_opt() {
     case $2 in
         "getall") curl -v $host/$1s ;;
         "get")    curl -v $host/$1s/$3 ;;
-        "post")   curl -v $host/$1s/new -H "Content-Type: application/json" --data \
+        "post")   curl -v $host/$1s -H "Content-Type: application/json" --data \
         '{
             "username":"'$3'",
             "firstName":"'$3'-fn",

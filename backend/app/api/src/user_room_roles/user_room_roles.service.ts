@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesService } from 'src/roles/roles.service';
 import { UserEntity } from 'src/user/user.entity';
+import { UserService } from 'src/user/user.service';
 import { UserRoomService } from 'src/user_room/user_room.service';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
@@ -13,6 +14,7 @@ export class UserRoomRolesService {
         @InjectRepository(UserRoomRolesEntity)
         private readonly userRoomRolesRepository: UserRoomRolesRepository,
         private readonly userRoomService: UserRoomService,
+        private readonly userService: UserService,
         private readonly rolesService: RolesService,
     ) { }
 
@@ -41,13 +43,22 @@ export class UserRoomRolesService {
     public async getUsersInRoomByRole(roomId: number, roleId: number): Promise<UserEntity[]> {
         const rolesInRoom = this.userRoomRolesRepository.find({
             relations: {
-                userRoom: true,
-                role: true,
+                //userRoom: true,
+                userRoom: { user: true },
             },
-            select: { userRoomId: true },
-            where: { roleId: roleId }
+            select: {
+                userRoom: { userId: true },
+            },
+            where: {
+                roleId: roleId,
+                userRoom: { roomId: roomId }
+            },
         });
-        const users = this.userRoomService.getAllUsersInRoom(roomId); /* ????? */
+        let users: UserEntity[] = [];
+        (await rolesInRoom).forEach(async (role) => {
+            const user = await this.userService.findOne(role.userRoom.userId);
+            users.push(user);
+        });
         return users;
     }
 

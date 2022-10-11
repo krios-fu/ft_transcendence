@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
@@ -10,6 +11,7 @@ export class UserRoomRolesController {
     constructor(
         private readonly userRoomRolesService: UserRoomRolesService,
         private readonly roomService: RoomService,
+        private readonly rolesService: RolesService,
     ) { 
         this.userRoomRolesLogger = new Logger(UserRoomRolesService.name);
     }
@@ -48,7 +50,14 @@ export class UserRoomRolesController {
         @Param('room_id', ParseIntPipe) roomId: number,
         @Param('role_id', ParseIntPipe) roleId: number,
     ): Promise<UserEntity[]> {
-        /* protect query here */
+        if (await this.roomService.findOne(roomId) === null) {
+            this.userRoomRolesLogger.error('No room with id ' + roomId + ' present in database');
+            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+        }
+        if (await this.rolesService.findOne(roleId) === null) {
+            this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
+            throw new HttpException('no role in db', HttpStatus.NOT_FOUND);
+        }
         return await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
     }
 
