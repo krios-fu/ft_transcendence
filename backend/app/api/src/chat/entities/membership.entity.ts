@@ -19,7 +19,7 @@ export class MembershipEntity{
     @CreateDateColumn()
     begin_at: Date;
 
-    @ManyToOne(()=> UserEntity, (user) => user.membership, )
+    @ManyToOne(()=> UserEntity, (user) => user.membership, {eager: true} )
     user : UserEntity;
 
     @ManyToOne(()=> ChatEntity, (chat)=> chat.membership)

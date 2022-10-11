@@ -27,9 +27,7 @@ export class ChatService {
                 membership: {
                     user: true,
                 },
-                messages: {
-                    author : true,
-                },
+                messages: true,
             },
             where: {
                     id: id
@@ -40,11 +38,11 @@ export class ChatService {
                             nickName : true
                         },
                 },
-                messages: {
-                    author:{
-                        nickName: true
-                    },
-                },
+                // messages: {
+                //     author:{
+                //         nickName: true
+                //     },
+                // },
             }
         });
     }

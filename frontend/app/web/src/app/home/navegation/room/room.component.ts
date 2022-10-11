@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FlatTreeControl, NestedTreeControl} from "@angular/cdk/tree";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material/tree";
+import {HttpClient} from "@angular/common/http";
 
 
 interface FoodNode {
@@ -8,7 +9,7 @@ interface FoodNode {
   children?: FoodNode[];
 }
 
-const TREE_DATA: FoodNode[] = [
+let TREE_DATA: FoodNode[] = [
   {
     name: 'Rooms',
     children: [
@@ -43,6 +44,8 @@ interface ExampleFlatNode {
 })
 export class RoomComponent implements OnInit {
 
+  entity: Object = [];
+
   private _transformer = (node: FoodNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
@@ -65,10 +68,15 @@ export class RoomComponent implements OnInit {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  constructor() {
-    this.dataSource.data = TREE_DATA;
+  constructor( private http : HttpClient) {
+
   }
   hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
   ngOnInit(): void {
+
+    this.http.get('http://localhost:3000/chat')
+      .subscribe( entity   => { let data = Object.assign(entity) ; console.log(entity); TREE_DATA[1].children[0].name = data[0].membership[0].user.nickName;
+        this.dataSource.data = TREE_DATA; } )
   }
+
 }
