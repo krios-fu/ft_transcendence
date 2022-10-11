@@ -3,6 +3,7 @@ import {
 	CreateDateColumn,
 	Entity,
 	PrimaryColumn,
+	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
 
@@ -11,7 +12,12 @@ import {
 })
 export class UserEntity {
 
-	@PrimaryColumn()
+	@PrimaryGeneratedColumn('increment')
+	id: number;
+
+	@Column({
+		unique: true
+	})
 	username : string;
 	
 	@Column()

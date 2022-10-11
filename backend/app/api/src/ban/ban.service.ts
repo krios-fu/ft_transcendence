@@ -20,13 +20,13 @@ export class BanService {
         return await this.banRepository.find();
     }
 
-    public async getOneBan(ban_id: number): Promise<BanEntity> {
+    public async findOne(ban_id: number): Promise<BanEntity> {
         return await this.banRepository.findOne({
             where: {id: ban_id} 
         });
     }
 
-    public async getBannedUsersInRoom(roomId: string): Promise<UserEntity[]> {
+    public async getBannedUsersInRoom(roomId: number): Promise<UserEntity[]> {
         let users: UserEntity[] = [];
 
         const bansInRoom = await this.banRepository.find({
@@ -38,7 +38,7 @@ export class BanService {
         return users;
     }
 
-    public async getRoomsWithUserBanned(userId: string): Promise<RoomEntity[]> {
+    public async getRoomsWithUserBanned(userId: number): Promise<RoomEntity[]> {
         let rooms: RoomEntity[] = [];
 
         const bansByUser = await this.banRepository.find({
@@ -58,10 +58,19 @@ export class BanService {
             this.banLogger.error(err);
             throw new HttpException('no user or room in db', HttpStatus.BAD_REQUEST);
         }
-        return newBan; /* this needs to be tested */
+        return newBan;
     }
 
     public async deleteBan(ban_id: number): Promise<void> {
         this.banRepository.delete(ban_id);
+    }
+
+    public async findOneByUserRoomIds(userId: number, roomId: number) {
+        return this.banRepository.find({
+            where: {
+                userId: userId,
+                roomId: roomId,
+            }
+        });
     }
 }

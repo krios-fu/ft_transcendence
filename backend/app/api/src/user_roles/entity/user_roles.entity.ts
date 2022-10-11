@@ -22,10 +22,10 @@ export class UserRolesEntity {
     id: number;
 
     @PrimaryColumn({
-        type: 'varchar',
+        type: 'bigint',
         name: 'user_id'
     })
-    userId: string;
+    userId: number;
 
     @ManyToOne(
         () => UserEntity,
@@ -35,10 +35,10 @@ export class UserRolesEntity {
     user: UserEntity;
 
     @PrimaryColumn({
-        type: 'varchar',
+        type: 'bigint',
         name: 'role_id'
     })
-    roleId: string;
+    roleId: number;
 
     @ManyToOne(
         () => RolesEntity,

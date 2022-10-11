@@ -1,7 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RolesService } from 'src/roles/roles.service';
-import { UserService } from 'src/user/user.service';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { UserRolesRepository } from './repository/user_roles.repository';
@@ -11,8 +9,6 @@ export class UserRolesService {
     constructor (
         @InjectRepository(UserRolesEntity)
         private readonly UserRolesRepository: UserRolesRepository,
-//        private readonly userService: UserService,
-//        private readonly rolesService: RolesService,
     ) { }
     
     public async getAllUserRoles(): Promise<UserRolesEntity[]> {

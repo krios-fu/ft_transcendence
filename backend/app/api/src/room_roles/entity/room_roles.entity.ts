@@ -1,7 +1,9 @@
+import { Exclude } from "class-transformer";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
+import * as bcrypt from "bcrypt";
 
 @Entity({ name: 'room_role' })
 @Index(['roomId', 'roleId'], { unique: true })
@@ -20,7 +22,7 @@ export class RoomRolesEntity {
         type: 'varchar',
         name: 'room_id'
     })
-    roomId: string;
+    roomId: number;
 
     @ManyToOne(
         () => RoomEntity,
@@ -36,7 +38,7 @@ export class RoomRolesEntity {
         type: 'varchar',
         name: 'role_id'
     })
-    roleId: string;
+    roleId: number;
 
     @ManyToOne(
         () => RolesEntity,
@@ -53,6 +55,19 @@ export class RoomRolesEntity {
         name: 'created_at'
     })
     createdAt: Date;
-}
 
-/* aqui contrasenia 222 */
+    @Exclude()
+    @Column({
+        type: "varchar",
+        nullable: true,
+    })
+    password?: string;
+    
+    @BeforeInsert()
+    async encryptPassword(): Promise<void> {
+        if (this.password != undefined) {
+            const salt = await bcrypt.genSalt();
+            this.password = await bcrypt.hash(this.password, salt);
+        }
+    }
+}

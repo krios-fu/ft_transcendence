@@ -9,40 +9,39 @@ export class RolesService {
     constructor(
         @InjectRepository(RolesEntity)
         private readonly rolesRepository: RolesRepository,
-    ) { 
-        this.roleLogger = new Logger(RolesService.name);
-    }
-    private readonly roleLogger: Logger;
-
-    public async create(dto: CreateRoleDto): Promise<RolesEntity>{
-        const roleEntity = new RolesEntity(dto);
-
-        /* check if role already exists */
-        return await this.rolesRepository.save(roleEntity); /* check why not insert */
-    }
+    ) { }
 
     public async findAll(): Promise<RolesEntity[]> {
         return await this.rolesRepository.find();
     }
 
-    public async findOne(roleId: string): Promise<RolesEntity> {
+    public async findOne(roleId: number): Promise<RolesEntity> {
         const role = await this.rolesRepository.findOne({
-            where: { role: roleId },
+            where: { id: roleId },
         });
-        if (role === null) {
-            this.roleLogger.error('No role with id ' + roleId + ' in database');
-        }
         return role;
     }
 
-    public async update(roleId: string, dto: UpdateRoleDto): Promise<RolesEntity> {
-        await this.rolesRepository.update(roleId, dto);
-        return this.rolesRepository.findOne({
-            where: { role: roleId }
-        });
+    public async create(dto: CreateRoleDto): Promise<RolesEntity>{
+        const roleEntity = new RolesEntity(dto);
+        return await this.rolesRepository.save(roleEntity); /* check why not insert */
     }
 
-    public async remove(roleId: string): Promise<void> {
+    public async update(roleId: number, dto: UpdateRoleDto): Promise<RolesEntity> {
+        if (await this.findOne(roleId) === null) {
+            return null
+        }
+        const tal = await this.rolesRepository.update(roleId, dto);
+        return this.findOne(roleId); /* nooo */
+    }
+
+    public async remove(roleId: number): Promise<void> {
         await this.rolesRepository.delete(roleId)
+    }
+
+    public async findRoleByName(role: string): Promise<RolesEntity> {
+        return await this.rolesRepository.findOne({
+            where: { role: role },
+        });
     }
 }

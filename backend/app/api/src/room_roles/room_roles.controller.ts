@@ -1,47 +1,89 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Patch } from '@nestjs/common';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesService } from './room_roles.service';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  Param, 
+  Delete, 
+  ParseIntPipe, 
+  Patch, 
+  ClassSerializerInterceptor, 
+  UseInterceptors, 
+  Logger,
+  HttpException,
+  HttpStatus
+} from '@nestjs/common';
+import { RoomService } from 'src/room/room.service';
+import { RolesService } from 'src/roles/roles.service';
 
 @Controller('room-roles')
+@UseInterceptors(ClassSerializerInterceptor)
 export class RoomRolesController {
-  constructor(private readonly roomRolesService: RoomRolesService) {}
+    constructor
+    (
+        private readonly roomRolesService: RoomRolesService,
+        private readonly roomService: RoomService,
+        private readonly rolesService: RolesService,
+    ) { 
+        this.roomRoleLogger = new Logger(RoomRolesController.name);
+    }
+    private readonly roomRoleLogger: Logger;
 
-  @Post()
-  public async create(@Body() dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
-    return this.roomRolesService.create(dto);
-  }
+    @Get()
+    public async findAll(): Promise<RoomRolesEntity[]> {
+        return this.roomRolesService.findAll();
+    }
 
-  @Get()
-  public async findAll(): Promise<RoomRolesEntity[]> {
-    return this.roomRolesService.findAll();
-  }
+    @Get(':id')
+    public async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoomRolesEntity> {
+        const roomRole = await this.roomRolesService.findOne(id);
+        if (roomRole === null) {
+            this.roomRoleLogger.error('Room role with id ' + id + ' not found in database');
+            throw new HttpException('no room role in db', HttpStatus.NOT_FOUND);
+        }
+        return roomRole;
+    }
 
-  @Get(':id')
-  public async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoomRolesEntity> {
-    return this.roomRolesService.findOne(id);
-  }
+    /* Get role of an specific room */
+    @Get('/rooms/:room_id')
+    public async findRoleRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<RolesEntity> {
+        if (await this.roomService.findOne(roomId) === null) {
+            this.roomRoleLogger.error('Room with id ' + roomId + ' not found in database');
+            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+        }
+        return this.roomRolesService.findRoleRoom(roomId);
+    }
 
-  /* Get role of an specific room */
-  @Get('/rooms/:room_id')
-  public async findRoleRoom(@Param('room_id') roomId: string): Promise<RolesEntity> {
-    return this.roomRolesService.findRoleRoom(roomId);
-  }
+    @Post()
+    public async create(@Body() dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
+        return this.roomRolesService.create(dto);
+    }
 
-  @Patch('/:id')
-  public async updateRoomRole
-  (
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateRoomRolesDto,
-  ): Promise<RoomRolesEntity> {
-    return this.roomRolesService.updateRoomRole(id, dto);
-  }
+    @Patch('/:id') /* is private && owner shit */
+    public async updateRoomRole
+    (
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdateRoomRolesDto,
+    ): Promise<RoomRolesEntity> {
+        return this.roomRolesService.updateRoomRole(id, dto);
+    }
 
-  @Delete(':id')
-  public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    await this.roomRolesService.remove(id);
-  }
+    /* Update a room password ?? */
+        /* UseGuards(RoomOwner) ~~ check if user owns the room ~~
+        @Put(':room_id')
+        public async changePwd(@Body creds: RoomPasswordDto ~~ @IsString() oldPwd, @IsString() newPwd ~~) {
+            return await this.roomService.changePwd(); ~~ first checks oldPwd, then changes entity ~~
+        }
+        */
+
+    @Delete(':id')
+    public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        await this.roomRolesService.remove(id);
+    }
 }
 
 /*

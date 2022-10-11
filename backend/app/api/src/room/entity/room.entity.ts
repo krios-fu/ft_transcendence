@@ -1,6 +1,4 @@
 import { UserEntity } from "src/user/user.entity";
-import * as bcrypt from "bcrypt";
-import { Exclude } from "class-transformer";
 import { CreateRoomDto } from "../dto/room.dto";
 import { 
     BeforeInsert, 
@@ -8,7 +6,7 @@ import {
     Entity, 
     JoinColumn, 
     ManyToOne, 
-    PrimaryColumn 
+    PrimaryGeneratedColumn
 } from "typeorm";
 
 @Entity({ name: "room" })
@@ -19,41 +17,28 @@ export class RoomEntity {
         }
         this.createdAt = new Date();
     }
+    @PrimaryGeneratedColumn('increment')
+    id!: number;
 
-    @PrimaryColumn({
+    @Column({
         type: 'varchar',
         name: 'room_id',
         unique: true,
         length: 15,
     })
-    roomId!: string;
-
-    @Exclude()
-    @Column({
-        type: "varchar",
-        nullable: true,
-    })
-    password?: string;
-    
-    @BeforeInsert()
-    async encryptPassword(): Promise<void> {
-        if (this.password != undefined) {
-            const salt = await bcrypt.genSalt();
-            this.password = await bcrypt.hash(this.password, salt);
-        }
-    }
+    roomName!: string;
 
     @Column({ 
         type: 'date' ,
         name: 'created_at'
     })
-    createdAt: Date;
+    createdAt!: Date;
 
     @Column({ 
-        type: 'varchar',
-        name: 'owner_user'
+        type: 'bigint',
+        name: 'owner_id'
     })
-    ownerId!: string;
+    ownerId!: number;
 
     @ManyToOne(
         () => UserEntity, 
@@ -62,6 +47,6 @@ export class RoomEntity {
             eager: true
         }
     )
-    @JoinColumn({ name: "owner_user" })
-    owner: UserEntity;
+    @JoinColumn({ name: "owner_id" })
+    owner!: UserEntity;
 }

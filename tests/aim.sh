@@ -65,8 +65,10 @@ function roles_opt() {
         "get")    curl -v $host/$1/$3 ;;
         "post")   curl -v $host/$1 -H "Content-Type: application/json" --data \
         '{ "role":"'$3'" }' ;;
-        "patch")  curl -v -X PATCH $host/$1 ;; # ~~ tbc ~~
+        "patch")  curl -v -X PATCH $host/$1/$3 -H "Content-Type: application/json" --data \
+        '{ "role":"'$4'"}' ;;
         "del")    curl -v -X DELETE $host/$1/$3 ;;
+        *)        echo "BAD (roles)" ;;
     esac
 }
 

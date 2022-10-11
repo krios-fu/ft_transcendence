@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoleDto } from "../dto/role.dto";
 
 @Entity({ name: "roles" })
@@ -9,9 +9,14 @@ export class RolesEntity {
         }
         this.createdAt = new Date;
     }
+    @PrimaryGeneratedColumn('increment')
+    id: number;
 
-    @PrimaryColumn({ type: 'varchar' })
-    readonly role: string
+    @Column({ 
+        type:  'varchar',
+        unique: true,
+     })
+    role!: string
 
     @Column({ 
         type: 'date',

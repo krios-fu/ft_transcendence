@@ -31,7 +31,7 @@ export class AuthService {
         let   loggedUser: UserEntity;
         let   tokenEntity: RefreshTokenEntity;
         
-        loggedUser = await this.userService.findOne(username);
+        loggedUser = await this.userService.findOneByUsername(username);
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
         }
@@ -100,7 +100,7 @@ export class AuthService {
         let userEntity: UserEntity;
 
 
-        userEntity = await this.userService.findOne(username);
+        userEntity = await this.userService.findOneByUsername(username);
         if (userEntity === null) {
             throw TokenError.NO_TOKEN_OR_USER;
         }

@@ -12,32 +12,24 @@ export class RoomService {
     constructor(
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
-        private readonly userService: UserService,
-    ) { 
-        this.roomLogger = new Logger(RoomService.name);
-    }
-    private readonly roomLogger: Logger;
+    ) { }
 
-    public async getAllRooms(): Promise<RoomEntity[]> {
+    public async findAllRooms(): Promise<RoomEntity[]> {
         return await this.roomRepository.find();
     }
 
-    public async getRoom(roomId: string): Promise<RoomEntity> {
-        const room = await this.roomRepository.findOne({
-            where: { roomId: roomId }
+    public async findOne(roomId: number): Promise<RoomEntity> {
+        return await this.roomRepository.findOne({
+            where: { id: roomId }
         });
-        if (room === null) {
-            this.roomLogger.error('Room with id ' + roomId + ' not found in database');
-        }
-        return room;
     }
 
-    public async getRoomOwner(roomId: string): Promise<UserEntity> {
-        const room = this.getRoom(roomId);
+    public async findRoomOwner(roomId: number): Promise<UserEntity> {
+        const room = this.findOne(roomId);
         return (await room).owner;
     }
 
-    public async updateRoomOwner(roomId: string, newOwnerId: string): Promise<UpdateResult> {
+    public async updateRoomOwner(roomId: number, newOwnerId: number): Promise<UpdateResult> {
         return await this.roomRepository.update(roomId, {
             ownerId: newOwnerId,
         });
@@ -47,8 +39,14 @@ export class RoomService {
         return await this.roomRepository.save(new RoomEntity(dto));
     }
 
-    public async removeRoom(roomId: string): Promise<void> {
+    public async removeRoom(roomId: number): Promise<void> {
         await this.roomRepository.delete(roomId);
+    }
+
+    public async findOneRoomByName(name: string): Promise<RoomEntity> {
+        return await this.roomRepository.findOne({
+            where: { roomName: name }
+        });
     }
 
     ///**************** room auth services *****************/

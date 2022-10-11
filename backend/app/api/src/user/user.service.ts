@@ -18,24 +18,24 @@ export class UserService {
         @InjectRepository(UserEntity)
         private userRepository: UserRepository,
         private userMapper: UserMapper
-    ) { 
-        this.userLogger = new Logger(UserService.name);
-    }
-    private readonly userLogger: Logger;
+    ) { }
 
     async findAllUsers(): Promise<UserEntity[]> {
         return await this.userRepository.find();
     }
 
-    async findOne(id: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({
+    async findOne(id: number): Promise<UserEntity> {
+        return await this.userRepository.findOne({
             where: {
-                username: id
+                id: id
             }
         });
-        if (user === null) {
-            this.userLogger.error('User with id ' + id + ' not found in database');
-        }
+    }
+
+    public async findOneByUsername(username: string): Promise<UserEntity> {
+        const user = await this.userRepository.findOne({ 
+            where: { username: username },
+        });
         return user;
     }
 
@@ -43,13 +43,7 @@ export class UserService {
     async postUser(newUser: UserDto): Promise<UserEntity> {
         const newEntity = this.userMapper.toEntity(newUser);
 
-        try {
-            await this.userRepository.insert(newEntity);
-        } catch (err) {
-            this.userLogger.error('User with id ' + newUser.username + ' already exists in database');
-            throw new HttpException('User already exists',
-                                    HttpStatus.BAD_REQUEST);
-        }
+        await this.userRepository.insert(newEntity);
         return newEntity;
     }
 
@@ -60,7 +54,7 @@ export class UserService {
     **  Determine if value checks of keys are necessary.
     */
 
-    async updateUser(id: string, data: Object): Promise<UpdateResult> {
+    async updateUser(id: number, data: Object): Promise<UpdateResult> {
         const   validData = new Set();
 
         for (let [key, value] of Object.entries(data)) {
@@ -88,7 +82,7 @@ export class UserService {
     **  delete or remove.
     */
 
-    async deleteUser(id: string): Promise<void> {
+    async deleteUser(id: number): Promise<void> {
         await this.userRepository.delete(id);
     }
 
