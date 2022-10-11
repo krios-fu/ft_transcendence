@@ -19,8 +19,9 @@ export class RoomRolesEntity {
     id: number;
 
     @Column({ 
-        type: 'varchar',
-        name: 'room_id'
+        type: 'bigint',
+        name: 'room_id',
+        update: false
     })
     roomId: number;
 
@@ -35,8 +36,10 @@ export class RoomRolesEntity {
     room: RoomEntity;
 
     @Column({ 
-        type: 'varchar',
-        name: 'role_id'
+        type: 'bigint',
+        name: 'role_id',
+        update: false
+
     })
     roleId: number;
 

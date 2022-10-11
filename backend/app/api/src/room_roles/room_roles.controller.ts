@@ -10,12 +10,13 @@ import {
   Param, 
   Delete, 
   ParseIntPipe, 
-  Patch, 
   ClassSerializerInterceptor, 
   UseInterceptors, 
   Logger,
   HttpException,
-  HttpStatus
+  HttpStatus,
+  Put,
+  Query
 } from '@nestjs/common';
 import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
@@ -34,7 +35,7 @@ export class RoomRolesController {
     private readonly roomRoleLogger: Logger;
 
     @Get()
-    public async findAll(): Promise<RoomRolesEntity[]> {
+    public async findAll(@Query() queryParams): Promise<RoomRolesEntity[]> {
         return this.roomRolesService.findAll();
     }
 
@@ -60,15 +61,29 @@ export class RoomRolesController {
 
     @Post()
     public async create(@Body() dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
+        const { roomId, roleId } = dto;
+        if (await this.roomService.findOne(roomId) === null) {
+            this.roomRoleLogger.error('No room with id ' + roomId + ' found in database');
+            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+        }
+        if (await this.rolesService.findOne(roleId) === null) {
+            this.roomRoleLogger.error('No role with id ' + roomId + ' found in database');
+        }
         return this.roomRolesService.create(dto);
     }
 
-    @Patch('/:id') /* is private && owner shit */
+    @Put(':id')
+    // UseGuard(PrivateRoom)
+    // UseGuard(AtLeastRoomOwner)
     public async updateRoomRole
     (
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateRoomRolesDto,
     ): Promise<RoomRolesEntity> {
+        if (await this.roomRolesService.findOne(id) === null) {
+            this.roomRoleLogger.error('No role for room with id ' + id + ' found in database');
+            throw new HttpException('no role room in db', HttpStatus.NOT_FOUND);
+        }
         return this.roomRolesService.updateRoomRole(id, dto);
     }
 

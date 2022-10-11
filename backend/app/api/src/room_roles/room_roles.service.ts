@@ -18,7 +18,7 @@ export class RoomRolesService {
 
     public async findOne(id: number) {
         return await this.roomRolesRepository.findOne({
-        where: { id: id }
+            where: { id: id }
         });
     }
 
@@ -52,11 +52,13 @@ export class RoomRolesService {
         await this.roomRolesRepository.delete(id);
     }
 
-    public async isOfficial(id: number): Promise<boolean> {
-        const role = await this.findRoleRoom(id);
+    /* ~~ role identifying service ~~ */
+
+    public async isRole(roleToCheck: string, roomId: number): Promise<boolean> {
+        const role = await this.findRoleRoom(roomId);
         if (role === null) {
             return false;
         }
-        return (role.role === 'official');
+        return (role.role === roleToCheck);
     }
 }

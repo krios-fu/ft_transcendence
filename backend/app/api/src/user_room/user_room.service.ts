@@ -83,7 +83,7 @@ export class UserRoomService {
             return ;
         }
         await this.userRoomRepository.delete(id);
-        if (await this.roomRolesService.isOfficial(roomRole.roomId) === true) {
+        if (await this.roomRolesService.isRole('official', roomRole.roomId) === true) {
             return ;
         }
         const isEmpty = await this.getAllUsersInRoom(roomRole.roomId);
