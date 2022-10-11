@@ -17,11 +17,11 @@ export class UserRoomEntity {
     id: number;
 
     @Column({
-        type: 'varchar',
+        type: 'bigint',
         name: 'user_id',
         update: false
     })
-    userId: string;
+    userId: number;
 
     @ManyToOne(
         () => UserEntity,
@@ -34,11 +34,11 @@ export class UserRoomEntity {
     user: UserEntity;
 
     @Column({
-        type: 'varchar',
+        type: 'bigint',
         name: 'room_id',
         update: false
     })
-    roomId: string;
+    roomId: number;
 
     @ManyToOne(
         () => RoomEntity,

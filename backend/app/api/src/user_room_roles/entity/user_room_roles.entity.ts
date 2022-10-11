@@ -34,11 +34,11 @@ export class UserRoomRolesEntity {
    userRoom: UserRoomEntity;
 
    @Column({
-      type: 'varchar',
+      type: 'bigint',
       name: 'role_id',
       update: false,
    })
-   roleId: string;
+   roleId: number;
 
    @ManyToOne(
       () => RolesEntity,

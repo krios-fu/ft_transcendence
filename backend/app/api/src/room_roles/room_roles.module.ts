@@ -18,6 +18,6 @@ import { RolesModule } from 'src/roles/roles.module';
     RoomRolesRepository,
     RoomRolesService,
   ],
-  exports: []
+  exports: [RoomRolesService]
 })
 export class RoomRolesModule { }

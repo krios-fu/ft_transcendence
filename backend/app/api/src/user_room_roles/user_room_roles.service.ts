@@ -26,7 +26,7 @@ export class UserRoomRolesService {
         });
     }
 
-    public async getRolesFromRoom(roomId: string): Promise<UserRoomRolesEntity[]> {
+    public async getRolesFromRoom(roomId: number): Promise<UserRoomRolesEntity[]> {
         return this.userRoomRolesRepository.find({
             relations: {
                 userRoom: true,
@@ -38,16 +38,16 @@ export class UserRoomRolesService {
         });
     }
 
-    public async getUsersInRoomByRole(room_id: string, roleId: string): Promise<UserEntity[]> {
+    public async getUsersInRoomByRole(roomId: number, roleId: number): Promise<UserEntity[]> {
         const rolesInRoom = this.userRoomRolesRepository.find({
             relations: {
                 userRoom: true,
                 role: true,
             },
             select: { userRoomId: true },
-            where: { role: roleId }
+            where: { roleId: roleId }
         });
-        const users = this.userRoomService.getAllUsersInRoom(room_id);
+        const users = this.userRoomService.getAllUsersInRoom(roomId); /* ????? */
         return users;
     }
 
@@ -67,5 +67,14 @@ export class UserRoomRolesService {
 
     public async remove(id: number): Promise<void> {
         await this.userRoomRolesRepository.delete(id);
+    }
+
+    public async findRoleByIds(userRoomId: number, roleId: number): Promise<UserRoomRolesEntity> {
+        return await this.userRoomRolesRepository.findOne({
+            where: {
+                userRoomId: userRoomId,
+                roleId: roleId,
+            }
+        });
     }
 }

@@ -13,7 +13,7 @@ export class RoomRolesService {
     ) { }
 
     public async findAll(): Promise<RoomRolesEntity[]> {
-        return await this.roomRolesRepository.find();
+        return await this.roomRolesRepository.find(/* ??? */);
     }
 
     public async findOne(id: number) {
@@ -24,14 +24,17 @@ export class RoomRolesService {
 
     public async findRoleRoom(roomId: number): Promise<RolesEntity> {
         const roomRole = await this.roomRolesRepository.findOne({
-        relations: { 
-            room: true,
-            role: true,
-        },
-        where: { 
-            room: { id: roomId }
-        }
+            relations: { 
+                room: true,
+                role: true,
+            },
+            where: { 
+                room: { id: roomId }
+            }
         });
+        if (roomRole === null) {
+            return null;
+        }
         return roomRole.role;
     }
 
@@ -47,5 +50,13 @@ export class RoomRolesService {
 
     public async remove(id: number): Promise<void> {
         await this.roomRolesRepository.delete(id);
+    }
+
+    public async isOfficial(id: number): Promise<boolean> {
+        const role = await this.findRoleRoom(id);
+        if (role === null) {
+            return false;
+        }
+        return (role.role === 'official');
     }
 }
