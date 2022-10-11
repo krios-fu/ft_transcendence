@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param
 import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
+import { UserRoomService } from 'src/user_room/user_room.service';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
@@ -10,6 +11,7 @@ import { UserRoomRolesService } from './user_room_roles.service';
 export class UserRoomRolesController {
     constructor(
         private readonly userRoomRolesService: UserRoomRolesService,
+        private readonly userRoomService: UserRoomService,
         private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { 
@@ -66,6 +68,14 @@ export class UserRoomRolesController {
     @Post()
     public async postRoleInRoom(@Body() dto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> {
         const { userRoomId, roleId } = dto;
+        if (await this.rolesService.findOne(roleId) === null) {
+            this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
+            throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
+        }
+        if (await this.userRoomService.findOne(userRoomId) === null) {
+            this.userRoomRolesLogger.error('No user in room with id ' + userRoomId + ' present in database');
+            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
+        }
         if (await this.userRoomRolesService.findRoleByIds(userRoomId, roleId) !== null) {
             this.userRoomRolesLogger.error('User role ' + userRoomId + ' with role ' + roleId + ' already in database');
             throw new HttpException('role already in db', HttpStatus.BAD_REQUEST);

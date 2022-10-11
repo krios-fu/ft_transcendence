@@ -62,18 +62,10 @@ export class UserRoomRolesService {
         return users;
     }
 
-    public async postRoleInRoom(newDto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
-        const { userRoomId, roleId } = newDto;
-        const roleEntity = await this.rolesService.findOne(roleId);
-        if (roleEntity === null) {
-            throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
-        }
-        const userInRoom = await this.userRoomService.findOne(userRoomId);
-        if (userInRoom === null) {
-            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
-        }
-        const roleInRoom = new UserRoomRolesEntity(newDto);
-        return await this.userRoomRolesRepository.save(roleInRoom);
+    public async postRoleInRoom(dto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
+        return await this.userRoomRolesRepository.save(
+            new UserRoomRolesEntity(dto)
+        );
     }
 
     public async remove(id: number): Promise<void> {

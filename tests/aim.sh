@@ -19,7 +19,7 @@ function ban_opt() {
             "roomId":"'$4'"
         }' ;;
         "del")      curl -v -X DELETE $host/$1/$3 ;;
-        *)          echo "BAD (ban) ~$1~" ;;
+        *)          echo "BAD (ban)" ;;
     esac 
 }
 
