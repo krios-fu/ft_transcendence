@@ -7,6 +7,8 @@ import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RoomModule } from './room/room.module';
 import { MatchModule } from './match/match.module';
 import { GameModule } from './game/game.module';
+import { WinnerModule } from './match/winner/winner.module';
+import { LoserModule } from './match/loser/loser.module';
 
 @Module({
     imports: [
@@ -24,6 +26,8 @@ import { GameModule } from './game/game.module';
         }),
         RoomModule,
         MatchModule,
+        WinnerModule,
+        LoserModule,
         GameModule
     ],
     controllers: [],
