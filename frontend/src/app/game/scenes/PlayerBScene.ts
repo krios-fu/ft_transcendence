@@ -11,9 +11,6 @@ export class    PlayerBScene extends PlayerScene {
     override update() {
         if (!this.cursors)
             return ;
-        this.socket.emit('ball',{
-            room: this.room
-        });
         if (this.cursors.up.isDown) //Move playerA's paddle up
         {
             this.socket.emit('paddleBUp',{

@@ -7,10 +7,4 @@ export class    SpectatorScene extends BaseScene {
     ) {
         super("Spectator", sock, room, initData);
     }
-
-    override update() {
-        this.socket.emit('ball',{
-            room: this.room
-        });
-    }
 }
