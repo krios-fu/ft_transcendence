@@ -10,6 +10,8 @@ export  class   Game {
     serveSide: number; // -1 left, 1 right
     lastUpdate: number; //timestamp milliseconds
 
+    private static  winScore: number = 3;
+
     constructor () {
         this.width = 800;
         this.height = 600;
@@ -18,6 +20,10 @@ export  class   Game {
         this.ball = new Ball(10, 395, 295, 0, 0);
         this.serveSide = -1;
         this.lastUpdate = Date.now();
+    }
+
+    static getWinScore(): number {
+        return (this.winScore);
     }
 
     serveBall() {
