@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   private code = '';
   @ViewChild(NavHeaderComponent) navHeader : any;
+  @ViewChild(ChatComponent) chat : any;
 
   constructor( private route : ActivatedRoute,  private http : HttpClient) {}
 
@@ -39,6 +40,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
         console.log(this.navHeader.profile); });
   }
 
-
+  send_chat_profile(e : any)
+  {
+    console.log("********** ",this.chat)
+    return e;
+  }
 
 }

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import {FlatTreeControl, NestedTreeControl} from "@angular/cdk/tree";
+import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {FlatTreeControl} from "@angular/cdk/tree";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material/tree";
 import {HttpClient} from "@angular/common/http";
+import {ChatComponent} from "../../../chat/chat.component";
+import {HomeComponent} from "../../home.component";
 
 
 interface FoodNode {
@@ -9,7 +11,7 @@ interface FoodNode {
   children?: FoodNode[];
 }
 
-let TREE_DATA: FoodNode[] = [
+let TREE_CHAT: FoodNode[] = [
   {
     name: 'Rooms',
     children: [
@@ -27,7 +29,7 @@ let TREE_DATA: FoodNode[] = [
   },
   {
     name: 'Dm',
-    children: [{name: 'onapoli-'}, {name: 'danrodri'} ],
+    children: [],
   },
 ];
 
@@ -37,12 +39,16 @@ interface ExampleFlatNode {
   level: number;
 }
 
+
+
 @Component({
   selector: 'app-room',
   templateUrl: './room.component.html',
   styleUrls: ['./room.component.scss']
 })
-export class RoomComponent implements OnInit {
+export class RoomComponent implements OnInit{
+
+  @Output('chat') chat = new EventEmitter<string>();
 
   entity: Object = [];
 
@@ -68,15 +74,34 @@ export class RoomComponent implements OnInit {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  constructor( private http : HttpClient) {
+  constructor( private http : HttpClient, ) {
 
   }
-  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
+
   ngOnInit(): void {
-
-    this.http.get('http://localhost:3000/chat')
-      .subscribe( entity   => { let data = Object.assign(entity) ; console.log(entity); TREE_DATA[1].children[0].name = data[0].membership[0].user.nickName;
-        this.dataSource.data = TREE_DATA; } )
+    this.http.get('http://localhost:3000/chat/krios-fu')
+      .subscribe(entity => {
+        let data = Object.assign(entity); console.log(entity);
+        for (let chat in data){
+          const {membership} = data[chat];
+          let {nickName} = membership[0].user;
+          if (nickName === 'krios-fu'){
+            nickName = membership[1].user.nickName;
+            console.log(nickName, "<------")
+          }
+          TREE_CHAT[1].children?.push({
+            name: nickName,
+          })
+        }
+        this.dataSource.data = TREE_CHAT;
+      })
   }
 
+  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
+
+
+  sendProfile(login : string) {
+    this.chat.emit(login)
+    console.log(login)
+  }
 }

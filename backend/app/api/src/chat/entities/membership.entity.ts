@@ -1,6 +1,6 @@
 import {
     CreateDateColumn,
-    Entity,
+    Entity, JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
@@ -13,7 +13,7 @@ import {ChatEntity} from "./chat.entity";
 )
 
 export class MembershipEntity{
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn()
     id: number;
 
     @CreateDateColumn()

@@ -2,12 +2,13 @@ import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, OnInit, V
 
 import {FormControl, FormGroup} from '@angular/forms'; //
 import {Chat} from "./chat";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss']
+  styleUrls: ['./chat.component.scss'],
+  inputs: ['login'],
 })
 export class ChatComponent implements OnInit{
 
@@ -18,14 +19,17 @@ export class ChatComponent implements OnInit{
   unfold : string;
   hidden = true;
 
+  @Input()
+  login = ''
 
   public formMessage= new FormGroup({
     message : new FormControl('')
   })
 
 
-  constructor( private chat : Chat, private route: ActivatedRoute)  {
+  constructor( private chat : Chat, private route: ActivatedRoute, private router_: Router)  {
     this.unfold = 'unfold_less';
+    console.log('----- ', this.login)
   }
 
 
@@ -62,4 +66,6 @@ export class ChatComponent implements OnInit{
     this.hidden = !this.hidden;
     // this.state["chat"] =  true;
   }
+
+
 }

@@ -68,7 +68,7 @@ export class UserEntity {
 	@OneToMany((type) => MessageEntity, (message) => message.author )
 	messages : MessageEntity[];
 
-	@OneToMany(()=>MembershipEntity, (membership) => membership.user)
+	@OneToMany(()=>MembershipEntity, (membership) => membership.user, )
 	membership : MembershipEntity[];
 
 }

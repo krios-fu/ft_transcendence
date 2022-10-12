@@ -7,8 +7,7 @@
       This padding value depends on the mat-icon-button width. -->
 
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding="3px" >
-
-      <a href="/login">
+      <a [routerLink]="[{ outlets: { chat: ['chat', node.name ] } }]" (click)="sendProfile(node.name)" >
         # {{node.name}}
       </a>
     </mat-tree-node>

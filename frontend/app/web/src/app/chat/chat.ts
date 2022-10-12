@@ -20,6 +20,8 @@ export class Chat {
   @Input()
   profile = {}
 
+
+
   constructor( private socket : Socket ) {
 
     this.id = this.socket.ioSocket.id;

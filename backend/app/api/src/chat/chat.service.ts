@@ -21,29 +21,28 @@ export class ChatService {
         return await this.chatRepository.find()
     }
 
-    async findOne(id: number): Promise<ChatEntity>{
-        return await this.chatRepository.findOne({
-            relations: {
-                membership: {
-                    user: true,
-                },
-                messages: true,
-            },
-            where: {
-                    id: id
-            },
+    async findOne(id: string): Promise<ChatEntity[]>{
+        return await this.chatRepository.find({
             select:{
                 membership:{
-                        user: {
-                            nickName : true
-                        },
+                    user:{
+                        username : true,
+                    }
                 },
-                // messages: {
-                //     author:{
-                //         nickName: true
-                //     },
-                // },
-            }
+            },
+            // relations: {
+            //     membership: true,
+            //     messages: false,
+            // },
+
+            where:{
+                membership:{
+                    user:{
+                        username: id
+                    }
+                },
+            },
+
         });
     }
 

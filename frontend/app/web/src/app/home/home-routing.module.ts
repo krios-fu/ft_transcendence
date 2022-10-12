@@ -9,7 +9,7 @@ import {LoginComponent} from "../login/login.component";
 const HomeRoutes: Routes = [
   {
     path: 'home', component: HomeComponent, children: [
-      {   path: 'chat', component: ChatComponent, outlet: 'chat' },
+      {   path: 'chat/:id', component : ChatComponent, outlet: 'chat' },
       {   path: 'login', component: LoginComponent, outlet: 'center'},
     ]
   }

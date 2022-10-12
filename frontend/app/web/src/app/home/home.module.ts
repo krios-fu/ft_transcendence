@@ -13,6 +13,7 @@ import {MatButtonModule} from "@angular/material/button";
 import { HeaderComponent } from './header/header.component';
 import {NavHeaderComponent} from "./navegation/header/navheader.component";
 import { RoomComponent } from './navegation/room/room.component';
+import {ChatComponent} from "../chat/chat.component";
 
 
 
@@ -21,7 +22,7 @@ import { RoomComponent } from './navegation/room/room.component';
     HomeComponent,
     HeaderComponent,
     NavHeaderComponent,
-    RoomComponent
+    RoomComponent,
   ],
   imports: [
     CommonModule,

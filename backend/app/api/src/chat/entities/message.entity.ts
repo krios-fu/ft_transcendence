@@ -6,7 +6,7 @@ import {ChatEntity} from "./chat.entity";
     name : 'messages'
 })
 export class MessageEntity {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn()
     id : number;
 
     @Column({name: 'content'})
