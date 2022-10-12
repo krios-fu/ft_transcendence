@@ -105,4 +105,8 @@ export class    Updater {
         playerB.score += 1;
     }
 
+    checkWin(playerScore: number): boolean {
+        return (playerScore === Game.getWinScore());
+    }
+
 }
