@@ -6,6 +6,7 @@ import { UserRoomEntity } from './entity/user_room.entity';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserService } from 'src/user/user.service';
 import { RoomService } from 'src/room/room.service';
+import { UserRoomQueryDto } from './dto/user_room.query.dto';
 
 @Controller('user_room')
 export class UserRoomController {
@@ -20,8 +21,8 @@ export class UserRoomController {
 
     /* Get all users registered in rooms */
     @Get()
-    public async findAll(@Query() queryParams): Promise<UserRoomEntity[]> {
-        return await this.userRoomService.findAll(/* gbys */);
+    public async findAll(@Query() queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
+        return await this.userRoomService.findAll(queryParams);
     }
 
     /* Get one user in a room */

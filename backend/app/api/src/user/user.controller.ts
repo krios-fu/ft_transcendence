@@ -16,6 +16,7 @@ import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
 import { UpdateResult } from 'typeorm';
+import { UserQueryDto } from './user.query.dto';
 
 @Controller('users')
 export class UserController {
@@ -27,8 +28,8 @@ export class UserController {
     private readonly userLogger: Logger;
 
     @Get()
-    async findAllUsers(@Query() queryParams): Promise<UserEntity[]> {
-        return this.userService.findAllUsers(/* query params */);
+    async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[]> {
+        return this.userService.findAllUsers(queryParams);
     }
 
     @Get(':id')

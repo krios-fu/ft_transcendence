@@ -4,6 +4,7 @@ import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserRoomService } from 'src/user_room/user_room.service';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
+import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
 
@@ -21,8 +22,8 @@ export class UserRoomRolesController {
 
     /* get all users in room with roles */
     @Get()
-    public async findAllRoles(@Query() queryParams): Promise<UserRoomRolesEntity[]> {
-        return await this.userRoomRolesService.getAllRoles(/* !??! */);
+    public async findAllRoles(@Query() queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
+        return await this.userRoomRolesService.findAllRoles(queryParams);
     }
 
     /* Get user with role in a room */

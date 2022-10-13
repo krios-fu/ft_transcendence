@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from "class-validator";
 
-export class RoleQueryDto {
+export class RoomQueryDto {
     @IsOptional()
     @IsString()
     sort?: string;

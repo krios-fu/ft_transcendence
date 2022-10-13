@@ -6,6 +6,7 @@ import { RoomRepository } from "./repository/room.repository";
 import { UserService } from "src/user/user.service";
 import { UserEntity } from "src/user/user.entity";
 import { UpdateResult } from "typeorm";
+import { RoomQueryDto } from "./dto/room.query.dto";
 
 @Injectable()
 export class RoomService {
@@ -14,7 +15,7 @@ export class RoomService {
         private readonly roomRepository: RoomRepository,
     ) { }
 
-    public async findAllRooms(): Promise<RoomEntity[]> {
+    public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
         return await this.roomRepository.find();
     }
 

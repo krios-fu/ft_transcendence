@@ -6,8 +6,10 @@ export class BanQueryDto {
     sort?: string;
 
     @IsOptional()
-    filter?: string[];
+    @IsString({ each: true })
+    filter?: Map<string, string>;
 
     @IsOptional()
-    range?: string[];
+    @IsString({ each: true })
+    range?: Map<string, string>;
 }

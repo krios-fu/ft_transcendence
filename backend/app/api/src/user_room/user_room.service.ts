@@ -6,6 +6,7 @@ import { RoomRolesService } from 'src/room_roles/room_roles.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateUserRoomDto } from './dto/user_room.dto';
+import { UserRoomQueryDto } from './dto/user_room.query.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { UserRoomRepository } from './repository/user_room.repository';
 
@@ -19,12 +20,7 @@ export class UserRoomService {
         private readonly userService: UserService,
     ) { }
 
-    public async create(newDto: CreateUserRoomDto) {
-        const userInRoom = new UserRoomEntity(newDto);
-        return await this.userRoomRepository.save(userInRoom);
-    }
-
-    public async findAll(): Promise<UserRoomEntity[]> {
+    public async findAll(queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
         return await this.userRoomRepository.find(/* ??? */);
     }
 
@@ -72,6 +68,11 @@ export class UserRoomService {
         rooms.push(userRoom.room);
         }
         return rooms;
+    }
+
+    public async create(newDto: CreateUserRoomDto) {
+        const userInRoom = new UserRoomEntity(newDto);
+        return await this.userRoomRepository.save(userInRoom);
     }
 
     public async remove(id: number): Promise<void> {

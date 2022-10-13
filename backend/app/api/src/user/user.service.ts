@@ -2,15 +2,11 @@ import { UserRepository } from './user.repository';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
-import {
-    Injectable,
-    HttpException,
-    HttpStatus,
-    Logger,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { isBoolean, isString } from 'class-validator';
+import { UserQueryDto } from './user.query.dto';
 
 @Injectable()
 export class UserService {
@@ -20,7 +16,7 @@ export class UserService {
         private userMapper: UserMapper
     ) { }
 
-    async findAllUsers(): Promise<UserEntity[]> {
+    async findAllUsers(queryParams: UserQueryDto): Promise<UserEntity[]> {
         return await this.userRepository.find();
     }
 

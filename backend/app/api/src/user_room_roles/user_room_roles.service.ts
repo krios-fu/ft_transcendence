@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
+import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
 
@@ -14,7 +15,7 @@ export class UserRoomRolesService {
         private readonly userService: UserService,
     ) { }
 
-    public async getAllRoles(): Promise<UserRoomRolesEntity[]> {
+    public async findAllRoles(queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
         return this.userRoomRolesRepository.find();
     }
 

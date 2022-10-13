@@ -23,7 +23,7 @@ export class BanController {
     @Get()
     async getAllBans(@Query() queryParams: BanQueryDto): Promise<BanEntity[]> {
         console.log('TESTING TESTS: ' + JSON.stringify(queryParams));
-        return await this.banService.getAllBans(/*queryParams*/);
+        return await this.banService.findAllBans(queryParams);
     }
 
     /* Return a ban by id */

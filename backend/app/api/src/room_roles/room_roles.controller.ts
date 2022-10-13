@@ -20,6 +20,7 @@ import {
 } from '@nestjs/common';
 import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
+import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 
 @Controller('room-roles')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -35,8 +36,8 @@ export class RoomRolesController {
     private readonly roomRoleLogger: Logger;
 
     @Get()
-    public async findAll(@Query() queryParams): Promise<RoomRolesEntity[]> {
-        return this.roomRolesService.findAll();
+    public async findAll(@Query() queryParams: RoomRolesQueryDto): Promise<RoomRolesEntity[]> {
+        return this.roomRolesService.findAll(queryParams);
     }
 
     @Get(':id')

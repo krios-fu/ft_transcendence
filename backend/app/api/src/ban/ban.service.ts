@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { CreateBanDto } from './dto/ban.dto';
+import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
 import { BanRepository } from './repository/ban.repository';
 
@@ -16,7 +17,7 @@ export class BanService {
     }
     private readonly banLogger: Logger;
 
-    public async getAllBans(): Promise<BanEntity[]> {
+    public async findAllBans(queryParams: BanQueryDto): Promise<BanEntity[]> {
         return await this.banRepository.find();
     }
 

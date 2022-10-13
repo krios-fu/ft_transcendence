@@ -17,6 +17,7 @@ import { Body,
     Put, 
     Query
 } from "@nestjs/common";
+import { RoomQueryDto } from "./dto/room.query.dto";
 
 @Controller('room')
 export class RoomController {
@@ -30,8 +31,8 @@ export class RoomController {
 
     /* Get all created rooms */
     @Get()
-    public async findAllRooms(@Query() queryParams): Promise<RoomEntity[]> {
-        return await this.roomService.findAllRooms();
+    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[]> {
+        return await this.roomService.findAllRooms(queryParams);
     }
 
     /* Get a room by name */

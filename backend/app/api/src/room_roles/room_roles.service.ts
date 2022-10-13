@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
+import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesRepository } from './repository/room_roles.repository';
 
@@ -12,7 +13,7 @@ export class RoomRolesService {
         private readonly roomRolesRepository: RoomRolesRepository,
     ) { }
 
-    public async findAll(): Promise<RoomRolesEntity[]> {
+    public async findAll(queryParams: RoomRolesQueryDto): Promise<RoomRolesEntity[]> {
         return await this.roomRolesRepository.find(/* ??? */);
     }
 

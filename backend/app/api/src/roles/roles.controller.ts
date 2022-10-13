@@ -15,7 +15,7 @@ export class RolesController {
     @Get()
     public async findAll(@Query() queryParams: RoleQueryDto): Promise<RolesEntity[]> {
         console.log('query tal: ' + JSON.stringify(queryParams));
-        return await this.rolesService.findAll();
+        return await this.rolesService.findAll(queryParams);
     }
 
     /* Get a role */

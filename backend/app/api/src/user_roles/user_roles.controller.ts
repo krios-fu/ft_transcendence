@@ -2,6 +2,7 @@ import { Body, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPi
 import { Controller } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
+import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { UserRolesService } from './user_roles.service';
 
@@ -15,8 +16,8 @@ export class UserRolesController {
     private readonly userRolesLogger: Logger;
     /* Get all users with roles */
     @Get()
-    public async getAllUserRoles(@Query() queryParams): Promise<UserRolesEntity[]> {
-        return await this.userRolesService.getAllUserRoles(/* gbys */);
+    public async findAllUserRoles(@Query() queryParams: UserRolesQueryDto): Promise<UserRolesEntity[]> {
+        return await this.userRolesService.findAllUserRoles(queryParams);
     }
     /* Get an user with a role */
     @Get(':id')

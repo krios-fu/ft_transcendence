@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
+import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { UserRolesRepository } from './repository/user_roles.repository';
 
@@ -11,7 +12,7 @@ export class UserRolesService {
         private readonly UserRolesRepository: UserRolesRepository,
     ) { }
     
-    public async getAllUserRoles(): Promise<UserRolesEntity[]> {
+    public async findAllUserRoles(queryParams: UserRolesQueryDto): Promise<UserRolesEntity[]> {
         return await this.UserRolesRepository.find();
     }
 
