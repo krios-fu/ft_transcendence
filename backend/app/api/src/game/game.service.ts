@@ -1,10 +1,9 @@
-import { LoserDto } from "src/match/loser/loser.dto";
+import { Injectable } from "@nestjs/common";
 import { LoserEntity } from "src/match/loser/loser.entity";
 import { LoserService } from "src/match/loser/loser.service";
 import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
-import { WinnerDto } from "src/match/winner/winner.dto";
 import { WinnerEntity } from "src/match/winner/winner.entity";
 import { WinnerService } from "src/match/winner/winner.service";
 import { UserEntity } from "src/user/user.entity";
@@ -21,6 +20,7 @@ enum    Level {
     Gold
 }
 
+@Injectable()
 export class    GameService {
     private gameQueue: Map<string, UserEntity[]>;
     private gamePlayers: Map<string, [UserEntity, UserEntity]>;
@@ -73,7 +73,14 @@ export class    GameService {
         if (nextPlayers[0] === undefined)
             return (nextPlayers);
         currentPlayers = this.gamePlayers.get(gameId);
-        currentPlayers = nextPlayers;
+        if (currentPlayers === undefined)
+        {
+            currentPlayers = this.gamePlayers.set(
+                gameId, [undefined, undefined]
+            ).get(gameId);
+        }
+        currentPlayers[0] = nextPlayers[0];
+        currentPlayers[1] = nextPlayers[1];
         this.removeFromQueue(gameId, nextPlayers[0].username);
         this.removeFromQueue(gameId, nextPlayers[1].username);
         return (nextPlayers);
@@ -81,7 +88,8 @@ export class    GameService {
 
     gameStarted(gameId: string): boolean {
         return (
-            this.gamePlayers.get(gameId)[0] != undefined
+            this.gamePlayers.get(gameId) != undefined
+                && this.gamePlayers.get(gameId)[0] != undefined
         );
     }
 
@@ -122,42 +130,32 @@ export class    GameService {
         //Pending ...
     }
 
-    private async   savePlayers(players: [UserEntity, UserEntity],
+    private savePlayers(players: [UserEntity, UserEntity],
                                 gameData: Game)
-                                : Promise<[WinnerEntity, LoserEntity]> {
-        let winnerDto: WinnerDto;
-        let loserDto: LoserDto;
-        let winnerEntity: WinnerEntity;
-        let loserEntity: LoserEntity;
+                                : [WinnerEntity, LoserEntity] {
+        let winnerEntity: WinnerEntity = new WinnerEntity;
+        let loserEntity: LoserEntity = new LoserEntity;
 
-        winnerDto.user = gameData.playerA.score > gameData.playerB.score
+        winnerEntity.user = gameData.playerA.score > gameData.playerB.score
                             ? players[0] : players[1];
-        winnerDto.score = gameData.playerA.score > gameData.playerB.score
+        winnerEntity.score = gameData.playerA.score > gameData.playerB.score
                             ? gameData.playerA.score : gameData.playerB.score;
-        winnerEntity = await this.winnerService.AddWinner(winnerDto);
-        loserDto.user = winnerDto.user === players[0]
-                        ? players[1] : players[0];
-        loserDto.score = winnerDto.user === players[0]
-                        ? gameData.playerB.score : gameData.playerA.score;
-        loserEntity = await this.loserService.AddLoser(loserDto);
+        loserEntity.user = winnerEntity.user === players[0]
+                            ? players[1] : players[0];
+        loserEntity.score = winnerEntity.user === players[0]
+                            ? gameData.playerB.score : gameData.playerA.score;
         return ([winnerEntity, loserEntity]);
     }
 
     private async   saveMatch(players: [UserEntity, UserEntity],
                                 gameData: Game, isOfficial: boolean)
                                 : Promise<MatchEntity> {
-        let matchDto: MatchDto;
-        let savedPlayers: [WinnerEntity, LoserEntity];
-        let winnerEntity: WinnerEntity;
-        let loserEntity: LoserEntity;
+        let matchDto: MatchDto = new MatchDto;
+        let playersEntities: [WinnerEntity, LoserEntity];
     
-        savedPlayers = await this.savePlayers(players, gameData);
-        if (!savedPlayers[0] || !savedPlayers[1])
-            return (null);
-        winnerEntity = savedPlayers[0];
-        loserEntity = savedPlayers[1];
-        matchDto.winner = winnerEntity;
-        matchDto.loser = loserEntity;
+        playersEntities = this.savePlayers(players, gameData);
+        matchDto.winner = playersEntities[0];
+        matchDto.loser = playersEntities[1];
         matchDto.official = isOfficial;
         return (await this.matchService.addMatch(matchDto));
     }
@@ -186,9 +184,7 @@ export class    GameService {
     }
 
     private findByUsername(username: string, queue: UserEntity[]): number {
-        return (queue.findIndex((elem) => {
-            elem.username === username
-        }));
+        return (queue.findIndex((elem) => elem.username === username));
     }
 
     async addToQueue(gameId: string, username: string): Promise<void> {

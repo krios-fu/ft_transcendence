@@ -9,7 +9,12 @@ import {
     WsResponse,
     ConnectedSocket,
   } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import {
+    RemoteSocket,
+    Server,
+    Socket
+} from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { Game } from './Game'
 import { Ball } from './Ball';
 import { Player } from './Player';
@@ -28,6 +33,7 @@ export class    GameGateway implements OnGatewayInit,
     games: Map<string, Game>;
     updater: Updater;
     updateInterval: NodeJS.Timer;
+    mockUserNum: number = 1; //Provisional
 
     constructor(
         private readonly gameService: GameService
@@ -39,13 +45,27 @@ export class    GameGateway implements OnGatewayInit,
         this.updater = new Updater();
     }
 
-    emitToSocketId(socketId: string, gameId: string, role: string): void {
-        this.server.to(socketId).emit("role", {
-            role: role,
-            room: gameId,
-            initData: this.games.get(gameId)
+    async addUserToRoom(username: string, roomId: string): Promise<void> {
+        let userSockets: RemoteSocket<DefaultEventsMap, any>[];
+
+        userSockets = await this.server.in(username).fetchSockets();
+        userSockets.forEach((sock) => {
+            sock.join(roomId);
         });
+    }
+
+    emitToRoom(roomId: string, eventId: string, data: any = null): void {
+        this.server.to(roomId).emit(eventId, data);
         return ;
+    }
+
+    async clearRoom(roomId: string): Promise<void> {
+        let roomSockets: RemoteSocket<DefaultEventsMap, any>[];
+
+        roomSockets = await this.server.in(roomId).fetchSockets();
+        roomSockets.forEach((sock) => {
+            sock.leave(roomId);
+        });
     }
 
     gameUpdate(game: Game, room: string): void {
@@ -86,10 +106,25 @@ export class    GameGateway implements OnGatewayInit,
                 a: playerA.score,
                 b: playerB.score
             });
-            setTimeout(() => {
-                game.serveBall();
-                this.server.to("Game1").emit("served", "served");
-            }, 3000);
+            if (this.updater.checkWin(playerA.score))
+            {
+                this.emitToRoom(room, "end", {
+                    winner: "PlayerA"
+                });
+                this.gameService.endGame(room, game);
+                this.clearRoom("PlayerA");
+                this.clearRoom("PlayerB");
+                this.games.delete(room);
+                if (this.games.size === 0)
+                    clearInterval(this.updateInterval);
+            }
+            else
+            {
+                setTimeout(() => {
+                    game.serveBall();
+                    this.emitToRoom(room, "served");
+                }, 3000);
+            }
         }
         else if (this.updater.checkCollisionLeft(ball, xDisplacement))
         {//Collision Left border
@@ -98,10 +133,25 @@ export class    GameGateway implements OnGatewayInit,
                 a: playerA.score,
                 b: playerB.score
             });
-            setTimeout(() => {
-                game.serveBall();
-                this.server.to("Game1").emit("served", "served");
-            }, 3000);
+            if (this.updater.checkWin(playerB.score))
+            {
+                this.emitToRoom(room, "end", {
+                    winner: "PlayerB"
+                });
+                this.gameService.endGame(room, game);
+                this.clearRoom("PlayerA");
+                this.clearRoom("PlayerB");
+                this.games.delete(room);
+                if (this.games.size === 0)
+                    clearInterval(this.updateInterval);
+            }
+            else
+            {
+                setTimeout(() => {
+                    game.serveBall();
+                    this.emitToRoom(room, "served");
+                }, 3000);
+            }
         }
         else
         {
@@ -123,15 +173,31 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     startGame(gameId: string): void {
-        let players: [UserEntity, UserEntity] = this.gameService.startGame(gameId);
+        let players: [UserEntity, UserEntity] =
+            this.gameService.startGame(gameId);
 
         if (!players[0] || !players[1])
             return ;
-        this.emitToSocketId(players[0].username, gameId, "PlayerA");
-        this.emitToSocketId(players[1].username, gameId, "PlayerB");
+        if (this.games.get(gameId) != undefined)
+            this.games.delete(gameId);
+        this.games.set(gameId, new Game());
+        this.emitToRoom(gameId, "newMatch", {
+            role: "Spectator",
+            initData: this.games.get(gameId)
+        });
+        this.emitToRoom(players[0].username, "newMatch", {
+            role: "PlayerA",
+            initData: this.games.get(gameId)
+        });
+        this.addUserToRoom(players[0].username, "PlayerA");
+        this.emitToRoom(players[1].username, "newMatch", {
+            role: "PlayerB",
+            initData: this.games.get(gameId)
+        });
+        this.addUserToRoom(players[1].username, "PlayerB");
         setTimeout(() => {
-            this.games.get("Game1").serveBall();
-            this.server.to("Game1").emit("served", "served");
+            this.games.get(gameId).serveBall();
+            this.server.to(gameId).emit("served");
         }, 3000);
         if (this.games.size === 1) {
             this.updateInterval = setInterval(() => {
@@ -145,23 +211,25 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
-        const   sockets = await this.server.fetchSockets();
-        const   sockLen: Number = sockets.length;
-        let     gameData: Game;
+        let gameData: Game;
+        let username: string = `user-${this.mockUserNum}`; //Provisional
 
         console.log("User joined Game room");
         client.join("Game1"); //Provisional
+        client.emit("mockUser", {
+            mockUser: username
+        }); //Provisional
+        client.join(username);
         //client.join(userSession)
         gameData = this.games.get("Game1");
         if (!gameData) // Provisional
             gameData = this.games.set("Game1", new Game()).get("Game1"); //Provisional
-        client.emit("role", {
-            role: "Spectator",
-            room: "Game1",
+        client.emit("init", {
             //Send latest game data
             initData: gameData
         });
-        console.log("With id: ", client.id);
+        ++this.mockUserNum; //Provisional
+        console.log(`With id: ${client.id} and username ${username}`);
     }
 
     async handleDisconnect(client: Socket) {
@@ -173,7 +241,7 @@ export class    GameGateway implements OnGatewayInit,
         else if (!(await PlayerB).length)
             console.log("Player B disconnected");
         else
-            console.log("A spectator disconnected");
+            console.log("A spectator or extra player socket disconnected");
         /*
         **  Check if there's any game room without socket connections
         **  and delete its respective game class if that is the case.

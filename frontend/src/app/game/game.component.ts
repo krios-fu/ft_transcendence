@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core"
 import * as Phaser from 'phaser'
 import * as SockIO from 'socket.io-client'
+import { EndScene } from "./scenes/EndScene";
 import { PlayerAScene } from "./scenes/PlayerAScene";
 import { PlayerBScene } from "./scenes/PlayerBScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
@@ -16,6 +17,7 @@ export class    GameComponent implements OnInit {
     private socket: SockIO.Socket;
     private game?: Phaser.Game;
     private queueButtonClick: boolean;
+    private username?: string; //Provisional
 
     constructor () {
         this.config = {
@@ -31,37 +33,40 @@ export class    GameComponent implements OnInit {
         };
         this.socket = SockIO.io("ws://localhost:3001");
         this.queueButtonClick = false;
+        this.socket.once("mockUser", (data: any) => {
+            this.username = data.mockUser;
+        }); //Provisional
     }
 
     ngOnInit(): void {
+        let playerAScene: PlayerAScene;
+        let playerBScene: PlayerBScene;
+        let spectatorScene: SpectatorScene;
+        let endScene: EndScene;
+
         //Create dto for data
-        this.socket.once("role", (data: any) => { //PlayerA, PlayerB, Spectator
-            if (data.role === "PlayerA")
-            {
-                this.config.scene = new PlayerAScene(
-                                        this.socket, data.room, data.initData);
-            }
-            else if (data.role === "PlayerB")
-            {
-                this.config.scene = new PlayerBScene(
-                                        this.socket, data.room, data.initData);
-            }
-            else if (data.role === "Spectator")
-            {
-                this.config.scene = new SpectatorScene(
-                                        this.socket, data.room, data.initData);
-            }
-            // Add else to handle invalid data.role ?
+        this.socket.once("init", (data: any) => {
+            playerAScene =
+                new PlayerAScene(this.socket, "Game1", data.initData);
+            playerBScene =
+                new PlayerBScene(this.socket, "Game1", data.initData);
+            spectatorScene =
+                new SpectatorScene(this.socket, "Game1", data.initData);
+            endScene = 
+                new EndScene(this.socket, "Game1", data.initData);
+            this.config.scene = [
+                spectatorScene, playerAScene, playerBScene, endScene
+            ];
             this.game = new Phaser.Game(this.config);
         })
     }
 
     addToQueue() {
-        if (this.queueButtonClick)
-            return ;
+        /*if (this.queueButtonClick)
+            return ;*/
         this.socket.emit("addToGameQueue", {
             gameId: "Game1",
-            username: "user"
+            username: this.username
         });
         this.queueButtonClick = true;
     }

@@ -32,18 +32,17 @@ export class    BaseScene extends Phaser.Scene {
                                         + this.scoreB,
                                         { fontSize: '20px', color: '#fff' });
         this.scoreText.setOrigin(0.5);
-    }      
-
-    requestServe() {
-        this.socket.emit("serve", {
-            room: this.room
-        });
     }
 
-    init() {
-        this.socket.on("start", () => {
-            this.time.delayedCall(3000, this.requestServe, [], this);
-        })
+    init(initData: any = {}) {
+        if (Object.keys(initData).length != 0)
+            this.initData = initData;
+        this.socket.on("newMatch", (data: any) => {
+            this.scene.start(data.role, data.initData);
+        });
+        this.socket.on("end", (data) => {
+            this.scene.start("End", data);
+        });
         //Register paddleA update event
         this.socket.on("paddleA", (coord) => {
             if (!this.playerA)
@@ -70,7 +69,6 @@ export class    BaseScene extends Phaser.Scene {
             this.scoreText.setText(
                 this.scoreA + BaseScene.scoreTextContent + this.scoreB);
             this.initText.setVisible(true);
-            this.time.delayedCall(3000, this.requestServe, [], this);
         });
         this.socket.on("served", () => {
             if (!this.initText)
