@@ -5,6 +5,7 @@ import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { BanService } from './ban.service';
 import { CreateBanDto } from './dto/ban.dto';
+import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
 
 @Controller('ban')
@@ -20,7 +21,8 @@ export class BanController {
 
     /* Return all ban entities */
     @Get()
-    async getAllBans(@Query() queryParams): Promise<BanEntity[]> {
+    async getAllBans(@Query() queryParams: BanQueryDto): Promise<BanEntity[]> {
+        console.log('TESTING TESTS: ' + JSON.stringify(queryParams));
         return await this.banService.getAllBans(/*queryParams*/);
     }
 

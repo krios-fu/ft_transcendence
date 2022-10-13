@@ -30,7 +30,7 @@ export class AuthController {
     @Public()
     @Get('42')
     @UseGuards(FortyTwoAuthGuard)
-    async authFromFT
+    public async authFromFT
         (
             @Req() req: IRequestProfile,
             @Res({ passthrough: true }) res: Response
@@ -47,7 +47,7 @@ export class AuthController {
 
     @Public()
     @Get('token')
-    async refreshToken
+    public async refreshToken
         (
             @Req() req: Request,
             @Res({ passthrough: true }) res: Response

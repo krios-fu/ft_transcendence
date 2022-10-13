@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpS
 import { RolesService } from './roles.service';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { RolesEntity } from './entity/roles.entity';
+import { RoleQueryDto } from './dto/role.query.dto';
 
 @Controller('roles')
 export class RolesController {
@@ -12,7 +13,8 @@ export class RolesController {
 
     /* Get all roles */
     @Get()
-    public async findAll(@Query() queryParams): Promise<RolesEntity[]> {
+    public async findAll(@Query() queryParams: RoleQueryDto): Promise<RolesEntity[]> {
+        console.log('query tal: ' + JSON.stringify(queryParams));
         return await this.rolesService.findAll();
     }
 
@@ -30,7 +32,7 @@ export class RolesController {
     /* Create a new role */
     @Post()
     public async create(@Body() dto: CreateRoleDto): Promise<RolesEntity> {
-        if (await this.rolesService.findRoleByName(dto.role) === null) {
+        if (await this.rolesService.findRoleByName(dto.role) !== null) {
             this.roleLogger.error('Role with id ' + dto.role + ' is already in database');
             throw new HttpException('role already in db', HttpStatus.BAD_REQUEST);
         }
