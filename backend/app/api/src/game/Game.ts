@@ -15,8 +15,8 @@ export  class   Game {
     constructor () {
         this.width = 800;
         this.height = 600;
-        this.playerA = new Player(10, 50, 50, 25, 0);
-        this.playerB = new Player(10, 50, 750, 25, 0);
+        this.playerA = new Player(10, 50, 50, 300, 0);
+        this.playerB = new Player(10, 50, 750, 300, 0);
         this.ball = new Ball(10, 395, 295, 0, 0);
         this.serveSide = -1;
         this.lastUpdate = Date.now();
