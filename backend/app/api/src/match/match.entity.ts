@@ -18,12 +18,14 @@ export class    MatchEntity {
     id: number;
 
     @OneToOne(() => WinnerEntity, (winner) => winner.match, {
+        cascade: true,
         eager: true
     })
     @JoinColumn()
     winner: WinnerEntity;
 
     @OneToOne(() => LoserEntity, (loser) => loser.match, {
+        cascade: true,
         eager: true
     })
     @JoinColumn()

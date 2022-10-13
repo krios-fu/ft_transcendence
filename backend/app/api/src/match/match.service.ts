@@ -80,7 +80,7 @@ export class    MatchService {
         const   matchEntity: MatchEntity = this.matchMapper.toEntity(matchDto);
         
         try {
-            await this.matchRepository.insert(matchEntity);
+            await this.matchRepository.save(matchEntity);
         } catch (err) {
             console.log(err);
             return (null);
