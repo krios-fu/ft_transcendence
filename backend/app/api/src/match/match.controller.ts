@@ -19,15 +19,15 @@ export class    MatchController {
         return (await this.matchService.findAllMatches());
     }
 
+    @Get('user')
+    async getUserMatches(@Req() req): Promise<MatchEntity[]> {
+        return (await this.matchService.findUserMatches(req.user.data));
+    }
+
     //Number validation must be added
     @Get(':id')
     async getMatch(@Param('id', ParseIntPipe) id: number): Promise<MatchEntity> {
         return (await this.matchService.findOneMatch(id));
-    }
-
-    @Get('user')
-    async getUserMatches(@Req() req): Promise<MatchEntity[]> {
-        return (await this.matchService.findUserMatches(req.user.data));
     }
 
     /*
