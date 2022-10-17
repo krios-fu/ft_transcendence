@@ -1,6 +1,11 @@
 import { Player } from './Player'
 import { Ball } from './Ball'
 
+export  enum    GameState {
+    Paused,
+    Running
+}
+
 export  class   Game {
     width: number;
     height: number;
@@ -9,6 +14,7 @@ export  class   Game {
     ball: Ball;
     serveSide: number; // -1 left, 1 right
     lastUpdate: number; //timestamp milliseconds
+    state: GameState;
 
     private static  winScore: number = 3;
 
@@ -20,6 +26,7 @@ export  class   Game {
         this.ball = new Ball(10, 395, 295, 0, 0);
         this.serveSide = -1;
         this.lastUpdate = Date.now();
+        this.state = GameState.Running;
     }
 
     static getWinScore(): number {
