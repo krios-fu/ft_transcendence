@@ -1,4 +1,4 @@
-import { Game } from "./Game";
+import { Game, GameState } from "./Game";
 import { Ball } from "./Ball";
 import { Player } from "./Player";
 
@@ -107,6 +107,27 @@ export class    Updater {
 
     checkWin(playerScore: number): boolean {
         return (playerScore === Game.getWinScore());
+    }
+
+    serve(game: Game): void {
+        game.serveBall();
+    }
+
+    pauseGame(game: Game): void {
+        game.state = GameState.Paused;
+    }
+
+    forceWin(game: Game, winner: string): void {
+        if (winner === "PlayerA")
+        {
+            game.playerA.score = Game.getWinScore();
+            game.playerB.score = 0;
+        }
+        else
+        {
+            game.playerB.score = Game.getWinScore();
+            game.playerA.score = 0;
+        }
     }
 
 }
