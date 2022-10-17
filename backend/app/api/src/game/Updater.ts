@@ -7,19 +7,19 @@ export class    Updater {
     checkPlayerACollision(ball: Ball, playerA: Player,
                             xDisplacement: number): boolean {
         return (ball.xPosition - ball.radius > playerA.xPosition
-                + (playerA.width / 2)
+                + playerA.halfWidth
             && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition
-                + (playerA.width / 2)
+                + playerA.halfWidth
             && (
                 (ball.yPosition - ball.radius <= playerA.yPosition
-                        + (playerA.height / 2)
+                        + playerA.halfHeight
                     && ball.yPosition - ball.radius >= playerA.yPosition
-                        - (playerA.height / 2))
+                        - playerA.halfHeight)
                 ||
                 (ball.yPosition + ball.radius <= playerA.yPosition
-                        + (playerA.height / 2)
+                        + playerA.halfHeight
                     && ball.yPosition + ball.radius >= playerA.yPosition
-                        - (playerA.height / 2))
+                        - playerA.halfHeight)
             )
         );
     }
@@ -27,19 +27,19 @@ export class    Updater {
     checkPlayerBCollision(ball: Ball, playerB: Player,
                             xDisplacement: number): boolean {
         return (ball.xPosition + ball.radius < playerB.xPosition
-                - (playerB.width / 2)
+                - playerB.halfWidth
             && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition
-                - (playerB.width / 2)
+                - playerB.halfWidth
             && (
                 (ball.yPosition + ball.radius <= playerB.yPosition
-                        + (playerB.height / 2)
+                        + playerB.halfHeight
                     && ball.yPosition + ball.radius >= playerB.yPosition
-                        - (playerB.height / 2))
+                        - playerB.halfHeight)
                 ||
                 (ball.yPosition - ball.radius <= playerB.yPosition
-                        + (playerB.height / 2)
+                        + playerB.halfHeight
                     && ball.yPosition - ball.radius >= playerB.yPosition
-                        - (playerB.height / 2))
+                        - playerB.halfHeight)
             )
         );
     }
@@ -61,7 +61,7 @@ export class    Updater {
     }
 
     collisionPlayerA(ball: Ball, playerA: Player): void {
-        ball.xPosition = playerA.xPosition + (playerA.width / 2) + ball.radius;
+        ball.xPosition = playerA.xPosition + playerA.halfWidth + ball.radius;
         ball.xVelocity = 300;
         if (ball.yPosition < playerA.yPosition)
             ball.yVelocity = Math.random() * (0 + 300) - 300;
@@ -70,7 +70,7 @@ export class    Updater {
     }
 
     collisionPlayerB(ball: Ball, playerB: Player): void {
-        ball.xPosition = playerB.xPosition - (playerB.width / 2) - ball.radius;
+        ball.xPosition = playerB.xPosition - playerB.halfWidth - ball.radius;
         ball.xVelocity = 300;
         if (ball.yPosition < playerB.yPosition)
             ball.yVelocity = Math.random() * (0 + 300) - 300;

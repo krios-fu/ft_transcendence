@@ -80,8 +80,11 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     gameEnd(gameId: string, game: Game, winnerRole: string): void {
+        const   winnerNickname = winnerRole === "PlayerA"
+                                    ? game.playerA.nick : game.playerB.nick;
+        
         this.emitToRoom(gameId, "end", {
-            winner: winnerRole
+            winner: winnerNickname
         });
         this.gameService.endGame(gameId, game);
         this.clearRoom(`${gameId}-PlayerA`);
@@ -215,7 +218,11 @@ export class    GameGateway implements OnGatewayInit,
             return ;
         if (this.games.get(gameId) != undefined)
             this.games.delete(gameId);
-        game = this.games.set(gameId, new Game()).get(gameId);
+        game = this.games.set(gameId,
+                                new Game(
+                                    players[0].username,
+                                    players[1].username
+                                )).get(gameId);
         playerRoom = `${gameId}-PlayerA`;
         await this.addUserToRoom(players[0].username, playerRoom);
         this.setRole("PlayerA", playerRoom, game);
@@ -310,12 +317,11 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   game: Game = this.games.get(data.room);
         const   playerA: Player = game.playerA;
-        const   playerAHalfHeight: number = playerA.height / 2;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerA.yPosition - 8 < playerAHalfHeight)
-            playerA.yPosition = playerAHalfHeight;
+        if (playerA.yPosition - 8 < playerA.halfHeight)
+            playerA.yPosition = playerA.halfHeight;
         else
             playerA.yPosition -= 8;
         /*
@@ -338,12 +344,11 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   game: Game = this.games.get(data.room);
         const   playerA: Player = game.playerA;
-        const   playerAHalfHeight: number = playerA.height / 2;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerA.yPosition + 8 > game.height - playerAHalfHeight)
-            playerA.yPosition = game.height - playerAHalfHeight;
+        if (playerA.yPosition + 8 > game.height - playerA.halfHeight)
+            playerA.yPosition = game.height - playerA.halfHeight;
         else
             playerA.yPosition += 8;
         /*
@@ -366,12 +371,11 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   game: Game = this.games.get(data.room);
         const   playerB: Player = game.playerB;
-        const   playerBHalfHeight = playerB.height / 2;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerB.yPosition - 8 < playerBHalfHeight)
-            playerB.yPosition = playerBHalfHeight;
+        if (playerB.yPosition - 8 < playerB.halfHeight)
+            playerB.yPosition = playerB.halfHeight;
         else
             playerB.yPosition -= 8;
         /*
@@ -394,12 +398,11 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   game: Game = this.games.get(data.room);
         const   playerB: Player = game.playerB;
-        const   playerBHalfHeight = playerB.height / 2;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerB.yPosition + 8 > game.height - playerBHalfHeight)
-            playerB.yPosition = game.height - playerBHalfHeight;
+        if (playerB.yPosition + 8 > game.height - playerB.halfHeight)
+            playerB.yPosition = game.height - playerB.halfHeight;
         else
             playerB.yPosition += 8;
         /*

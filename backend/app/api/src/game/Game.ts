@@ -7,8 +7,8 @@ export  enum    GameState {
 }
 
 export  class   Game {
-    width: number;
-    height: number;
+    width: number; //Make it static
+    height: number; //Make it static
     playerA: Player;
     playerB: Player;
     ball: Ball;
@@ -18,11 +18,11 @@ export  class   Game {
 
     private static  winScore: number = 3;
 
-    constructor () {
+    constructor (playerANick: string, playerBNick: string) {
         this.width = 800;
         this.height = 600;
-        this.playerA = new Player(10, 50, 50, 300, 0);
-        this.playerB = new Player(10, 50, 750, 300, 0);
+        this.playerA = new Player(10, 50, 50, 300, 0, playerANick);
+        this.playerB = new Player(10, 50, 750, 300, 0, playerBNick);
         this.ball = new Ball(10, 395, 295, 0, 0);
         this.serveSide = -1;
         this.lastUpdate = Date.now();

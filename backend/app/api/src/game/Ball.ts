@@ -1,6 +1,6 @@
 export class    Ball {
-    diameter: number;
-    radius: number;
+    diameter: number; //Make it static
+    radius: number; //Make it static
     xPosition: number;
     yPosition: number;
     xVelocity: number; // pixels/second
