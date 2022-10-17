@@ -8,7 +8,7 @@ export class    BaseScene extends Phaser.Scene {
     scoreA?: number;
     scoreB?: number;
     scoreText?: Phaser.GameObjects.Text;
-    static readonly scoreTextContent: string = " playerA - playerB ";
+    scoreTextContent: string;
     initText?: Phaser.GameObjects.Text;
     socket: SocketIO.Socket;
     room: string;
@@ -21,13 +21,14 @@ export class    BaseScene extends Phaser.Scene {
 
         this.socket = socket;
         this.room = room;
+        this.scoreTextContent = "";
     }
 
     createScore(scoreA: number = 0, scoreB: number = 0) {
         this.scoreA = scoreA;
         this.scoreB = scoreB;
         this.scoreText = this.add.text(400, 20, this.scoreA
-                                        + BaseScene.scoreTextContent
+                                        + this.scoreTextContent
                                         + this.scoreB,
                                         { fontSize: '20px', color: '#fff' });
         this.scoreText.setOrigin(0.5);
@@ -74,7 +75,7 @@ export class    BaseScene extends Phaser.Scene {
             this.scoreA = data.a;
             this.scoreB = data.b;
             this.scoreText.setText(
-                this.scoreA + BaseScene.scoreTextContent + this.scoreB);
+                this.scoreA + this.scoreTextContent + this.scoreB);
             if (this.initText)
                 this.initText.setVisible(true);
         });
@@ -100,6 +101,9 @@ export class    BaseScene extends Phaser.Scene {
             this.initData.playerB.xPosition,
             this.initData.playerB.yPosition, 10, 50, 0xffffff
         );
+        
+        this.scoreTextContent =
+            ` ${this.initData.playerA.nick} - ${this.initData.playerB.nick} `;
 
         //Score creation
         this.createScore(

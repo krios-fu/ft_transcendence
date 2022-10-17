@@ -36,6 +36,9 @@ export class    PlayerScene extends BaseScene {
             this.initData.playerB.yPosition, 10, 50, 0xffffff
         );
 
+        this.scoreTextContent =
+            ` ${this.initData.playerA.nick} - ${this.initData.playerB.nick} `;
+
         //Score creation
         this.createScore(
             this.initData.playerA.score, this.initData.playerB.score
