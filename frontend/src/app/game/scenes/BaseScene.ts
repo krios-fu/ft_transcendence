@@ -12,16 +12,15 @@ export class    BaseScene extends Phaser.Scene {
     initText?: Phaser.GameObjects.Text;
     socket: SocketIO.Socket;
     room: string;
-    initData: any; // Create dto
+    initData?: any; // Create dto
 
     constructor(
-        role: string, socket: SocketIO.Socket, room: string, initData: any
+        role: string, socket: SocketIO.Socket, room: string
     ) {
         super(role);
 
         this.socket = socket;
         this.room = room;
-        this.initData = initData;
     }
 
     createScore(scoreA: number = 0, scoreB: number = 0) {
@@ -34,13 +33,21 @@ export class    BaseScene extends Phaser.Scene {
         this.scoreText.setOrigin(0.5);
     }
 
+    removeAllSocketListeners() {
+        this.socket.off("newMatch");
+        this.socket.off("end");
+        this.socket.off("paddleA");
+        this.socket.off("paddleB");
+        this.socket.off("ball");
+        this.socket.off("score");
+        this.socket.off("served");
+    }
+
     init(initData: any = {}) {
         if (Object.keys(initData).length != 0)
             this.initData = initData;
-        this.socket.on("newMatch", (data: any) => {
-            this.scene.start(data.role, data.initData);
-        });
         this.socket.on("end", (data) => {
+            this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
         //Register paddleA update event
@@ -62,13 +69,14 @@ export class    BaseScene extends Phaser.Scene {
             this.ball.y = coords.y;
         })
         this.socket.on("score", (data) => {
-            if (!this.scoreText || !this.initText)
+            if (!this.scoreText)
                 return ;
             this.scoreA = data.a;
             this.scoreB = data.b;
             this.scoreText.setText(
                 this.scoreA + BaseScene.scoreTextContent + this.scoreB);
-            this.initText.setVisible(true);
+            if (this.initText)
+                this.initText.setVisible(true);
         });
         this.socket.on("served", () => {
             if (!this.initText)
@@ -97,7 +105,7 @@ export class    BaseScene extends Phaser.Scene {
         this.createScore(
             this.initData.playerA.score, this.initData.playerB.score
         );
-        //Delete temporary value of initData.
-        delete this.initData;           
+
+        this.initData = undefined;           
     }
 }

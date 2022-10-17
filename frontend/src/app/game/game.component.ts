@@ -5,6 +5,7 @@ import { EndScene } from "./scenes/EndScene";
 import { PlayerAScene } from "./scenes/PlayerAScene";
 import { PlayerBScene } from "./scenes/PlayerBScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
+import { StartScene } from "./scenes/StartScene";
 
 @Component({
     selector: 'app-game',
@@ -39,26 +40,21 @@ export class    GameComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        let playerAScene: PlayerAScene;
-        let playerBScene: PlayerBScene;
-        let spectatorScene: SpectatorScene;
-        let endScene: EndScene;
-
-        //Create dto for data
-        this.socket.once("init", (data: any) => {
-            playerAScene =
-                new PlayerAScene(this.socket, "Game1", data.initData);
-            playerBScene =
-                new PlayerBScene(this.socket, "Game1", data.initData);
-            spectatorScene =
-                new SpectatorScene(this.socket, "Game1", data.initData);
-            endScene = 
-                new EndScene(this.socket, "Game1", data.initData);
-            this.config.scene = [
-                spectatorScene, playerAScene, playerBScene, endScene
-            ];
-            this.game = new Phaser.Game(this.config);
-        })
+        let startScene: StartScene =
+                new StartScene(this.socket, "Game1");
+        let playerAScene: PlayerAScene =
+                new PlayerAScene(this.socket, "Game1");
+        let playerBScene: PlayerBScene =
+                new PlayerBScene(this.socket, "Game1");
+        let spectatorScene: SpectatorScene =
+                new SpectatorScene(this.socket, "Game1");
+        let endScene: EndScene =
+                new EndScene(this.socket, "Game1");
+            
+        this.config.scene = [
+            startScene, playerAScene, playerBScene, spectatorScene, endScene
+        ];
+        this.game = new Phaser.Game(this.config);
     }
 
     addToQueue() {

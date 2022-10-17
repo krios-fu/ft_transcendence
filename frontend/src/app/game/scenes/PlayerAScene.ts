@@ -3,9 +3,9 @@ import { PlayerScene } from './PlayerScene'
 
 export class    PlayerAScene extends PlayerScene {
     constructor(
-        sock: SocketIO.Socket, room: string, initData: any
+        sock: SocketIO.Socket, room: string
     ) {
-        super("PlayerA", sock, room, initData);
+        super("PlayerA", sock, room);
     }
 
     override update() {

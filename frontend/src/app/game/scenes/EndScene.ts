@@ -5,15 +5,16 @@ export class    EndScene extends BaseScene {
     winner?: string;
 
     constructor(
-        sock: SocketIO.Socket, room: string, initData: any
+        sock: SocketIO.Socket, room: string
     ) {
-        super("End", sock, room, initData);
+        super("End", sock, room);
     }
 
     override init(data: any) {
         this.winner = data.winner;
-        this.socket.on("newMatch", (data: any) => {
-            this.scene.start(data.role, data.initData);
+        this.socket.once("newMatch", (gameData: any) => {
+            this.removeAllSocketListeners();
+            this.scene.start(gameData.role, gameData.initData);
         });
     }
 

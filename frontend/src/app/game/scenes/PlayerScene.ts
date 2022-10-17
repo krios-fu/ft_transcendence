@@ -6,9 +6,9 @@ export class    PlayerScene extends BaseScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor(
-        role: string, socket: SocketIO.Socket, room: string, initData: any
+        role: string, socket: SocketIO.Socket, room: string
     ) {
-        super(role, socket, room, initData);
+        super(role, socket, room);
     }
 
     createInitText() {
@@ -44,8 +44,7 @@ export class    PlayerScene extends BaseScene {
         //Serve text creation
         this.createInitText();
 
-        //Delete temporary value of initData.
-        delete this.initData;
+        this.initData = undefined;
 
         //Activate keyboard input
         this.cursors = this.input.keyboard.createCursorKeys(); //up, left, down, right

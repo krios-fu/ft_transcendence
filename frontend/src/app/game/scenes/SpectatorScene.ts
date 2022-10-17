@@ -3,8 +3,8 @@ import { BaseScene } from './BaseScene'
 
 export class    SpectatorScene extends BaseScene {
     constructor(
-        sock: SocketIO.Socket, room: string, initData: any
+        sock: SocketIO.Socket, room: string
     ) {
-        super("Spectator", sock, room, initData);
+        super("Spectator", sock, room);
     }
 }
