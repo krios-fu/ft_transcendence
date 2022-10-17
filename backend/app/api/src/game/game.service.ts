@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { LoserEntity } from "src/match/loser/loser.entity";
-import { LoserService } from "src/match/loser/loser.service";
 import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
 import { WinnerEntity } from "src/match/winner/winner.entity";
-import { WinnerService } from "src/match/winner/winner.service";
 import { UserEntity } from "src/user/user.entity";
 import { UserService } from "src/user/user.service";
 import { UpdateResult } from "typeorm";
@@ -27,9 +25,7 @@ export class    GameService {
 
     constructor(
         private readonly userService: UserService,
-        private readonly matchService: MatchService,
-        private readonly winnerService: WinnerService,
-        private readonly loserService: LoserService
+        private readonly matchService: MatchService
     ) {
         this.gameQueue = new Map<string, UserEntity[]>;
         this.gamePlayers = new Map<string, [UserEntity, UserEntity]>;
@@ -59,7 +55,10 @@ export class    GameService {
                     - this.getPlayerLevel(queue[i])
                 );
                 if (levelDiff <= maxLevelDiff)
+                {
                     playerB = queue[i];
+                    break ;
+                }
             }
             ++maxLevelDiff;
         }
@@ -84,13 +83,6 @@ export class    GameService {
         this.removeFromQueue(gameId, nextPlayers[0].username);
         this.removeFromQueue(gameId, nextPlayers[1].username);
         return (nextPlayers);
-    }
-
-    gameStarted(gameId: string): boolean {
-        return (
-            this.gamePlayers.get(gameId) != undefined
-                && this.gamePlayers.get(gameId)[0] != undefined
-        );
     }
 
     private isOfficial(gameId: string): boolean {
