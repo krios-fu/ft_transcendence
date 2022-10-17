@@ -15,7 +15,10 @@ import {
     Socket
 } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { Game } from './Game'
+import {
+    Game,
+    GameState
+} from './Game'
 import { Ball } from './Ball';
 import { Player } from './Player';
 import { Updater } from './Updater';
@@ -32,14 +35,14 @@ export class    GameGateway implements OnGatewayInit,
     @WebSocketServer() server: Server;
     games: Map<string, Game>;
     updater: Updater;
-    updateInterval: NodeJS.Timer;
+    updateInterval: NodeJS.Timer = undefined;
     mockUserNum: number = 1; //Provisional
 
     constructor(
         private readonly gameService: GameService
     ) {}
   
-    afterInit(server: any) {
+    afterInit() {
         console.log("Game Gateway initiated");
         this.games = new Map<string, Game>();
         this.updater = new Updater();
@@ -66,6 +69,31 @@ export class    GameGateway implements OnGatewayInit,
         roomSockets.forEach((sock) => {
             sock.leave(roomId);
         });
+    }
+
+    gameTransition(gameId: string): void {
+        setTimeout(() => {
+            this.games.delete(gameId);
+            this.manageUpdateInterval();
+            this.startGame(gameId);
+        }, 10000);
+    }
+
+    gameEnd(gameId: string, game: Game, winnerRole: string): void {
+        this.emitToRoom(gameId, "end", {
+            winner: winnerRole
+        });
+        this.gameService.endGame(gameId, game);
+        this.clearRoom(`${gameId}-PlayerA`);
+        this.clearRoom(`${gameId}-PlayerB`);
+        this.gameTransition(gameId);
+    }
+
+    pointTransition(game: Game, gameId: string): void {
+        setTimeout(() => {
+            this.updater.serve(game);
+            this.emitToRoom(gameId, "served");
+        }, 3000);
     }
 
     gameUpdate(game: Game, room: string): void {
@@ -108,23 +136,11 @@ export class    GameGateway implements OnGatewayInit,
             });
             if (this.updater.checkWin(playerA.score))
             {
-                this.emitToRoom(room, "end", {
-                    winner: "PlayerA"
-                });
-                this.gameService.endGame(room, game);
-                this.clearRoom("PlayerA");
-                this.clearRoom("PlayerB");
-                this.games.delete(room);
-                if (this.games.size === 0)
-                    clearInterval(this.updateInterval);
+                this.updater.pauseGame(game);
+                this.gameEnd(room, game, "PlayerA");
             }
             else
-            {
-                setTimeout(() => {
-                    game.serveBall();
-                    this.emitToRoom(room, "served");
-                }, 3000);
-            }
+                this.pointTransition(game, room);
         }
         else if (this.updater.checkCollisionLeft(ball, xDisplacement))
         {//Collision Left border
@@ -135,23 +151,11 @@ export class    GameGateway implements OnGatewayInit,
             });
             if (this.updater.checkWin(playerB.score))
             {
-                this.emitToRoom(room, "end", {
-                    winner: "PlayerB"
-                });
-                this.gameService.endGame(room, game);
-                this.clearRoom("PlayerA");
-                this.clearRoom("PlayerB");
-                this.games.delete(room);
-                if (this.games.size === 0)
-                    clearInterval(this.updateInterval);
+                this.updater.pauseGame(game);
+                this.gameEnd(room, game, "PlayerB");
             }
             else
-            {
-                setTimeout(() => {
-                    game.serveBall();
-                    this.emitToRoom(room, "served");
-                }, 3000);
-            }
+                this.pointTransition(game, room);
         }
         else
         {
@@ -172,7 +176,38 @@ export class    GameGateway implements OnGatewayInit,
         });
     }
 
-    startGame(gameId: string): void {
+    manageUpdateInterval(): void {
+        if (this.updateInterval === undefined
+                && this.games.size === 1) {
+            this.updateInterval = setInterval(() => {
+                    this.games.forEach(
+                        (gameElem, room) => {
+                            if (gameElem.state != GameState.Paused)
+                                this.gameUpdate(gameElem, room);
+                        }
+                    );
+                },
+                16
+            );
+        }
+        else if (this.updateInterval
+                    && this.games.size === 0)
+        {
+            clearInterval(this.updateInterval);
+            this.updateInterval = undefined
+        }
+    }
+
+    setRole(role: string, roomId: string, gameData: Game): void {
+        this.emitToRoom(roomId, "newMatch", {
+            role: role,
+            initData: gameData
+        });
+    }
+
+    async startGame(gameId: string): Promise<void> {
+        let game: Game;
+        let playerRoom: string;
         let players: [UserEntity, UserEntity] =
             this.gameService.startGame(gameId);
 
@@ -180,34 +215,38 @@ export class    GameGateway implements OnGatewayInit,
             return ;
         if (this.games.get(gameId) != undefined)
             this.games.delete(gameId);
-        this.games.set(gameId, new Game());
-        this.emitToRoom(gameId, "newMatch", {
-            role: "Spectator",
-            initData: this.games.get(gameId)
-        });
-        this.emitToRoom(players[0].username, "newMatch", {
-            role: "PlayerA",
-            initData: this.games.get(gameId)
-        });
-        this.addUserToRoom(players[0].username, "PlayerA");
-        this.emitToRoom(players[1].username, "newMatch", {
-            role: "PlayerB",
-            initData: this.games.get(gameId)
-        });
-        this.addUserToRoom(players[1].username, "PlayerB");
-        setTimeout(() => {
-            this.games.get(gameId).serveBall();
-            this.server.to(gameId).emit("served");
-        }, 3000);
-        if (this.games.size === 1) {
-            this.updateInterval = setInterval(() => {
-                    this.games.forEach(
-                        (game, room) => { this.gameUpdate(game, room) }
-                    );
-                },
-                16
-            );
-        }
+        game = this.games.set(gameId, new Game()).get(gameId);
+        playerRoom = `${gameId}-PlayerA`;
+        await this.addUserToRoom(players[0].username, playerRoom);
+        this.setRole("PlayerA", playerRoom, game);
+        playerRoom = `${gameId}-PlayerB`;
+        await this.addUserToRoom(players[1].username, playerRoom);
+        this.setRole("PlayerB", playerRoom, game);
+        this.setRole("Spectator", gameId, game);
+        this.pointTransition(game, gameId);
+        this.manageUpdateInterval();
+    }
+
+    async handlePlayerDisconnect(playerRoom: string): Promise<void> {
+        const   gameId: string = playerRoom.slice(0, playerRoom.indexOf('-'));
+        const   game: Game = this.games.get(gameId);
+        let     roomSockets: RemoteSocket<DefaultEventsMap, any>[];
+        let     winnerRole: string;
+    
+        roomSockets = await this.server.in(playerRoom).fetchSockets();
+        /*
+        **  Checking for > 1, because socket has not left the room yet.
+        **  socket.io Event "disconnecting".
+        */
+        if (roomSockets.length > 1)
+            return ;
+        if (game.state != GameState.Running)
+            return ;
+        this.updater.pauseGame(game);
+        winnerRole = playerRoom[playerRoom.length - 1] === 'A'
+                        ? "PlayerB" : "PlayerA";
+        this.updater.forceWin(game, winnerRole);
+        this.gameEnd(gameId, game, winnerRole);
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
@@ -222,41 +261,28 @@ export class    GameGateway implements OnGatewayInit,
         client.join(username);
         //client.join(userSession)
         gameData = this.games.get("Game1");
-        if (!gameData) // Provisional
-            gameData = this.games.set("Game1", new Game()).get("Game1"); //Provisional
         client.emit("init", {
             //Send latest game data
             initData: gameData
+        });
+        client.on("disconnecting", () => {
+            const   rooms: IterableIterator<string> = client.rooms.values();
+
+            for (const room of rooms)
+            {
+                if (room.includes("Player"))
+                {
+                    this.handlePlayerDisconnect(room);
+                    break ;
+                }
+            }
         });
         ++this.mockUserNum; //Provisional
         console.log(`With id: ${client.id} and username ${username}`);
     }
 
-    async handleDisconnect(client: Socket) {
-        const playerA = this.server.in("PlayerA").fetchSockets();
-        const PlayerB = this.server.in("PlayerB").fetchSockets();
-
-        if (!(await playerA).length)
-            console.log("Player A disconnected");
-        else if (!(await PlayerB).length)
-            console.log("Player B disconnected");
-        else
-            console.log("A spectator or extra player socket disconnected");
-        /*
-        **  Check if there's any game room without socket connections
-        **  and delete its respective game class if that is the case.
-        **
-        **  Keep in mind that a disconnected socket might have left
-        **  more than one game room at the same time.
-        */
-        for (const [room] of this.games)
-        {
-            if ((await this.server.in(room).fetchSockets()).length === 0)
-                this.games.delete(room);
-        }
-        if (this.games.size === 0)
-            clearInterval(this.updateInterval);
-        console.log("With id: ", client.id);
+    handleDisconnect(client: Socket) {
+        console.log(`Socket ${client.id} disconnected`);
     }
 
     @SubscribeMessage('addToGameQueue')
@@ -268,7 +294,7 @@ export class    GameGateway implements OnGatewayInit,
             return ;
         //Need to implement user authentication
         await this.gameService.addToQueue(data.gameId, data.username);
-        if (!this.gameService.gameStarted(data.gameId))
+        if (!this.games.get(data.gameId))
             this.startGame(data.gameId);
     }
 
@@ -286,6 +312,8 @@ export class    GameGateway implements OnGatewayInit,
         const   playerA: Player = game.playerA;
         const   playerAHalfHeight: number = playerA.height / 2;
 
+        if (game.state != GameState.Running)
+            return ;
         if (playerA.yPosition - 8 < playerAHalfHeight)
             playerA.yPosition = playerAHalfHeight;
         else
@@ -312,6 +340,8 @@ export class    GameGateway implements OnGatewayInit,
         const   playerA: Player = game.playerA;
         const   playerAHalfHeight: number = playerA.height / 2;
 
+        if (game.state != GameState.Running)
+            return ;
         if (playerA.yPosition + 8 > game.height - playerAHalfHeight)
             playerA.yPosition = game.height - playerAHalfHeight;
         else
@@ -338,6 +368,8 @@ export class    GameGateway implements OnGatewayInit,
         const   playerB: Player = game.playerB;
         const   playerBHalfHeight = playerB.height / 2;
 
+        if (game.state != GameState.Running)
+            return ;
         if (playerB.yPosition - 8 < playerBHalfHeight)
             playerB.yPosition = playerBHalfHeight;
         else
@@ -364,6 +396,8 @@ export class    GameGateway implements OnGatewayInit,
         const   playerB: Player = game.playerB;
         const   playerBHalfHeight = playerB.height / 2;
 
+        if (game.state != GameState.Running)
+            return ;
         if (playerB.yPosition + 8 > game.height - playerBHalfHeight)
             playerB.yPosition = game.height - playerBHalfHeight;
         else
