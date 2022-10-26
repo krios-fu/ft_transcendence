@@ -1,4 +1,25 @@
-import { IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+
+export class RoomQueryFilterDto { 
+    @IsOptional()
+    @IsNumber()
+    id?: number;
+
+    @IsOptional()
+    @IsString()
+    roomName?: string;
+
+    @IsOptional()
+    @IsString()
+    ownerId?: string;
+}
+
+export class RoomQueryRangeDto extends RoomQueryFilterDto { 
+    @IsOptional()
+    @IsDate()
+    createdAt?: Date;
+}
 
 export class RoomQueryDto {
     @IsOptional()
@@ -6,10 +27,13 @@ export class RoomQueryDto {
     sort?: string;
 
     @IsOptional()
-    @IsString({ each: true })
-    filter?: Map<string, string>;
+    @ValidateNested()
+    @Type(() => RoomQueryFilterDto)
+    filter?: RoomQueryFilterDto;
 
     @IsOptional()
-    @IsString({ each: true })
-    range?: Map<string, string>;
+    @ValidateNested()
+    @Type(() => RoomQueryRangeDto)
+    range?: RoomQueryRangeDto;
 }
+

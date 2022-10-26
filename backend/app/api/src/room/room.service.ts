@@ -3,7 +3,6 @@ import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
-import { UserService } from "src/user/user.service";
 import { UserEntity } from "src/user/user.entity";
 import { UpdateResult } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
@@ -16,12 +15,15 @@ export class RoomService {
     ) { }
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
+        if (queryParams !== undefined) {
+            console.log('QUERY RECEIVED: ' + JSON.stringify(queryParams));
+        }
         return await this.roomRepository.find();
     }
 
     public async findOne(roomId: number): Promise<RoomEntity> {
         return await this.roomRepository.findOne({
-            where: { id: roomId }
+            where: [{ id: roomId }, { id: roomId }],
         });
     }
 
@@ -48,6 +50,30 @@ export class RoomService {
         return await this.roomRepository.findOne({
             where: { roomName: name }
         });
+    }
+
+    private parseQuery(queryParams: RoomQueryDto) {
+    /* filter -> where, sort -> order, range -> skip, take */
+        const { filter, sort, range } = queryParams;
+
+        
+
+        // keys.forEach((key) => {
+            // if (queryParams[key] !== undefined) {
+                // if (key === 'filter') {
+                    // Object.keys(queryParams['filter']).forEach((id) => {
+                        // if (ids.includes(id)) {
+                            // queryParams['filter'][id].split(',').forEach((value) => {
+                                // const query['where'].push({id: value});
+                            // });
+                        // } else if (key === 'sort') {
+                            // if (id keyof RoomEntity)
+                        // }
+                    // });
+                // }
+            // }
+        // });
+
     }
 
     ///**************** room auth services *****************/
