@@ -53,10 +53,9 @@ export class RoomService {
     }
 
     private parseQuery(queryParams: RoomQueryDto) {
-    /* filter -> where, sort -> order, range -> skip, take */
         const { filter, sort, range } = queryParams;
 
-        
+        /* where: [{'id': 'tal'}, {'id': 'cual'}] */
 
         // keys.forEach((key) => {
             // if (queryParams[key] !== undefined) {
