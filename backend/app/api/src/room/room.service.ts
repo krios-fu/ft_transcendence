@@ -72,7 +72,6 @@ export class RoomService {
                 // }
             // }
         // });
-
     }
 
     ///**************** room auth services *****************/
