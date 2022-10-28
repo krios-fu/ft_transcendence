@@ -53,9 +53,11 @@ export class RoomService {
     }
 
     private parseQuery(queryParams: RoomQueryDto) {
-        const { filter, sort, range } = queryParams;
+        const { filter, order, range } = queryParams;
 
+        /* query['where'] = array de mierdas */
         /* where: [{'id': 'tal'}, {'id': 'cual'}] */
+        /* Usually such endpoints return more than just the entities — say, pagination info. */
 
         // keys.forEach((key) => {
             // if (queryParams[key] !== undefined) {

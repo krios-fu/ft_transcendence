@@ -1,9 +1,17 @@
-import { Type } from "class-transformer";
-import { IsDate, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { IsArray, IsDate, IsOptional, IsString, ValidateNested } from "class-validator";
 
 export class RoomQueryFilterDto { 
     @IsOptional()
-    @IsNumber()
+    //@Type(() => String)
+    //@Transform(({ value }) => Number(value), { toPlainOnly: true })
+    @IsArray()
+    @Transform(({ value }) => {
+        value.array.forEach(params => {
+            value.push(params.split(','))
+        });
+        return value;
+    })
     id?: number;
 
     @IsOptional()
@@ -23,8 +31,9 @@ export class RoomQueryRangeDto extends RoomQueryFilterDto {
 
 export class RoomQueryDto {
     @IsOptional()
-    @IsString()
-    sort?: string;
+    @IsArray()
+    @Transform(({ value }) => value.split(','))
+    order?: string[];
 
     @IsOptional()
     @ValidateNested()
@@ -36,4 +45,3 @@ export class RoomQueryDto {
     @Type(() => RoomQueryRangeDto)
     range?: RoomQueryRangeDto;
 }
-
