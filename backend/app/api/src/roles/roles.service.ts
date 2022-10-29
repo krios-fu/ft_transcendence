@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { RoleQueryDto } from './dto/role.query.dto';
@@ -13,6 +13,7 @@ export class RolesService {
     ) { }
 
     public async findAll(queryParams: RoleQueryDto): Promise<RolesEntity[]> {
+        
         return await this.rolesRepository.find();
     }
 

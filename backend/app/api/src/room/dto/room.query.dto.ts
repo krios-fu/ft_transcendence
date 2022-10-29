@@ -2,16 +2,28 @@ import { Transform, Type } from "class-transformer";
 import { IsArray, IsDate, IsOptional, IsString, ValidateNested } from "class-validator";
 
 export class RoomQueryFilterDto { 
+    private queryIntoArray(value: string | Array<string>): Array<string> {
+        let ids = new Array<string>();
+
+        if (!Array.isArray(value)) {
+            value.split(',').forEach((param: string) => {
+                ids.push(param);
+            });
+        } else {
+            value.forEach((params: string) => {
+                params.split(',').forEach((param: string) => {
+                    ids.push(param);
+                });
+            });
+        }
+        return ids;
+    }
+
     @IsOptional()
     //@Type(() => String)
     //@Transform(({ value }) => Number(value), { toPlainOnly: true })
     @IsArray()
-    @Transform(({ value }) => {
-        value.array.forEach(params => {
-            value.push(params.split(','))
-        });
-        return value;
-    })
+    @Transform(({ value }) => this.queryIntoArray(value))
     id?: number;
 
     @IsOptional()
@@ -36,7 +48,9 @@ export class RoomQueryDto {
     order?: string[];
 
     @IsOptional()
-    @ValidateNested()
+    @ValidateNested({
+        message: ''
+    })
     @Type(() => RoomQueryFilterDto)
     filter?: RoomQueryFilterDto;
 
