@@ -1,44 +1,51 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsDate, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsNumber, IsOptional, ValidateNested } from "class-validator";
 
 export class RoomQueryFilterDto { 
-    private queryIntoArray(value: string | Array<string>): Array<string> {
+    @IsOptional()
+    @IsArray()
+    @Transform(({ value }) => {
         let ids = new Array<string>();
+        let params = (!Array.isArray(value)) ? [ value ] : value;
 
-        if (!Array.isArray(value)) {
-            value.split(',').forEach((param: string) => {
+        params.forEach((params: string) => {
+            params.split(',').filter(Boolean).forEach((param: string) => {
                 ids.push(param);
             });
-        } else {
-            value.forEach((params: string) => {
-                params.split(',').forEach((param: string) => {
-                    ids.push(param);
-                });
-            });
-        }
+        });
         return ids;
-    }
+    })
+    id?: string;
 
     @IsOptional()
-    //@Type(() => String)
-    //@Transform(({ value }) => Number(value), { toPlainOnly: true })
     @IsArray()
-    @Transform(({ value }) => this.queryIntoArray(value))
-    id?: number;
+    @Transform(({ value }) => {
+        let ids = new Array<string>();
+        let params = (!Array.isArray(value)) ? [ value ] : value;
 
-    @IsOptional()
-    @IsString()
+        params.forEach((params: string) => {
+            params.split(',').filter(Boolean).forEach((param: string) => {
+                ids.push(param);
+            });
+        });
+        return ids;
+    })
     roomName?: string;
 
     @IsOptional()
-    @IsString()
-    ownerId?: string;
-}
+    @IsArray()
+    @Transform(({ value }) => {
+        let ids = new Array<string>();
+        let params = (!Array.isArray(value)) ? [ value ] : value;
 
-export class RoomQueryRangeDto extends RoomQueryFilterDto { 
-    @IsOptional()
-    @IsDate()
-    createdAt?: Date;
+        params.forEach((params: string) => {
+            params.split(',').filter(Boolean).forEach((param: string) => {
+                ids.push(param);
+            });
+        });
+        return ids;
+    })
+    ownerId?: string;
 }
 
 export class RoomQueryDto {
@@ -49,13 +56,16 @@ export class RoomQueryDto {
 
     @IsOptional()
     @ValidateNested({
-        message: ''
+        message: 'invalid parameter passed to filter option'
     })
     @Type(() => RoomQueryFilterDto)
     filter?: RoomQueryFilterDto;
 
     @IsOptional()
-    @ValidateNested()
-    @Type(() => RoomQueryRangeDto)
-    range?: RoomQueryRangeDto;
+    @IsNumber()
+    offset?: number
+
+    @IsOptional()
+    @IsNumber()
+    limit?: number;
 }

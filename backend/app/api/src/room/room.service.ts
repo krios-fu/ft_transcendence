@@ -53,27 +53,9 @@ export class RoomService {
     }
 
     private parseQuery(queryParams: RoomQueryDto) {
-        const { filter, order, range } = queryParams;
+        const { filter, order } = queryParams;
 
-        /* query['where'] = array de mierdas */
-        /* where: [{'id': 'tal'}, {'id': 'cual'}] */
-        /* Usually such endpoints return more than just the entities — say, pagination info. */
-
-        // keys.forEach((key) => {
-            // if (queryParams[key] !== undefined) {
-                // if (key === 'filter') {
-                    // Object.keys(queryParams['filter']).forEach((id) => {
-                        // if (ids.includes(id)) {
-                            // queryParams['filter'][id].split(',').forEach((value) => {
-                                // const query['where'].push({id: value});
-                            // });
-                        // } else if (key === 'sort') {
-                            // if (id keyof RoomEntity)
-                        // }
-                    // });
-                // }
-            // }
-        // });
+        
     }
 
     ///**************** room auth services *****************/
