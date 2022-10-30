@@ -6,41 +6,25 @@ export class    Updater {
 
     checkPlayerACollision(ball: Ball, playerA: Player,
                             xDisplacement: number): boolean {
-        return (ball.xPosition - ball.radius > playerA.xPosition
-                + playerA.halfWidth
-            && ball.xPosition - ball.radius + xDisplacement <= playerA.xPosition
-                + playerA.halfWidth
-            && (
-                (ball.yPosition - ball.radius <= playerA.yPosition
-                        + playerA.halfHeight
-                    && ball.yPosition - ball.radius >= playerA.yPosition
-                        - playerA.halfHeight)
-                ||
-                (ball.yPosition + ball.radius <= playerA.yPosition
-                        + playerA.halfHeight
-                    && ball.yPosition + ball.radius >= playerA.yPosition
-                        - playerA.halfHeight)
-            )
+        let ballLeftBorder = ball.xPosition - ball.radius;
+        let playerARightBorder = playerA.xPosition + playerA.halfWidth;
+    
+        return (ballLeftBorder > playerARightBorder
+            && ballLeftBorder + xDisplacement <= playerARightBorder
+            && Math.abs(ball.yPosition - playerA.yPosition)
+                <= playerA.halfHeight + ball.radius
         );
     }
 
     checkPlayerBCollision(ball: Ball, playerB: Player,
                             xDisplacement: number): boolean {
-        return (ball.xPosition + ball.radius < playerB.xPosition
-                - playerB.halfWidth
-            && ball.xPosition + ball.radius + xDisplacement >= playerB.xPosition
-                - playerB.halfWidth
-            && (
-                (ball.yPosition + ball.radius <= playerB.yPosition
-                        + playerB.halfHeight
-                    && ball.yPosition + ball.radius >= playerB.yPosition
-                        - playerB.halfHeight)
-                ||
-                (ball.yPosition - ball.radius <= playerB.yPosition
-                        + playerB.halfHeight
-                    && ball.yPosition - ball.radius >= playerB.yPosition
-                        - playerB.halfHeight)
-            )
+        let ballRightBorder = ball.xPosition + ball.radius;
+        let playerBLeftBorder = playerB.xPosition - playerB.halfWidth;
+    
+        return (ballRightBorder < playerBLeftBorder
+            && ballRightBorder + xDisplacement >= playerBLeftBorder
+            && Math.abs(ball.yPosition - playerB.yPosition)
+                <= playerB.halfHeight + ball.radius
         );
     }
 
