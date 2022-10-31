@@ -1,7 +1,9 @@
 /* Common interface for all routes' query parameters */
 export interface IQueryParams {
-    limit?:  number;
     offset?: number;
+    limit?:  number;
     order?:  string[];
-    filter?: Map<string, string[]>;
+
+    @Transform
+    filter?: 
 }

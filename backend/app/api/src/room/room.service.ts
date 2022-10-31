@@ -6,6 +6,7 @@ import { RoomRepository } from "./repository/room.repository";
 import { UserEntity } from "src/user/user.entity";
 import { UpdateResult } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
+import { QueryMapper } from "src/common/mappers/query.mapper";
 
 @Injectable()
 export class RoomService {
@@ -17,6 +18,7 @@ export class RoomService {
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
         if (queryParams !== undefined) {
             console.log('QUERY RECEIVED: ' + JSON.stringify(queryParams));
+            const coso = new QueryMapper(queryParams);
         }
         return await this.roomRepository.find();
     }

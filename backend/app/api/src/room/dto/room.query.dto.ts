@@ -4,7 +4,7 @@ import { HasValidFields } from "src/common/decorators/filter.decorator";
 import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
 
-class RoomQueryFilterDto extends BaseQueryFilterDto{ 
+class RoomQueryFilterDto extends BaseQueryFilterDto { 
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
