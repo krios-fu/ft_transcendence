@@ -4,7 +4,7 @@ import {
     ExtractJwt,
 } from 'passport-jwt';
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { IJwtPayload } from 'src/interfaces/request-payload.interface';
+import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
 import { AuthService } from '../auth.service';
 
 @Injectable()

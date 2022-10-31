@@ -1,5 +1,7 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsNumber, IsOptional, ValidateNested } from "class-validator";
+import { IsArray, IsOptional, ValidateNested } from "class-validator";
+import { BaseQueryDto } from "src/common/dtos/base.query.dto";
+import { HasValidFields } from "../validations/room.decorator";
 
 export class RoomQueryFilterDto { 
     @IsOptional()
@@ -15,7 +17,7 @@ export class RoomQueryFilterDto {
         });
         return ids;
     })
-    id?: string;
+    id?: string[];
 
     @IsOptional()
     @IsArray()
@@ -30,7 +32,7 @@ export class RoomQueryFilterDto {
         });
         return ids;
     })
-    roomName?: string;
+    roomName?: string[];
 
     @IsOptional()
     @IsArray()
@@ -45,13 +47,14 @@ export class RoomQueryFilterDto {
         });
         return ids;
     })
-    ownerId?: string;
+    ownerId?: string[];
 }
 
-export class RoomQueryDto {
+export class RoomQueryDto extends BaseQueryDto {
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => value.split(','))
+    @HasValidFields()
     order?: string[];
 
     @IsOptional()
@@ -60,12 +63,4 @@ export class RoomQueryDto {
     })
     @Type(() => RoomQueryFilterDto)
     filter?: RoomQueryFilterDto;
-
-    @IsOptional()
-    @IsNumber()
-    offset?: number
-
-    @IsOptional()
-    @IsNumber()
-    limit?: number;
 }

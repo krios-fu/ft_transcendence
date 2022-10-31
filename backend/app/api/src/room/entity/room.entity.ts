@@ -1,6 +1,7 @@
 import { UserEntity } from "src/user/user.entity";
 import { CreateRoomDto } from "../dto/room.dto";
 import { 
+    BaseEntity,
     BeforeInsert, 
     Column, 
     Entity, 
@@ -10,8 +11,9 @@ import {
 } from "typeorm";
 
 @Entity({ name: "room" })
-export class RoomEntity {
-    constructor(dto: CreateRoomDto) {
+export class RoomEntity extends BaseEntity {
+    constructor(dto?: CreateRoomDto) {
+        super();
         if (dto !== undefined) {
             Object.assign(this, dto);
         }

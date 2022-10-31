@@ -10,11 +10,11 @@ import {
     Res,
     UseGuards,
 } from '@nestjs/common';
-import { Public } from '../decorators/public.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
 import { UserDto } from 'src/user/user.dto';
-import { IAuthPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
+import { IAuthPayload, IRequestUser } from 'src/common/interfaces/request-payload.interface';
 
 interface IRequestProfile extends Request {
     user: UserDto;
