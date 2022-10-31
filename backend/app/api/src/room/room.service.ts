@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -50,12 +50,6 @@ export class RoomService {
         return await this.roomRepository.findOne({
             where: { roomName: name }
         });
-    }
-
-    private parseQuery(queryParams: RoomQueryDto) {
-        const { filter, order } = queryParams;
-
-        
     }
 
     ///**************** room auth services *****************/

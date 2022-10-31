@@ -3,7 +3,7 @@ import { CreateRoleDto } from "../dto/role.dto";
 
 @Entity({ name: "roles" })
 export class RolesEntity {
-    constructor( dto: CreateRoleDto ) {
+    constructor(dto: CreateRoleDto) {
         if (dto !== undefined) {
             Object.assign(this, dto);
         }

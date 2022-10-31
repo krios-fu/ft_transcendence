@@ -1,24 +1,9 @@
 import { Transform, Type } from "class-transformer";
 import { IsArray, IsOptional, ValidateNested } from "class-validator";
-import { BaseQueryDto } from "src/common/dtos/base.query.dto";
-import { HasValidFields } from "../validations/room.decorator";
+import { HasValidFields } from "src/common/decorators/filter.decorator";
+import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 
-export class RoomQueryFilterDto { 
-    @IsOptional()
-    @IsArray()
-    @Transform(({ value }) => {
-        let ids = new Array<string>();
-        let params = (!Array.isArray(value)) ? [ value ] : value;
-
-        params.forEach((params: string) => {
-            params.split(',').filter(Boolean).forEach((param: string) => {
-                ids.push(param);
-            });
-        });
-        return ids;
-    })
-    id?: string[];
-
+class RoomQueryFilterDto extends BaseQueryFilterDto{ 
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => {
@@ -54,7 +39,7 @@ export class RoomQueryDto extends BaseQueryDto {
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => value.split(','))
-    @HasValidFields()
+    @HasValidFields(['id', 'roomName', 'createdAt', 'ownerId'])
     order?: string[];
 
     @IsOptional()
