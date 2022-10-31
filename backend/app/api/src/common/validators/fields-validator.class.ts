@@ -2,8 +2,6 @@ import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface 
 
 @ValidatorConstraint({ name: 'roomHasValidFieldsConstraints', async: true })
 export class HasValidFieldsConstraints implements ValidatorConstraintInterface {
-    //validFields: string[] = ['id', 'roomName', 'createdAt', 'ownerId'];
-
     validate(fields: string[], args: ValidationArguments): boolean {
         const validFields: string[] = args.constraints;
         let cond: boolean = true;
@@ -19,4 +17,16 @@ export class HasValidFieldsConstraints implements ValidatorConstraintInterface {
     defaultMessage(validationArguments?: ValidationArguments): string {
         return 'Parameter cannot be set for sorting';
     }
+}
+
+export function intoArrayOfParams(value: string[]) {
+    let ids = new Array<string>();
+        let params = (!Array.isArray(value)) ? [ value ] : value;
+
+        params.forEach((params: string) => {
+            params.split(',').filter(Boolean).forEach((param: string) => {
+                ids.push(param);
+            });
+        });
+        return ids;
 }

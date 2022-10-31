@@ -2,36 +2,17 @@ import { Transform, Type } from "class-transformer";
 import { IsArray, IsOptional, ValidateNested } from "class-validator";
 import { HasValidFields } from "src/common/decorators/filter.decorator";
 import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
+import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
 
 class RoomQueryFilterDto extends BaseQueryFilterDto{ 
     @IsOptional()
     @IsArray()
-    @Transform(({ value }) => {
-        let ids = new Array<string>();
-        let params = (!Array.isArray(value)) ? [ value ] : value;
-
-        params.forEach((params: string) => {
-            params.split(',').filter(Boolean).forEach((param: string) => {
-                ids.push(param);
-            });
-        });
-        return ids;
-    })
+    @Transform(({ value }) => intoArrayOfParams(value))
     roomName?: string[];
 
     @IsOptional()
     @IsArray()
-    @Transform(({ value }) => {
-        let ids = new Array<string>();
-        let params = (!Array.isArray(value)) ? [ value ] : value;
-
-        params.forEach((params: string) => {
-            params.split(',').filter(Boolean).forEach((param: string) => {
-                ids.push(param);
-            });
-        });
-        return ids;
-    })
+    @Transform(({ value }) => intoArrayOfParams(value))
     ownerId?: string[];
 }
 

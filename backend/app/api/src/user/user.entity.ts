@@ -1,8 +1,8 @@
+import { Exclude } from "class-transformer";
 import {
 	Column,
 	CreateDateColumn,
 	Entity,
-	PrimaryColumn,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
@@ -40,6 +40,7 @@ export class UserEntity {
 	})
 	nickName : string;
 
+	@Exclude()
 	@Column({
 		default: false
 	})

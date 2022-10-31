@@ -1,8 +1,8 @@
 import { registerDecorator, ValidationOptions } from "class-validator";
-import { HasValidFieldsConstraints } from "./room-validator.class";
+import { HasValidFieldsConstraints } from "../validators/fields-validator.class";
 
 export function HasValidFields(validFields: string[], validationOptions?: ValidationOptions) {
-    return function(/*validFields: string[],*/ o: Object, propertyName: string) {
+    return function(o: Object, propertyName: string) {
         registerDecorator({
             name: 'hasValidFields',
             target: o.constructor,
