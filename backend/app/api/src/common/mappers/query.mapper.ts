@@ -2,7 +2,6 @@ import { IQueryParams } from "../interfaces/queryparams.interface";
 
 export class QueryMapper {
     constructor(queryParams: IQueryParams) {
-        /* here conv. logic */
         const { limit, offset, order, filter } = queryParams; 
         if (limit !== undefined) {
             this.limit = limit;
@@ -11,28 +10,20 @@ export class QueryMapper {
             this.offset = offset;
         }
         if (order !== undefined) {
-            /* tal */
+            for (let value in order) {
+                order[value] = 'ASC';
+            }
         }
         if (filter !== undefined) {
-            /* tal */
+            for (let key in filter) {
+                for (let value in filter[key]) {
+                    this.where.push(new Map(Object.entries({ key: value })));
+                }
+            }
         }
     }
     limit?: number;
     offset?: number;
     order?: Map<string, string>;
-    where?: Map<string, string[]>;
+    where?: Map<string, string>[];
 }
-
-/* {
-    where: [
-        "id": tal,
-        "id": cual,
-        "name": otro,
-    ]
-}
-*/
-/* where: {
-    "id": tal,
-    "id": cual,
-}
-*/
