@@ -7,7 +7,7 @@ export class HasValidFieldsConstraints implements ValidatorConstraintInterface {
         let cond: boolean = true;
 
         fields.forEach((field: string) => {
-            if (!validFields.includes(field)) {
+            if (!validFields.indexOf(field)) {
                 cond = false;
             }
         });
@@ -21,12 +21,12 @@ export class HasValidFieldsConstraints implements ValidatorConstraintInterface {
 
 export function intoArrayOfParams(value: string[]) {
     let ids = new Array<string>();
-        let params = (!Array.isArray(value)) ? [ value ] : value;
+    let params = (!Array.isArray(value)) ? [ value ] : value;
 
-        params.forEach((params: string) => {
-            params.split(',').filter(Boolean).forEach((param: string) => {
-                ids.push(param);
-            });
+    params.forEach((params: string) => {
+        params.split(',').filter(Boolean).forEach((param: string) => {
+            ids.push(param);
         });
-        return ids;
+    });
+    return ids;
 }
