@@ -25,10 +25,9 @@ export function ValidateOrder(validationOptions?: ValidationOptions) {
             validator: {
                 validate(values: string[], args: ValidationArguments): boolean {
                     let cond: boolean = true;
+
                     values.forEach((value) => {
-                        let typevalue = typeof value;
-                        console.log('aaa');
-                        if (typevalue !== 'string') {
+                        if (typeof(value) !== 'string') {
                             cond = false;
                         }
                     });

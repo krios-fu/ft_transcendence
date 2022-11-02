@@ -23,10 +23,12 @@ export function intoArrayOfParams(value: string[]) {
     let ids = new Array<string>();
     let params = (!Array.isArray(value)) ? [ value ] : value;
 
-    params.forEach((params: string) => {
-        params.split(',').filter(Boolean).forEach((param: string) => {
-            ids.push(param);
-        });
+    params.forEach((param: string) => {
+        if (typeof(param) === 'string') {
+            param.split(',').filter(Boolean).forEach((value: string) => {
+                ids.push(value);
+            });
+        }
     });
     return ids;
 }

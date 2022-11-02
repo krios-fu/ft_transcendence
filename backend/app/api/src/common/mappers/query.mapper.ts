@@ -4,26 +4,27 @@ export class QueryMapper {
     constructor(queryParams: IQueryParams) {
         const { limit, offset, order, filter } = queryParams; 
         if (limit !== undefined) {
-            this.limit = limit;
+            this.take = limit;
         }
         if (limit !== undefined) {
-            this.offset = offset;
+            this.skip = offset;
         }
         if (order !== undefined) {
             for (let value in order) {
-                order[value] = 'ASC';
+                this.order.value = 'ASC';
+                //Object.assign(this.order, { value: 'ASC' });
             }
         }
         if (filter !== undefined) {
             for (let key in filter) {
                 for (let value in filter[key]) {
-                    this.where.push(new Map(Object.entries({ key: value })));
+                    this.where.push({ key: value });
                 }
             }
         }
     }
-    limit?: number;
-    offset?: number;
-    order?: Map<string, string>;
-    where?: Map<string, string>[];
+    take?: number;
+    skip?: number;
+    order?: { [key: string]: string }
+    where?: { [key: string]: string }[];
 }

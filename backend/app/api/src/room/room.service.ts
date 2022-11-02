@@ -19,7 +19,7 @@ export class RoomService {
         if (queryParams !== undefined) {
             console.log('QUERY RECEIVED: ' + JSON.stringify(queryParams));
             const coso = new QueryMapper(queryParams);
-            console.log(JSON.stringify(coso));
+            console.log('QUERY: ' + JSON.stringify(coso));
         }
         return await this.roomRepository.find();
     }
