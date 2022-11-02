@@ -17,16 +17,19 @@ export class RoomService {
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
         if (queryParams !== undefined) {
-            console.log('QUERY RECEIVED: ' + JSON.stringify(queryParams));
             const coso = new QueryMapper(queryParams);
-            console.log('QUERY: ' + JSON.stringify(coso));
+            try {
+                return await this.roomRepository.find(new QueryMapper(queryParams));
+            } catch {
+                throw 'no';
+            }
         }
         return await this.roomRepository.find();
     }
 
     public async findOne(roomId: number): Promise<RoomEntity> {
         return await this.roomRepository.findOne({
-            where: [{ id: roomId }, { id: roomId }],
+            where: { id: roomId },
         });
     }
 

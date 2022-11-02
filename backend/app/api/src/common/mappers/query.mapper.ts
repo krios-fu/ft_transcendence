@@ -11,19 +11,16 @@ export class QueryMapper {
         }
         if (order !== undefined) {
             this.order = {};
-            for (let value in order) {
-                //this.order.value = 'ASC';
-                console.log('lo de value: ' + value);
-                Object.assign(this.order, { value: 'ASC' });
-            }
+            order.forEach((value) => {
+                Object.assign(this.order, { [value]: 'ASC' })
+            });
         }
         if (filter !== undefined) {
             this.where = [];
             for (let key in filter) {
-                for (let thisValue in filter[key]) {
-                    console.log('is where an array of algo? ' + typeof(this.where));
-                    this.where.push({ key: thisValue });
-                }
+                filter[key].forEach((value) => {
+                    this.where.push({ [key]: value });
+                })
             }
         }
     }
