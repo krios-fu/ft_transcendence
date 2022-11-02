@@ -10,15 +10,19 @@ export class QueryMapper {
             this.skip = offset;
         }
         if (order !== undefined) {
+            this.order = {};
             for (let value in order) {
-                this.order.value = 'ASC';
-                //Object.assign(this.order, { value: 'ASC' });
+                //this.order.value = 'ASC';
+                console.log('lo de value: ' + value);
+                Object.assign(this.order, { value: 'ASC' });
             }
         }
         if (filter !== undefined) {
+            this.where = [];
             for (let key in filter) {
-                for (let value in filter[key]) {
-                    this.where.push({ key: value });
+                for (let thisValue in filter[key]) {
+                    console.log('is where an array of algo? ' + typeof(this.where));
+                    this.where.push({ key: thisValue });
                 }
             }
         }
