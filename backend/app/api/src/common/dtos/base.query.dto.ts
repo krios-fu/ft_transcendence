@@ -17,7 +17,8 @@ export class BaseQueryDto {
 
 export class BaseQueryFilterDto {
     @IsOptional()
-    @IsArray()
+    @IsNumber({}, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
-    id?: string[];
+    @Type((() => Number))
+    id?: number[];
 }
