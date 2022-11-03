@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsNumber, IsOptional } from "class-validator";
+import { IsNumber, IsOptional } from "class-validator";
 import { intoArrayOfParams } from "../validators/fields-validator.class";
 
 /* Base query implements pagination for all query parameters in every route */
@@ -17,7 +17,7 @@ export class BaseQueryDto {
 
 export class BaseQueryFilterDto {
     @IsOptional()
-    @IsNumber({}, { each: true })
+    @IsNumber({ allowNaN: false }, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
     @Type((() => Number))
     id?: number[];

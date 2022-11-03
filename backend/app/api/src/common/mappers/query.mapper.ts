@@ -17,6 +17,7 @@ export class QueryMapper {
         }
         if (filter !== undefined) {
             this.where = [];
+            console.log('initializing filter query: ' + JSON.stringify(filter));
             for (let key in filter) {
                 filter[key].forEach((value: string) => {
                     this.where.push({ [key]: value });
