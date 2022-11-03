@@ -20,8 +20,8 @@ export class ChatController {
 
     @Get(':id')
     @Public()
-    async findChat(@Param('id' ) id: string): Promise<ChatEntity []>{
-        let chat  = await  this.chatService.findOne(id);
+    async findChat(@Param('id') id: string): Promise<ChatEntity []>{
+        let chat  = await this.chatService.findOne(id);
         if (!chat)
             throw new HttpException('Chat not found', HttpStatus.NOT_FOUND);
         return chat;

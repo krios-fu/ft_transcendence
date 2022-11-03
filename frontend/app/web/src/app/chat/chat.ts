@@ -1,5 +1,7 @@
 import {Injectable, Input, OnInit} from "@angular/core";
 import {Socket} from "ngx-socket-io";
+import {HttpClient} from "@angular/common/http";
+
 import {map} from "rxjs";
 import {newArray} from "@angular/compiler/src/util";
 
@@ -13,7 +15,7 @@ export class message {
 }
 
 @Injectable()
-export class Chat {
+export class Chat implements OnInit{
 
   public msg : message [] = [];
   public id : string;
@@ -22,7 +24,7 @@ export class Chat {
 
 
 
-  constructor( private socket : Socket ) {
+  constructor( private socket : Socket, private http : HttpClient  ) {
 
     this.id = this.socket.ioSocket.id;
     this.socket.on('message', (msg : message ) => {
@@ -33,6 +35,10 @@ export class Chat {
 
   }
 
+  ngOnInit(): void {
+    this.http.get('')
+
+  }
 
   sendMessage( txt : string )  {
     this.id = this.socket.ioSocket.id;

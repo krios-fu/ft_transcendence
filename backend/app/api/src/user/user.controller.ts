@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
 import { UpdateResult } from 'typeorm';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
@@ -30,6 +31,7 @@ export class UserController {
         return this.userService.findOne(id);
     }
 
+    @Public()
     @Post('new')
     async postUser(@Body() newUser: UserDto): Promise<UserEntity> {
         return this.userService.postUser(newUser);

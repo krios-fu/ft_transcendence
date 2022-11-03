@@ -79,13 +79,13 @@ export class RoomComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.http.get('http://localhost:3000/chat/krios-fu')
+    this.http.get('http://localhost:3000/chat/macondo')
       .subscribe(entity => {
         let data = Object.assign(entity); console.log(entity);
         for (let chat in data){
           const {membership} = data[chat];
           let {nickName} = membership[0].user;
-          if (nickName === 'krios-fu'){
+          if (nickName === 'macondo'){
             nickName = membership[1].user.nickName;
             console.log(nickName, "<------")
           }
