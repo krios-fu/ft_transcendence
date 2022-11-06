@@ -15,10 +15,12 @@ export class BaseQueryDto {
     limit?: number;
 }
 
+/* transform into array, then transform into number array */
+
 export class BaseQueryFilterDto {
     @IsOptional()
-    @IsNumber({ allowNaN: false }, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
+    @IsNumber({ allowNaN: false }, { each: true })
     @Type((() => Number))
     id?: number[];
 }
