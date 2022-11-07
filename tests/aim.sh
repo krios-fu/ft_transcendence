@@ -7,7 +7,7 @@ if [ $# -eq 0 ]; then
     exit 1
 fi;
 
-function ban_opt() {
+ban_opt () {
     case $2 in
         "getall")   curl -v $host/$1 ;;
         "get")      curl -v $host/$1/$3 ;;
@@ -23,7 +23,7 @@ function ban_opt() {
     esac 
 }
 
-function user_opt() {
+user_opt() {
     case $2 in
         "getall") curl -v $host/$1s ;;
         "get")    curl -v $host/$1s/$3 ;;
@@ -42,7 +42,7 @@ function user_opt() {
     esac
 }
 
-function room_opt() {
+room_opt() {
     case $2 in
         "getall") curl -v $host/$1 ;;
         "get")    curl -v $host/$1/$3 ;;
@@ -50,7 +50,7 @@ function room_opt() {
         "chgown") curl -v -X PUT  $host/$1/$3/owner/$4 ;;
         "post")   curl -v $host/$1 -H "Content-Type: application/json" --data \
         '{
-            "roomId":"'$3'",
+            "roomName":"'$3'",
             "ownerId":"'$4'"
         }' ;;
         # post with pw: ~~ tba ~~
@@ -59,7 +59,7 @@ function room_opt() {
     esac
 }
 
-function roles_opt() {
+roles_opt() {
     case $2 in
         "getall") curl -v $host/$1 ;;
         "get")    curl -v $host/$1/$3 ;;
@@ -74,7 +74,7 @@ function roles_opt() {
 
 # ~~ not tested ~~
 
-function room_roles_opt() {
+room_roles_opt() {
     case $2 in    
         "getall")  curl -v $host/$1 ;;
         "get")     curl -v $host/$1/$3 ;;
@@ -84,7 +84,7 @@ function room_roles_opt() {
     esac
 }
 
-function user_roles_opt() {
+user_roles_opt() {
     case $2 in
         "getall")   curl -v $host/$1 ;;
         "get")      curl -v $host/$1/$3 ;;
@@ -96,7 +96,7 @@ function user_roles_opt() {
     esac
 }
 
-function user_rooms_opt() {
+user_rooms_opt() {
     case $2 in
         "getall")   curl -v $host/$1 ;;
         "get")      curl -v $host/$1/$3 ;;
@@ -108,7 +108,7 @@ function user_rooms_opt() {
     esac
 }
 
-function user_room_roles_opt() {
+user_room_roles_opt() {
     case $2 in 
         "getall") curl -v $host/$1 ;;
         "get")    curl -v $host/$1/$3 ;;

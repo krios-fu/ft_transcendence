@@ -57,14 +57,7 @@ export class BanService {
     }
 
     public async createBan(dto: CreateBanDto): Promise<BanEntity> {
-        const newBan = new BanEntity(dto);
-        try {
-            await this.banRepository.save(newBan);
-        } catch (err) {
-            this.banLogger.error(err);
-            throw new HttpException('no user or room in db', HttpStatus.BAD_REQUEST);
-        }
-        return newBan;
+        return await this.banRepository.save(new BanEntity(dto));
     }
 
     public async deleteBan(ban_id: number): Promise<void> {
@@ -72,13 +65,11 @@ export class BanService {
     }
 
     public async findOneByUserRoomIds(userId: number, roomId: number) {
-        const coso =  await this.banRepository.find({
+        return await this.banRepository.findOne({
             where: {
                 userId: userId,
                 roomId: roomId,
             }
         });
-        console.log('coso: ' + JSON.stringify(coso));
-        return coso;
     }
 }

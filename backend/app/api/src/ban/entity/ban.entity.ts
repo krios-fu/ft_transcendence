@@ -6,7 +6,7 @@ import { CreateBanDto } from "../dto/ban.dto";
 @Entity({ name: 'ban' })
 @Index(['userId', 'roomId'], { unique: true })
 export class BanEntity {
-    constructor(dto: CreateBanDto) {
+    constructor(dto?: CreateBanDto) {
         if (dto !== undefined){
             Object.assign(this, dto);
         }
