@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsNumberString, IsOptional, IsString, ValidateNested } from "class-validator";
 import { HasValidFields } from "src/common/decorators/order.decorator";
 import { BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
@@ -7,13 +7,15 @@ import { intoArrayOfParams } from "src/common/validators/fields-validator.class"
 class UserRoomQueryFilterDto extends BaseQueryFilterDto {
     @IsOptional()
     @IsArray()
+    @IsNumberString({}, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
-    userId?: string[];
+    userId?: Number[];
 
     @IsOptional()
     @IsArray()
+    @IsNumberString({}, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
-    roomId?: string[];
+    roomId?: Number[];
 }
 
 export class UserRoomQueryDto {

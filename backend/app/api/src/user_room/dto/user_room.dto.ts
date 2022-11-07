@@ -1,9 +1,14 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber } from "class-validator";
 
 export class CreateUserRoomDto {
-    @IsNumber() userId: number;
-    @IsNumber() roomId: number;
+    @IsNotEmpty()
+    @IsNumber() 
+    userId: number;
+
+    @IsNotEmpty()
+    @IsNumber() 
+    roomId: number;
 }
 
 export class UpdateUserRoomDto extends PartialType(CreateUserRoomDto) { }
