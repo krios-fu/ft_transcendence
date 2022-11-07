@@ -23,7 +23,6 @@ export function intoArrayOfParams(value: string[]) {
     let ids = new Array<string>();
     let params = (!Array.isArray(value)) ? [ value ] : value;
 
-    console.log('start of intoArrayOfParams: ' + params);
     params.forEach((param: string) => {
         if (typeof(param) === 'string') {
             param.split(',').filter(Boolean).forEach((value: string) => {
@@ -31,6 +30,5 @@ export function intoArrayOfParams(value: string[]) {
             });
         }
     });
-    console.log('end of intoArrayOfParams: ' + ids);
     return ids;
 }

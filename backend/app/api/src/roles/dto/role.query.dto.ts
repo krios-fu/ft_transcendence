@@ -16,7 +16,7 @@ export class RoleQueryDto extends BaseQueryDto {
     @IsArray()
     @Transform(({ value }) => value.split(','))
     @HasValidFields(['id', 'role', 'createdAt'])
-    sort?: string[];
+    order?: string[];
 
     @IsOptional()
     @ValidateNested({

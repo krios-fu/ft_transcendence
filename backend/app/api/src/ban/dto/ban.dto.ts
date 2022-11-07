@@ -1,9 +1,14 @@
-import { IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumberString } from "class-validator";
 import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateBanDto { 
-    @IsNumber() userId: number;
-    @IsNumber() roomId: number;
+    @IsNotEmpty()
+    @IsNumberString() 
+    userId: number;
+
+    @IsNotEmpty()
+    @IsNumberString() 
+    roomId: number;
 }
 
 export class UpdateBanDto extends PartialType(CreateBanDto) { }

@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { CreateBanDto } from './dto/ban.dto';
@@ -18,6 +19,9 @@ export class BanService {
     private readonly banLogger: Logger;
 
     public async findAllBans(queryParams: BanQueryDto): Promise<BanEntity[]> {
+        if (queryParams !== undefined) {
+            return await this.banRepository.find(new QueryMapper(queryParams));
+        }
         return await this.banRepository.find();
     }
 

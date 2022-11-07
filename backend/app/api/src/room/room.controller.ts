@@ -71,6 +71,7 @@ export class RoomController {
     @Post()
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
+        console.log('type of ownerId: ' + typeof(ownerId));
         if (await this.userService.findOne(ownerId) === null) {
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }

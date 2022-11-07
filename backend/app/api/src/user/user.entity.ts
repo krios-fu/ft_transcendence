@@ -15,25 +15,16 @@ export class UserEntity {
 	@PrimaryGeneratedColumn('increment')
 	id: number;
 
-	@Column({
-		unique: true
+	@Column({ 
+		unique: true 
 	})
 	username : string;
 	
-	@Column()
-	firstName : string;
-
-	@Column()
-	lastName : string;
-
-	@Column()
-	email : string;
-
-	@Column()
-	photoUrl : string;
-
-  	@Column()
-	profileUrl : string;
+	@Column() firstName : string;
+	@Column() lastName : string;
+	@Column() email : string;
+	@Column() photoUrl : string;
+  	@Column() profileUrl : string;
 
 	@Column({
 		unique: true
