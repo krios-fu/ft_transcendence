@@ -6,7 +6,7 @@ export class QueryMapper {
         if (limit !== undefined) {
             this.take = limit;
         }
-        if (limit !== undefined) {
+        if (offset !== undefined) {
             this.skip = offset;
         }
         if (order !== undefined) {
@@ -17,7 +17,6 @@ export class QueryMapper {
         }
         if (filter !== undefined) {
             this.where = [];
-            console.log('initializing filter query: ' + JSON.stringify(filter));
             for (let key in filter) {
                 filter[key].forEach((value: string) => {
                     this.where.push({ [key]: value });

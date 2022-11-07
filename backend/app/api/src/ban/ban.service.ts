@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
@@ -13,16 +13,12 @@ export class BanService {
     constructor (
         @InjectRepository(BanEntity)
         private readonly banRepository: BanRepository,
-    ) { 
-        this.banLogger = new Logger(BanService.name);
-    }
-    private readonly banLogger: Logger;
+    ) { }
 
     public async findAllBans(queryParams: BanQueryDto): Promise<BanEntity[]> {
         if (queryParams !== undefined) {
             return await this.banRepository.find(new QueryMapper(queryParams));
         }
-        console.log("hola?");
         return await this.banRepository.find();
     }
 

@@ -1,7 +1,7 @@
 import { Transform, Type } from "class-transformer";
 import { IsArray, IsOptional, ValidateNested } from "class-validator";
 import { HasValidFields, ValidateOrder } from "src/common/decorators/order.decorator";
-import { BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
+import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
 
 class BanQueryFilterDto extends BaseQueryFilterDto { 
@@ -16,7 +16,7 @@ class BanQueryFilterDto extends BaseQueryFilterDto {
     roomId?: string[];
 }
 
-export class BanQueryDto {
+export class BanQueryDto extends BaseQueryDto {
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
