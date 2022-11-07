@@ -22,6 +22,7 @@ export class BanService {
         if (queryParams !== undefined) {
             return await this.banRepository.find(new QueryMapper(queryParams));
         }
+        console.log("hola?");
         return await this.banRepository.find();
     }
 
@@ -71,11 +72,13 @@ export class BanService {
     }
 
     public async findOneByUserRoomIds(userId: number, roomId: number) {
-        return this.banRepository.find({
+        const coso =  await this.banRepository.find({
             where: {
                 userId: userId,
                 roomId: roomId,
             }
         });
+        console.log('coso: ' + JSON.stringify(coso));
+        return coso;
     }
 }

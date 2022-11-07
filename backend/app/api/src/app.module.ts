@@ -25,8 +25,7 @@ import { RoomRolesModule } from './room_roles/room_roles.module';
             password: process.env.DB_PASSWD,
             database: process.env.DB_NAME,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true,
-            logging: true
+            synchronize: true
         }),
         RolesModule,
         RoomModule,

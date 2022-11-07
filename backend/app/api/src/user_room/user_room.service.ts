@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
@@ -21,7 +22,10 @@ export class UserRoomService {
     ) { }
 
     public async findAll(queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
-        return await this.userRoomRepository.find(/* ??? */);
+        if (queryParams !== undefined) {
+            return await this.userRoomRepository.find(new QueryMapper(queryParams));
+        }
+        return await this.userRoomRepository.find();
     }
 
     public async findOne(id: number): Promise<UserRoomEntity> { 

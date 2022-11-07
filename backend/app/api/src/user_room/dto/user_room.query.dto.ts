@@ -21,12 +21,12 @@ export class UserRoomQueryDto {
     @IsArray()
     @Transform(({ value }) => value.split(','))
     @HasValidFields(['id', 'userId', 'roomId', 'createdAt'])
-    sort?: string;
+    sort?: string[];
 
     @IsOptional()
     @ValidateNested({
         message: 'invalid parameter passed to filter option'
     })
     @Type(() => UserRoomQueryFilterDto)
-    filter?: Map<string, string>;
+    filter?: UserRoomQueryFilterDto;
 }

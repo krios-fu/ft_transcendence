@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
@@ -16,6 +17,9 @@ export class UserRoomRolesService {
     ) { }
 
     public async findAllRoles(queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
+        if (queryParams !== undefined) {
+            return await this.userRoomRolesRepository.find(new QueryMapper(queryParams));
+        }
         return this.userRoomRolesRepository.find();
     }
 

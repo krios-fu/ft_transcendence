@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
@@ -14,7 +15,10 @@ export class RoomRolesService {
     ) { }
 
     public async findAll(queryParams: RoomRolesQueryDto): Promise<RoomRolesEntity[]> {
-        return await this.roomRolesRepository.find(/* ??? */);
+        if (queryParams !== undefined) {
+            return await this.roomRolesRepository.find(new QueryMapper(queryParams));
+        }
+        return await this.roomRolesRepository.find();
     }
 
     public async findOne(id: number) {
