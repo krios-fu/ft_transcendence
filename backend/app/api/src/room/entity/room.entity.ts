@@ -1,8 +1,7 @@
 import { UserEntity } from "src/user/user.entity";
 import { CreateRoomDto } from "../dto/room.dto";
 import { 
-    BaseEntity,
-    BeforeInsert, 
+    BaseEntity, 
     Column, 
     Entity, 
     JoinColumn, 

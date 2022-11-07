@@ -20,7 +20,7 @@ export class QueryMapper {
             for (let key in filter) {
                 filter[key].forEach((value: string) => {
                     this.where.push({ [key]: value });
-                })
+                });
             }
         }
     }

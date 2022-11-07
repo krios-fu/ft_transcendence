@@ -17,12 +17,7 @@ export class RoomService {
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
         if (queryParams !== undefined) {
-            const coso = new QueryMapper(queryParams);
-            try {
-                return await this.roomRepository.find(new QueryMapper(queryParams));
-            } catch {
-                throw 'no';
-            }
+            return await this.roomRepository.find(new QueryMapper(queryParams));
         }
         return await this.roomRepository.find();
     }

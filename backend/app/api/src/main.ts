@@ -7,7 +7,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     app.useGlobalPipes(new ValidationPipe({ 
-        transform: true, 
+        transform: true,
         whitelist: true,
         validateCustomDecorators: true
     }));
