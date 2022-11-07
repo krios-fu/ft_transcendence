@@ -15,6 +15,8 @@ export class BaseQueryDto {
     limit?: number;
 }
 
+/* transform into array, then transform into number array */
+
 export class BaseQueryFilterDto {
     @IsOptional()
     @IsNumberString({}, { each: true })
