@@ -11,12 +11,14 @@ import {
     Logger,
     HttpException,
     HttpStatus,
+    Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserDto } from './user.dto';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from './user.query.dto';
+import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 
 @Controller('users')
 export class UserController {
@@ -30,6 +32,16 @@ export class UserController {
     @Get()
     async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[]> {
         return this.userService.findAllUsers(queryParams);
+    }
+
+
+    @Get('me')
+    public async findMe(@Req() req: IRequestUser) {
+        if (req.username === undefined) {
+            this.userLogger.error('Cannot find username for client in request body');
+            throw new HttpException('user has no valid credentials', HttpStatus.BAD_REQUEST);
+        }
+        return await this.userService.findAllUsers({ "filter": { "username": [req.username] } });
     }
 
     @Get(':id')

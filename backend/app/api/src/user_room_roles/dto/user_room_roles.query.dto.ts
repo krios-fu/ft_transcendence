@@ -9,13 +9,13 @@ class UserRoomRolesQueryFilterDto extends BaseQueryFilterDto {
     @IsArray()
     @IsNumberString({}, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
-    userRoomId?: string[];
+    userRoomId?: number[];
 
     @IsOptional()
     @IsArray()
     @IsNumberString({}, { each: true })
     @Transform(({ value }) => intoArrayOfParams(value))
-    roleId?: string[];
+    roleId?: number[];
 }
 
 export class UserRoomRolesQueryDto {

@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEmail, IsOptional, IsString, ValidateNested } from "class-validator";
 import { HasValidFields } from "src/common/decorators/order.decorator";
 import { BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
@@ -22,6 +22,7 @@ class UserQueryFilterDto extends BaseQueryFilterDto {
 
     @IsOptional()
     @IsArray()
+    @IsEmail({ each: true }) /* needs testing */
     @Transform(({ value }) => intoArrayOfParams(value))
     email?: string[];
 

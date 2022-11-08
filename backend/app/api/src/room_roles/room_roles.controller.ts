@@ -22,7 +22,7 @@ import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 
-@Controller('room-roles')
+@Controller('room_roles')
 @UseInterceptors(ClassSerializerInterceptor)
 export class RoomRolesController {
     constructor
