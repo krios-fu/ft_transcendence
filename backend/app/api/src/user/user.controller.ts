@@ -34,7 +34,6 @@ export class UserController {
         return this.userService.findAllUsers(queryParams);
     }
 
-
     @Get('me')
     public async findMe(@Req() req: IRequestUser) {
         if (req.username === undefined) {
@@ -54,6 +53,7 @@ export class UserController {
         return user;
     }
 
+    /* role guards ?? */
     @Post()
     async postUser(@Body() newUser: UserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {

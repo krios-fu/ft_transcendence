@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
@@ -49,6 +49,7 @@ export class BanController {
     }
 
     /* Create a ban */
+    @UseGuards(AtLeastRoomOwner)
     @Post()
     async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
         const { userId, roomId } = dto;
@@ -68,6 +69,7 @@ export class BanController {
     }
 
     /* Delete a ban */
+    @UseGuards(AtLeastRoomOwner)
     @Delete(':ban_id')
     async deleteBan(@Param('ban_id', ParseIntPipe) ban_id: number): Promise<void> {
         return await this.banService.deleteBan(ban_id);
