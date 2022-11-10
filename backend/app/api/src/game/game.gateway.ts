@@ -8,7 +8,7 @@ import {
     WebSocketServer,
     WsResponse,
     ConnectedSocket,
-  } from '@nestjs/websockets';
+} from '@nestjs/websockets';
 import {
     RemoteSocket,
     Server,
@@ -17,11 +17,9 @@ import {
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
     Game,
-    GameState
-} from './Game'
-import { Ball } from './Ball';
-import { Player } from './Player';
-import { Updater } from './Updater';
+    GameState,
+    IGameClientStart
+} from './elements/Game'
 import { GameService } from './game.service';
 import { UserEntity } from 'src/user/user.entity';
 
@@ -34,7 +32,6 @@ export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     games: Map<string, Game>;
-    updater: Updater;
     updateInterval: NodeJS.Timer = undefined;
     mockUserNum: number = 1; //Provisional
 
@@ -45,7 +42,6 @@ export class    GameGateway implements OnGatewayInit,
     afterInit() {
         console.log("Game Gateway initiated");
         this.games = new Map<string, Game>();
-        this.updater = new Updater();
     }
 
     async addUserToRoom(username: string, roomId: string): Promise<void> {
@@ -79,9 +75,8 @@ export class    GameGateway implements OnGatewayInit,
         }, 10000);
     }
 
-    gameEnd(gameId: string, game: Game, winnerRole: string): void {
-        const   winnerNickname = winnerRole === "PlayerA"
-                                    ? game.playerA.nick : game.playerB.nick;
+    gameEnd(gameId: string, game: Game): void {
+        const   winnerNickname = game.getWinnerNick();
         
         this.emitToRoom(gameId, "end", {
             winner: winnerNickname
@@ -94,89 +89,24 @@ export class    GameGateway implements OnGatewayInit,
 
     pointTransition(game: Game, gameId: string): void {
         setTimeout(() => {
-            this.updater.serve(game);
+            game.serveBall();
             this.emitToRoom(gameId, "served");
         }, 3000);
     }
 
     gameUpdate(game: Game, room: string): void {
-        const   playerA: Player = game.playerA;
-        const   playerB: Player = game.playerB;
-        const   ball: Ball = game.ball;
-        const   currentUpdate: number = Date.now();
-        const   secondsElapsed: number = (currentUpdate - game.lastUpdate) / 1000;
-        const   xDisplacement: number = ball.displacement('x', secondsElapsed);
-        const   yDisplacement: number = ball.displacement('y', secondsElapsed);
-        /*
-        **  IMPORTANT!!!
-        **
-        **  playerA.width / 2, playerA.height / 2, ball.radius, etc
-        **  Are calculated because the origin coordinates of the position
-        **  of players and ball are at the center of the object.
-        */
-        if (this.updater.checkPlayerACollision(ball, playerA, xDisplacement))
-        {//Collision PlayerA
-            this.updater.collisionPlayerA(ball, playerA);
-        }
-        else if (this.updater.checkPlayerBCollision(ball, playerB, xDisplacement))
-        {//Collision PlayerB
-            this.updater.collisionPlayerB(ball, playerB);
-        }
-        else if (this.updater.checkCollisionUp(ball, yDisplacement))
-        {// Collision Upper border
-            this.updater.collisionUp(ball);
-        }
-        else if (this.updater.checkCollisionDown(game, yDisplacement))
-        {// Collision Lower border
-            this.updater.collisionDown(game);
-        }
-        else if (this.updater.checkCollisionRight(game, xDisplacement))
-        {//Collision Right border
-            this.updater.collisionRight(game, playerA);
-            this.server.to(room).emit('score', {
-                a: playerA.score,
-                b: playerB.score
-            });
-            if (this.updater.checkWin(playerA.score))
+        if (game.update())
+        { // A player scored
+            if (game.getWinnerNick() != "")
             {
-                this.updater.pauseGame(game);
-                this.gameEnd(room, game, "PlayerA");
+                game.pause();
+                this.gameEnd(room, game);
+                return ;
             }
             else
                 this.pointTransition(game, room);
         }
-        else if (this.updater.checkCollisionLeft(ball, xDisplacement))
-        {//Collision Left border
-            this.updater.collisionLeft(game, playerB);
-            this.server.to(room).emit('score', {
-                a: playerA.score,
-                b: playerB.score
-            });
-            if (this.updater.checkWin(playerB.score))
-            {
-                this.updater.pauseGame(game);
-                this.gameEnd(room, game, "PlayerB");
-            }
-            else
-                this.pointTransition(game, room);
-        }
-        else
-        {
-            ball.xPosition += xDisplacement;
-            ball.yPosition += yDisplacement;
-        }
-        game.lastUpdate = currentUpdate;
-        /*
-        **  volatile will not send events if the connection is not available.
-        **  Works more or less like UDP.
-        **  Only using it for updating paddle and ball positions, as only
-        **  the latest data is useful, and does not make sense to store the
-        **  past data to be sent when the connection is available again.
-        */
-        this.server.volatile.to(room).emit('ball', {
-            x: ball.xPosition,
-            y: ball.yPosition
-        });
+        this.server.to(room).emit('matchUpdate', game.data());
     }
 
     manageUpdateInterval(): void {
@@ -201,7 +131,7 @@ export class    GameGateway implements OnGatewayInit,
         }
     }
 
-    setRole(role: string, roomId: string, gameData: Game): void {
+    setRole(role: string, roomId: string, gameData: IGameClientStart): void {
         this.emitToRoom(roomId, "newMatch", {
             role: role,
             initData: gameData
@@ -218,18 +148,18 @@ export class    GameGateway implements OnGatewayInit,
             return ;
         if (this.games.get(gameId) != undefined)
             this.games.delete(gameId);
-        game = this.games.set(gameId,
-                                new Game(
-                                    players[0].username,
-                                    players[1].username
-                                )).get(gameId);
+        game = this.games.set(gameId, new Game(
+                                        players[0].username,
+                                        players[1].username,
+                                        0, 0
+                                    )).get(gameId);
         playerRoom = `${gameId}-PlayerA`;
         await this.addUserToRoom(players[0].username, playerRoom);
-        this.setRole("PlayerA", playerRoom, game);
+        this.setRole("PlayerA", playerRoom, game.clientStartData());
         playerRoom = `${gameId}-PlayerB`;
         await this.addUserToRoom(players[1].username, playerRoom);
-        this.setRole("PlayerB", playerRoom, game);
-        this.setRole("Spectator", gameId, game);
+        this.setRole("PlayerB", playerRoom, game.clientStartData());
+        this.setRole("Spectator", gameId, game.clientStartData());
         this.pointTransition(game, gameId);
         this.manageUpdateInterval();
     }
@@ -238,7 +168,7 @@ export class    GameGateway implements OnGatewayInit,
         const   gameId: string = playerRoom.slice(0, playerRoom.indexOf('-'));
         const   game: Game = this.games.get(gameId);
         let     roomSockets: RemoteSocket<DefaultEventsMap, any>[];
-        let     winnerRole: string;
+        let     winner: number;
     
         roomSockets = await this.server.in(playerRoom).fetchSockets();
         /*
@@ -249,15 +179,15 @@ export class    GameGateway implements OnGatewayInit,
             return ;
         if (game.state != GameState.Running)
             return ;
-        this.updater.pauseGame(game);
-        winnerRole = playerRoom[playerRoom.length - 1] === 'A'
-                        ? "PlayerB" : "PlayerA";
-        this.updater.forceWin(game, winnerRole);
-        this.gameEnd(gameId, game, winnerRole);
+        game.pause();
+        winner = playerRoom[playerRoom.length - 1] === 'A'
+                    ? 1 : 0;
+        game.forceWin(winner);
+        this.gameEnd(gameId, game);
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
-        let gameData: Game;
+        let game: Game;
         let username: string = `user-${this.mockUserNum}`; //Provisional
 
         console.log("User joined Game room");
@@ -267,11 +197,8 @@ export class    GameGateway implements OnGatewayInit,
         }); //Provisional
         client.join(username);
         //client.join(userSession)
-        gameData = this.games.get("Game1");
-        client.emit("init", {
-            //Send latest game data
-            initData: gameData
-        });
+        game = this.games.get("Game1");
+        client.emit("init", game ? game.clientStartData() : undefined);
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
 
@@ -316,25 +243,10 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() data: any
     ) {
         const   game: Game = this.games.get(data.room);
-        const   playerA: Player = game.playerA;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerA.yPosition - 8 < playerA.halfHeight)
-            playerA.yPosition = playerA.halfHeight;
-        else
-            playerA.yPosition -= 8;
-        /*
-        **  volatile will not send events if the connection is not available.
-        **  Works more or less like UDP.
-        **  Only using it for updating paddle and ball positions, as only
-        **  the latest data is useful, and does not make sense to store the
-        **  past data to be sent when the connection is available again.
-        */
-       //In paddles does not work well
-        this.server/*.volatile*/.to(data.room).emit('paddleA', {
-            y: playerA.yPosition
-        });
+        game.addPaddleAMove(1); //1: Up
     }
 
     @SubscribeMessage('paddleADown')
@@ -343,25 +255,10 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() data: any
     ) {
         const   game: Game = this.games.get(data.room);
-        const   playerA: Player = game.playerA;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerA.yPosition + 8 > game.height - playerA.halfHeight)
-            playerA.yPosition = game.height - playerA.halfHeight;
-        else
-            playerA.yPosition += 8;
-        /*
-        **  volatile will not send events if the connection is not available.
-        **  Works more or less like UDP.
-        **  Only using it for updating paddle and ball positions, as only
-        **  the latest data is useful, and does not make sense to store the
-        **  past data to be sent when the connection is available again.
-        */
-       //In paddles does not work well
-        this.server/*.volatile*/.to(data.room).emit('paddleA', {
-            y: playerA.yPosition
-        });
+        game.addPaddleAMove(0); //0: Down
     }
 
     @SubscribeMessage('paddleBUp')
@@ -370,25 +267,10 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() data: any
     ) {
         const   game: Game = this.games.get(data.room);
-        const   playerB: Player = game.playerB;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerB.yPosition - 8 < playerB.halfHeight)
-            playerB.yPosition = playerB.halfHeight;
-        else
-            playerB.yPosition -= 8;
-        /*
-        **  volatile will not send events if the connection is not available.
-        **  Works more or less like UDP.
-        **  Only using it for updating paddle and ball positions, as only
-        **  the latest data is useful, and does not make sense to store the
-        **  past data to be sent when the connection is available again.
-        */
-        //In paddles does not work well
-        this.server/*.volatile*/.to(data.room).emit('paddleB', {
-            y: playerB.yPosition
-        });
+        game.addPaddleBMove(1); //1: Up
     }
 
     @SubscribeMessage('paddleBDown')
@@ -397,25 +279,58 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() data: any
     ) {
         const   game: Game = this.games.get(data.room);
-        const   playerB: Player = game.playerB;
 
         if (game.state != GameState.Running)
             return ;
-        if (playerB.yPosition + 8 > game.height - playerB.halfHeight)
-            playerB.yPosition = game.height - playerB.halfHeight;
-        else
-            playerB.yPosition += 8;
-        /*
-        **  volatile will not send events if the connection is not available.
-        **  Works more or less like UDP.
-        **  Only using it for updating paddle and ball positions, as only
-        **  the latest data is useful, and does not make sense to store the
-        **  past data to be sent when the connection is available again.
-        */
-        //In paddles does not work well
-        this.server/*.volatile*/.to(data.room).emit('paddleB', {
-            y: playerB.yPosition
-        });
+        game.addPaddleBMove(0); //0: Down
+    }
+
+    @SubscribeMessage('heroAUp')
+    async heroAUp(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   game: Game = this.games.get(data.room);
+
+        if (game.state != GameState.Running)
+            return ;
+        game.addHeroAInvocation(1); //1 === W
+    }
+
+    @SubscribeMessage('heroADown')
+    async heroADown(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   game: Game = this.games.get(data.room);
+
+        if (game.state != GameState.Running)
+            return ;
+        game.addHeroAInvocation(0); //0 === S
+    }
+
+    @SubscribeMessage('heroBUp')
+    async heroBUp(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   game: Game = this.games.get(data.room);
+
+        if (game.state != GameState.Running)
+            return ;
+        game.addHeroBInvocation(1); //1 === W
+    }
+
+    @SubscribeMessage('heroBDown')
+    async heroBDown(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   game: Game = this.games.get(data.room);
+
+        if (game.state != GameState.Running)
+            return ;
+        game.addHeroBInvocation(0); //0 === S
     }
 
   }

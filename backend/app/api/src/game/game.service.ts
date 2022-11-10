@@ -7,7 +7,7 @@ import { WinnerEntity } from "src/match/winner/winner.entity";
 import { UserEntity } from "src/user/user.entity";
 import { UserService } from "src/user/user.service";
 import { UpdateResult } from "typeorm";
-import { Game } from "./Game";
+import { Game } from "./elements/Game";
 
 /*
 **  Provisional
@@ -123,19 +123,17 @@ export class    GameService {
     }
 
     private savePlayers(players: [UserEntity, UserEntity],
-                                gameData: Game)
-                                : [WinnerEntity, LoserEntity] {
-        let winnerEntity: WinnerEntity = new WinnerEntity;
-        let loserEntity: LoserEntity = new LoserEntity;
+                            game: Game) : [WinnerEntity, LoserEntity] {
+        let     winnerEntity: WinnerEntity = new WinnerEntity;
+        let     loserEntity: LoserEntity = new LoserEntity;
+        const   winnerNick: string = game.getWinnerNick();
 
-        winnerEntity.user = gameData.playerA.score > gameData.playerB.score
+        winnerEntity.user = players[0].nickName === winnerNick
                             ? players[0] : players[1];
-        winnerEntity.score = gameData.playerA.score > gameData.playerB.score
-                            ? gameData.playerA.score : gameData.playerB.score;
-        loserEntity.user = winnerEntity.user === players[0]
-                            ? players[1] : players[0];
-        loserEntity.score = winnerEntity.user === players[0]
-                            ? gameData.playerB.score : gameData.playerA.score;
+        winnerEntity.score = game.getWinnerScore();
+        loserEntity.user = players[0].nickName != winnerNick
+                            ? players[0] : players[1];
+        loserEntity.score = game.getLoserScore();
         return ([winnerEntity, loserEntity]);
     }
 
