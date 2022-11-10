@@ -9,17 +9,27 @@ export class    PlayerAScene extends PlayerScene {
     }
 
     override update() {
-        if (!this.cursors)
-            return ;
-        if (this.cursors.up.isDown) //Move playerA's paddle up
+        if (this.cursors?.up.isDown) //Move playerA's paddle up
         {
             this.socket.emit('paddleAUp',{
                 room: this.room
             });
         }
-        else if (this.cursors.down.isDown) //Move playerA's paddle down
+        else if (this.cursors?.down.isDown) //Move playerA's paddle down
         {
             this.socket.emit('paddleADown',{
+                room: this.room
+            });
+        }
+        if (this.powerKeys.up.isDown)
+        {
+            this.socket.emit('heroAUp',{
+                room: this.room
+            });
+        }
+        else if (this.powerKeys.down.isDown)
+        {
+            this.socket.emit('heroADown',{
                 room: this.room
             });
         }

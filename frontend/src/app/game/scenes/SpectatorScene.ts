@@ -1,10 +1,12 @@
 import * as SocketIO from 'socket.io-client'
-import { BaseScene } from './BaseScene'
+import { MatchScene } from './MatchScene';
 
-export class    SpectatorScene extends BaseScene {
+export class    SpectatorScene extends MatchScene {
+
     constructor(
         sock: SocketIO.Socket, room: string
     ) {
         super("Spectator", sock, room);
     }
+
 }

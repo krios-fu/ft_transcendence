@@ -1,7 +1,9 @@
 import * as SocketIO from 'socket.io-client'
+import { Txt } from '../elements/Txt';
 import { BaseScene } from './BaseScene'
 
 export class    EndScene extends BaseScene {
+
     winner?: string;
 
     constructor(
@@ -10,7 +12,7 @@ export class    EndScene extends BaseScene {
         super("End", sock, room);
     }
 
-    override init(data: any) {
+    init(data: any) {
         this.winner = data.winner;
         this.socket.once("newMatch", (gameData: any) => {
             this.removeAllSocketListeners();
@@ -20,14 +22,18 @@ export class    EndScene extends BaseScene {
 
     createInitText() {
         //Init screen setup
-        this.initText = this.add.text(400, 250, `${this.winner} wins!`,
-                                    { fontSize: '20px', color: '#fff' });
-        this.initText.setDepth(1);
-        //Sets the origin coordinates of the object to its center
-        this.initText.setOrigin(0.5);
+        this.initTxt = new Txt(this, {
+            xPos: 400,
+            yPos: 250,
+            content: `${this.winner} wins!`,
+            style: { fontSize: '20px', color: '#fff' },
+            xOrigin: 0.5,
+            yOrigin: 0.5,
+            depth: 1
+        });
     }
 
-    override create() {
+    create() {
         this.createInitText();
     }
 }
