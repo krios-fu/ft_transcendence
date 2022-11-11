@@ -1,10 +1,12 @@
 import { MatchScene } from '../scenes/MatchScene';
 import { Aquaman } from './Aquaman';
+import { BlackPanther } from './BlackPanther';
+import { Superman } from './Superman';
 import {
-    IHero,
+    Hero,
     IHeroData,
     IHeroInitData
-} from './IHero';
+} from './Hero';
 import {
     Paddle,
     IPaddleInitData,
@@ -27,7 +29,7 @@ export interface    IPlayerData {
 export class    Player {
 
     private _paddle: Paddle;
-    private _hero: IHero;
+    private _hero: Hero;
     private _score: number;
     private _nick: string;
 
@@ -35,8 +37,10 @@ export class    Player {
         this._paddle = new Paddle(scene, initData.paddle);
         if (initData.hero.name === "aquaman")
             this._hero = new Aquaman(scene, initData.hero);
+        else if (initData.hero.name === "superman")
+            this._hero = new Superman(scene, initData.hero);
         else
-            this._hero = new Aquaman(scene, initData.hero);
+            this._hero = new BlackPanther(scene, initData.hero);
         this._score = initData.score;
         this._nick = initData.nick;
     }

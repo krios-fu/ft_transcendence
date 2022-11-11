@@ -4,18 +4,18 @@ import {
     IHeroInitData
 } from "./Hero";
 
-export class    Aquaman extends Hero {
+export class    BlackPanther extends Hero {
 
     constructor(scene: MatchScene, initData: IHeroInitData) {
         super(scene, initData);
-        this._lowerSprite.flipY = true;
+        this._upperSprite.flipY = true;
         if (initData.playerSide === 0)
         {
             this._upperSprite.flipX = true;
             this._lowerSprite.flipX = true;
         }
-        this._upperSprite.scale = 0.5; //Provisional. It should not be necessary to scale
-        this._lowerSprite.scale = 0.5; //Provisional. It should not be necessary to scale
+        this._upperSprite.scale = 0.65; //Provisional. It should not be necessary to scale
+        this._lowerSprite.scale = 0.65; //Provisional. It should not be necessary to scale
     }
 
 }
