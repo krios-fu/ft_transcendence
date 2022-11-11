@@ -40,6 +40,8 @@ export class    MatchScene extends BaseScene {
     //Called after init()
     preload() {
         this.load.image('aquaman', '/assets/aquaman.png');
+        this.load.image('superman', '/assets/superman.png');
+        this.load.image('blackPanther', '/assets/blackPanther.png');
     }
 
     createInitText() {
