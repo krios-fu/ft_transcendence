@@ -1,4 +1,4 @@
-import { IHero } from "./IHero";
+import { Hero } from "./Hero";
 import { Paddle } from "./Paddle";
 
 export interface    IBallInit {
@@ -182,7 +182,7 @@ export class    Ball {
     **  Does not work with ball next position (ballDisplacement) at the moment.
     **  Working with ball current position for now.
     */
-    checkHeroCollision(hero: IHero/*, ballXDisplacement: number,
+    checkHeroCollision(hero: Hero/*, ballXDisplacement: number,
                         ballYDisplacement: number*/): boolean {
         let ballVelocities: [number, number] =
                 hero.checkBallHit(this._xPosition, this._yPosition,

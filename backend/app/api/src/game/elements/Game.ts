@@ -8,6 +8,7 @@ import {
     IBallClientStart,
     IBallData
 } from './Ball'
+import { HeroCreator } from './HeroCreator';
 
 export enum    GameState {
     Paused,
@@ -40,8 +41,11 @@ export class   Game {
 
     constructor (playerANick: string, playerBNick: string,
                     playerAHero: number, playerBHero: number) {
+        let heroCreator: HeroCreator;
+
         this._width = 800;
         this._height = 600;
+        heroCreator = new HeroCreator(this._width, this._height);
         this._playerA = new Player({
             paddle: {
                 width: 10,
@@ -52,7 +56,7 @@ export class   Game {
             },
             score: 0,
             nick: playerANick,
-            hero: playerAHero,
+            hero: heroCreator.create(playerAHero, 0),
             gameWidth: this._width,
             gameHeight: this._height
         });
@@ -66,7 +70,7 @@ export class   Game {
             },
             score: 0,
             nick: playerBNick,
-            hero: playerBHero,
+            hero: heroCreator.create(playerBHero, 1),
             gameWidth: this._width,
             gameHeight: this._height
         });

@@ -1,9 +1,8 @@
 import {
-    IHero,
+    Hero,
     IHeroClientStart,
     IHeroData
-} from "./IHero";
-import { Aquaman } from "./Aquaman";
+} from "./Hero";
 import {
     IPaddleClientStart,
     IPaddleData,
@@ -15,7 +14,7 @@ export interface    IPlayerInit {
     paddle: IPaddleInit;
     score: number;
     nick: string;
-    hero: number; //0: Aquaman, 1: BlackPanther, 2: Superman
+    hero: Hero; //0: Aquaman, 1: BlackPanther, 2: Superman
     gameWidth: number;
     gameHeight: number;
 }
@@ -36,7 +35,7 @@ export interface    IPlayerData {
 export class    Player {
 
     private _paddle: Paddle;
-    private _hero: IHero;
+    private _hero: Hero;
     private _score: number;
     private _nick: string;
     private _paddleMoves: number[]; //0: down, 1: up
@@ -44,31 +43,11 @@ export class    Player {
 
     constructor(init: IPlayerInit) {
         this._paddle = new Paddle(init.paddle);
-        this._hero = this.createHero(init.hero, init.gameWidth,
-                                        init.gameHeight);
+        this._hero = init.hero;
         this._score = init.score;
         this._nick = init.nick;
         this._paddleMoves = [];
         this._heroInvocation = -1;
-    }
-
-    private createHero(heroNumber: number, gameWidth: number,
-                        gameHeight: number): IHero {
-        let res: IHero;
-
-        if (heroNumber === 0)
-        {
-            res = new Aquaman(
-                this._paddle.side,
-                gameWidth,
-                gameHeight
-            );
-        }
-        else if (heroNumber === 1)
-        {}
-        else
-        {}
-        return (res);
     }
 
     get score(): number {
@@ -83,7 +62,7 @@ export class    Player {
         return (this._paddle);
     }
 
-    get hero(): IHero {
+    get hero(): Hero {
         return (this._hero);
     }
 
