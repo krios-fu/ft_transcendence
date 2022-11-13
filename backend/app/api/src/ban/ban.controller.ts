@@ -49,7 +49,7 @@ export class BanController {
     }
 
     /* Create a ban */
-    @UseGuards(AtLeastRoomOwner)
+    //@UseGuards(AtLeastRoomOwner)
     @Post()
     async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
         const { userId, roomId } = dto;
@@ -69,7 +69,7 @@ export class BanController {
     }
 
     /* Delete a ban */
-    @UseGuards(AtLeastRoomOwner)
+    //@UseGuards(AtLeastRoomOwner)
     @Delete(':ban_id')
     async deleteBan(@Param('ban_id', ParseIntPipe) ban_id: number): Promise<void> {
         return await this.banService.deleteBan(ban_id);

@@ -53,7 +53,8 @@ export class UserController {
         return user;
     }
 
-    /* role guards ?? */
+    /* role guards ?? (or admin) */
+    /* it is me! */
     @Post()
     async postUser(@Body() newUser: UserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
@@ -72,12 +73,14 @@ export class UserController {
     **      - status (ONLINE, OFFLINE, PLAYING
     */
 
+    /* it is me! (or admin) */
     @Patch(':id')
     async updateUser( @Param('id', ParseIntPipe) id: number, @Body() body: Object)
                     : Promise<UpdateResult> {
         return this.userService.updateUser(id, body);
     }
 
+    /* it is me! (or admin) */
     @Delete(':id')
 	async remove( @Param('id', ParseIntPipe) id: number ): Promise<void> {
 		return this.userService.deleteUser(id);

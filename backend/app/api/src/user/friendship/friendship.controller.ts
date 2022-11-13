@@ -4,36 +4,40 @@ import {
     Post,
     Param,
     Req,
-    Patch
+    Patch,
+    Logger
 } from "@nestjs/common";
 import { FriendshipService } from "./friendship.service";
 import { FriendshipEntity } from './friendship.entity';
 import { FriendDto } from './friendship.dto';
 import { UpdateResult } from 'typeorm';
+import { IRequestUser } from "src/common/interfaces/request-payload.interface";
 
 @Controller('friends')
 export class    FriendshipController {
     constructor(
         private friendshipService: FriendshipService
     ) {
-        console.log("FriendshipController inicializado");
+        this.friendlyLogger = new Logger(FriendshipController.name);
+        this.friendlyLogger.log('FriendshipController inicializado');
     }
+    private readonly friendlyLogger: Logger;
 
     @Get()
-    async getFriends(@Req() req): Promise<FriendDto[]> {
-        return this.friendshipService.getFriends(req.user.username);
+    async getFriends(@Req() req: IRequestUser): Promise<FriendDto[]> {
+        return this.friendshipService.getFriends(req.username);
     }
 
     @Get(':id')
-    async getOneFriend( @Req() req, @Param('id') id: string )
+    async getOneFriend( @Req() req: IRequestUser, @Param('id') id: string )
                         : Promise<FriendDto> {
-        return this.friendshipService.getOneFriend(req.user.username, id);
+        return this.friendshipService.getOneFriend(req.username, id);
     }
 
     @Post(':id')
-    async postFriend( @Req() req, @Param('id') id: string )
+    async postFriend( @Req() req: IRequestUser, @Param('id') id: string )
                         : Promise<FriendshipEntity> {
-        return this.friendshipService.addFriend(req.user.username, id);
+        return this.friendshipService.addFriend(req.username, id);
     }
 
     /*
@@ -42,9 +46,9 @@ export class    FriendshipController {
     */
    
     @Patch('accept/:id')
-    async acceptFriend( @Req() req, @Param('id') id: string )
+    async acceptFriend( @Req() req: IRequestUser, @Param('id') id: string )
                         : Promise<UpdateResult> {
-        return this.friendshipService.acceptFriend(req.user.username, id);
+        return this.friendshipService.acceptFriend(req.username, id);
     }
 
     /*

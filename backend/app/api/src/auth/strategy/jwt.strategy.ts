@@ -33,7 +33,7 @@ constructor
             Invalidamos petición manualmente
     */
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        try {
+    /*    try {
             await this.authService.getTokenByUsername(jwtPayload.data.username);
         } catch(err) {
             this.logger.error(`failed to acquire refresh token for user ${jwtPayload.data.username}`);
@@ -42,7 +42,7 @@ constructor
                 'User has been logged out in another device',
                 HttpStatus.UNAUTHORIZED
             );
-        }
+        } */
         return jwtPayload;
     }
 }

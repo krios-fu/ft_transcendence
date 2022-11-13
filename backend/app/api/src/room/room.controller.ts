@@ -15,7 +15,8 @@ import { Body,
     ParseIntPipe, 
     Post, 
     Put, 
-    Query
+    Query,
+    UseGuards
 } from "@nestjs/common";
 import { RoomQueryDto } from "./dto/room.query.dto";
 
