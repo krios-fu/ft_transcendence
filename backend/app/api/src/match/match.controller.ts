@@ -3,7 +3,7 @@ import {
     Get,
     Param,
     ParseIntPipe,
-    Req
+    Query
 } from "@nestjs/common";
 import { MatchEntity } from "./match.entity";
 import { MatchService } from "./match.service";
@@ -15,16 +15,13 @@ export class    MatchController {
     ) {}
 
     @Get()
-    async getMatches(): Promise<MatchEntity[]> {
+    async getUserMatches(@Query('userId') userId?: string)
+            : Promise<MatchEntity[]> {
+        if (userId)
+            return (await this.matchService.findUserMatches(userId));
         return (await this.matchService.findAllMatches());
     }
 
-    @Get('user')
-    async getUserMatches(@Req() req): Promise<MatchEntity[]> {
-        return (await this.matchService.findUserMatches(req.user.data));
-    }
-
-    //Number validation must be added
     @Get(':id')
     async getMatch(@Param('id', ParseIntPipe) id: number): Promise<MatchEntity> {
         return (await this.matchService.findOneMatch(id));
