@@ -22,6 +22,7 @@ import {
 } from './elements/Game'
 import { GameService } from './game.service';
 import { UserEntity } from 'src/user/user.entity';
+import { IGameSelection } from './components/IGameSelection';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -32,6 +33,7 @@ export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     games: Map<string, Game>;
+    gameSelections: Map<string, IGameSelection>;
     updateInterval: NodeJS.Timer = undefined;
     mockUserNum: number = 1; //Provisional
 
@@ -131,35 +133,52 @@ export class    GameGateway implements OnGatewayInit,
         }
     }
 
-    setRole(role: string, roomId: string, gameData: IGameClientStart): void {
-        this.emitToRoom(roomId, "newMatch", {
-            role: role,
-            initData: gameData
+    setRole(role: string, roomId: string): void {
+        this.emitToRoom(roomId, "newGame", {
+            role: role
         });
     }
 
     async startGame(gameId: string): Promise<void> {
-        let game: Game;
+        let gameSelection: IGameSelection;
         let playerRoom: string;
         let players: [UserEntity, UserEntity] =
             this.gameService.startGame(gameId);
 
         if (!players[0] || !players[1])
             return ;
+        if (this.gameSelections.get(gameId) != undefined)
+            this.gameSelections.delete(gameId);
+        gameSelection = this.gameSelections.set(gameId, {
+            playerA: players[0],
+            playerB: players[1],
+            heroA: undefined,
+            heroB: undefined,
+            stage: undefined
+        }).get(gameId);
+        playerRoom = `${gameId}-PlayerA`;
+        await this.addUserToRoom(gameSelection.playerA.username, playerRoom);
+        this.setRole("PlayerA", playerRoom);
+        playerRoom = `${gameId}-PlayerB`;
+        await this.addUserToRoom(gameSelection.playerB.username, playerRoom);
+        this.setRole("PlayerB", playerRoom);
+        this.setRole("Spectator", gameId);
+    }
+
+    startMatch(gameId: string,
+                        gameSelection: IGameSelection): void {
+        let game: Game;
+    
         if (this.games.get(gameId) != undefined)
             this.games.delete(gameId);
         game = this.games.set(gameId, new Game(
-                                        players[0].username,
-                                        players[1].username,
-                                        0, 0
-                                    )).get(gameId);
-        playerRoom = `${gameId}-PlayerA`;
-        await this.addUserToRoom(players[0].username, playerRoom);
-        this.setRole("PlayerA", playerRoom, game.clientStartData());
-        playerRoom = `${gameId}-PlayerB`;
-        await this.addUserToRoom(players[1].username, playerRoom);
-        this.setRole("PlayerB", playerRoom, game.clientStartData());
-        this.setRole("Spectator", gameId, game.clientStartData());
+            gameSelection.playerA.username,
+            gameSelection.playerB.username,
+            gameSelection.heroA,
+            gameSelection.heroB,
+            gameSelection.stage
+        )).get(gameId);
+        this.emitToRoom(gameId, "startMatch", game.clientStartData());
         this.pointTransition(game, gameId);
         this.manageUpdateInterval();
     }
@@ -198,7 +217,7 @@ export class    GameGateway implements OnGatewayInit,
         client.join(username);
         //client.join(userSession)
         game = this.games.get("Game1");
-        client.emit("init", game ? game.clientStartData() : undefined);
+        client.emit("init", game ? game.clientStartData(): undefined);
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
 
