@@ -3,6 +3,7 @@ import {
     MenuScene
 } from "../scenes/MenuScene";
 import { SelectionStatus } from "./MenuSelector";
+import { Txt } from "./Txt";
 
 export class    MenuRenderer {
 
@@ -12,6 +13,9 @@ export class    MenuRenderer {
     private _heroAImage: Phaser.GameObjects.Image;
     private _heroBImage: Phaser.GameObjects.Image;
     private _stageImage: Phaser.GameObjects.Image;
+    private _vsTxt: Txt;
+    private _nickATxt: Txt;
+    private _nickBTxt: Txt;
 
     constructor(scene: MenuScene, initData: ISelectionInit) {
         this._heroImages = [
@@ -32,9 +36,36 @@ export class    MenuRenderer {
             'metropolisMenu',
             'wakandaMenu'
         ];
-        (this._heroAImage = scene.add.image(200, 300,
+        (this._vsTxt = new Txt(scene, {
+            xPos: 400,
+            yPos: 300,
+            content: "VS",
+            style: { fontSize: '30px', color: '#fff' },
+            xOrigin: 0.5,
+            yOrigin: 0.5,
+            depth: 1
+        })).visible = false;
+        (this._nickATxt = new Txt(scene, {
+            xPos: 200,
+            yPos: 500,
+            content: initData.nickPlayerA,
+            style: { fontSize: '20px', color: '#fff' },
+            xOrigin: 0.5,
+            yOrigin: 0.5,
+            depth: 1
+        })).visible = false;
+        (this._nickBTxt = new Txt(scene, {
+            xPos: 600,
+            yPos: 500,
+            content: initData.nickPlayerB,
+            style: { fontSize: '20px', color: '#fff' },
+            xOrigin: 0.5,
+            yOrigin: 0.5,
+            depth: 1
+        })).visible = false;
+        (this._heroAImage = scene.add.image(200, 250,
                                 this._heroImages[initData.heroA])).visible = false;
-        (this._heroBImage = scene.add.image(600, 300,
+        (this._heroBImage = scene.add.image(600, 250,
                                 this._heroImages[initData.heroB])).visible = false;
         (this._stageImage = scene.add.image(400, 300,
                                 this._stageImages[initData.stage])).visible = false;
@@ -42,6 +73,9 @@ export class    MenuRenderer {
         {
             this._heroAImage.visible = true;
             this._heroBImage.visible = true;
+            this._vsTxt.visible = true;
+            this._nickATxt.visible = true;
+            this._nickBTxt.visible = true;
         }
         else
             this._stageImage.visible = true;
@@ -78,6 +112,9 @@ export class    MenuRenderer {
             {
                 this._heroAImage.visible = false;
                 this._heroBImage.visible = false;
+                this._vsTxt.visible = false;
+                this._nickATxt.visible = false;
+                this._nickBTxt.visible = false;
                 this._stageImage.visible = true;
             }
         }
