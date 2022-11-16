@@ -1,86 +1,105 @@
 import { Socket } from "socket.io-client";
-import { Hero } from "../elements/Hero";
+import { MenuSelector } from "../elements/MenuSelector";
 import { BaseScene } from "./BaseScene";
 
-interface   IMenuData {
-    //PlayerA, PlayerB, Spectator
-    role: string;
-    nickA: string;
-    nickB: string;
+export interface   ISelectionInit {
+    nickPlayerA: string;
+    nickPlayerB: string;
+    heroA: number;
+    heroB: number;
+    heroAConfirmed: boolean;
+    heroBConfirmed: boolean;
+    stage: number;
+    status: number;
 }
 
-enum    SelectionStatus {
-    Hero,
-    Stage,
-    Finish
+interface   IMenuInit {
+    //PlayerA, PlayerB, Spectator
+    role: string;
+    selection: ISelectionInit;
 }
 
 export class    MenuScene extends BaseScene {
 
-    role?: string;
-    nickA?: string;
-    nickB?: string;
-    status: SelectionStatus;
-    selection?: any;
+    role: string;
+    initData?: ISelectionInit;
+    selector?: MenuSelector;
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     enter?: any; //Enter key
 
     constructor(sock: Socket, room: string) {
         super("Menu", sock, room);
-        this.status = SelectionStatus.Hero;
+        this.role = "";
     }
 
-    init(initData: IMenuData) {
+    init(initData: IMenuInit) {
         this.role = initData.role;
-        this.nickA = initData.nickA;
-        this.nickB = initData.nickB;
+        this.initData = initData.selection;
+        this.socket.once("startMatch", (gameData: any) => {
+            this.removeAllSocketListeners();
+            this.scene.start(this.role, gameData);
+        });
+        this.socket.once("end", (data) => {
+            this.removeAllSocketListeners();
+            this.scene.start("End", data);
+        });
     }
 
     preload() {
-        //load hero selection images
+        this.load.image('aquamanMenu', '/assets/aquaman_menu.jpg');
+        this.load.image('supermanMenu', '/assets/superman_menu.jpg');
+        this.load.image('blackPantherMenu', '/assets/blackPanther_menu.jpeg');
+        this.load.image('aquamanConfirm', '/assets/aquaman_menu.jpg');
+        this.load.image('supermanConfirm', '/assets/superman_menu.jpg');
+        this.load.image('blackPantherConfirm', '/assets/blackPanther_menu.jpeg');
+        this.load.image('atlantisMenu', '/assets/atlantis_menu.jpeg');
+        this.load.image('metropolisMenu', '/assets/metropolis_menu.jpeg');
+        this.load.image('wakandaMenu', '/assets/wakanda_menu.png');
     }
 
     create() {
+        if (!this.initData)
+            return ;
+        this.selector = new MenuSelector(this, this.initData);
+        this.socket.on("leftSelection", (data: any) => {
+            this.selector?.nextLeft(data.player);
+        });
+        this.socket.on("rightSelection", (data: any) => {
+            this.selector?.nextRight(data.player);
+        });
+        this.socket.on("confirmSelection", (data: any) => {
+            this.selector?.confirm(data.player);
+        });
         this.cursors = this.input.keyboard.createCursorKeys(); //up, left, down, right
         this.enter = this.input.keyboard.addKey("ENTER");
-        //Create Hero and Stage images
         this.cursors.left.on('down', () => {
             // Next selection to the left
             if (this.role != "Spectator")
             {
-                if (this.status === SelectionStatus.Finish)
+                if (this.selector?.finished)
                     return ;
                 this.socket.emit("leftSelection");
-                if (this.status === SelectionStatus.Hero)
-                    //Call HeroSelector
-                else
-                    //Call StageSelector
+                this.selector?.nextLeft(this.role);
             }
         });
         this.cursors.right.on('down', () => {
             // Next selection to the right
             if (this.role != "Spectator")
             {
-                if (this.status === SelectionStatus.Finish)
+                if (this.selector?.finished)
                     return ;
                 this.socket.emit("rightSelection");
-                if (this.status === SelectionStatus.Hero)
-                    //Call HeroSelector
-                else
-                    //Call StageSelector
+                this.selector?.nextRight(this.role);
             }
         });
         this.enter.on('down', () => {
             //Confirm selection
             if (this.role != "Spectator")
             {
-                if (this.status === SelectionStatus.Finish)
+                if (this.selector?.finished)
                     return ;
                 this.socket.emit("confirmSelection")
-                if (this.status === SelectionStatus.Hero)
-                    //Call HeroSelector
-                else
-                    //Call StageSelector
+                this.selector?.confirm(this.role);
             }
         });
     }

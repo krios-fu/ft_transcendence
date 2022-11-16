@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core"
 import * as Phaser from 'phaser'
 import * as SockIO from 'socket.io-client'
 import { EndScene } from "./scenes/EndScene";
+import { MenuScene } from "./scenes/MenuScene";
 import { PlayerAScene } from "./scenes/PlayerAScene";
 import { PlayerBScene } from "./scenes/PlayerBScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
@@ -42,6 +43,8 @@ export class    GameComponent implements OnInit {
     ngOnInit(): void {
         let startScene: StartScene =
                 new StartScene(this.socket, "Game1");
+        let menuScene: MenuScene =
+                new MenuScene(this.socket, "Game1");
         let playerAScene: PlayerAScene =
                 new PlayerAScene(this.socket, "Game1");
         let playerBScene: PlayerBScene =
@@ -52,7 +55,7 @@ export class    GameComponent implements OnInit {
                 new EndScene(this.socket, "Game1");
             
         this.config.scene = [
-            startScene, playerAScene, playerBScene, spectatorScene, endScene
+            startScene, menuScene, playerAScene, playerBScene, spectatorScene, endScene
         ];
         this.game = new Phaser.Game(this.config);
     }
