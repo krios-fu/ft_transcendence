@@ -9,6 +9,7 @@ import {
     IBallData
 } from './Ball'
 import { HeroCreator } from './HeroCreator';
+import { IGameSelectionData } from './GameSelection';
 
 export enum    GameState {
     Paused,
@@ -39,8 +40,7 @@ export class   Game {
 
     private static  winScore: number = 3;
 
-    constructor (playerANick: string, playerBNick: string,
-                    playerAHero: number, playerBHero: number) {
+    constructor (gameSelection: IGameSelectionData) {
         let heroCreator: HeroCreator;
 
         this._width = 800;
@@ -55,8 +55,8 @@ export class   Game {
                 side: 0
             },
             score: 0,
-            nick: playerANick,
-            hero: heroCreator.create(playerAHero, 0),
+            nick: gameSelection.nickPlayerA,
+            hero: heroCreator.create(gameSelection.heroA, 0),
             gameWidth: this._width,
             gameHeight: this._height
         });
@@ -69,8 +69,8 @@ export class   Game {
                 side: 1
             },
             score: 0,
-            nick: playerBNick,
-            hero: heroCreator.create(playerBHero, 1),
+            nick: gameSelection.nickPlayerB,
+            hero: heroCreator.create(gameSelection.heroB, 1),
             gameWidth: this._width,
             gameHeight: this._height
         });

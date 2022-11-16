@@ -1,4 +1,5 @@
 import { BlackPanther } from "./BlackPanther";
+import { HeroId } from "./GameSelection";
 import {
     Hero,
     ISprite
@@ -135,11 +136,12 @@ export class    HeroCreator {
         }));
     }
 
-    //heroId: 0 === aquaman, 1 === superman, 2 === blackPanther
-    create(heroId: number, playerSide: number): Hero {
-        if (heroId === 0)
+    create(heroId: HeroId, playerSide: number): Hero {
+        if (heroId === HeroId.None)
             return (this.aquaman(playerSide));
-        if (heroId === 1)
+        if (heroId === HeroId.Aquaman)
+            return (this.aquaman(playerSide));
+        if (heroId === HeroId.Superman)
             return (this.superman(playerSide));
         return (this.blackPanther(playerSide));
     }
