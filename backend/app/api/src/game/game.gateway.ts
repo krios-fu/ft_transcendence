@@ -17,11 +17,14 @@ import {
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import {
     Game,
-    GameState,
-    IGameClientStart
+    GameState
 } from './elements/Game'
 import { GameService } from './game.service';
 import { UserEntity } from 'src/user/user.entity';
+import {
+    GameSelection,
+    IGameSelectionData
+} from './elements/GameSelection';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -32,6 +35,7 @@ export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server: Server;
     games: Map<string, Game>;
+    gameSelections: Map<string, GameSelection>;
     updateInterval: NodeJS.Timer = undefined;
     mockUserNum: number = 1; //Provisional
 
@@ -42,6 +46,7 @@ export class    GameGateway implements OnGatewayInit,
     afterInit() {
         console.log("Game Gateway initiated");
         this.games = new Map<string, Game>();
+        this.gameSelections = new Map<string, GameSelection>;
     }
 
     async addUserToRoom(username: string, roomId: string): Promise<void> {
@@ -131,35 +136,49 @@ export class    GameGateway implements OnGatewayInit,
         }
     }
 
-    setRole(role: string, roomId: string, gameData: IGameClientStart): void {
-        this.emitToRoom(roomId, "newMatch", {
+    sendSelectionData(role: string, selectionData: IGameSelectionData,
+                        roomId: string): void {
+        this.emitToRoom(roomId, "newGame", {
             role: role,
-            initData: gameData
+            selection: selectionData
         });
     }
 
     async startGame(gameId: string): Promise<void> {
-        let game: Game;
+        let gameSelection: GameSelection;
+        let selectionData: IGameSelectionData;
         let playerRoom: string;
         let players: [UserEntity, UserEntity] =
             this.gameService.startGame(gameId);
 
         if (!players[0] || !players[1])
             return ;
+        if (this.gameSelections.get(gameId) != undefined)
+            this.gameSelections.delete(gameId);
+        gameSelection = this.gameSelections.set(gameId, new GameSelection(
+            players[0].username,
+            players[1].username
+        )).get(gameId);
+        selectionData = gameSelection.data;
+        playerRoom = `${gameId}-PlayerA`;
+        await this.addUserToRoom(players[0].username, playerRoom);
+        this.sendSelectionData("PlayerA", selectionData, playerRoom);
+        playerRoom = `${gameId}-PlayerB`;
+        await this.addUserToRoom(players[1].username, playerRoom);
+        this.sendSelectionData("PlayerB", selectionData, playerRoom);
+        this.sendSelectionData("Spectator", selectionData, gameId);
+    }
+
+    startMatch(gameId: string,
+                        gameSelectionData: IGameSelectionData): void {
+        let game: Game;
+    
         if (this.games.get(gameId) != undefined)
             this.games.delete(gameId);
         game = this.games.set(gameId, new Game(
-                                        players[0].username,
-                                        players[1].username,
-                                        0, 0
-                                    )).get(gameId);
-        playerRoom = `${gameId}-PlayerA`;
-        await this.addUserToRoom(players[0].username, playerRoom);
-        this.setRole("PlayerA", playerRoom, game.clientStartData());
-        playerRoom = `${gameId}-PlayerB`;
-        await this.addUserToRoom(players[1].username, playerRoom);
-        this.setRole("PlayerB", playerRoom, game.clientStartData());
-        this.setRole("Spectator", gameId, game.clientStartData());
+            gameSelectionData
+        )).get(gameId);
+        this.emitToRoom(gameId, "startMatch", game.clientStartData());
         this.pointTransition(game, gameId);
         this.manageUpdateInterval();
     }
@@ -177,7 +196,8 @@ export class    GameGateway implements OnGatewayInit,
         */
         if (roomSockets.length > 1)
             return ;
-        if (game.state != GameState.Running)
+        if (!game
+                || game.state != GameState.Running)
             return ;
         game.pause();
         winner = playerRoom[playerRoom.length - 1] === 'A'
@@ -187,6 +207,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
+        let gameSelection: GameSelection;
         let game: Game;
         let username: string = `user-${this.mockUserNum}`; //Provisional
 
@@ -197,8 +218,20 @@ export class    GameGateway implements OnGatewayInit,
         }); //Provisional
         client.join(username);
         //client.join(userSession)
-        game = this.games.get("Game1");
-        client.emit("init", game ? game.clientStartData() : undefined);
+        gameSelection = this.gameSelections.get("Game1");
+        if (gameSelection)
+        {
+            client.emit("newGame", {
+                role: "Spectator",
+                selection: gameSelection.data
+            });
+        }
+        else
+        {
+            game = this.games.get("Game1");
+            if (game)
+                client.emit("startMatch", game.clientStartData());
+        }
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
 
@@ -236,6 +269,86 @@ export class    GameGateway implements OnGatewayInit,
     **  client.rooms returns a Set with the socket id as first element,
     **  and the next ones, the ids of the rooms it is currently in.
     */
+    getClientRoomPlayer(client: Socket): [string, string] {
+        const   rooms: IterableIterator<string> = client.rooms.keys();
+        let     room: string = undefined;
+        let     player: string = undefined;
+        let     separatorPosition: number;
+
+        for (const r of rooms)
+        {
+            if (r.includes("-Player"))
+            {
+                separatorPosition = r.indexOf('-');
+                room = r.slice(0, separatorPosition);
+                player = r.slice(separatorPosition + 1);
+                break ;
+            }
+        }
+        return ([room, player]);
+    }
+
+    @SubscribeMessage('leftSelection')
+    async leftSelection(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   [room, player] = this.getClientRoomPlayer(client);
+        let     gameSelection: GameSelection;
+
+        if (!room)
+            return ;
+        gameSelection = this.gameSelections.get(room);
+        if (!gameSelection)
+            return ;
+        client.to(room).emit('leftSelection', {
+            player: player
+        });
+        gameSelection.nextLeft(player);
+    }
+
+    @SubscribeMessage('rightSelection')
+    async rightSelection(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   [room, player] = this.getClientRoomPlayer(client);
+        let     gameSelection: GameSelection;
+
+        if (!room)
+            return ;
+        gameSelection = this.gameSelections.get(room);
+        if (!gameSelection)
+            return ;
+        client.to(room).emit('rightSelection', {
+            player: player
+        });
+        gameSelection.nextRight(player);
+    }
+
+    @SubscribeMessage('confirmSelection')
+    async confirmSelection(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        const   [room, player] = this.getClientRoomPlayer(client);
+        let     gameSelection: GameSelection;
+
+        if (!room)
+            return ;
+        gameSelection = this.gameSelections.get(room);
+        if (!gameSelection)
+            return ;
+        client.to(room).emit('confirmSelection', {
+            player: player
+        });
+        gameSelection.confirm(player);
+        if (gameSelection.finished)
+        {
+            this.startMatch(room, gameSelection.data);
+            this.gameSelections.delete(room);
+        }
+    }
     
     @SubscribeMessage('paddleAUp')
     async paddleAUp(

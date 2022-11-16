@@ -23,7 +23,7 @@ export class    MatchScene extends BaseScene {
     init(initData: IMatchInitData) {
         if (Object.keys(initData).length != 0)
             this.initData = initData;
-        this.socket.on("end", (data) => {
+        this.socket.once("end", (data) => {
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });

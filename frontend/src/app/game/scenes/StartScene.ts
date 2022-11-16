@@ -9,18 +9,18 @@ export class    StartScene extends BaseScene {
         sock: SocketIO.Socket, room: string
     ) {
         super("Start", sock, room);
-        this.socket.once("init", (data: IMatchInitData) => {
-            if (data)
-                this.scene.start("Spectator", data);
-        });
     }
 
     init() {
-        this.socket.once("newMatch", (gameData: any) => {
+        this.socket.once("newGame", (data: any) => {
             this.removeAllSocketListeners();
-            this.scene.start(gameData.role, gameData.initData);
+            this.scene.start("Menu", data);
         });
-        this.socket.on("end", (data) => {
+        this.socket.once("startMatch", (gameData: any) => {
+            this.removeAllSocketListeners();
+            this.scene.start("Spectator", gameData);
+        });
+        this.socket.once("end", (data) => {
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
