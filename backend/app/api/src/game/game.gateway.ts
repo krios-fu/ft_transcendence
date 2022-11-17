@@ -301,10 +301,8 @@ export class    GameGateway implements OnGatewayInit,
         gameSelection = this.gameSelections.get(room);
         if (!gameSelection)
             return ;
-        client.to(room).emit('leftSelection', {
-            player: player
-        });
         gameSelection.nextLeft(player);
+        client.to(room).emit('leftSelection', gameSelection.data);
     }
 
     @SubscribeMessage('rightSelection')
@@ -320,10 +318,8 @@ export class    GameGateway implements OnGatewayInit,
         gameSelection = this.gameSelections.get(room);
         if (!gameSelection)
             return ;
-        client.to(room).emit('rightSelection', {
-            player: player
-        });
         gameSelection.nextRight(player);
+        client.to(room).emit('rightSelection', gameSelection.data);
     }
 
     @SubscribeMessage('confirmSelection')
@@ -339,10 +335,8 @@ export class    GameGateway implements OnGatewayInit,
         gameSelection = this.gameSelections.get(room);
         if (!gameSelection)
             return ;
-        client.to(room).emit('confirmSelection', {
-            player: player
-        });
         gameSelection.confirm(player);
+        client.to(room).emit('confirmSelection', gameSelection.data);
         if (gameSelection.finished)
         {
             this.startMatch(room, gameSelection.data);

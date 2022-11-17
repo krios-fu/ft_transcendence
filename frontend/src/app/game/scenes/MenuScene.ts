@@ -2,7 +2,7 @@ import { Socket } from "socket.io-client";
 import { MenuSelector } from "../elements/MenuSelector";
 import { BaseScene } from "./BaseScene";
 
-export interface   ISelectionInit {
+export interface   ISelectionData {
     nickPlayerA: string;
     nickPlayerB: string;
     heroA: number;
@@ -16,13 +16,13 @@ export interface   ISelectionInit {
 interface   IMenuInit {
     //PlayerA, PlayerB, Spectator
     role: string;
-    selection: ISelectionInit;
+    selection: ISelectionData;
 }
 
 export class    MenuScene extends BaseScene {
 
     role: string;
-    initData?: ISelectionInit;
+    initData?: ISelectionData;
     selector?: MenuSelector;
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     enter?: any; //Enter key
@@ -61,14 +61,14 @@ export class    MenuScene extends BaseScene {
         if (!this.initData)
             return ;
         this.selector = new MenuSelector(this, this.initData);
-        this.socket.on("leftSelection", (data: any) => {
-            this.selector?.nextLeft(data.player);
+        this.socket.on("leftSelection", (data: ISelectionData) => {
+            this.selector?.serverUpdate(data);
         });
-        this.socket.on("rightSelection", (data: any) => {
-            this.selector?.nextRight(data.player);
+        this.socket.on("rightSelection", (data: ISelectionData) => {
+            this.selector?.serverUpdate(data);
         });
-        this.socket.on("confirmSelection", (data: any) => {
-            this.selector?.confirm(data.player);
+        this.socket.on("confirmSelection", (data: ISelectionData) => {
+            this.selector?.serverUpdate(data);
         });
         this.cursors = this.input.keyboard.createCursorKeys(); //up, left, down, right
         this.enter = this.input.keyboard.addKey("ENTER");

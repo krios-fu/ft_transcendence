@@ -1,5 +1,5 @@
 import {
-    ISelectionInit,
+    ISelectionData,
     MenuScene
 } from "../scenes/MenuScene";
 import { SelectionStatus } from "./MenuSelector";
@@ -17,7 +17,7 @@ export class    MenuRenderer {
     private _nickATxt: Txt;
     private _nickBTxt: Txt;
 
-    constructor(scene: MenuScene, initData: ISelectionInit) {
+    constructor(scene: MenuScene, initData: ISelectionData) {
         this._heroImages = [
             'aquamanMenu', //Provisional, none image
             'aquamanMenu',

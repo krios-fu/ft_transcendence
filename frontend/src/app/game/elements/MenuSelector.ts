@@ -1,5 +1,5 @@
 import {
-    ISelectionInit,
+    ISelectionData,
     MenuScene
 } from "../scenes/MenuScene";
 import { MenuRenderer } from "./MenuRenderer";
@@ -34,7 +34,7 @@ export class    MenuSelector {
     private _status: SelectionStatus;
     private _renderer: MenuRenderer;
 
-    constructor(scene: MenuScene, initData: ISelectionInit) {
+    constructor(scene: MenuScene, initData: ISelectionData) {
         this._heroA = initData.heroA;
         this._heroB = initData.heroB;
         this._heroAConfirmed = initData.heroAConfirmed;
@@ -145,6 +145,41 @@ export class    MenuSelector {
         {
             if (player === "PlayerA")
                 this._status = SelectionStatus.Finished;
+        }
+    }
+
+    private updateHeroes(data: ISelectionData): void {
+        this._heroA = data.heroA;
+        if (data.heroAConfirmed)
+        {
+            this._heroAConfirmed = true;
+            this._renderer.render(this._status, "PlayerA", this._heroA, true);
+        }
+        else
+            this._renderer.render(this._status, "PlayerA", this._heroA, false);
+        this._heroB = data.heroB;
+        if (data.heroBConfirmed)
+        {
+            this._heroBConfirmed = true;
+            this._renderer.render(this._status, "PlayerB", this._heroB, true);
+        }
+        else
+            this._renderer.render(this._status, "PlayerB", this._heroB, false);
+    }
+
+    serverUpdate(data: ISelectionData): void {
+        if (this._status === SelectionStatus.Hero
+            && data.status != this._status)
+        {
+            this._status = data.status;
+            this._renderer.changeStatus(this._status);
+        }
+        if (this._status === SelectionStatus.Hero)
+            this.updateHeroes(data);
+        else
+        {
+            this._stage = data.stage;
+            this._renderer.render(this._status, "PlayerA", this._stage, false);
         }
     }
 
