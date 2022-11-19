@@ -18,7 +18,11 @@ export class    BaseScene extends Phaser.Scene {
     }
 
     removeAllSocketListeners() {
-        this.socket.off("newMatch");
+        this.socket.off("leftSelection");
+        this.socket.off("rightSelection");
+        this.socket.off("confirmSelection");
+        this.socket.off("newGame");
+        this.socket.off("startMatch");
         this.socket.off("end");
         this.socket.off("matchUpdate");
         this.socket.off("served");
