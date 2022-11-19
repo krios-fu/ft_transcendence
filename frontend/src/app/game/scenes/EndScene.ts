@@ -16,7 +16,7 @@ export class    EndScene extends BaseScene {
         this.winner = data.winner;
         this.socket.once("newGame", (gameData: any) => {
             this.removeAllSocketListeners();
-            this.scene.start(gameData.role, gameData.initData);
+            this.scene.start("Menu", gameData);
         });
     }
 
