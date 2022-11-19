@@ -1,7 +1,7 @@
 import { UserRepository } from './user.repository';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './user.entity';
-import { UserDto } from './user.dto';
+import { UpdateUser, UserDto } from './user.dto';
 import {
     Injectable,
     HttpException,
@@ -54,24 +54,7 @@ export class UserService {
     **  Determine if value checks of keys are necessary.
     */
 
-    async updateUser(id: string, data: Object): Promise<UpdateResult> {
-        const   validData = new Set();
-
-        for (let [key, value] of Object.entries(data)) {
-            if (
-                (( key === "photoUrl" && isString(value) )
-                    || ( key === "nickName" && isString(value) )
-                    || ( key === "doubleAuth" && isBoolean(value) )
-                    || ( key === "status"
-                        && (value === "online"
-                            || value === "offline"
-                            || value === "playing") ))
-                && validData.has(key) == false
-            )
-                validData.add(key);
-            else
-                return new UpdateResult();
-        }
+    async updateUser(id: string, data: UpdateUser): Promise<UpdateResult> {
         return await this.userRepository.update(id, data);
     }
 

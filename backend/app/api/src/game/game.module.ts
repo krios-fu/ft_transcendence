@@ -4,7 +4,10 @@ import { MatchModule } from 'src/match/match.module';
 import { WinnerModule } from 'src/match/winner/winner.module';
 import { UserModule } from 'src/user/user.module';
 import { GameGateway } from './game.gateway';
+import { GameQueueService } from './game.queueService';
+import { GameRankingService } from './game.rankingService';
 import { GameService } from './game.service';
+import { SocketHelper } from './game.socket.helper';
 
 @Module({
   imports: [
@@ -15,7 +18,10 @@ import { GameService } from './game.service';
   ],
   providers: [
     GameGateway,
-    GameService
+    GameService,
+    GameQueueService,
+    GameRankingService,
+    SocketHelper
   ],
 })
 export class GameModule {}

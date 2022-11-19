@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
-import { UserDto } from './user.dto';
+import { UpdateUser, UserDto } from './user.dto';
 import { UpdateResult } from 'typeorm';
 
 @Controller('users')
@@ -44,7 +44,7 @@ export class UserController {
     */
 
     @Patch(':id')
-    async updateUser( @Param('id') id: string, @Body() body: Object)
+    async updateUser( @Param('id') id: string, @Body() body: UpdateUser)
                     : Promise<UpdateResult> {
         return this.userService.updateUser(id, body);
     }

@@ -3,15 +3,15 @@ import {
 	CreateDateColumn,
 	Entity,
 	PrimaryColumn,
-	UpdateDateColumn,
-	ManyToMany,
-	OneToMany
+	UpdateDateColumn
 } from "typeorm";
 
-export enum UserStatus {
-	ONLINE = "online",
-	OFFLINE = "offline",
-	PLAYING = "playing",
+export enum Category {
+	Iron,
+	Bronze,
+	Silver,
+	Gold,
+	Platinum
 }
 
 @Entity({
@@ -48,24 +48,19 @@ export class UserEntity {
 	doubleAuth : boolean;
 
 	@Column({
-		type: 'enum',
-		enum: UserStatus,
-		default: UserStatus.ONLINE
+		default: 1000
 	})
-	status : UserStatus;
+	ranking: number;
+
+	@Column({
+		default: Category.Iron
+	})
+	category : Category;
 
 	@CreateDateColumn()
 	creationDate : Date;
 
 	@UpdateDateColumn()
 	lastConnection : Date;
-
-	//Relations
-
-	/*@ManyToMany(() => Room, (room) => room.users)
-  rooms: Room[];
-
-	@OneToMany(() => Score, (score) => score.user)
-	scores: Score[];*/
 
 }

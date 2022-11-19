@@ -1,3 +1,6 @@
+import { IsBoolean, IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
+import { Category } from "./user.entity";
+
 export class UserDto {
 
     username: string;
@@ -15,3 +18,31 @@ export type Payload = {
     accessToken: string;
 
 };
+
+export class    UpdateUser {
+
+    @IsOptional()
+    @IsString()
+    nickname?: string;
+
+    @IsOptional()
+    @IsEmail()
+    email?: string;
+
+    @IsOptional()
+    @IsBoolean()
+    doubleAuth?: boolean;
+
+    @IsOptional()
+    @IsString()
+    photoUrl?: string;
+
+    @IsOptional()
+    @IsNumber()
+    ranking?: number;
+
+    @IsOptional()
+    @IsNumber()
+    category?: Category;
+
+}
