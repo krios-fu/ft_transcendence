@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Category } from '../user/user.entity';
 import { GameRankingService } from './game.rankingService';
 
-describe('UserService', () => {
+describe('GameRankingService', () => {
     let service: GameRankingService;
 
     beforeEach(async () => {
