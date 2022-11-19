@@ -1,12 +1,12 @@
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { CreateUserRoomRolesDto } from "../dto/user_room_roles.dto";
+import { UserRoomRolesDto } from "../dto/user_room_roles.dto";
 
 @Entity({ name: 'roles_room' })
 @Index(['userRoomId', 'roleId'], { unique: true })
 export class UserRoomRolesEntity {
-   constructor(dto: CreateUserRoomRolesDto) {
+   constructor(dto: UserRoomRolesDto) {
       if (dto !== undefined) {
          Object.assign(this, dto);
      }

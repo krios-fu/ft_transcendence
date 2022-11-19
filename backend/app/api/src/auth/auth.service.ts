@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { UserDto } from 'src/user/user.dto';
+import { CreateUserDto } from 'src/user/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
@@ -26,7 +26,7 @@ export class AuthService {
         });
     }
 
-    async authUser(userProfile: UserDto, res: Response): Promise<IAuthPayload> {
+    async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
         const username: string = userProfile.username;
         let   loggedUser: UserEntity;
         let   tokenEntity: RefreshTokenEntity;

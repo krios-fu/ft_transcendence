@@ -6,8 +6,10 @@ import {
     Entity, 
     JoinColumn, 
     ManyToOne, 
+    OneToMany, 
     PrimaryGeneratedColumn
 } from "typeorm";
+import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -50,4 +52,7 @@ export class RoomEntity extends BaseEntity {
     )
     @JoinColumn({ name: "owner_id" })
     owner!: UserEntity;
+
+    @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.roomId)
+    roomRole: RoomRolesEntity[];
 }

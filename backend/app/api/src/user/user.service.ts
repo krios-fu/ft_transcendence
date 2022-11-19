@@ -1,7 +1,7 @@
 import { UserRepository } from './user.repository';
 import { UserMapper } from './user.mapper';
 import { UserEntity } from './user.entity';
-import { UserDto } from './user.dto';
+import { CreateUserDto } from './user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
@@ -36,7 +36,7 @@ export class UserService {
     }
 
     /* post new user */
-    async postUser(newUser: UserDto): Promise<UserEntity> {
+    async postUser(newUser: CreateUserDto): Promise<UserEntity> {
         const newEntity = this.userMapper.toEntity(newUser);
 
         await this.userRepository.insert(newEntity);

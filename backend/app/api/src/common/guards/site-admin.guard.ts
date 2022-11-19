@@ -10,21 +10,24 @@ import { IRequestUser } from "../interfaces/request-payload.interface";
 @Injectable()
 export class SiteAdminGuard implements CanActivate {
     constructor (
-        private userService: UserService,
-        private userRolesService: UserRolesService,
+        private readonly userService: UserService,
+        private readonly userRolesService: UserRolesService,
     ) { }
 
     canActivate(ctx: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const req: IRequestUser = ctx.switchToHttp().getRequest();
-        return this.validateRole(req);
-    }
+        const username = req.username;
 
-    async validateRole(req: IRequestUser): Promise<boolean> {
-        if (req.username === null) {
+        if (username === null) {
             return false;    
         }
-        var isAdmin: boolean = false;
-        this.userService.findOneByUsername(req.username).then(async (usr: UserEntity) => {
+        return this.validateRole(username);
+    }
+
+    private async validateRole(username: string): Promise<boolean> {
+        let isAdmin: boolean = false;
+
+        this.userService.findOneByUsername(username).then(async (usr: UserEntity) => {
             this.userRolesService.getAllRolesFromUser(usr.id).then((usrRoles: UserRolesEntity[]) => {
                 isAdmin = usrRoles.filter(usrRole => usrRole.role.role == 'admin').length > 0;
             });

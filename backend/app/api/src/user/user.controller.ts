@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
-import { UserDto } from './user.dto';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from './user.query.dto';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
@@ -47,7 +47,7 @@ export class UserController {
     async findOneUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
         const user = await this.userService.findOne(id);
         if (user === null) {
-            this.userLogger.error('User with id ' + id + ' not found in database');
+            this.userLogger.error(`User with id ${id} not found in database`);
             throw new HttpException('no user in db', HttpStatus.NOT_FOUND);
         }
         return user;
@@ -56,7 +56,7 @@ export class UserController {
     /* role guards ?? (or admin) */
     /* it is me! */
     @Post()
-    async postUser(@Body() newUser: UserDto): Promise<UserEntity> {
+    async postUser(@Body() newUser: CreateUserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
             this.userLogger.error('User with id ' + newUser.username + ' already exists in database');
             throw new HttpException('User already exists',
@@ -70,12 +70,11 @@ export class UserController {
     **      - photoUrl
     **      - nickname
     **      - doubleAuth (boolean)
-    **      - status (ONLINE, OFFLINE, PLAYING
     */
 
     /* it is me! (or admin) */
     @Patch(':id')
-    async updateUser( @Param('id', ParseIntPipe) id: number, @Body() body: Object)
+    async updateUser( @Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDto)
                     : Promise<UpdateResult> {
         return this.userService.updateUser(id, body);
     }

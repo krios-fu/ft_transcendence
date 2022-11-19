@@ -18,7 +18,7 @@ export class UserEntity {
 	@Column({ 
 		unique: true 
 	})
-	username : string;
+	readonly username : string;
 	
 	@Column() firstName : string;
 	@Column() lastName : string;
@@ -27,7 +27,9 @@ export class UserEntity {
   	@Column() profileUrl : string;
 
 	@Column({
-		unique: true
+		type: 'varchar',
+		unique: true,
+		length: 12
 	})
 	nickName : string;
 

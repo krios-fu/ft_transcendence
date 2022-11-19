@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { UserEntity } from 'src/user/user.entity';
 import { UserService } from 'src/user/user.service';
-import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
+import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
@@ -62,7 +62,7 @@ export class UserRoomRolesService {
         return users;
     }
 
-    public async postRoleInRoom(dto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> { 
+    public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
         return await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
         );

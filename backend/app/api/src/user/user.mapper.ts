@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from './user.entity';
-import { UserDto } from './user.dto';
+import { CreateUserDto } from './user.dto';
 
 @Injectable()
 export class UserMapper {
-    toEntity(userDto: UserDto): UserEntity {
+    toEntity(userDto: CreateUserDto): UserEntity {
         const newEntity = new UserEntity;
 
         newEntity.username = userDto.username;
@@ -18,7 +18,7 @@ export class UserMapper {
     }
 
     toDto(userEntity: UserEntity): UserDto {
-        const newDto = new UserDto;
+        const newDto = new CreateUserDto;
 
         newDto.username = userEntity.username;
         newDto.firstName = userEntity.firstName;

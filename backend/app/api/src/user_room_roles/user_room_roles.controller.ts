@@ -3,7 +3,7 @@ import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { UserRoomService } from 'src/user_room/user_room.service';
-import { CreateUserRoomRolesDto } from './dto/user_room_roles.dto';
+import { CreateUserRoomRolesDto, UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
@@ -68,20 +68,29 @@ export class UserRoomRolesController {
     /* at least mod role required */
     @Post()
     public async postRoleInRoom(@Body() dto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> {
-        const { userRoomId, roleId } = dto;
+        const { userId, roomId, roleId } = dto;
+        const userRoom = await this.userRoomService.findAll({ 
+            filter: { userId: [ userId ], roomId: [ roomId ] }
+        });
+        if (!userRoom.length) {
+            this.userRoomRolesLogger.error(`No user ${userId} in room ${roomId} present in database`);
+            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
+        }
+        const userRoomId = userRoom[0].id;
         if (await this.rolesService.findOne(roleId) === null) {
             this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
             throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
         }
-        if (await this.userRoomService.findOne(userRoomId) === null) {
-            this.userRoomRolesLogger.error('No user in room with id ' + userRoomId + ' present in database');
-            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
-        }
         if (await this.userRoomRolesService.findRoleByIds(userRoomId, roleId) !== null) {
-            this.userRoomRolesLogger.error('User role ' + userRoomId + ' with role ' + roleId + ' already in database');
+            this.userRoomRolesLogger.error(`User role ${userRoomId} with role ${roleId} already in database`);
             throw new HttpException('role already in db', HttpStatus.BAD_REQUEST);
         }
-        return await this.userRoomRolesService.postRoleInRoom(dto);
+        return await this.userRoomRolesService.postRoleInRoom(
+            new UserRoomRolesDto({
+                "userRoomId": userRoomId,
+                "roleId": roleId
+            })
+        );
     }
 
     /* Delete a user with role in a room */

@@ -5,6 +5,6 @@ import { Observable } from "rxjs";
 export class UserGuard implements CanActivate {
     constructor () { }
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-        
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, Logger, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, Logger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
 import { UserEntity } from 'src/user/user.entity';
 import { CreateUserRoomDto } from './dto/user_room.dto';
@@ -7,6 +7,8 @@ import { RoomEntity } from 'src/room/entity/room.entity';
 import { UserService } from 'src/user/user.service';
 import { RoomService } from 'src/room/room.service';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
+import { IsPrivate } from 'src/common/guards/is-private.guard';
+import { Banned } from './guards/banned.guard';
 
 @Controller('user_room')
 export class UserRoomController {
@@ -57,6 +59,8 @@ export class UserRoomController {
     }
 
     /* Create a new user in a room */
+    @UseGuards(Banned)
+    @UseGuards(IsPrivate)
     @Post()
     public async create(@Body() dto: CreateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;

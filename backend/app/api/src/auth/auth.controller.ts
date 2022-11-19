@@ -13,11 +13,11 @@ import {
 import { Public } from 'src/common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
-import { UserDto } from 'src/user/user.dto';
+import { CreateUserDto } from 'src/user/user.dto';
 import { IAuthPayload, IRequestUser } from 'src/common/interfaces/request-payload.interface';
 
 interface IRequestProfile extends Request {
-    user: UserDto;
+    user: CreateUserDto;
 };
 
 @Controller('auth')

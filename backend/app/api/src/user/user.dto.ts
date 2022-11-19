@@ -1,29 +1,42 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
 
-export class UserDto {
+export class CreateUserDto {
+    @IsString()
+    @IsNotEmpty()
+    readonly username: string;
 
     @IsString()
     @IsNotEmpty()
-    username: string;
+    readonly firstName: string;
 
     @IsString()
     @IsNotEmpty()
-    firstName: string;
+    readonly lastName: string;
 
     @IsString()
     @IsNotEmpty()
-    lastName: string;
-
-    @IsString()
-    @IsNotEmpty()
-    profileUrl: string;
+    readonly profileUrl: string;
 
     @IsEmail()
     @IsNotEmpty()
-    email: string;
+    readonly email: string;
 
     @IsString()
     @IsNotEmpty()
-    photoUrl: string;
+    readonly photoUrl: string;
+}
 
+export class UpdateUserDto {
+    @IsString()
+    @IsNotEmpty()
+    photoUrl?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(9, 12)
+    nickName?: string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    doubleAuth?: boolean;
 }

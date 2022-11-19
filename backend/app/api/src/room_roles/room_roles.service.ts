@@ -27,8 +27,9 @@ export class RoomRolesService {
         });
     }
 
-    public async findRoleRoom(roomId: number): Promise<RolesEntity> {
-        const roomRole = await this.roomRolesRepository.findOne({
+    public async findRolesRoom(roomId: number): Promise<RolesEntity[]> {
+        let roles: RolesEntity[];
+        const roomRoles = await this.roomRolesRepository.find({
             relations: { 
                 room: true,
                 role: true,
@@ -37,10 +38,13 @@ export class RoomRolesService {
                 room: { id: roomId }
             }
         });
-        if (roomRole === null) {
+        if (!roomRoles.length) {
             return null;
         }
-        return roomRole.role;
+        roomRoles.forEach((roomRole: RoomRolesEntity) => {
+            roles.push(roomRole.role);
+        })
+        return roles;
     }
 
     public async create(dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
@@ -60,10 +64,10 @@ export class RoomRolesService {
     /* ~~ role identifying service ~~ */
 
     public async isRole(roleToCheck: string, roomId: number): Promise<boolean> {
-        const role = await this.findRoleRoom(roomId);
-        if (role === null) {
-            return false;
-        }
-        return (role.role === roleToCheck);
+        const roles: RolesEntity[] = await this.findRolesRoom(roomId);
+        //if (!roles.length) {
+        //    return false;
+        //}
+        return roles.filter(role => role.role === roleToCheck).length > 0;
     }
 }

@@ -6,7 +6,12 @@ export class CreateUserRoomRolesDto {
     @IsNotEmpty()
     @IsNumber()
     @Type(() => Number)
-    userRoomId: number;
+    userId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    roomId: number;
 
     @IsNotEmpty()
     @IsNumber() 
@@ -15,3 +20,20 @@ export class CreateUserRoomRolesDto {
 }
 
 export class UpdateUserRoomRolesDto extends PartialType(CreateUserRoomRolesDto) { }
+
+export class UserRoomRolesDto {
+    constructor(dto?: { "userRoomId": number, "roleId": number }) {
+        if (dto !== undefined) {
+            Object.assign(this, dto);
+        }
+    }
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    userRoomId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
+    roleId: number;
+}
