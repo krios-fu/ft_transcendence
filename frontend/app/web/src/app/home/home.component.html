@@ -4,7 +4,13 @@
   <div class="column1 ">
     <app-navheader></app-navheader>
     <br>
-    <app-room (chat)="send_chat_profile($event)" ></app-room>
+    <!-- <div> -->
+      <a mat-icon-button (click)="plus()" class="tree">
+        <mat-icon>{{plus_minus}}</mat-icon>
+        ROOM Y DM
+      </a>
+    <!-- </div> -->
+      <app-room *ngIf="status_room"></app-room>
   </div>
   <div class="column2" >
 <!--    <nav>-->

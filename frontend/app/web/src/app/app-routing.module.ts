@@ -5,12 +5,14 @@ import {LoginModule} from "./login/login.module";
 import {ChatComponent} from "./chat/chat.component";
 import {HomeModule} from "./home/home.module";
 import {HomeComponent} from "./home/home.component";
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: 'login', component : LoginComponent },
+  { path: 'login', component : LoginComponent},
  // { path: 'chat', component: ChatComponent },
-  //{ path: 'home', component: HomeComponent},
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+ { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+  // { path: '', redirectTo: '/home', pathMatch: 'full', },
 
 ];
 

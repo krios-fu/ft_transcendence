@@ -10,10 +10,14 @@ import { FriendshipService } from './friendship/friendship.service';
 import { FriendshipRepository } from './friendship/friendship.repository';
 import { FriendMapper } from './friendship/friendship.mapper';
 import { FriendshipEntity } from './friendship/friendship.entity';
+import { ChatService } from 'src/chat/chat.service';
+import { ChatEntity } from 'src/chat/entities/chat.entity';
+import { ChatMapper } from 'src/chat/mapper/chat.mapper';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity, FriendshipEntity])
+        TypeOrmModule.forFeature([UserEntity, FriendshipEntity, ChatEntity])
+        
     ],
     exports: [UserService], //Usado por el módulo externo AuthModule
     controllers: [UserController, FriendshipController],
@@ -23,7 +27,9 @@ import { FriendshipEntity } from './friendship/friendship.entity';
         UserMapper,
         FriendshipService,
         FriendshipRepository,
-        FriendMapper
+        FriendMapper,
+        ChatService,
+        ChatMapper
     ]
 })
 export class UserModule {

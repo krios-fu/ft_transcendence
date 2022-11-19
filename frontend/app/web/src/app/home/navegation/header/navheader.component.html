@@ -1,9 +1,9 @@
 <div style="display: flex; position: relative; align-items: center;  justify-content: space-between;">
   <figure  class="avatar">
-    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+    <img src={{getPhoto()}} alt={{getName()}} />
   </figure>
-  <div style=" padding: 21px; bottom: initial; border-bottom: none; border-top: none;">
-    {{getName()}}
+  <div style=" font-size: 13px; padding: 14px; bottom: initial; border-bottom: none; border-top: none;">
+    {{getName()}} 
   </div>
   <a mat-icon-button href="/login">
     <mat-icon matBadge="15"
@@ -16,7 +16,7 @@
   <a mat-icon-button href="/login" >
     <mat-icon>manage_accounts</mat-icon>
   </a>
-  <a mat-icon-button href="/login" >
+  <a mat-icon-button (click)="logout()" >
     <mat-icon>logout</mat-icon>
   </a>
 </div>

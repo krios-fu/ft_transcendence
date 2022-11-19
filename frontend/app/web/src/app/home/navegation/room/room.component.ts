@@ -1,9 +1,14 @@
-import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, EventEmitter, OnInit, Input, ViewChild} from '@angular/core';
 import {FlatTreeControl} from "@angular/cdk/tree";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material/tree";
 import {HttpClient} from "@angular/common/http";
 import {ChatComponent} from "../../../chat/chat.component";
 import {HomeComponent} from "../../home.component";
+import { AuthService } from 'src/app/services/auth.service';
+import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { UsersService } from 'src/app/services/users.service';
+import { UserDto } from 'src/app/dtos/user.dto';
 
 
 interface FoodNode {
@@ -46,11 +51,10 @@ interface ExampleFlatNode {
   templateUrl: './room.component.html',
   styleUrls: ['./room.component.scss']
 })
-export class RoomComponent implements OnInit{
+export class RoomComponent implements AfterViewInit{
 
-  @Output('chat') chat = new EventEmitter<string>();
+  statusTree = false;
 
-  entity: Object = [];
 
   private _transformer = (node: FoodNode, level: number) => {
     return {
@@ -74,34 +78,59 @@ export class RoomComponent implements OnInit{
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-  constructor( private http : HttpClient, ) {
+  constructor( private http : HttpClient, 
+    private authService: AuthService,
+    private router: Router,
+    private usersService: UsersService,
+    ) {
 
-  }
 
-  ngOnInit(): void {
-    this.http.get('http://localhost:3000/chat/macondo')
-      .subscribe(entity => {
-        let data = Object.assign(entity); console.log(entity);
-        for (let chat in data){
-          const {membership} = data[chat];
-          let {nickName} = membership[0].user;
-          if (nickName === 'macondo'){
-            nickName = membership[1].user.nickName;
-            console.log(nickName, "<------")
-          }
+    }
+
+  ngAfterViewInit(): void  {
+    let lol = this.authService.getAuthUser();
+
+//     this.usersService.getUser()
+//     .subscribe({
+//         next: (userDto : UserDto) => {
+//           console.log(userDto);
+//             // this.user = userDto.username;
+//             // this.firstName = userDto.firstName;
+//             // this.lastName = userDto.lastName;
+//             // this.navHeader.profile = userDto ;
+//         }
+// });
+    
+    console.log(`http://localhost:3000/users/${lol}/chat`);
+    this.http.get(`http://localhost:3000/users/${lol}/chat`)
+    .subscribe( entity => {
+      let data = Object.assign(entity);
+      let user_sesion = lol;
+      // TREE_CHAT[1].children?.pop();
+      for (let chat in data){
+        const {membership} = data[chat];
+        let {nickName} = membership[0].user;
+        if (nickName === user_sesion ){
+          nickName = membership[1].user.nickName;
+        }
+        this.statusTree = true;
+        if (!(TREE_CHAT[1].children?.find( (child) => {
+            return child.name === nickName 
+        })))
           TREE_CHAT[1].children?.push({
             name: nickName,
           })
-        }
-        this.dataSource.data = TREE_CHAT;
-      })
+    }
+    console.log("holaaaaa");
+    this.dataSource.data = TREE_CHAT;
+  });
+ 
   }
+
+  
+
 
   hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
 
 
-  sendProfile(login : string) {
-    this.chat.emit(login)
-    console.log(login)
-  }
 }

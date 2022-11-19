@@ -8,6 +8,8 @@ import {MembershipEntity} from "./entities/membership.entity";
 import { ChatService } from './chat.service';
 import { ChatController } from './chat.controller';
 import {ChatMapper} from "./mapper/chat.mapper";
+import { MessageController } from './message/message.controller';
+import { MessageService } from './message/message.service';
 
 @Module({
     imports: [
@@ -16,10 +18,10 @@ import {ChatMapper} from "./mapper/chat.mapper";
             MessageEntity,
             MembershipEntity,
         ]),
-
         UserModule,
     ],
-    providers: [ChatGateway, ChatService, ChatMapper],
-    controllers: [ChatController],
+    exports: [ChatService],
+    providers: [ChatGateway, ChatService, ChatMapper, MessageService],
+    controllers: [ChatController, MessageController],
 })
 export class ChatModule {}

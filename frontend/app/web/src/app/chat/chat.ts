@@ -4,13 +4,19 @@ import {HttpClient} from "@angular/common/http";
 
 import {map} from "rxjs";
 import {newArray} from "@angular/compiler/src/util";
+import { AuthService } from "../services/auth.service";
 
 export class message {
-  msg : string;
+  content: string;
   sender : string;
-  constructor(msg : string , sender : string) {
-    this.msg = msg;
+  id_chat : string;
+  reciver : string;
+
+  constructor( chat : string, msg : string , sender : string, reciver : string) {
+    this.content = msg;
     this.sender = sender;
+    this.id_chat = chat;
+    this.reciver = reciver;
   }
 }
 
@@ -18,37 +24,56 @@ export class message {
 export class Chat implements OnInit{
 
   public msg : message [] = [];
-  public id : string;
+  public id = '**';
+  count_new_msg = 0;
   @Input()
   profile = {}
 
 
 
-  constructor( private socket : Socket, private http : HttpClient  ) {
+  constructor( private socket : Socket, private http : HttpClient, private authService: AuthService  ) {
 
-    this.id = this.socket.ioSocket.id;
-    this.socket.on('message', (msg : message ) => {
-      console.log("msg ---->", msg)
-      if( msg.sender != this.getSocketId() )
-        this.msg.push(msg);
-    });
 
+    socket.fromEvent('new_message').subscribe((message: any) => {
+      let new_message = message as message;
+        this.count_new_msg += 1;
+        this.msg.unshift(new_message);
+    })
   }
 
   ngOnInit(): void {
-    this.http.get('')
-
   }
 
-  sendMessage( txt : string )  {
-    this.id = this.socket.ioSocket.id;
-    const msg = new message(txt, this.socket.ioSocket.id );
+  joinRoom(id_chat : string){
+    this.socket.emit('join_room', id_chat);
+  }
+
+  sendMessage( txt : string, reciver : string )  {
+    const msg = new message(this.id, txt, `${this.authService.getAuthUser()}`, reciver);
     this.socket.emit('message', msg);
-    this.msg.push(msg);
   }
 
   getSocketId(){
-    return this.id;
+    return this.authService.getAuthUser();
+  }
+
+  resetChat(){
+    this.msg = [];
+  }
+
+  getMessageApi(login : string){
+    this.http.get(`http://localhost:3000/users/${this.authService.getAuthUser()}/chat/${login}`)
+    .subscribe((entity : any) => {
+      let data = Object.assign(entity); 
+      this.id = data[0].id;
+      this.socket.emit('join_room', this.id);
+      console.log(this.id);
+       const {messages} = data[0];
+        for(let msg in messages){
+          const msgs = new message(login, messages[msg].content, messages[msg].author.username, login)
+          this.msg.unshift(msgs);
+        }
+    })
   }
 
   getMessage() {

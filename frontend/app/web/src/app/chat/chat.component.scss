@@ -39,12 +39,11 @@ Chat
 .chat-min
 {
   position: absolute;
-  width: 21rem;
+  width: 15rem;
 
   z-index: 2;
   overflow: hidden;
-  flex-direction: column;
-  display: flex;
+
   border-radius: 20px;
   border: 1px solid rgba(245, 245, 245, 0.29);
   box-shadow: 0 10px 30px black;
@@ -73,6 +72,7 @@ Chat
   }
 
   .message, .message-box {
+
     display: none;
   }
 
@@ -120,7 +120,7 @@ Chat Title
   height: 3rem;
   h1, h2, span {
     font-weight: normal;
-    font-size: 14px;
+    font-size: 8px;
     margin: 0;
     padding: 0;
   }
@@ -143,8 +143,8 @@ Chat Title
 
   .avatar {
     border-radius: 30px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     overflow: hidden;
     margin: 0;
     padding: 0;
@@ -168,6 +168,8 @@ Messages
   position: relative;
   width: 100%;
   overflow: scroll;
+  display: flex;
+  flex-direction:column-reverse;
 
 
   & .messages-content {
@@ -177,11 +179,6 @@ Messages
 
     height: 101%;
     width: 100%;
-  }
-
-  &::-webkit-scrollbar
-  {
-    display: none;
   }
 
 
@@ -229,9 +226,6 @@ Messages
       float: right;
       color: #fff;
       text-align: right;
-      //background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
-	   // -webkit-background-clip: text;
-	    //-webkit-text-fill-color: transparent;
       border-radius: 10px 10px 0 10px;
 
       &::before {
@@ -239,13 +233,13 @@ Messages
         right: 0;
         border-right: none;
         border-left: 5px solid transparent;
-        border-top: 4px solid #257287;
+        border-top: 4px solid #04b5e6;
         bottom: -4px;
       }
     }
 
     &:last-child {
-      margin-bottom: 7px;
+      margin-bottom: 20px;
       margin-top: 7px;
     }
 
@@ -254,37 +248,8 @@ Messages
       transform-origin: 0 0;
       animation: bounce 500ms linear both;
       color: #fff;
-      //background: linear-gradient(90deg, #FC466B 0%, #3F5EFB 100%);
+      background: linear-gradient(90deg, #0f1f32 0%, #3F5EFB 100%);
     }
-
-    &.loading {
-
-      &::before {
-        @include ball;
-        border: none;
-        animation-delay: .15s;
-      }
-
-      & span {
-        display: block;
-        font-size: 0;
-        width: 20px;
-        height: 10px;
-        position: relative;
-
-        &::before {
-          @include ball;
-          margin-left: -7px;
-        }
-
-        &::after {
-          @include ball;
-          margin-left: 7px;
-          animation-delay: .3s;
-        }
-      }
-    }
-
   }
 }
 

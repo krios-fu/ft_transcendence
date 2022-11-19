@@ -1,5 +1,5 @@
 
-<div [ngClass]="state">
+<div [ngClass]="state" *ngIf="user">
   <div  class="chat-title">
 
     <div style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
@@ -7,11 +7,11 @@
     <div class="badge">
 
     <button class="avatar" href="#"  >
-    <img src="https://cdn.intra.42.fr/users/krios-fu.jpg"  alt="krios-fu" />
+    <img src= {{user.photoUrl}} alt="krios-fu" />
     </button>
     </div >
 
-      <div matBadge="42"
+      <div *ngIf="this.chat.count_new_msg" matBadge="{{this.chat.count_new_msg}}"
            matBadgeOverlap="true"
            matBadgeSize="small"
            matBadgePosition="after"
@@ -25,13 +25,13 @@
 <!--    <mat-icon matBadge="15" matBadgeColor="warn" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">message</mat-icon>-->
 
 
-    <div class="icon" style=" display: flex; color : rgb(111, 255, 0); align-items: center; align-content: center;">
+    <div class="icon" style=" display: flex; color : white; align-items: center; align-content: center;">
       <button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()" >
         <mat-icon>{{unfold}}</mat-icon>
       </button>
 
 
-      <button mat-icon-button routerLink="../">
+      <button mat-icon-button routerLink="../../">
         <mat-icon>close</mat-icon>
       </button>
       <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
@@ -52,14 +52,13 @@
 
 </div>
 
-   <div #update class="messages"  [scrollTop]="update.scrollHeight + 10">
-
-     <div *ngFor="let msg of viewMessage()" >
-       <div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.msg}}</div>
+   <div class="messages" >
+     <div *ngFor="let msg of viewMessage()">
+       <div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.content}}</div>
        <ng-template #other> <div class="message">
          <figure class="avatar">
-           <img src="https://cdn.intra.42.fr/users/krios-fu.jpg">
-         </figure> {{msg.msg}}
+           <img src={{user.photoUrl}}>
+         </figure> {{msg.content}}
        </div></ng-template>
      </div>
    </div>

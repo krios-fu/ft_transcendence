@@ -2,18 +2,19 @@
   position: relative;
   background: lawngreen;
   //z-index: 1;
-  left: 3px;
+  left: 5px;
   border-radius: 50%;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   overflow: hidden;
   margin: 0;
-  padding: 0;
+  padding:0;
   border: 2px solid rgba(255, 255, 255, 0.24);
 
   img {
     width: 100%;
     height: auto;
+
   }
 }
 
