@@ -112,8 +112,7 @@ export class    GameService {
         return (await this.matchService.addMatch(matchDto));
     }
 
-    private getWinner(playerA: UserEntity, playerB: UserEntity,
-                game: Game): number {
+    private getWinner(playerA: UserEntity, game: Game): number {
         const   winnerNick: string = game.getWinnerNick();
 
         return (playerA.nickName === winnerNick
@@ -130,7 +129,7 @@ export class    GameService {
         let     winner: number;
 
         isOfficial = this.isOfficial(gameId);
-        winner = this.getWinner(players[0], players[1], gameData);
+        winner = this.getWinner(players[0], gameData);
         if (isOfficial)
         {
             if (!(await this.updatePlayerRankings(players, winner)))
