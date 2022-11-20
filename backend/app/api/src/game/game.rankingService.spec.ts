@@ -119,4 +119,48 @@ describe('GameRankingService', () => {
         });
     });
 
+    describe('updateRanking(850, -324, 1)', () => {
+        it('should return [ 818, -292 ]', () => {
+            const   input: [ number, number, number ] = [ 850, -324, 1 ];
+            const   output: [ number, number ] = [ 818, -292 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(850, -324, 0)', () => {
+        it('should return [ 850, -324 ]', () => {
+            const   input: [ number, number, number ] = [ 850, -324, 0 ];
+            const   output: [ number, number ] = [ 850, -324 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(-1100, -245, 0)', () => {
+        it('should return [ -1068, -277 ]', () => {
+            const   input: [ number, number, number ] = [ -1100, -245, 0 ];
+            const   output: [ number, number ] = [ -1068, -277 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(-1100, -245, 1)', () => {
+        it('should return [ -1100, -245 ]', () => {
+            const   input: [ number, number, number ] = [ -1100, -245, 1 ];
+            const   output: [ number, number ] = [ -1100, -245 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
 });
