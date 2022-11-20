@@ -1,32 +1,68 @@
 <app-header></app-header>
-
 <div class="row">
   <div class="column1 ">
-    <app-navheader></app-navheader>
+    <div>
+      <router-outlet> </router-outlet>
+    </div>
+
     <br>
-    <!-- <div> -->
-      <a mat-icon-button (click)="plus()" class="tree">
-        <mat-icon>{{plus_minus}}</mat-icon>
-        ROOM Y DM
+    <a mat-icon-button (click)="plus()" class="tree">
+      <mat-icon>{{plus_minus}}</mat-icon>
+      ROOM Y DM
+    </a>
+
+    <cdk-virtual-scroll-viewport style="height: 45vh; position: relative; color: white;" itemSize="5">
+      <app-room *ngIf="status_room" style="height: 80vh;"></app-room>
+    </cdk-virtual-scroll-viewport>
+
+
+    <div style="color: white; 
+    /* overflow: hidden; */
+ 
+    position: absolute;
+    justify-content:space-around;
+    /* align-items: center; */
+    /* align-content: center; */
+    display: flex;
+    /* height: -20%; */
+
+    background: rgb(4, 20, 51);
+    overflow: hidden;
+
+border-radius: 50px;
+border: 1px solid rgba(245, 245, 245, 0.29);
+  
+    bottom: 1vh;">
+    <div>
+      <button mat-icon-button class="icon_logout" routerLink="/home/profile">
+        <mat-icon>arrow_back</mat-icon>
+      </button> 
+    </div>
+    <div>
+      <a mat-icon-button class="icon_nav" href="/login">
+        <mat-icon matBadge="15" matBadgeColor="warn" matBadgeSize="small" [matBadgeHidden]="hidden"
+          (click)="toggleBadgeVisibility()">people
+        </mat-icon>
       </a>
-    <!-- </div> -->
-      <app-room *ngIf="status_room"></app-room>
+    </div>
+      <div>
+        <a mat-icon-button class="icon_nav" routerLink="/home/setting" routerLinkActive="active">
+          <mat-icon>manage_accounts</mat-icon>
+        </a>
+      </div>
+      <div>
+        <a mat-icon-button class="icon_logout" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+        </a>
+      </div>
+
+    </div>
   </div>
-  <div class="column2" >
-<!--    <nav>-->
-<!--      <div class="title" >-->
-<!--&lt;!&ndash;        <a [routerLink]="[{ outlets: { chat: ['chat', 'krios-fu'] } }]"  >&ndash;&gt;-->
-<!--&lt;!&ndash;          <h1>&ndash;&gt;-->
-<!--&lt;!&ndash;            PLAY&ndash;&gt;-->
-<!--&lt;!&ndash;          </h1>&ndash;&gt;-->
-<!--&lt;!&ndash;        </a>&ndash;&gt;-->
-<!--      </div>-->
-<!--    </nav>-->
+
+  <div class="column2">
     <router-outlet name="center"></router-outlet>
   </div>
-  <div class="column3" >
-    <router-outlet name="chat" ></router-outlet>
-<!--    <app-chat></app-chat>-->
+  <div class="column3">
+    <router-outlet name="chat"></router-outlet>
   </div>
 </div>
-

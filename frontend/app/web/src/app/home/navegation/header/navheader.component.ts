@@ -1,7 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import {Payload, UserDto} from "../../../dtos/user.dto";
+import { UsersService } from 'src/app/services/users.service';
+import { Payload, UserDto } from "../../../dtos/user.dto";
 
 @Component({
   selector: 'app-navheader',
@@ -10,38 +12,45 @@ import {Payload, UserDto} from "../../../dtos/user.dto";
 })
 export class NavHeaderComponent implements OnInit {
 
-  constructor(private authService: AuthService,) { }
 
-  @Input() profile = {};
-  hidden = false;
-
-  ngOnInit(): void {
+  user: UserDto | null;
+  constructor(private http: HttpClient,
+    private usersService: UsersService,
+    private authService: AuthService,) {
+    const username = this.authService.getAuthUser() as string;
+    this.user = null;
+    this.usersService.getUser(username)
+      .subscribe({
+        next: (user: UserDto) => {
+          this.user = user;
+        }
+      });
+      console.log("CONSTRUCTOR NAVHEADER")
   }
 
-  getName()  {
-    try {
-      const pp = this.profile as UserDto;
-      return pp.username;
-    }
-    catch {}
-    return "marvin";
+  // @Input() profile = {};
+
+
+  ngOnInit() {
+    console.log("ON INIT")
+
+  }
+
+  getName() {
+    if (this.user)
+      return this.user.username;
+    return "MARVIN"
   }
 
   getPhoto() {
-    try {
-      const pp = this.profile as UserDto;
-      return pp.photoUrl;
-    }
-    catch {}
+    if (this.user)
+      return this.user.photoUrl;
     return "https://ih1.redbubble.net/image.1849186021.6993/flat,750x,075,f-pad,750x1000,f8f8f8.jpg";
   }
 
+
  
-  toggleBadgeVisibility() {
-    this.hidden = !this.hidden;
-  }
 
 
-logout() { this.authService.logout(); }
 
 }

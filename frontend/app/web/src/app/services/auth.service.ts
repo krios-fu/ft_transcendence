@@ -46,7 +46,7 @@ export class AuthService {
     }
 
     redirectHome(): void {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/home/profile']);
     }
 
     redirectLogin(): void {

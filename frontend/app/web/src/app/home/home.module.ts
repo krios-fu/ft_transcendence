@@ -14,6 +14,8 @@ import { HeaderComponent } from './header/header.component';
 import {NavHeaderComponent} from "./navegation/header/navheader.component";
 import { RoomComponent } from './navegation/room/room.component';
 import {ChatComponent} from "../chat/chat.component";
+import { SettingComponent } from './profile/setting/setting.component';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 
 
 
@@ -23,6 +25,8 @@ import {ChatComponent} from "../chat/chat.component";
     HeaderComponent,
     NavHeaderComponent,
     RoomComponent,
+    SettingComponent,
+
   ],
   imports: [
     CommonModule,
@@ -34,6 +38,7 @@ import {ChatComponent} from "../chat/chat.component";
     MatBadgeModule,
     MatTreeModule,
     MatButtonModule,
+    ScrollingModule
 
   ]
 })

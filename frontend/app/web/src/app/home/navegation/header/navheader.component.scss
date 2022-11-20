@@ -4,12 +4,12 @@
   //z-index: 1;
   left: 5px;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 60px;
+  height: 60px;
   overflow: hidden;
   margin: 0;
   padding:0;
-  border: 2px solid rgba(255, 255, 255, 0.24);
+  border: 3px solid rgba(255, 255, 255, 0.24);
 
   img {
     width: 100%;
@@ -25,4 +25,21 @@ div{
     border-bottom: 1px solid rgba(245, 245, 245, 0.29);
   }
 
+}
+
+
+.icon_nav{
+  color: white;
+
+  &:hover{
+    color: rgb(237, 235, 139);
+  }
+}
+
+.icon_logout{
+  color: white;
+
+  &:hover{
+    color: rgb(215, 20, 20);
+  }
 }

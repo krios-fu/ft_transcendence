@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
 import { UserDto } from 'src/app/dtos/user.dto';
+import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
+
 
 
 interface FoodNode {
@@ -22,7 +24,7 @@ let TREE_CHAT: FoodNode[] = [
     children: [
       {
         name: 'public',
-        children: [{name: '42'}
+        children: [{name: '42'}, {name: 'metropolis'}, {name: 'wakanda'}, {name: 'atlantis'}
         ],
       },
       {

@@ -1,0 +1,31 @@
+.head{
+	display: flex; 
+	position: relative; 
+	align-items: center;  
+	justify-content: center;
+	height: 60px;
+	padding: 40px;
+}
+
+.avatar {
+	position: relative;
+	background: lawngreen;
+	//z-index: 1;
+	left: 5px;
+	border-radius: 50%;
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	margin: 0;
+	border: 2px solid rgba(255, 255, 255, 0.24);
+  
+	img {
+	  width: 100%;
+	  height: auto;
+  
+	}
+  }
+
+div {
+	font-size:smaller;
+}
