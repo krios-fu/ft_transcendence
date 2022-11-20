@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { UserEntity } from "src/user/user.entity";
-import { UserService } from "src/user/user.service";
+import { UserEntity } from "../user/user.entity";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class    GameQueueService {
@@ -19,7 +19,8 @@ export class    GameQueueService {
         let maxCategoryDiff: number = 0;
         let categoryDiff: number;
 
-        if (queue.length < 2)
+        if (!queue
+            || queue.length < 2)
             return ([playerA, playerB]);
         playerA = queue[0];
         while (playerB === undefined)
