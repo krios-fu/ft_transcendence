@@ -1,0 +1,131 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserService } from '../user/user.service';
+import { Repository } from 'typeorm';
+import { Category, UserEntity } from '../user/user.entity';
+import { GameQueueService } from './game.queueService';
+import { UserMapper } from '../user/user.mapper';
+
+const   mockUsers: UserEntity[] = (() => {
+    const   res: UserEntity[] = [
+        new UserEntity(),
+        new UserEntity(),
+        new UserEntity(),
+        new UserEntity(),
+        new UserEntity()
+    ];
+
+    res[0].category = Category.Iron;
+    res[1].category = Category.Bronze;
+    res[2].category = Category.Silver;
+    res[3].category = Category.Gold;
+    res[4].category = Category.Platinum;
+    return (res);
+})();
+
+describe('GameQueueService', () => {
+    let service: GameQueueService;
+    let repository: Repository<UserEntity>;
+
+    beforeEach(async () => {
+        const   module: TestingModule = await Test.createTestingModule({
+            providers: [
+              GameQueueService,
+              UserMapper,
+              UserService,
+              {
+                provide: getRepositoryToken(UserEntity),
+                useClass: Repository,
+              },
+            ],
+        }).compile();
+
+        service = module.get<GameQueueService>(GameQueueService);
+        repository = module.get<Repository<UserEntity>>(getRepositoryToken(UserEntity));
+    });
+
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
+
+    /*
+    **  getNextPlayers() tests
+    */
+
+    describe('getNextPlayers()', () => {
+        it('should return players of same Category', async () => {
+            const   gameId: string = "Game1";
+            const   output: [ UserEntity, UserEntity ] = [ mockUsers[0], mockUsers[0] ];
+
+            jest.spyOn(repository, 'findOne')
+            .mockResolvedValueOnce({...mockUsers[0]})
+            .mockResolvedValueOnce({...mockUsers[4]})
+            .mockResolvedValueOnce({...mockUsers[0]});
+            await service.add(gameId, "first");
+            await service.add(gameId, "second");
+            await service.add(gameId, "third");
+            expect(
+                service.getNextPlayers(gameId)
+            ).toEqual(output);
+        });
+    });
+
+    describe('getNextPlayers()', () => {
+        it('should return players of nearest category', async () => {
+            const   gameId: string = "Game1";
+            const   output: [ UserEntity, UserEntity ] = [ mockUsers[0], mockUsers[3] ];
+
+            jest.spyOn(repository, 'findOne')
+            .mockResolvedValueOnce({...mockUsers[0]})
+            .mockResolvedValueOnce({...mockUsers[4]})
+            .mockResolvedValueOnce({...mockUsers[3]});
+            await service.add(gameId, "first");
+            await service.add(gameId, "second");
+            await service.add(gameId, "third");
+            expect(
+                service.getNextPlayers(gameId)
+            ).toEqual(output);
+        });
+    });
+
+    describe('getNextPlayers()', () => {
+        it('should return players of nearest category', async () => {
+            const   gameId: string = "Game1";
+            const   output: [ UserEntity, UserEntity ] = [ mockUsers[4], mockUsers[4] ];
+
+            jest.spyOn(repository, 'findOne')
+            .mockResolvedValueOnce({...mockUsers[4]})
+            .mockResolvedValueOnce({...mockUsers[4]})
+            .mockResolvedValueOnce({...mockUsers[3]});
+            await service.add(gameId, "first");
+            await service.add(gameId, "second");
+            await service.add(gameId, "third");
+            expect(
+                service.getNextPlayers(gameId)
+            ).toEqual(output);
+        });
+    });
+
+    describe('getNextPlayers()', () => {
+        it('should return players of nearest category', async () => {
+            const   gameId: string = "Game1";
+            const   output: [ UserEntity, UserEntity ] = [ mockUsers[2], mockUsers[3] ];
+
+            jest.spyOn(repository, 'findOne')
+            .mockResolvedValueOnce({...mockUsers[2]})
+            .mockResolvedValueOnce({...mockUsers[0]})
+            .mockResolvedValueOnce({...mockUsers[4]})
+            .mockResolvedValueOnce({...mockUsers[3]})
+            .mockResolvedValueOnce({...mockUsers[1]});
+            await service.add(gameId, "first");
+            await service.add(gameId, "second");
+            await service.add(gameId, "third");
+            await service.add(gameId, "fourth");
+            await service.add(gameId, "fifth");
+            expect(
+                service.getNextPlayers(gameId)
+            ).toEqual(output);
+        });
+    });
+
+});
