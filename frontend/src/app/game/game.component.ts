@@ -3,8 +3,7 @@ import * as Phaser from 'phaser'
 import * as SockIO from 'socket.io-client'
 import { EndScene } from "./scenes/EndScene";
 import { MenuScene } from "./scenes/MenuScene";
-import { PlayerAScene } from "./scenes/PlayerAScene";
-import { PlayerBScene } from "./scenes/PlayerBScene";
+import { PlayerScene } from "./scenes/PlayerScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
 import { StartScene } from "./scenes/StartScene";
 
@@ -41,21 +40,19 @@ export class    GameComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        let startScene: StartScene =
-                new StartScene(this.socket, "Game1");
-        let menuScene: MenuScene =
-                new MenuScene(this.socket, "Game1");
-        let playerAScene: PlayerAScene =
-                new PlayerAScene(this.socket, "Game1");
-        let playerBScene: PlayerBScene =
-                new PlayerBScene(this.socket, "Game1");
-        let spectatorScene: SpectatorScene =
-                new SpectatorScene(this.socket, "Game1");
-        let endScene: EndScene =
-                new EndScene(this.socket, "Game1");
+        const   startScene: StartScene =
+                    new StartScene(this.socket, "Game1");
+        const   menuScene: MenuScene =
+                    new MenuScene(this.socket, "Game1");
+        const   playerScene: PlayerScene =
+                    new PlayerScene(this.socket, "Game1");
+        const   spectatorScene: SpectatorScene =
+                    new SpectatorScene(this.socket, "Game1");
+        const   endScene: EndScene =
+                    new EndScene(this.socket, "Game1");
             
         this.config.scene = [
-            startScene, menuScene, playerAScene, playerBScene, spectatorScene, endScene
+            startScene, menuScene, playerScene, spectatorScene, endScene
         ];
         this.game = new Phaser.Game(this.config);
     }

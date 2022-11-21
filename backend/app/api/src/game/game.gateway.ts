@@ -250,51 +250,42 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @SubscribeMessage('leftSelection')
-    async leftSelection(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    leftSelection(
+        @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        let     gameSelection: GameSelection;
+        const   gameSelection: GameSelection = this.gameSelections.get(room);
 
-        if (!room)
-            return ;
-        gameSelection = this.gameSelections.get(room);
-        if (!gameSelection)
+        if (!room
+            || !gameSelection)
             return ;
         gameSelection.nextLeft(player);
         client.to(room).emit('leftSelection', gameSelection.data);
     }
 
     @SubscribeMessage('rightSelection')
-    async rightSelection(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    rightSelection(
+        @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        let     gameSelection: GameSelection;
+        const   gameSelection: GameSelection = this.gameSelections.get(room);
 
-        if (!room)
-            return ;
-        gameSelection = this.gameSelections.get(room);
-        if (!gameSelection)
+        if (!room
+            || !gameSelection)
             return ;
         gameSelection.nextRight(player);
         client.to(room).emit('rightSelection', gameSelection.data);
     }
 
     @SubscribeMessage('confirmSelection')
-    async confirmSelection(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    confirmSelection(
+        @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        let     gameSelection: GameSelection;
+        const   gameSelection: GameSelection = this.gameSelections.get(room);
 
-        if (!room)
-            return ;
-        gameSelection = this.gameSelections.get(room);
-        if (!gameSelection)
+        if (!room
+            || !gameSelection)
             return ;
         gameSelection.confirm(player);
         client.to(room).emit('confirmSelection', gameSelection.data);
@@ -305,100 +296,72 @@ export class    GameGateway implements OnGatewayInit,
         }
     }
     
-    @SubscribeMessage('paddleAUp')
-    async paddleAUp(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    @SubscribeMessage('paddleUp')
+    paddleUp(
+        @ConnectedSocket() client: Socket
     ) {
-        const   game: Game = this.games.get(data.room);
+        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        const   game: Game = this.games.get(room);
 
-        if (game.state != GameState.Running)
+        if (!room
+            || !game
+            || game.state != GameState.Running)
             return ;
-        game.addPaddleAMove(1); //1: Up
+        if (player === "PlayerA")
+            game.addPaddleAMove(1); //1: Up
+        else
+            game.addPaddleBMove(1); //1: Up
     }
 
-    @SubscribeMessage('paddleADown')
-    async paddleADown(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    @SubscribeMessage('paddleDown')
+    paddleDown(
+        @ConnectedSocket() client: Socket
     ) {
-        const   game: Game = this.games.get(data.room);
+        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        const   game: Game = this.games.get(room);
 
-        if (game.state != GameState.Running)
+        if (!room
+            || !game
+            || game.state != GameState.Running)
             return ;
-        game.addPaddleAMove(0); //0: Down
+        if (player === "PlayerA")
+            game.addPaddleAMove(0); //0: Down
+        else
+            game.addPaddleBMove(0); //0: Down
     }
 
-    @SubscribeMessage('paddleBUp')
-    async paddleBUp(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    @SubscribeMessage('heroUp')
+    heroUp(
+        @ConnectedSocket() client: Socket
     ) {
-        const   game: Game = this.games.get(data.room);
+        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        const   game: Game = this.games.get(room);
 
-        if (game.state != GameState.Running)
+        if (!room
+            || !game
+            || game.state != GameState.Running)
             return ;
-        game.addPaddleBMove(1); //1: Up
+        if (player === "PlayerA")
+            game.addHeroAInvocation(1); //1 === W
+        else
+            game.addHeroBInvocation(1); //1 === W
     }
 
-    @SubscribeMessage('paddleBDown')
-    async paddleBDown(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+    @SubscribeMessage('heroDown')
+    heroDown(
+        @ConnectedSocket() client: Socket
     ) {
-        const   game: Game = this.games.get(data.room);
+        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        const   game: Game = this.games.get(room);
 
-        if (game.state != GameState.Running)
+        if (!room
+            || !game
+            || game.state != GameState.Running)
             return ;
-        game.addPaddleBMove(0); //0: Down
-    }
-
-    @SubscribeMessage('heroAUp')
-    async heroAUp(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        const   game: Game = this.games.get(data.room);
-
-        if (game.state != GameState.Running)
-            return ;
-        game.addHeroAInvocation(1); //1 === W
-    }
-
-    @SubscribeMessage('heroADown')
-    async heroADown(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        const   game: Game = this.games.get(data.room);
-
-        if (game.state != GameState.Running)
-            return ;
-        game.addHeroAInvocation(0); //0 === S
-    }
-
-    @SubscribeMessage('heroBUp')
-    async heroBUp(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        const   game: Game = this.games.get(data.room);
-
-        if (game.state != GameState.Running)
-            return ;
-        game.addHeroBInvocation(1); //1 === W
-    }
-
-    @SubscribeMessage('heroBDown')
-    async heroBDown(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {
-        const   game: Game = this.games.get(data.room);
-
-        if (game.state != GameState.Running)
-            return ;
-        game.addHeroBInvocation(0); //0 === S
+        if (player === "PlayerA")
+            game.addHeroAInvocation(0); //0 === S
+        else
+            game.addHeroBInvocation(0); //0 === S
     }
 
   }

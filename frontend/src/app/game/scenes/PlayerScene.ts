@@ -9,9 +9,9 @@ export class    PlayerScene extends MatchScene {
     powerKeys: any;
 
     constructor(
-        role: string, socket: SocketIO.Socket, room: string
+        socket: SocketIO.Socket, room: string
     ) {
-        super(role, socket, room);
+        super("Player", socket, room);
     }
 
     override create() {
@@ -25,6 +25,17 @@ export class    PlayerScene extends MatchScene {
             this.match = new Match(this, this.initData);        
         this.createInitText();
         this.initData = undefined;           
+    }
+
+    override update() {
+        if (this.cursors?.up.isDown)
+            this.socket.emit('paddleUp');
+        else if (this.cursors?.down.isDown)
+            this.socket.emit('paddleDown');
+        if (this.powerKeys.up.isDown)
+            this.socket.emit('heroUp');
+        else if (this.powerKeys.down.isDown)
+            this.socket.emit('heroDown');
     }
 
 }

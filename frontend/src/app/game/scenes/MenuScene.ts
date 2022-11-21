@@ -37,7 +37,10 @@ export class    MenuScene extends BaseScene {
         this.initData = initData.selection;
         this.socket.once("startMatch", (gameData: any) => {
             this.removeAllSocketListeners();
-            this.scene.start(this.role, gameData);
+            if (this.role != "Spectator")
+                this.scene.start("Player", gameData);
+            else
+                this.scene.start(this.role, gameData);
         });
         this.socket.once("end", (data) => {
             this.removeAllSocketListeners();
