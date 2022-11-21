@@ -1,3 +1,4 @@
+import { Injectable } from "@nestjs/common";
 import {
     RemoteSocket,
     Server,
@@ -5,9 +6,8 @@ import {
 } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
+@Injectable()
 export class    SocketHelper {
-
-    constructor() {}
 
     async addUserToRoom(server: Server, username: string,
                             roomId: string): Promise<void> {

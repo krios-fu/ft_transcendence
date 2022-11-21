@@ -8,6 +8,7 @@ import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';
 import { GameService } from './game.service';
 import { SocketHelper } from './game.socket.helper';
+import { GameUpdateService } from './game.updateService';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SocketHelper } from './game.socket.helper';
     GameGateway,
     GameService,
     GameQueueService,
+    GameUpdateService,
     GameRankingService,
     SocketHelper
   ],

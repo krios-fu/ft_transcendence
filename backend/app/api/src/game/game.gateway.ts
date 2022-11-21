@@ -15,18 +15,11 @@ import {
     Socket
 } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import {
-    Game,
-    GameState
-} from './elements/Game'
-import { GameService } from './game.service';
+import { IGameClientStart } from './elements/Game'
+import { IGameSelectionData } from './elements/GameSelection';
 import { GameQueueService } from './game.queueService';
-import { UserEntity } from 'src/user/user.entity';
-import {
-    GameSelection,
-    IGameSelectionData
-} from './elements/GameSelection';
 import { SocketHelper } from './game.socket.helper';
+import { GameUpdateService } from './game.updateService';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -35,143 +28,24 @@ import { SocketHelper } from './game.socket.helper';
 })
 export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
+
     @WebSocketServer() server: Server;
-    games: Map<string, Game>;
-    gameSelections: Map<string, GameSelection>;
-    updateInterval: NodeJS.Timer = undefined;
     mockUserNum: number = 1; //Provisional
 
     constructor(
-        private readonly gameService: GameService,
+        private readonly updateService: GameUpdateService,
         private readonly queueService: GameQueueService,
         private readonly socketHelper: SocketHelper
     ) {}
   
     afterInit() {
+        this.updateService.initServer(this.server);
         console.log("Game Gateway initiated");
-        this.games = new Map<string, Game>();
-        this.gameSelections = new Map<string, GameSelection>;
-    }
-
-    gameTransition(gameId: string): void {
-        setTimeout(() => {
-            this.games.delete(gameId);
-            this.manageUpdateInterval();
-            this.startGame(gameId);
-        }, 10000);
-    }
-
-    gameEnd(gameId: string, game: Game): void {
-        const   winnerNickname = game.getWinnerNick();
-        
-        this.socketHelper.emitToRoom(this.server, gameId, "end", {
-            winner: winnerNickname
-        });
-        this.gameService.endGame(gameId, game);
-        this.socketHelper.clearRoom(this.server, `${gameId}-PlayerA`);
-        this.socketHelper.clearRoom(this.server, `${gameId}-PlayerB`);
-        this.gameTransition(gameId);
-    }
-
-    pointTransition(game: Game, gameId: string): void {
-        setTimeout(() => {
-            game.serveBall();
-            this.socketHelper.emitToRoom(this.server, gameId, "served");
-        }, 3000);
-    }
-
-    gameUpdate(game: Game, room: string): void {
-        if (game.update())
-        { // A player scored
-            if (game.getWinnerNick() != "")
-            {
-                game.pause();
-                this.gameEnd(room, game);
-                return ;
-            }
-            else
-                this.pointTransition(game, room);
-        }
-        this.server.to(room).emit('matchUpdate', game.data());
-    }
-
-    manageUpdateInterval(): void {
-        if (this.updateInterval === undefined
-                && this.games.size === 1) {
-            this.updateInterval = setInterval(() => {
-                    this.games.forEach(
-                        (gameElem, room) => {
-                            if (gameElem.state != GameState.Paused)
-                                this.gameUpdate(gameElem, room);
-                        }
-                    );
-                },
-                16
-            );
-        }
-        else if (this.updateInterval
-                    && this.games.size === 0)
-        {
-            clearInterval(this.updateInterval);
-            this.updateInterval = undefined
-        }
-    }
-
-    sendSelectionData(role: string, selectionData: IGameSelectionData,
-                        roomId: string): void {
-        this.socketHelper.emitToRoom(this.server, roomId, "newGame", {
-            role: role,
-            selection: selectionData
-        });
-    }
-
-    async startGame(gameId: string): Promise<void> {
-        let gameSelection: GameSelection;
-        let selectionData: IGameSelectionData;
-        let playerRoom: string;
-        let players: [UserEntity, UserEntity] =
-            this.gameService.startGame(gameId);
-        
-        if (!players[0] || !players[1])
-            return ;
-        if (this.gameSelections.get(gameId) != undefined)
-            this.gameSelections.delete(gameId);
-        gameSelection = this.gameSelections.set(gameId, new GameSelection(
-            players[0].username,
-            players[1].username
-        )).get(gameId);
-        selectionData = gameSelection.data;
-        playerRoom = `${gameId}-PlayerA`;
-        await this.socketHelper.addUserToRoom(this.server,
-                                            players[0].username, playerRoom);
-        this.sendSelectionData("PlayerA", selectionData, playerRoom);
-        playerRoom = `${gameId}-PlayerB`;
-        await this.socketHelper.addUserToRoom(this.server,
-                                            players[1].username, playerRoom);
-        this.sendSelectionData("PlayerB", selectionData, playerRoom);
-        this.sendSelectionData("Spectator", selectionData, gameId);
-    }
-
-    startMatch(gameId: string,
-                gameSelectionData: IGameSelectionData): void {
-        let game: Game;
-    
-        if (this.games.get(gameId) != undefined)
-            this.games.delete(gameId);
-        game = this.games.set(gameId, new Game(
-            gameSelectionData
-        )).get(gameId);
-        this.socketHelper.emitToRoom(this.server, gameId,
-                            "startMatch", game.clientStartData());
-        this.pointTransition(game, gameId);
-        this.manageUpdateInterval();
     }
 
     async handlePlayerDisconnect(playerRoom: string): Promise<void> {
-        const   gameId: string = playerRoom.slice(0, playerRoom.indexOf('-'));
-        const   game: Game = this.games.get(gameId);
+        const   roomId: string = playerRoom.slice(0, playerRoom.indexOf('-'));
         let     roomSockets: RemoteSocket<DefaultEventsMap, any>[];
-        let     winner: number;
     
         roomSockets = await this.server.in(playerRoom).fetchSockets();
         /*
@@ -180,19 +54,12 @@ export class    GameGateway implements OnGatewayInit,
         */
         if (roomSockets.length > 1)
             return ;
-        if (!game
-                || game.state != GameState.Running)
-            return ;
-        game.pause();
-        winner = playerRoom[playerRoom.length - 1] === 'A'
-                    ? 1 : 0;
-        game.forceWin(winner);
-        this.gameEnd(gameId, game);
+        this.updateService.playerWithdrawal(roomId, playerRoom);
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
-        let gameSelection: GameSelection;
-        let game: Game;
+        let gameSelectionData: IGameSelectionData;
+        let gameStartData: IGameClientStart;
         let username: string = `user-${this.mockUserNum}`; //Provisional
 
         console.log("User joined Game room");
@@ -202,19 +69,19 @@ export class    GameGateway implements OnGatewayInit,
         }); //Provisional
         client.join(username);
         //client.join(userSession)
-        gameSelection = this.gameSelections.get("Game1");
-        if (gameSelection)
+        gameSelectionData = this.updateService.getGameSelectionData("Game1");
+        if (gameSelectionData)
         {
             client.emit("newGame", {
                 role: "Spectator",
-                selection: gameSelection.data
+                selection: gameSelectionData
             });
         }
         else
         {
-            game = this.games.get("Game1");
-            if (game)
-                client.emit("startMatch", game.clientStartData());
+            gameStartData = this.updateService.getGameClientStartData("Game1");
+            if (gameStartData)
+                client.emit("startMatch", gameStartData);
         }
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
@@ -241,12 +108,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
     ) {
-        if (!client.rooms.has(data.gameId))
+        if (!client.rooms.has(data.room))
             return ;
         //Need to implement user authentication
-        await this.queueService.add(data.gameId, data.username);
-        if (!this.games.get(data.gameId))
-            this.startGame(data.gameId);
+        await this.queueService.add(data.room, data.username);
+        this.updateService.attemptGameInit(data.room);
     }
 
     @SubscribeMessage('leftSelection')
@@ -254,13 +120,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   gameSelection: GameSelection = this.gameSelections.get(room);
+        let     selectionData: IGameSelectionData;
 
-        if (!room
-            || !gameSelection)
-            return ;
-        gameSelection.nextLeft(player);
-        client.to(room).emit('leftSelection', gameSelection.data);
+        selectionData = this.updateService.selectionInput(room, player, 0);
+        if (selectionData)
+            client.to(room).emit('leftSelection', selectionData);
     }
 
     @SubscribeMessage('rightSelection')
@@ -268,13 +132,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   gameSelection: GameSelection = this.gameSelections.get(room);
+        let     selectionData: IGameSelectionData;
 
-        if (!room
-            || !gameSelection)
-            return ;
-        gameSelection.nextRight(player);
-        client.to(room).emit('rightSelection', gameSelection.data);
+        selectionData = this.updateService.selectionInput(room, player, 1);
+        if (selectionData)
+            client.to(room).emit('rightSelection', selectionData);
     }
 
     @SubscribeMessage('confirmSelection')
@@ -282,17 +144,13 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   gameSelection: GameSelection = this.gameSelections.get(room);
+        let     selectionData: IGameSelectionData;
 
-        if (!room
-            || !gameSelection)
-            return ;
-        gameSelection.confirm(player);
-        client.to(room).emit('confirmSelection', gameSelection.data);
-        if (gameSelection.finished)
+        selectionData = this.updateService.selectionInput(room, player, 2);
+        if (selectionData)
         {
-            this.startMatch(room, gameSelection.data);
-            this.gameSelections.delete(room);
+            client.to(room).emit('confirmSelection', selectionData);
+            this.updateService.attemptSelectionFinish(room);
         }
     }
     
@@ -301,16 +159,8 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   game: Game = this.games.get(room);
-
-        if (!room
-            || !game
-            || game.state != GameState.Running)
-            return ;
-        if (player === "PlayerA")
-            game.addPaddleAMove(1); //1: Up
-        else
-            game.addPaddleBMove(1); //1: Up
+        
+        this.updateService.paddleInput(room, player, 1);
     }
 
     @SubscribeMessage('paddleDown')
@@ -318,16 +168,8 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   game: Game = this.games.get(room);
-
-        if (!room
-            || !game
-            || game.state != GameState.Running)
-            return ;
-        if (player === "PlayerA")
-            game.addPaddleAMove(0); //0: Down
-        else
-            game.addPaddleBMove(0); //0: Down
+        
+        this.updateService.paddleInput(room, player, 0);
     }
 
     @SubscribeMessage('heroUp')
@@ -335,16 +177,8 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   game: Game = this.games.get(room);
 
-        if (!room
-            || !game
-            || game.state != GameState.Running)
-            return ;
-        if (player === "PlayerA")
-            game.addHeroAInvocation(1); //1 === W
-        else
-            game.addHeroBInvocation(1); //1 === W
+        this.updateService.heroInput(room, player, 1);
     }
 
     @SubscribeMessage('heroDown')
@@ -352,16 +186,8 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        const   game: Game = this.games.get(room);
 
-        if (!room
-            || !game
-            || game.state != GameState.Running)
-            return ;
-        if (player === "PlayerA")
-            game.addHeroAInvocation(0); //0 === S
-        else
-            game.addHeroBInvocation(0); //0 === S
+        this.updateService.heroInput(room, player, 0);
     }
 
   }

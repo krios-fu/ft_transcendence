@@ -61,7 +61,7 @@ export class    GameComponent implements OnInit {
         /*if (this.queueButtonClick)
             return ;*/
         this.socket.emit("addToGameQueue", {
-            gameId: "Game1",
+            room: "Game1",
             username: this.username
         });
         this.queueButtonClick = true;
