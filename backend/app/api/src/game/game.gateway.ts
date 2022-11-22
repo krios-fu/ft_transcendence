@@ -86,6 +86,7 @@ export class    GameGateway implements OnGatewayInit,
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
 
+            this.queueService.remove("Game1", username);
             for (const room of rooms)
             {
                 if (room.includes("Player"))
