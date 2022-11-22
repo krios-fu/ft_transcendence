@@ -12,8 +12,9 @@ import { HeroCreator } from './HeroCreator';
 import { IGameSelectionData } from './GameSelection';
 
 export enum    GameState {
+    Running,
     Paused,
-    Running
+    Finished
 }
 
 export interface    IGameClientStart {
@@ -26,6 +27,13 @@ export interface    IGameData {
     playerA: IPlayerData;
     playerB: IPlayerData;
     ball: IBallData;
+}
+
+export interface    IGameResult {
+    winnerNick: string;
+    loserNick: string;
+    winnerScore: number;
+    loserScore: number;
 }
 
 export class   Game {
@@ -97,8 +105,8 @@ export class   Game {
         return (this.winScore);
     }
 
-    pause(): void {
-        this._state = GameState.Paused;
+    isFinished(): boolean {
+        return (this._state === GameState.Finished);
     }
 
     serveBall(): void {
@@ -126,26 +134,23 @@ export class   Game {
         return ("");
     }
 
-    getWinnerScore(): number {
-        const   playerAScore: number = this._playerA.score;
-        const   playerBScore: number = this._playerB.score;
-    
-        if (playerAScore === Game.getWinScore())
-            return (playerAScore);
-        if (playerBScore === Game.getWinScore())
-            return (playerBScore);
-        return (undefined);
-    }
+    getResult(): IGameResult {
+        const   winnerNick: string = this.getWinnerNick();
+        let     winner: Player;
+        let     loser: Player;
 
-    getLoserScore(): number {
-        const   playerAScore: number = this._playerA.score;
-        const   playerBScore: number = this._playerB.score;
-    
-        if (playerAScore === Game.getWinScore())
-            return (playerBScore);
-        if (playerBScore === Game.getWinScore())
-            return (playerAScore);
-        return (undefined);
+        if (winnerNick === "")
+            return (undefined);
+        winner = winnerNick === this._playerA.nick
+                    ? this._playerA : this._playerB;
+        loser = winnerNick != this._playerA.nick
+                    ? this._playerA : this._playerB;
+        return ({
+            winnerNick: winner.nick,
+            loserNick: loser.nick,
+            winnerScore: winner.score,
+            loserScore: loser.score
+        });
     }
 
     private deltaTime(currentTime: number): number {
@@ -222,7 +227,11 @@ export class   Game {
         this._playerA.update(secondsElapsed, this._height);
         this._playerB.update(secondsElapsed, this._height);
         if (this.ballUpdate(secondsElapsed))
+        {
             pointTransition = true;
+            if (this.getWinnerNick() != "")
+                this._state = GameState.Finished;
+        }
         // Sets hero's position to initial one if its action ended.
         this._playerA.checkHeroEnd();
         this._playerB.checkHeroEnd();

@@ -7,7 +7,7 @@ import { WinnerEntity } from "src/match/winner/winner.entity";
 import { UserEntity } from "src/user/user.entity";
 import { UserService } from "src/user/user.service";
 import { UpdateResult } from "typeorm";
-import { Game } from "./elements/Game";
+import { IGameResult } from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
 
@@ -85,37 +85,33 @@ export class    GameService {
     }
 
     private createPlayerEntities(players: [UserEntity, UserEntity],
-                            game: Game) : [WinnerEntity, LoserEntity] {
+                            gameResult: IGameResult) : [WinnerEntity, LoserEntity] {
         let     winnerEntity: WinnerEntity = new WinnerEntity;
         let     loserEntity: LoserEntity = new LoserEntity;
-        const   winnerNick: string = game.getWinnerNick();
+        const   winnerNick: string = gameResult.winnerNick;
 
         winnerEntity.user = players[0].nickName === winnerNick
                             ? players[0] : players[1];
-        winnerEntity.score = game.getWinnerScore();
+        winnerEntity.score = gameResult.winnerScore;
         loserEntity.user = players[0].nickName != winnerNick
                             ? players[0] : players[1];
-        loserEntity.score = game.getLoserScore();
+        loserEntity.score = gameResult.loserScore;
         return ([winnerEntity, loserEntity]);
     }
 
     private async saveMatch(players: [UserEntity, UserEntity],
-                                gameData: Game, isOfficial: boolean)
+                                gameResult: IGameResult, isOfficial: boolean)
                                 : Promise<MatchEntity> {
         let matchDto: MatchDto = new MatchDto;
-        let playerEntities: [WinnerEntity, LoserEntity];
     
-        playerEntities = this.createPlayerEntities(players, gameData);
-        matchDto.winner = playerEntities[0];
-        matchDto.loser = playerEntities[1];
+        [ matchDto.winner, matchDto.loser ] =
+            this.createPlayerEntities(players, gameResult);
         matchDto.official = isOfficial;
         return (await this.matchService.addMatch(matchDto));
     }
 
-    private getWinner(playerA: UserEntity, game: Game): number {
-        const   winnerNick: string = game.getWinnerNick();
-
-        return (playerA.nickName === winnerNick
+    private getWinner(playerA: UserEntity, gameResult: IGameResult): number {
+        return (playerA.nickName === gameResult.winnerNick
                     ? 0 : 1);
     }
 
@@ -123,19 +119,19 @@ export class    GameService {
     **  User ranking update and match insertion must be done in a transaction.
     **  Determine failure handling.
     */
-    async endGame(gameId: string, gameData: Game): Promise<void> {
+    async endGame(gameId: string, gameResult: IGameResult): Promise<void> {
         const   players: [UserEntity, UserEntity] = this.gamePlayers.get(gameId);
         let     isOfficial: boolean;
         let     winner: number;
 
         isOfficial = this.isOfficial(gameId);
-        winner = this.getWinner(players[0], gameData);
+        winner = this.getWinner(players[0], gameResult);
         if (isOfficial)
         {
             if (!(await this.updatePlayerRankings(players, winner)))
                 return ;
         }
-        if (!(await this.saveMatch(players, gameData, isOfficial)))
+        if (!(await this.saveMatch(players, gameResult, isOfficial)))
             console.error(`Failed database insertion for match: ${gameId}`);
         players[0] = undefined;
         players[1] = undefined;

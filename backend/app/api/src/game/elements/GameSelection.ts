@@ -15,7 +15,8 @@ export enum StageId {
 export enum SelectionStatus {
     Hero,
     Stage,
-    Finished
+    Finished,
+    Canceled
 }
 
 export interface    IGameSelectionData {
@@ -49,6 +50,10 @@ export class    GameSelection {
         this._heroBConfirmed = false;
         this._stage = StageId.None;
         this._status = SelectionStatus.Hero;
+    }
+
+    set status(input: SelectionStatus) {
+        this._status = input;
     }
 
     get finished(): boolean {

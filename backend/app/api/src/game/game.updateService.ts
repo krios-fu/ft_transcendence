@@ -1,8 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { Server } from "socket.io";
 import { UserEntity } from "src/user/user.entity";
-import { Game, GameState, IGameClientStart } from "./elements/Game";
-import { GameSelection, IGameSelectionData } from "./elements/GameSelection";
+import {
+    Game,
+    GameState,
+    IGameClientStart,
+    IGameResult
+} from "./elements/Game";
+import {
+    GameSelection,
+    IGameSelectionData,
+    SelectionStatus
+} from "./elements/GameSelection";
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 
@@ -115,19 +124,18 @@ export class    GameUpdateService {
 
     private gameTransition(gameId: string): void {
         setTimeout(() => {
+            this.gameSelections.delete(gameId);
             this.games.delete(gameId);
             this.manageUpdateInterval();
             this.startGame(gameId);
         }, 10000);
     }
 
-    private gameEnd(gameId: string, game: Game): void {
-        const   winnerNickname = game.getWinnerNick();
-        
+    private gameEnd(gameId: string, gameResult: IGameResult): void {        
         this.socketHelper.emitToRoom(this.server, gameId, "end", {
-            winner: winnerNickname
+            winner: gameResult.winnerNick
         });
-        this.gameService.endGame(gameId, game);
+        this.gameService.endGame(gameId, gameResult);
         this.socketHelper.clearRoom(this.server, `${gameId}-PlayerA`);
         this.socketHelper.clearRoom(this.server, `${gameId}-PlayerB`);
         this.gameTransition(gameId);
@@ -143,10 +151,9 @@ export class    GameUpdateService {
     private gameUpdate(game: Game, room: string): void {
         if (game.update())
         { // A player scored
-            if (game.getWinnerNick() != "")
+            if (game.isFinished())
             {
-                game.pause();
-                this.gameEnd(room, game);
+                this.gameEnd(room, game.getResult());
                 return ;
             }
             else
@@ -161,7 +168,7 @@ export class    GameUpdateService {
             this.updateInterval = setInterval(() => {
                     this.games.forEach(
                         (gameElem, room) => {
-                            if (gameElem.state != GameState.Paused)
+                            if (gameElem.state === GameState.Running)
                                 this.gameUpdate(gameElem, room);
                         }
                     );
@@ -230,16 +237,30 @@ export class    GameUpdateService {
     playerWithdrawal(roomId: string, playerRoomId: string): void {
         const   gameSelection: GameSelection = this.getGameSelection(roomId);
         const   game: Game = this.getGame(roomId);
-        let     winner: number;
+        const   winner: number = playerRoomId[playerRoomId.length - 1] === 'A'
+                                    ? 1 : 0;
 
-        if (!game
-            || game.state != GameState.Running)
+        if (
+            (!gameSelection && !game)
+            || (game && game.state != GameState.Running)
+        )
             return ;
-        game.pause();
-        winner = playerRoomId[playerRoomId.length - 1] === 'A'
-                    ? 1 : 0;
-        game.forceWin(winner);
-        this.gameEnd(roomId, game);
+        if (game)
+        {
+            game.state = GameState.Finished;
+            game.forceWin(winner);
+            this.gameEnd(roomId, game.getResult());
+            return ;
+        }
+        gameSelection.status = SelectionStatus.Canceled;
+        this.gameEnd(roomId, {
+            winnerNick: winner === 0 ? gameSelection.data.nickPlayerA
+                                        : gameSelection.data.nickPlayerB,
+            loserNick: winner != 0 ? gameSelection.data.nickPlayerA
+                                        : gameSelection.data.nickPlayerB,
+            winnerScore: Game.getWinScore(),
+            loserScore: 0,
+        });
     }
 
 }
