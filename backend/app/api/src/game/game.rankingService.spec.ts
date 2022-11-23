@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Category } from '../user/user.entity';
-import { GameRankingService } from './game.rankingService';
+import {
+    GameRankingService,
+    RankingData
+} from './game.rankingService';
 
 describe('GameRankingService', () => {
     let service: GameRankingService;
@@ -77,7 +80,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(1000, 1000, 0)', () => {
         it('should return [ 1016, 984 ]', () => {
-            const   input: [ number, number, number ] = [ 1000, 1000, 0 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 1000, category: Category.Bronze },
+                { ranking: 1000, category: Category.Bronze },
+                0
+            ];
             const   output: [ number, number ] = [ 1016, 984 ];
 
             expect(
@@ -88,7 +95,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(1123, 0, 0)', () => {
         it('should return [ 1123, -0 ]', () => {
-            const   input: [ number, number, number ] = [ 1123, 0, 0 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 1123, category: Category.Bronze },
+                { ranking: 0, category: Category.Iron },
+                0
+            ];
             const   output: [ number, number ] = [ 1123, -0 ];
 
             expect(
@@ -99,7 +110,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(2000, 2500, 0)', () => {
         it('should return [ 2030, 2470 ]', () => {
-            const   input: [ number, number, number ] = [ 2000, 2500, 0 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 2000, category: Category.Gold },
+                { ranking: 2500, category: Category.Platinum },
+                0
+            ];
             const   output: [ number, number ] = [ 2030, 2470 ];
 
             expect(
@@ -110,7 +125,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(2500, 2000, 1)', () => {
         it('should return [ 2470, 2030 ]', () => {
-            const   input: [ number, number, number ] = [ 2500, 2000, 1 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 2500, category: Category.Platinum },
+                { ranking: 2000, category: Category.Gold },
+                1
+            ];
             const   output: [ number, number ] = [ 2470, 2030 ];
 
             expect(
@@ -121,7 +140,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(850, -324, 1)', () => {
         it('should return [ 818, -292 ]', () => {
-            const   input: [ number, number, number ] = [ 850, -324, 1 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 850, category: Category.Iron },
+                { ranking: -324, category: Category.Iron },
+                1
+            ];
             const   output: [ number, number ] = [ 818, -292 ];
 
             expect(
@@ -132,7 +155,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(850, -324, 0)', () => {
         it('should return [ 850, -324 ]', () => {
-            const   input: [ number, number, number ] = [ 850, -324, 0 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 850, category: Category.Iron },
+                { ranking: -324, category: Category.Iron },
+                0
+            ];
             const   output: [ number, number ] = [ 850, -324 ];
 
             expect(
@@ -143,7 +170,11 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(-1100, -245, 0)', () => {
         it('should return [ -1068, -277 ]', () => {
-            const   input: [ number, number, number ] = [ -1100, -245, 0 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: -1100, category: Category.Iron },
+                { ranking: -245, category: Category.Iron },
+                0
+            ];
             const   output: [ number, number ] = [ -1068, -277 ];
 
             expect(
@@ -154,8 +185,72 @@ describe('GameRankingService', () => {
 
     describe('updateRanking(-1100, -245, 1)', () => {
         it('should return [ -1100, -245 ]', () => {
-            const   input: [ number, number, number ] = [ -1100, -245, 1 ];
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: -1100, category: Category.Iron },
+                { ranking: -245, category: Category.Iron },
+                1
+            ];
             const   output: [ number, number ] = [ -1100, -245 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(1500, 1500, 0)', () => {
+        it('should return [ 1600, 1400 ]', () => {
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 1500, category: Category.Pending },
+                { ranking: 1500, category: Category.Pending },
+                0
+            ];
+            const   output: [ number, number ] = [ 1600, 1400 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(1500, 1500, 0)', () => {
+        it('should return [ 1400, 1600 ]', () => {
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 1500, category: Category.Pending },
+                { ranking: 1500, category: Category.Pending },
+                1
+            ];
+            const   output: [ number, number ] = [ 1400, 1600 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(1500, 1500, 0)', () => {
+        it('should return [ 1500, 1400 ]', () => {
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 1500, category: Category.Silver },
+                { ranking: 1500, category: Category.Pending },
+                0
+            ];
+            const   output: [ number, number ] = [ 1500, 1400 ];
+
+            expect(
+                service.updateRanking(...input)
+            ).toEqual(output);
+        });
+    });
+
+    describe('updateRanking(1500, 1500, 0)', () => {
+        it('should return [ 1500, 1600 ]', () => {
+            const   input: [ RankingData, RankingData, number ] = [
+                { ranking: 1500, category: Category.Silver },
+                { ranking: 1500, category: Category.Pending },
+                1
+            ];
+            const   output: [ number, number ] = [ 1500, 1600 ];
 
             expect(
                 service.updateRanking(...input)

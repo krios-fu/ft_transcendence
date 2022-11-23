@@ -10,6 +10,11 @@ import { Category } from "../user/user.entity";
 **
 */
 
+export interface    RankingData {
+    ranking: number;
+    category: Category;
+}
+
 @Injectable()
 export class    GameRankingService {
 
@@ -20,9 +25,45 @@ export class    GameRankingService {
             return (Category.Gold);
         if (ranking >= 1500)
             return (Category.Silver);
-        if (ranking >= 1100)
+        if (ranking >= 1000)
             return (Category.Bronze);
         return (Category.Iron);
+    }
+
+    /*
+    **  K is set so high because the number of matches to determine
+    **  a new Player's category is set very low, for testing
+    **  and fast presentation purposes. K = 50 during the first 20 matches
+    **  should be set for production.
+    */
+    private getK(category: Category): number {
+        if (category === Category.Pending)
+            return (200);
+        return (32);
+    }
+
+    private calcRankingUpdate(ranking: number, kFactor: number, win: boolean,
+                                expectedScore: number): number {
+        const   winBin = win ? 1 : 0;
+    
+        return (
+            Math.round(ranking + kFactor * (winBin - expectedScore))
+        );
+    }
+
+    private update(targetData: RankingData, rivalData: RankingData,
+                        win: boolean, expect: number): number {
+        if (targetData.category === Category.Pending
+            || rivalData.category != Category.Pending)
+        {
+            return (this.calcRankingUpdate(
+                targetData.ranking,
+                this.getK(targetData.category),
+                win,
+                expect
+            ));
+        }
+        return (targetData.ranking);
     }
 
     // Returns the probability of target winning rival
@@ -33,29 +74,18 @@ export class    GameRankingService {
         );
     }
 
-    // win === 0 Lost | win === 1 Won
-    private calcRankingUpdate(ranking: number, win: number,
-                                expectedScore: number): number {
-        return (
-            Math.round(ranking + 32 * (win - expectedScore))
-        );
-    }
-
     // win === 0 A Won | win === 1 B Won
-    updateRanking(rankingA: number, rankingB: number,
+    updateRanking(aData: RankingData, bData: RankingData,
                     win: number): [number, number] {
         let expectA: number;
         let expectB: number;
         let updateA: number;
         let updateB: number;
     
-        expectA = this.calcExpectedScore(rankingA, rankingB);
-        expectB = this.calcExpectedScore(rankingB, rankingA);
-        if (win === 0)
-            updateA = this.calcRankingUpdate(rankingA, 1, expectA);
-        else
-            updateA = this.calcRankingUpdate(rankingA, 0, expectA);
-        updateB = this.calcRankingUpdate(rankingB, win, expectB);
+        expectA = this.calcExpectedScore(aData.ranking, bData.ranking);
+        expectB = this.calcExpectedScore(bData.ranking, aData.ranking);
+        updateA = this.update(aData, bData, win === 0, expectA);
+        updateB = this.update(bData, aData, win === 1, expectB);
         return ([updateA, updateB]);
     }
 

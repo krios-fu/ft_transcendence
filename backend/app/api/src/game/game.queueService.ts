@@ -1,5 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { UserEntity } from "../user/user.entity";
+import {
+    Category,
+    UserEntity
+} from "../user/user.entity";
 import { UserService } from "../user/user.service";
 
 @Injectable()
@@ -30,7 +33,8 @@ export class    GameQueueService {
                 categoryDiff = Math.abs(
                     playerA.category - queue[i].category
                 );
-                if (categoryDiff <= maxCategoryDiff)
+                if (categoryDiff <= maxCategoryDiff
+                    || queue[i].category === Category.Pending)
                 {
                     playerB = queue[i];
                     break ;
@@ -59,9 +63,12 @@ export class    GameQueueService {
     }
 
     remove(gameId: string, username: string): void {
+        let targetIndex: number;
         let queue: UserEntity[] = this.gameQueue.get(gameId);
-        let targetIndex: number = this.findByUsername(username, queue);
 
+        if (!queue || username === "")
+            return ;
+        targetIndex = this.findByUsername(username, queue);
         if (targetIndex !== -1)
             queue.splice(targetIndex, 1);
     }

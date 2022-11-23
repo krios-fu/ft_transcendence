@@ -4,7 +4,10 @@ import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
 import { WinnerEntity } from "src/match/winner/winner.entity";
-import { UserEntity } from "src/user/user.entity";
+import {
+    Category,
+    UserEntity
+} from "src/user/user.entity";
 import { UserService } from "src/user/user.service";
 import { UpdateResult } from "typeorm";
 import { IGameResult } from "./elements/Game";
@@ -50,29 +53,25 @@ export class    GameService {
         return (true);
     }
 
-    private async updatePlayerRankings(players: [UserEntity, UserEntity],
-                                            winner: number): Promise<boolean> {
+    /*
+    **  IMPORTANT!!!
+    **
+    **  This must be implemented in a transaction to ensure
+    **  both Users get updated, or none of them.
+    */
+    private async saveRankings(playerA: UserEntity,
+                                playerB: UserEntity): Promise<boolean> {
         let resultA: Promise<UpdateResult>;
         let resultB: Promise<UpdateResult>;
     
-        [ players[0].ranking, players[1].ranking ] =
-            this.rankingService.updateRanking(
-                players[0].ranking,
-                players[1].ranking,
-                winner
-        );
-        players[0].category =
-            this.rankingService.getCategory(players[0].category);
-        players[1].category =
-            this.rankingService.getCategory(players[1].category);
         try {
-            resultA = this.userService.updateUser(players[0].username, {
-                ranking: players[0].ranking,
-                category: players[0].category
+            resultA = this.userService.updateUser(playerA.username, {
+                ranking: playerA.ranking,
+                category: playerA.category
             });
-            resultB = this.userService.updateUser(players[1].username, {
-                ranking: players[1].ranking,
-                category: players[1].category
+            resultB = this.userService.updateUser(playerB.username, {
+                ranking: playerB.ranking,
+                category: playerB.category
             });
             await resultA;
             await resultB;
@@ -82,6 +81,45 @@ export class    GameService {
             return (false);
         }
         return (true);
+    }
+
+    /*
+    **  A higher number of minMathes is needed to determine
+    **  with higher accuracy the actual Category of a Player,
+    **  but for testing and fast presentation purposes it is set
+    **  to a low value.
+    */
+    private async updateCategory(username: string, ranking: number,
+                                    category: Category): Promise<Category> {
+        const   minMatches: number = 3;
+    
+        if (category === Category.Pending)
+        {
+            if (await this.matchService.countUserMatches(username) < minMatches)
+                return (category);
+        }
+        return (this.rankingService.getCategory(ranking));
+    }
+
+    private async updatePlayerRankings(players: [UserEntity, UserEntity],
+                                            winner: number): Promise<boolean> {    
+        [ players[0].ranking, players[1].ranking ] =
+            this.rankingService.updateRanking(
+                {ranking: players[0].ranking, category: players[0].category},
+                {ranking: players[1].ranking, category: players[1].category},
+                winner
+        );
+        players[0].category = await this.updateCategory(
+            players[0].username,
+            players[0].ranking,
+            players[0].category
+        );
+        players[1].category = await this.updateCategory(
+            players[1].username,
+            players[1].ranking,
+            players[1].category
+        );
+        return (await this.saveRankings(players[0], players[1]));
     }
 
     private createPlayerEntities(players: [UserEntity, UserEntity],
@@ -126,13 +164,13 @@ export class    GameService {
 
         isOfficial = this.isOfficial(gameId);
         winner = this.getWinner(players[0], gameResult);
+        if (!(await this.saveMatch(players, gameResult, isOfficial)))
+            console.error(`Failed database insertion for match: ${gameId}`);
         if (isOfficial)
         {
             if (!(await this.updatePlayerRankings(players, winner)))
                 return ;
         }
-        if (!(await this.saveMatch(players, gameResult, isOfficial)))
-            console.error(`Failed database insertion for match: ${gameId}`);
         players[0] = undefined;
         players[1] = undefined;
         return ;

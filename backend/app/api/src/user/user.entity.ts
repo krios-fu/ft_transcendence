@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 
 export enum Category {
+	Pending,
 	Iron,
 	Bronze,
 	Silver,
@@ -48,12 +49,12 @@ export class UserEntity {
 	doubleAuth : boolean;
 
 	@Column({
-		default: 1000
+		default: 1500
 	})
 	ranking: number;
 
 	@Column({
-		default: Category.Iron
+		default: Category.Pending
 	})
 	category : Category;
 

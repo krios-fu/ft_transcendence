@@ -87,4 +87,26 @@ export class    MatchService {
         }
         return (matchEntity);
     }
+
+    async countUserMatches(userId: string): Promise<number> {
+        return (await this.matchRepository.count({
+            where: [
+                {
+                    winner: {
+                        user: {
+                            username: userId
+                        }
+                    }
+                },
+                {
+                    loser: {
+                        user: {
+                            username: userId
+                        }
+                    }
+                }
+            ]
+        }));
+    }
+
 }
