@@ -5,12 +5,48 @@
 	<figure class="avatar">
 		<img src={{getPhoto()}} />
 	</figure>
+</div>
 
-</div>
-<div style="display: flex; 
-position: relative; 
-align-items: center;  
-/* justify-content: spa; */
-">
-<h1 style="font-size: 14px;">setting</h1>
-</div>
+	<div style="display: flex; 
+	position: relative; 
+	align-items: center;  
+	justify-content: space-around;
+	"><h1 style="font-size: 14px;">setting</h1></div>
+
+	<div style="font-size:x-small; padding: 15px; justify-content: center;">
+
+		
+		<!-- <mat-slide-toggle [(ngModel)]="isChecked"> Slide Toggle Checked: {{isChecked}}</mat-slide-toggle> -->
+		
+		
+		<form class="example-form" #form="ngForm" (ngSubmit)="alertFormValues(form.form)">
+
+			<mat-slide-toggle ngModel name="enableWifi">2FA Authentication</mat-slide-toggle>
+			<mat-slide-toggle ngModel name="acceptTerms" required>Accept Terms of Service</mat-slide-toggle>
+			<br>
+			<br>
+			<br>
+
+			<section style="justify-content: center;
+			align-items: center; 
+			display: flex;
+			background-color: inherit;
+			">
+				<button>
+					<mat-icon style="transform: scale(1.5); padding: 0px;">save</mat-icon>
+				</button>
+			</section>
+		</form>
+		
+		<!-- <p>Slide Toggle inside of a Reactive form</p>
+		
+		<form class="example-form" [formGroup]="formGroup" (ngSubmit)="alertFormValues(formGroup)" ngNativeValidate>
+			
+			<mat-slide-toggle formControlName="enableWifi">Enable Wifi</mat-slide-toggle>
+			<mat-slide-toggle formControlName="acceptTerms">Accept Terms of Service</mat-slide-toggle>
+			
+			<p>Form Group Status: {{formGroup.status}}</p>
+			
+			<button mat-raised-button type="submit">Save Settings</button>
+		</form> -->
+	</div>

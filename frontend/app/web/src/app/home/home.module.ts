@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './home.component';
 import {ChatModule} from "../chat/chat.module";
-import {ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, FormsModule} from "@angular/forms";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {Router} from "@angular/router";
 import {HomeRoutingModule} from "./home-routing.module";
@@ -16,6 +16,8 @@ import { RoomComponent } from './navegation/room/room.component';
 import {ChatComponent} from "../chat/chat.component";
 import { SettingComponent } from './profile/setting/setting.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { FriendOnlineComponent } from './friend/friend-online/friend-online.component';
 
 
 
@@ -26,11 +28,12 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     NavHeaderComponent,
     RoomComponent,
     SettingComponent,
+    FriendOnlineComponent,
 
   ],
   imports: [
     CommonModule,
-    ChatModule,
+    // ChatModule,
     ReactiveFormsModule,
     MatExpansionModule,
     HomeRoutingModule,
@@ -38,8 +41,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     MatBadgeModule,
     MatTreeModule,
     MatButtonModule,
-    ScrollingModule
-
+    ScrollingModule,
+    FormsModule,
+    MatSlideToggleModule
   ]
 })
 export class HomeModule {

@@ -1,19 +1,9 @@
-<app-header></app-header>
 <div class="row">
   <div class="column1 ">
     <div>
       <router-outlet> </router-outlet>
     </div>
 
-    <br>
-    <a mat-icon-button (click)="plus()" class="tree">
-      <mat-icon>{{plus_minus}}</mat-icon>
-      ROOM Y DM
-    </a>
-
-    <cdk-virtual-scroll-viewport style="height: 45vh; position: relative; color: white;" itemSize="5">
-      <app-room *ngIf="status_room" style="height: 80vh;"></app-room>
-    </cdk-virtual-scroll-viewport>
 
 
     <div style="color: white; 
@@ -46,7 +36,7 @@ border: 1px solid rgba(245, 245, 245, 0.29);
       </a>
     </div>
       <div>
-        <a mat-icon-button class="icon_nav" routerLink="/home/setting" routerLinkActive="active">
+        <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/home/setting" >
           <mat-icon>manage_accounts</mat-icon>
         </a>
       </div>
@@ -55,7 +45,6 @@ border: 1px solid rgba(245, 245, 245, 0.29);
           <mat-icon>logout</mat-icon>
         </a>
       </div>
-
     </div>
   </div>
 
@@ -63,6 +52,7 @@ border: 1px solid rgba(245, 245, 245, 0.29);
     <router-outlet name="center"></router-outlet>
   </div>
   <div class="column3">
-    <router-outlet name="chat"></router-outlet>
+    <router-outlet  name="chat"></router-outlet>
+    <!-- <app-chat></app-chat> -->
   </div>
 </div>

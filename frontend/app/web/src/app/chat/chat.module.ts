@@ -9,12 +9,14 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {RouterModule} from "@angular/router";
 import {MatBadgeModule} from "@angular/material/badge";
+import { ChatIdComponent } from './chat-id/chat-id.component';
 
 
 
 @NgModule({
   declarations: [
     ChatComponent,
+    ChatIdComponent,
   ],
   imports: [
     CommonModule,
@@ -28,7 +30,8 @@ import {MatBadgeModule} from "@angular/material/badge";
   ],
   providers: [Chat],
   exports: [
-    ChatComponent
+    ChatComponent,
+    
   ]
 })
 export class ChatModule {

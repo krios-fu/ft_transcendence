@@ -12,6 +12,8 @@ import { Payload, UserDto } from "../../../dtos/user.dto";
 })
 export class NavHeaderComponent implements OnInit {
 
+  status_room = false;
+  plus_minus = "chevron_right";
 
   user: UserDto | null;
   constructor(private http: HttpClient,
@@ -49,7 +51,10 @@ export class NavHeaderComponent implements OnInit {
   }
 
 
- 
+  plus() {
+    this.status_room = !this.status_room;
+    this.plus_minus = (this.status_room) ? "expand_more" : "chevron_right";
+  }
 
 
 

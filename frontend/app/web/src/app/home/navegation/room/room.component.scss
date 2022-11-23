@@ -13,10 +13,19 @@ a {
   font-size: 9px;
 
   &:hover{
-    color: chartreuse;
+    color: goldenrod;
   }
 }
 
+.effect{
 
+  animation: bounce-in 2s ease;
+  animation: fade-in 2s linear both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
 
 

@@ -27,13 +27,13 @@ import { SettingComponent } from './profile/setting/setting.component';
 })
 export class HomeComponent implements OnInit, AfterViewInit {
 
-  status_room = false;
   lol = false;
-  plus_minus = "chevron_right";
   user: string = "";
   firstName: string = "";
   lastName: string = "";
   hidden = false;
+
+  outlet_chat = false;
 
   @ViewChild(NavHeaderComponent) navHeader: any;
   @ViewChild(ChatComponent) chat: any;
@@ -43,7 +43,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     public usersService: UsersService,
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
-  ) { }
+  ) { 
+  }
 
   ngOnInit(): void {
     let code: string | undefined;
@@ -105,25 +106,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
 
   ngAfterViewInit() {
-
-    // const username: string = this.authService.getAuthUser() as string;
-    // if (username)
-    //   this.usersService.getUser(username)
-    //     .subscribe({
-    //       next: (userDto: UserDto) => {
-    //         this.user = userDto.username;
-    //         this.firstName = userDto.firstName;
-    //         this.lastName = userDto.lastName;
-    //         // this.navHeader.profile = userDto;
-    //       }
-    //     });
+    console.log(this.route);
   }
 
 
-  plus() {
-    this.status_room = !this.status_room;
-    this.plus_minus = (this.status_room) ? "expand_more" : "chevron_right";
-  }
+
 
   send_chat_profile(e: any) {
     return e;
@@ -134,4 +121,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
   }
+
+
 }

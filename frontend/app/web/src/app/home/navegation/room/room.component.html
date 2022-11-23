@@ -1,21 +1,19 @@
 <script src="room.component.ts"></script>
 
-
-
-
   <mat-tree  [dataSource]="dataSource" [treeControl]="treeControl" class="tree"  >
     <!-- This is the tree node template for leaf nodes -->
     <!-- There is inline padding applied to this node using styles.
       This padding value depends on the mat-icon-button width. -->
       
-      <mat-tree-node style="font-size: smaller;" *matTreeNodeDef="let node; when: !hasChild" matTreeNodePadding="2px" >
-        <a  [routerLink]="[{ outlets: { chat: ['chat', node.name ] } }]"
-        >
+      <mat-tree-node class="effect" style="font-size: smaller;" *matTreeNodeDef="let node; when: !hasChild" matTreeNodePadding="2px" >
+       <a routerLinkActive="true" [routerLink]="[ '../', { outlets: {  chat: ['chat', node.name ] } }]">
+        <!-- <a [routerLink]="['../chat', node.name ]" > -->
+          <!-- <a [routerLink]="['../chat', node.name]"> -->
         # {{node.name}}
       </a>
     </mat-tree-node>
     <!-- This is the tree node template for expandable nodes -->
-    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" 
+    <mat-tree-node class="effect" *matTreeNodeDef="let node; when: hasChild" 
     matTreeNodePadding="2px"
     style="color: white; font-size: small;" >
                    <!-- /* border: 1px solid rgba(245, 245, 245, 0.29);"> */ -->

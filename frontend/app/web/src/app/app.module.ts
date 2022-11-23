@@ -12,6 +12,7 @@ import {Router} from "@angular/router";
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './http-interceptors/auth.interceptor';
 import { CookieService } from 'ngx-cookie-service';
+import { ChatModule } from './chat/chat.module';
 
 const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
 
@@ -25,7 +26,7 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
     HttpClientModule,
     AppRoutingModule,
     LoginModule,
-    //ChatModule,
+    ChatModule,
     HomeModule,
     SocketIoModule.forRoot(config),
     BrowserAnimationsModule,

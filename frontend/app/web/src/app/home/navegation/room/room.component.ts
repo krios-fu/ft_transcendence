@@ -6,7 +6,7 @@ import {ChatComponent} from "../../../chat/chat.component";
 import {HomeComponent} from "../../home.component";
 import { AuthService } from 'src/app/services/auth.service';
 import { Observable } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLinkActive } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
@@ -82,8 +82,9 @@ export class RoomComponent implements AfterViewInit{
 
   constructor( private http : HttpClient, 
     private authService: AuthService,
-    private router: Router,
+    public router: Router,
     private usersService: UsersService,
+     routeActivate: ActivatedRoute,
     ) {
 
 
@@ -133,6 +134,5 @@ export class RoomComponent implements AfterViewInit{
 
 
   hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
-
 
 }

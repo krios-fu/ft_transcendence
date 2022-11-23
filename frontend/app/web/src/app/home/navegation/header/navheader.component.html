@@ -30,3 +30,22 @@ justify-content: space-around;
 
   
 </div>
+
+<a mat-icon-button (click)="plus()" class="tree">
+  <mat-icon>{{plus_minus}}</mat-icon>
+  ROOM AND DM
+</a>
+
+<cdk-virtual-scroll-viewport *ngIf="status_room" class="efecct" style="height: 46vh; position: relative; color: white;   flex-direction:column-reverse;" itemSize="5">
+  <app-room ></app-room>
+</cdk-virtual-scroll-viewport>
+
+
+<div style="margin-top: 40px;" class="effect" *ngIf="!status_room">
+<div style="display: flex; justify-content: center; padding: 10px;"> <h1 style="font-size: 10px;">Friends online</h1></div>
+  <cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"  style=" height: 10vh; position: relative; color: white;" itemSize="5">
+    <section  >
+      <app-friend-online></app-friend-online>
+    </section>
+  </cdk-virtual-scroll-viewport>
+</div>
