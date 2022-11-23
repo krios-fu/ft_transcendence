@@ -1,3 +1,4 @@
+import { BaseEntity } from "src/common/classes/base.entity";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -5,12 +6,12 @@ import { UserRoomRolesDto } from "../dto/user_room_roles.dto";
 
 @Entity({ name: 'roles_room' })
 @Index(['userRoomId', 'roleId'], { unique: true })
-export class UserRoomRolesEntity {
+export class UserRoomRolesEntity extends BaseEntity {
    constructor(dto: UserRoomRolesDto) {
+      super();
       if (dto !== undefined) {
          Object.assign(this, dto);
      }
-     this.createdAt = new Date;
    }
    
    @PrimaryGeneratedColumn('increment')
@@ -49,11 +50,4 @@ export class UserRoomRolesEntity {
    )
    @JoinColumn({ name: 'role' })
    role: string;
-
-   @Column({
-      type: 'date',
-      name: 'created_at',
-      update: false,
-   })
-   createdAt: Date;
 }

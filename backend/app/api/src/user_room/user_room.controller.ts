@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, Logger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/entity/user.entity';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { RoomEntity } from 'src/room/entity/room.entity';

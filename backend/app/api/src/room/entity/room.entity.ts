@@ -1,7 +1,5 @@
-import { UserEntity } from "src/user/user.entity";
 import { CreateRoomDto } from "../dto/room.dto";
-import { 
-    BaseEntity, 
+import {  
     Column, 
     Entity, 
     JoinColumn, 
@@ -10,6 +8,8 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
+import { UserEntity } from "src/user/entity/user.entity";
+import { BaseEntity } from "src/common/classes/base.entity";
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -18,7 +18,6 @@ export class RoomEntity extends BaseEntity {
         if (dto !== undefined) {
             Object.assign(this, dto);
         }
-        this.createdAt = new Date();
     }
     @PrimaryGeneratedColumn('increment')
     id!: number;

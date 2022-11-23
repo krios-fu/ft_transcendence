@@ -4,11 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { CreateUserDto } from 'src/user/user.dto';
+import { CreateUserDto } from 'src/user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class AuthService {

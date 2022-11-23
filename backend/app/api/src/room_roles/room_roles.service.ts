@@ -58,16 +58,13 @@ export class RoomRolesService {
     }
 
     public async remove(id: number): Promise<void> {
-        await this.roomRolesRepository.delete(id);
+        await this.roomRolesRepository.softDelete(id);
     }
 
     /* ~~ role identifying service ~~ */
 
     public async isRole(roleToCheck: string, roomId: number): Promise<boolean> {
-        const roles: RolesEntity[] = await this.findRolesRoom(roomId);
-        //if (!roles.length) {
-        //    return false;
-        //}
-        return roles.filter(role => role.role === roleToCheck).length > 0;
+        return ((await this.findRolesRoom(roomId))
+            .filter(role => role.role === roleToCheck)).length > 0;
     }
 }

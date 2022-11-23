@@ -4,7 +4,7 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
@@ -63,10 +63,6 @@ export class UserRoomService {
         relations: { room: true },
         where:     { userId: userId },
         });
-
-        /* debugggg */
-        console.log(userRooms);
-        /* ........ */
 
         for (let userRoom of userRooms) {
         rooms.push(userRoom.room);

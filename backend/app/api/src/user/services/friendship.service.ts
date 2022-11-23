@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from '../user.repository';
-import { UserEntity } from '../user.entity';
+import { UserRepository } from '../repository/user.repository';
+import { UserEntity } from '../entity/user.entity';
 import { FriendshipRepository } from './friendship.repository';
 import { FriendshipEntity, FriendshipStatus } from './friendship.entity';
-import { FriendMapper } from './friendship.mapper';
 import { FriendDto } from './friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 
@@ -15,7 +14,6 @@ export class    FriendshipService {
         private userRepository: UserRepository,
         @InjectRepository(FriendshipEntity)
         private friendRepository: FriendshipRepository,
-        private friendMapper: FriendMapper,
         private datasorce: DataSource,
     ) {
         console.log("FriendshipService inicializado");
@@ -34,7 +32,7 @@ export class    FriendshipService {
     **  at the same time.
     */
 
-    async addFriend(senderId : string, receiverId : string)
+    public async addFriend(senderId : string, receiverId : string)
                     : Promise<FriendshipEntity> {
         const   friendship = new FriendshipEntity();
         const   queryRunner = this.datasorce.createQueryRunner();
@@ -74,7 +72,7 @@ export class    FriendshipService {
         return friendship;
     }
 
-    async getFriends(userId: string): Promise<FriendDto[]> {
+    async getFriends(userId: string): Promise<FriendshipEntity[]> {
         const friendships = await this.friendRepository.find({
             relations: {
                 sender: true,
@@ -93,11 +91,11 @@ export class    FriendshipService {
         });
         let friends: FriendDto[] = [];
 
-        for (let i = 0; i < friendships.length; ++i)
-        {
-            friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
-        }
-        return (friends);
+    //    for (let i = 0; i < friendships.length; ++i)
+    //   {
+    //        friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
+    //    }
+        return (friendships);
     }
 
     async getOneFriend(userId: string, friendId: string): Promise<FriendDto> {

@@ -3,10 +3,10 @@ import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
-import { UserEntity } from "src/user/user.entity";
 import { UpdateResult } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
 import { QueryMapper } from "src/common/mappers/query.mapper";
+import { UserEntity } from "src/user/entity/user.entity";
 
 @Injectable()
 export class RoomService {
@@ -44,7 +44,7 @@ export class RoomService {
     }
 
     public async removeRoom(roomId: number): Promise<void> {
-        await this.roomRepository.delete(roomId);
+        await this.roomRepository.softDelete(roomId);
     }
 
     public async findOneRoomByName(name: string): Promise<RoomEntity> {

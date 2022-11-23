@@ -1,4 +1,10 @@
-import { IsBoolean, IsEmail, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
+import {
+    IsBoolean, 
+    IsEmail, 
+    IsNotEmpty, 
+    IsString, 
+    Length 
+} from "class-validator";
 
 export class CreateUserDto {
     @IsString()
@@ -40,3 +46,19 @@ export class UpdateUserDto {
     @IsNotEmpty()
     doubleAuth?: boolean;
 }
+
+export class SettingsPayloadDto {
+    @IsBoolean()
+    @IsNotEmpty()
+    readonly isInvisible?: boolean;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    readonly acceptedTerms?: boolean;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    readonly doubleAuth?: boolean;
+
+}
+

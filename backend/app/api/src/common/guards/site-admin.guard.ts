@@ -1,7 +1,10 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
+import { 
+    CanActivate, 
+    ExecutionContext, 
+    Injectable 
+} from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserEntity } from "src/user/user.entity";
+import { UserEntity } from "src/user/entity/user.entity";
 import { UserService } from "src/user/user.service";
 import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 import { UserRolesService } from "src/user_roles/user_roles.service";

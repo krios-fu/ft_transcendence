@@ -1,29 +1,31 @@
-import { UserRepository } from './user.repository';
-import { UserMapper } from './user.mapper';
-import { UserEntity } from './user.entity';
-import { CreateUserDto } from './user.dto';
+import { UserRepository } from './repository/user.repository';
+import { UserEntity } from './entity/user.entity';
+import { CreateUserDto, SettingsPayloadDto } from './dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { isBoolean, isString } from 'class-validator';
-import { UserQueryDto } from './user.query.dto';
+import { UserQueryDto } from './dto/user.query.dto';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: UserRepository,
-        private userMapper: UserMapper
     ) { }
 
-    async findAllUsers(queryParams: UserQueryDto): Promise<UserEntity[]> {
+    public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
+        if (queryParams !== undefined) {
+            return await this.userRepository.find(new QueryMapper(queryParams));
+        }
         return await this.userRepository.find();
     }
 
-    async findOne(id: number): Promise<UserEntity> {
+    public async findOne(userId: number): Promise<UserEntity> {
         return await this.userRepository.findOne({
             where: {
-                id: id
+                id: userId
             }
         });
     }
@@ -37,7 +39,7 @@ export class UserService {
 
     /* post new user */
     async postUser(newUser: CreateUserDto): Promise<UserEntity> {
-        const newEntity = this.userMapper.toEntity(newUser);
+        const newEntity = new UserEntity(newUser);
 
         await this.userRepository.insert(newEntity);
         return newEntity;
@@ -71,6 +73,10 @@ export class UserService {
         return await this.userRepository.update(id, data);
     }
 
+    public async updateSettings(userId: number, dto: SettingsPayloadDto): Promise<UserEntity> {
+        this.userRepository.update();
+    }
+
     /*
     **  Delete user by name.
     **
@@ -79,7 +85,7 @@ export class UserService {
     */
 
     async deleteUser(id: number): Promise<void> {
-        await this.userRepository.delete(id);
+        await this.userRepository.softDelete(id);
     }
 
 }

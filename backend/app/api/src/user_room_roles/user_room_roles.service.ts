@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/entity/user.entity';
 import { UserService } from 'src/user/user.service';
 import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
@@ -69,7 +69,7 @@ export class UserRoomRolesService {
     }
 
     public async remove(id: number): Promise<void> {
-        await this.userRoomRolesRepository.delete(id);
+        await this.userRoomRolesRepository.softDelete(id);
     }
 
     public async findRoleByIds(userRoomId: number, roleId: number): Promise<UserRoomRolesEntity> {

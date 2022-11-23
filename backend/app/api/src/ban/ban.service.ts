@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from 'src/user/entity/user.entity';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
@@ -57,7 +57,7 @@ export class BanService {
     }
 
     public async deleteBan(ban_id: number): Promise<void> {
-        this.banRepository.delete(ban_id);
+        this.banRepository.softDelete(ban_id);
     }
 
     public async findOneByUserRoomIds(userId: number, roomId: number) {

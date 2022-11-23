@@ -1,16 +1,24 @@
+import { BaseEntity } from "src/common/classes/base.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
-import { UserEntity } from "src/user/user.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserEntity } from "src/user/entity/user.entity";
+import { 
+    Column, 
+    Entity, 
+    Index, 
+    JoinColumn, 
+    ManyToOne, 
+    PrimaryGeneratedColumn, 
+} from "typeorm";
 import { CreateBanDto } from "../dto/ban.dto";
 
 @Entity({ name: 'ban' })
 @Index(['userId', 'roomId'], { unique: true })
-export class BanEntity {
+export class BanEntity extends BaseEntity {
     constructor(dto?: CreateBanDto) {
+        super();
         if (dto !== undefined){
             Object.assign(this, dto);
         }
-        this.createdAt = new Date;    
     }
 
     @PrimaryGeneratedColumn('increment', { type: 'bigint' })
@@ -49,11 +57,4 @@ export class BanEntity {
     )
     @JoinColumn({ name: 'room_id' })
     room: RoomEntity;
-
-    @Column({
-        type: 'date',
-        name: 'created_at',
-        update: false
-    })
-    createdAt: Date;
 }

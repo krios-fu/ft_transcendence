@@ -1,17 +1,17 @@
 
 import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { UserEntity } from 'src/user/user.entity';
-import { Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { UserEntity } from 'src/user/entity/user.entity';
+import { BaseEntity, Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 
 @Entity({ name: 'roles_user' })
 @Index(['roleId', 'userId'], { unique: true })
-export class UserRolesEntity {
+export class UserRolesEntity extends BaseEntity {
     constructor (dto: CreateUserRolesDto) {
+        super();
         if (dto !== undefined) {
             Object.assign(this, dto);
         }
-        this.createdAt = new Date;
     }
 
     @Column({
@@ -46,10 +46,4 @@ export class UserRolesEntity {
     )
     @JoinColumn({ name: "role" })
     role: RolesEntity;
-
-    @Column({
-        type: 'date',
-        name: 'created_at'
-    })
-    createdAt: Date;
 }

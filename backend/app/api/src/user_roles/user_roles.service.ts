@@ -50,7 +50,7 @@ export class UserRolesService {
 
     /* Remove role entity by id */
     public async deleteRoleFromUser(id: number) { 
-        await this.userRolesRepository.delete(id);
+        await this.userRolesRepository.softDelete(id);
     }
     /* Test if delete removes from non-primary key column */
 

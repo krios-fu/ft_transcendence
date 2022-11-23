@@ -2,30 +2,49 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { RoomRolesService } from "src/room_roles/room_roles.service";
+import { UserService } from "src/user/user.service";
+import { UserRoomService } from "src/user_room/user_room.service";
 
 @Injectable()
 export class IsPrivate implements CanActivate {
     constructor(
-        private roomRolesService: RoomRolesService,
+        private readonly userService: UserService,
+        private readonly roomRolesService: RoomRolesService,
     ) { }
     canActivate(ctx: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const req = ctx.switchToHttp().getRequest();
         const username = req.username;
         const roomId = (req.method === 'POST') ?
-            req.body['roomId'] :
-            req.param['room_id'];
+            Number(req.body['roomId']) :
+            Number(req.param['room_id']);
+        const password = req.body['password'];
 
         if (username === undefined || roomId !== roomId) {
             return false;
         }
-        return this.validatePrivateRoom(roomId);
+        return this.validatePrivateRoom(username, roomId, password);
     }
 
-    private async validatePrivateRoom(roomId: number): Promise<boolean> {
+    private async validatePrivateRoom(
+        username: string, 
+        roomId: number,
+        password: string,
+    ): Promise<boolean> {
+        var hasAccess: boolean = false;
+        const privateRole = (await this.roomRolesService.findRolesRoom(roomId))
+            .filter((role: RolesEntity) => role.role === 'private');
+        
+        if (!privateRole.length) {
+            return true;
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            return false;
+        }
+        
 
-        this.roomRolesService.findRolesRoom(roomId).then((roles: RolesEntity[]) => {
-            /* filter role: if role is private: then check if body payload has password */
-        })
     }
+
+    private 
 
 }

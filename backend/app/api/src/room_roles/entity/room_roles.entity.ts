@@ -4,15 +4,16 @@ import { RoomEntity } from "src/room/entity/room.entity";
 import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 import * as bcrypt from "bcrypt";
+import { BaseEntity } from "src/common/classes/base.entity";
 
 @Entity({ name: 'room_role' })
 @Index(['roomId', 'roleId'], { unique: true })
-export class RoomRolesEntity {
+export class RoomRolesEntity extends BaseEntity {
     constructor(dto: CreateRoomRolesDto) {
+        super();
         if (dto !== undefined) {
             Object.assign(this, dto);
         }
-        this.createdAt = new Date;
     }
     
     @PrimaryGeneratedColumn('increment')
@@ -52,12 +53,6 @@ export class RoomRolesEntity {
     )
     @JoinColumn({ name: 'role_id' })
     role: RolesEntity;
-
-    @Column({
-        type: 'date',
-        name: 'created_at'
-    })
-    createdAt: Date;
 
     @Exclude()
     @Column({

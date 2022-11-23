@@ -1,12 +1,13 @@
 import {
-	CreateDateColumn,
 	Entity,
 	ManyToOne,
   Column,
   JoinColumn,
-  PrimaryColumn
+  PrimaryColumn,
+  BaseEntity
 } from "typeorm";
-import { UserEntity } from "../user.entity";
+import { UserEntity } from "../entity/user.entity";
+import { FriendDto } from "./friendship.dto";
 
 export enum FriendshipStatus {
 	PENDING = "pending",
@@ -17,9 +18,15 @@ export enum FriendshipStatus {
 @Entity({
   name: 'friendship'
 })
-export class  FriendshipEntity {
+export class  FriendshipEntity extends BaseEntity {
+  constructor(dto?: FriendDto) {
+    super();
+    if (dto !== undefined) {
 
-  @PrimaryColumn()
+    }
+  }
+
+  @PrimaryColumn({ name: 'sender_id' })
   senderId: string
 
   @ManyToOne(() => UserEntity)
@@ -30,7 +37,7 @@ export class  FriendshipEntity {
   )
   sender : UserEntity
 
-  @PrimaryColumn()
+  @PrimaryColumn({ name: 'receiver_id' })
   receiverId: string
 
   @ManyToOne(() => UserEntity)
@@ -45,8 +52,5 @@ export class  FriendshipEntity {
     default: FriendshipStatus.PENDING
   })
   status : FriendshipStatus
-
-  @CreateDateColumn()
-  since : Date
 
 }

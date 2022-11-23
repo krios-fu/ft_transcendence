@@ -1,16 +1,22 @@
 import { Exclude } from "class-transformer";
+import { BaseEntity } from "src/common/classes/base.entity";
 import {
 	Column,
-	CreateDateColumn,
 	Entity,
 	PrimaryGeneratedColumn,
-	UpdateDateColumn,
 } from "typeorm";
+import { CreateUserDto } from "../dto/user.dto";
 
 @Entity({
 	name: 'user'
 })
-export class UserEntity {
+export class UserEntity extends BaseEntity {
+	constructor(dto?: CreateUserDto) {
+		super();
+		if (dto !== undefined) {
+			Object.assign(this, dto);
+		}
+	}
 
 	@PrimaryGeneratedColumn('increment')
 	id: number;
@@ -35,13 +41,19 @@ export class UserEntity {
 
 	@Exclude()
 	@Column({
+		type: 'boolean',
 		default: false
 	})
 	doubleAuth : boolean;
 
-	@CreateDateColumn()
-	creationDate : Date;
+	@Column({
+		type: 'boolean',
+		default: false
+	})
+	defaultOffline: boolean;
 
-	@UpdateDateColumn()
-	lastConnection : Date;
+	@Column({ type: 'boolean' })
+	acceptedTerms: boolean;
+
+	//@Column() lastConnection : Date;
 }

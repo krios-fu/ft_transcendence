@@ -1,16 +1,17 @@
+import { BaseEntity } from "src/common/classes/base.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
-import { UserEntity } from "src/user/user.entity";
+import { UserEntity } from "src/user/entity/user.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateUserRoomDto } from "../dto/user_room.dto";
 
 @Entity({name: 'users_room'})
 @Index(['userId', 'roomId'], {unique: true})
-export class UserRoomEntity {
+export class UserRoomEntity extends BaseEntity {
     constructor (dto: CreateUserRoomDto) {
+        super();
         if (dto !== undefined) {
             Object.assign(this, dto);
         }
-        this.createdAt = new Date;
     }
 
     @PrimaryGeneratedColumn('increment', {type: 'bigint'})
