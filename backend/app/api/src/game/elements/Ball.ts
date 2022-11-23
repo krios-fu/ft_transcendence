@@ -135,22 +135,34 @@ export class    Ball {
         return (this._xPosition - this._radius + xDisplacement <= 0);
     }
 
+    /*
+    **  (paddleHitHeight / paddle.height) obtains percentage
+    **      of total paddle height.
+    **
+    **  (* (ballHitVelocity * 2) - ballHitVelocity) relates
+    **  paddle height percentage with ball
+    **  velocity range (-ballHitVelocity - +ballHitVelocity).
+    */
     private collisionPaddleLeft(paddle: Paddle): void {
+        const   ballHitVelocity = 300;
+        const   paddleHitHeight = this._yPosition - paddle.yPos
+                                    + paddle.halfHeight;
+        
         this._xPosition = paddle.xPos + paddle.halfWidth + this._radius;
-        this._xVelocity = 300;
-        if (this._yPosition < paddle.yPos)
-            this._yVelocity = Math.random() * (0 + 300) - 300;
-        else
-            this._yVelocity = Math.random() * (300 - 0) + 0;
+        this._xVelocity = ballHitVelocity;
+        this._yVelocity = ((paddleHitHeight / paddle.height)
+                            * (ballHitVelocity * 2)) - ballHitVelocity;
     }
 
     private collisionPaddleRight(paddle: Paddle): void {
+        const   ballHitVelocity = 300;
+        const   paddleHitHeight = this._yPosition - paddle.yPos
+                                    + paddle.halfHeight;
+        
         this._xPosition = paddle.xPos - paddle.halfWidth - this._radius;
-        this._xVelocity = 300;
-        if (this._yPosition < paddle.yPos)
-            this._yVelocity = Math.random() * (0 + 300) - 300;
-        else
-            this._yVelocity = Math.random() * (300 - 0) + 0;
+        this._xVelocity = ballHitVelocity;
+        this._yVelocity = ((paddleHitHeight / paddle.height)
+                            * (ballHitVelocity * 2)) - ballHitVelocity;
         this._xVelocity *= -1;
     }
 

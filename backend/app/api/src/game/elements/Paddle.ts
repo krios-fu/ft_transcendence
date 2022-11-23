@@ -41,6 +41,10 @@ export class    Paddle {
         this._side = init.side;
     }
 
+    get height(): number {
+        return (this._height);
+    }
+
     get halfWidth(): number {
         return (this._halfWidth);
     }
