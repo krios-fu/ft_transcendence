@@ -26,12 +26,13 @@ import { ChatRoutingModule } from './chat-routing.module';
     MatIconModule,
     MatButtonModule,
     // RouterModule,
+    
     MatBadgeModule,
     ChatRoutingModule,
   ],
   providers: [Chat],
   exports: [
-    ChatComponent,
+    // ChatComponent,
     // ChatIdComponent
     
   ]

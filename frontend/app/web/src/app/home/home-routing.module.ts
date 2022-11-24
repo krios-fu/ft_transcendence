@@ -5,6 +5,7 @@ import { LoginComponent } from "../login/login.component";
 import { SettingComponent } from './profile/setting/setting.component';
 import { NavHeaderComponent } from './navegation/header/navheader.component';
 import { ChatModule } from '../room/chat/chat.module';
+import { ChatComponent } from '../room/chat/chat.component';
 
 
 const HomeRoutes: Routes = [

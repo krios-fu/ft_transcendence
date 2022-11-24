@@ -109,6 +109,7 @@ export class RoomComponent implements AfterViewInit{
         const {membership} = data[chat];
         let {nickName} = membership[0].user;
         if (nickName === user_sesion ){
+          console.log(membership[1])
           nickName = membership[1].user.nickName;
         }
         this.statusTree = true;

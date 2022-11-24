@@ -8,7 +8,6 @@ import { FormControl, FormGroup } from '@angular/forms'; //
   selector: 'app-chat-id',
   templateUrl: './chat-id.component.html',
   styleUrls: ['./chat-id.component.scss'],
-  inputs: ['login'],
 })
 export class ChatIdComponent implements OnInit {
 

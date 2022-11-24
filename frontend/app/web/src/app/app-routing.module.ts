@@ -10,7 +10,7 @@ const routes: Routes = [
   { path: '', redirectTo: '/home/profile', pathMatch: 'full'},
   { path: 'home', loadChildren: ()=> import('./home/home.module').then(m => m.HomeModule),},
   // {path: 'home/profile', component: HomeComponent, pathMatch: 'full'},
-  // { path: 'login', component: LoginComponent, outlet: 'game' },
+  { path: 'login', component: LoginComponent , outlet:'game' },
 
   // {path: 'chat', loadChildren: () => import('./room/chat/chat.module').then(m => m.ChatModule),},
 ];

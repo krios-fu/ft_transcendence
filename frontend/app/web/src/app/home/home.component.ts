@@ -43,6 +43,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
   ) { 
+    console.log("HOME COMPONENT");
   }
 
   ngOnInit(): void {
