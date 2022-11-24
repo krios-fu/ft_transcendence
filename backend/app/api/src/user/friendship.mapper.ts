@@ -13,7 +13,7 @@ export class  FriendMapper {
     friend.user = friendship.sender.username != userId
       ? friendship.sender : friendship.receiver;
     friend.status = friendship.status;
-    friend.since = friendship.since;
+    friend.since = friendship.createdAt;
     return (friend);
   }
 
@@ -21,7 +21,7 @@ export class  FriendMapper {
     const friend = new FriendDto();
     friend.user = new UserEntity();
 
-    friend.user.nickName = friendship.senderId != userId
+    friend.user.nickname = friendship.senderId != userId
       ? friendship.sender.nickName : friendship.receiver.nickName;
     return (friend);
   }

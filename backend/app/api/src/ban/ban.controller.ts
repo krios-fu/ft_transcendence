@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
-import { UserEntity } from 'src/user/entity/user.entity';
-import { UserService } from 'src/user/user.service';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/services/user.service';
 import { BanService } from './ban.service';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';

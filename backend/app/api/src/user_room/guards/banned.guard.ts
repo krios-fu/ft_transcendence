@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { BanService } from "src/ban/ban.service";
 import { BanEntity } from "src/ban/entity/ban.entity";
-import { UserService } from "src/user/user.service";
+import { UserService } from "src/user/services/user.service";
 
 @Injectable()
 export class Banned implements CanActivate {

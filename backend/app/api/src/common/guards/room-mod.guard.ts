@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserService } from "src/user/user.service";
+import { UserService } from "src/user/services/user.service";
 import { UserRoomRolesService } from "src/user_room_roles/user_room_roles.service";
 
 @Injectable()

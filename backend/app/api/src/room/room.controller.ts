@@ -1,8 +1,8 @@
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
-import { UserEntity } from "src/user/entity/user.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 import { CreateRoomDto } from "./dto/room.dto";
-import { UserService } from "src/user/user.service";
+import { UserService } from "src/user/services/user.service";
 import { UpdateResult } from "typeorm";
 import { Body, 
     Controller, 

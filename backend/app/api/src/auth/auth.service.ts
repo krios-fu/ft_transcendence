@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
@@ -8,7 +8,7 @@ import { CreateUserDto } from 'src/user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
-import { UserEntity } from 'src/user/entity/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {

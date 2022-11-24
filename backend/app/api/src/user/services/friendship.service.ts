@@ -1,20 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from '../repository/user.repository';
-import { UserEntity } from '../entity/user.entity';
-import { FriendshipRepository } from './friendship.repository';
-import { FriendshipEntity, FriendshipStatus } from './friendship.entity';
-import { FriendDto } from './friendship.dto';
+import { UserRepository } from 'src/user/repositories/user.repository';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { FriendshipRepository } from 'src/user/repositories/friendship.repository';
+import { FriendshipEntity, FriendshipStatus } from 'src/user/entities/friendship.entity';
+import { FriendDto } from 'src/user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
+import { FriendMapper } from "../friendship.mapper";
 
 @Injectable()
 export class    FriendshipService {
     constructor(
         @InjectRepository(UserEntity)
-        private userRepository: UserRepository,
+        private readonly userRepository: UserRepository,
         @InjectRepository(FriendshipEntity)
-        private friendRepository: FriendshipRepository,
-        private datasorce: DataSource,
+        private readonly friendRepository: FriendshipRepository,
+        private readonly friendMapper: FriendMapper,
+        private readonly datasource: DataSource,
     ) {
         console.log("FriendshipService inicializado");
     }
@@ -35,7 +37,7 @@ export class    FriendshipService {
     public async addFriend(senderId : string, receiverId : string)
                     : Promise<FriendshipEntity> {
         const   friendship = new FriendshipEntity();
-        const   queryRunner = this.datasorce.createQueryRunner();
+        const   queryRunner = this.datasource.createQueryRunner();
         let     users: UserEntity[];
 
         //Start transaction

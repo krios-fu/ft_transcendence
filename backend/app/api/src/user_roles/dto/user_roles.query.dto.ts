@@ -1,5 +1,5 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsNumberString, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsNumberString, IsOptional, ValidateNested } from "class-validator";
 import { HasValidFields } from "src/common/decorators/order.decorator";
 import { BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";

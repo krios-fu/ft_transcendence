@@ -1,11 +1,11 @@
-import { UserRepository } from './repository/user.repository';
-import { UserEntity } from './entity/user.entity';
-import { CreateUserDto, SettingsPayloadDto } from './dto/user.dto';
+import { UserRepository } from 'src/user/repositories/user.repository';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { CreateUserDto, SettingsPayloadDto } from 'src/user/dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { isBoolean, isString } from 'class-validator';
-import { UserQueryDto } from './dto/user.query.dto';
+import { UserQueryDto } from 'src/user/dto/user.query.dto';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 
 @Injectable()

@@ -4,8 +4,8 @@ import {
     Injectable 
 } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserEntity } from "src/user/entity/user.entity";
-import { UserService } from "src/user/user.service";
+import { UserEntity } from "src/user/entities/user.entity";
+import { UserService } from "src/user/services/user.service";
 import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 import { UserRolesService } from "src/user_roles/user_roles.service";
 import { IRequestUser } from "../interfaces/request-payload.interface";

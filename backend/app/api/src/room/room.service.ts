@@ -6,7 +6,7 @@ import { RoomRepository } from "./repository/room.repository";
 import { UpdateResult } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
 import { QueryMapper } from "src/common/mappers/query.mapper";
-import { UserEntity } from "src/user/entity/user.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 
 @Injectable()
 export class RoomService {

@@ -1,4 +1,4 @@
-import { CreateRoomDto } from "../dto/room.dto";
+import { CreateRoomDto } from "src/room/dto/room.dto";
 import {  
     Column, 
     Entity, 
@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
-import { UserEntity } from "src/user/entity/user.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 
 @Entity({ name: "room" })

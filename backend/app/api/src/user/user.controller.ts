@@ -72,10 +72,22 @@ export class UserController {
         return user;
     }
 
-    /* Get all friends from user */
-    @Get(':id/friends')
-    async getFriends(@Req() req: IRequestUser): Promise<FriendDto[]> {
-        return this.friendshipService.getFriends(req.username);
+    /*
+    ** Get all friends from user
+    ** (user_id must be my id or I need to be an admin)
+    */
+    @Get(':user_id/friends')
+    async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendDto[]> {
+        return this.friendshipService.getFriends(userId);
+    }
+
+    /*
+    ** Get my friends (I must be me)
+    **
+    */
+    @Get('me/friends')
+    public getMyFriends(@Req() req: IRequestUser): Promise<FriendDto[]> {
+
     }
 
     /* Get one friend from user by id */

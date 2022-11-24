@@ -1,6 +1,6 @@
 
 import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { UserEntity } from 'src/user/entity/user.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { BaseEntity, Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 

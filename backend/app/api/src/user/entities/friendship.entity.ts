@@ -4,10 +4,10 @@ import {
   Column,
   JoinColumn,
   PrimaryColumn,
-  BaseEntity
 } from "typeorm";
-import { UserEntity } from "../entity/user.entity";
-import { FriendDto } from "./friendship.dto";
+import { UserEntity } from "src/user/entities/user.entity";
+import { FriendDto } from "src/user/dto/friendship.dto";
+import { BaseEntity } from "src/common/classes/base.entity";
 
 export enum FriendshipStatus {
 	PENDING = "pending",
