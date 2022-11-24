@@ -3,13 +3,12 @@ import { ActivatedRoute } from "@angular/router";
 
 import { HttpClient } from "@angular/common/http";
 import { MatExpansionModule } from '@angular/material/expansion';
-import { Chat } from '../chat/chat';
+import { Chat } from '../room/chat/chat';
 import { Payload, UserDto } from '../dtos/user.dto';
 import { Observable } from 'rxjs';
-import { ChatComponent } from "../chat/chat.component";
-import { ChatModule } from "../chat/chat.module";
-import { MatTreeNestedDataSource } from "@angular/material/tree";
-import { NestedTreeControl } from "@angular/cdk/tree";
+import { ChatComponent } from '../room/chat/chat.component';
+import { ChatModule } from "../room/chat/chat.module";
+
 import { NavHeaderComponent } from "./navegation/header/navheader.component";
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';

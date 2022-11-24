@@ -7,16 +7,16 @@ import {MatExpansionModule} from "@angular/material/expansion";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
-import {RouterModule} from "@angular/router";
 import {MatBadgeModule} from "@angular/material/badge";
 import { ChatIdComponent } from './chat-id/chat-id.component';
-
+import { ChatRoutingModule } from './chat-routing.module';
 
 
 @NgModule({
   declarations: [
     ChatComponent,
     ChatIdComponent,
+    // RoomComponent
   ],
   imports: [
     CommonModule,
@@ -25,12 +25,14 @@ import { ChatIdComponent } from './chat-id/chat-id.component';
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
-    RouterModule,
-    MatBadgeModule
+    // RouterModule,
+    MatBadgeModule,
+    ChatRoutingModule,
   ],
   providers: [Chat],
   exports: [
     ChatComponent,
+    // ChatIdComponent
     
   ]
 })

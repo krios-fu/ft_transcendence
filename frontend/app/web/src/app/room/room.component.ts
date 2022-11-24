@@ -2,14 +2,9 @@ import {AfterViewChecked, AfterViewInit, Component, EventEmitter, OnInit, Input,
 import {FlatTreeControl} from "@angular/cdk/tree";
 import {MatTreeFlatDataSource, MatTreeFlattener} from "@angular/material/tree";
 import {HttpClient} from "@angular/common/http";
-import {ChatComponent} from "../../../chat/chat.component";
-import {HomeComponent} from "../../home.component";
 import { AuthService } from 'src/app/services/auth.service';
-import { Observable } from 'rxjs';
 import { ActivatedRoute, Router, RouterLinkActive } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
-import { UserDto } from 'src/app/dtos/user.dto';
-import { CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 
 
 

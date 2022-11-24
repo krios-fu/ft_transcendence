@@ -1,3 +1,15 @@
-
-<router-outlet></router-outlet>
-
+<app-header></app-header>
+<div class="row">
+	<div class="column1 ">
+		<router-outlet></router-outlet>
+		
+	</div>
+	<div class="column2 ">
+		<router-outlet name="game"></router-outlet>
+	</div>
+	<div class="column3">
+		<div>
+		<router-outlet name="chat"></router-outlet>
+		</div>
+	</div>
+</div>

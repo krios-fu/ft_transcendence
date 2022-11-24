@@ -4,7 +4,7 @@ import {HttpClient} from "@angular/common/http";
 
 import {map} from "rxjs";
 import {newArray} from "@angular/compiler/src/util";
-import { AuthService } from "../services/auth.service";
+import { AuthService } from "../../services/auth.service";
 
 export class message {
   content: string;

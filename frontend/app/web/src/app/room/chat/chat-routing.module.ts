@@ -5,16 +5,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { ChatIdComponent } from './chat-id/chat-id.component';
 
 const routes: Routes = [
-	{ path: 'chat', component : ChatComponent, children : [
-    {path: 'chat/:id', component : ChatIdComponent}
-  ] },
+	{ path: '', component : ChatComponent,},
+  { path: ':id', component : ChatIdComponent}
 ]
 
 @NgModule({
   declarations: [],
   imports: [
 	RouterModule.forChild(routes),
-    CommonModule
+    // CommonModule
   ],
   exports:[RouterModule]
 })

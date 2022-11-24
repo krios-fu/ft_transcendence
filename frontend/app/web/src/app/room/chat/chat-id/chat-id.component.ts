@@ -33,7 +33,7 @@ export class ChatIdComponent implements OnInit {
     private router_: Router,
     private http: HttpClient) {
     this.unfold = 'unfold_less';
-    console.log("CHAT COMPONENT")
+    console.log("CHAT COMPONENT", this.route.params)
     // this.login = this.route.snapshot.paramMap.get('id')?.toString();
   }
 
@@ -46,10 +46,12 @@ export class ChatIdComponent implements OnInit {
 
       this.chat.resetChat();
 
+        console.log('-->',id)
       // this.chat.joinRoom(id);
       // friend chat
       this.http.get('http://localhost:3000/users/' + this.login)
         .subscribe((user) => {
+          console.log(user);
           this.user = Object.assign(user);
         });
       this.chat.getMessageApi(id);
