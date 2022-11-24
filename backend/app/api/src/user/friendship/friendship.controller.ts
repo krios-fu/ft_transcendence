@@ -8,7 +8,6 @@ import {
 } from "@nestjs/common";
 import { FriendshipService } from "./friendship.service";
 import { FriendshipEntity } from './friendship.entity';
-import { FriendDto } from './friendship.dto';
 import { UpdateResult } from 'typeorm';
 
 @Controller('friends')
@@ -20,13 +19,13 @@ export class    FriendshipController {
     }
 
     @Get()
-    async getFriends(@Req() req): Promise<FriendDto[]> {
+    async getFriends(@Req() req): Promise<FriendshipEntity[]> {
         return this.friendshipService.getFriends(req.user.data);
     }
 
     @Get(':id')
     async getOneFriend( @Req() req, @Param('id') id: string )
-                        : Promise<FriendDto> {
+                        : Promise<FriendshipEntity> {
         return this.friendshipService.getOneFriend(req.user.data, id);
     }
 

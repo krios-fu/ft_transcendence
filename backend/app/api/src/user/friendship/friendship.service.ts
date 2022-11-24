@@ -4,22 +4,17 @@ import {
     HttpStatus
 } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from '../user.repository';
 import { UserEntity } from '../user.entity';
 import { FriendshipRepository } from './friendship.repository';
 import { FriendshipEntity, FriendshipStatus } from './friendship.entity';
-import { FriendMapper } from './friendship.mapper';
-import { FriendDto } from './friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 
 @Injectable()
 export class    FriendshipService {
     constructor(
         @InjectRepository(UserEntity)
-        private userRepository: UserRepository,
         @InjectRepository(FriendshipEntity)
         private friendRepository: FriendshipRepository,
-        private friendMapper: FriendMapper,
         private datasource: DataSource,
     ) {
         console.log("FriendshipService inicializado");
@@ -79,54 +74,69 @@ export class    FriendshipService {
         return friendship;
     }
 
-    async getFriends(userId: string): Promise<FriendDto[]> {
-        const friendships = await this.friendRepository.find({
-            relations: {
-                sender: true,
-                receiver: true,
-            },
-            where: [
+    async getFriends(userId: string): Promise<FriendshipEntity[]> {
+        return (await this.friendRepository.createQueryBuilder("friendship")
+            .leftJoinAndSelect(
+                "friendship.sender",
+                "sender",
+                "sender.username!= :id",
+                {id: userId})
+            .leftJoinAndSelect(
+                "friendship.receiver",
+                "receiver",
+                "receiver.username!= :id",
+                {id: userId})
+            .where(
+                "friendship.senderId= :id"
+                + "AND friendship.status= :status",
                 {
-                    senderId: userId,
-                    status: FriendshipStatus.CONFIRMED,
-                },
+                    id: userId,
+                    status: FriendshipStatus.CONFIRMED
+                })
+            .orWhere(
+                "friendship.receiverId= :id"
+                + "AND friendship.status= :status",
                 {
-                    receiverId: userId,
-                    status: FriendshipStatus.CONFIRMED,
-                },
-            ]
-        });
-        let friends: FriendDto[] = [];
-
-        for (let i = 0; i < friendships.length; ++i)
-        {
-            friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
-        }
-        return (friends);
+                    id: userId,
+                    status: FriendshipStatus.CONFIRMED
+                })
+            .getMany()
+        );
     }
 
-    async getOneFriend(userId: string, friendId: string): Promise<FriendDto> {
-        const friendship = await this.friendRepository.find({
-            relations: {
-                sender: true,
-                receiver: true
-            },
-            where: [
+    async getOneFriend(userId: string, friendId: string)
+                        : Promise<FriendshipEntity> {
+        return (await this.friendRepository.createQueryBuilder("friendship")
+            .leftJoinAndSelect(
+                "friendship.sender",
+                "sender",
+                "sender.username!= :id",
+                {id: userId})
+            .leftJoinAndSelect(
+                "friendship.receiver",
+                "receiver",
+                "receiver.username!= :id",
+                {id: userId})
+            .where(
+                "friendship.senderId= :uId"
+                + "AND friendship.receiverId= :fId"
+                + "AND friendship.status= :status",
                 {
-                    senderId: userId,
-                    receiverId: friendId,
+                    uId: userId,
+                    fId: friendId,
                     status: FriendshipStatus.CONFIRMED
-                },
+                })
+            .orWhere(
+                "friendship.receiverId= :uId"
+                + "AND friendship.senderId= :fId"
+                + "AND friendship.status= :status",
                 {
-                    senderId: friendId,
-                    receiverId: userId,
+                    uId: userId,
+                    fId: friendId,
                     status: FriendshipStatus.CONFIRMED
-                }
-            ]
-        });
-        if (friendship.length != 1)
-            return new FriendDto();
-        return this.friendMapper.toFriendDto(userId, friendship[0]);
+                })
+            .getOne()
+        );
     }
 
     /*
