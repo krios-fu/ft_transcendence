@@ -20,49 +20,38 @@ export class    MatchService {
     }
 
     async findUserMatches(userId: string): Promise<MatchEntity[]> {
-        return await this.matchRepository.find({
-            relations: {
-                winner: {
-                    user: true
-                },
-                loser: {
-                    user: true
-                }
-            },
-            select: {
-                winner: {
-                    user: {
-                        nickName: true,
-                        photoUrl: true
-                    }
-                },
-                loser: {
-                    user: {
-                        nickName: true,
-                        photoUrl: true
-                    }
-                }
-            },
-            where: [
-                {
-                    winner: {
-                        user: {
-                            username: userId
-                        }
-                    }
-                },
-                {
-                    loser: {
-                        user: {
-                            username: userId
-                        }
-                    }
-                }
-            ],
-            order: {
-                playedAt: "DESC"
-            }
-        });
+        return (await this.matchRepository.createQueryBuilder("match")
+            .leftJoinAndSelect(
+                "match.winner",
+                "winner")
+            .leftJoinAndSelect(
+                "match.loser",
+                "loser")
+            .leftJoinAndSelect(
+                "winner.user",
+                "winnerUser")
+            .leftJoinAndSelect(
+                "loser.user",
+                "loserUser")
+            .select(
+                [
+                    "match.official",
+                    "match.playedAt",
+                    "winner.score",
+                    "loser.score",
+                    "winnerUser.nickName",
+                    "loserUser.nickName",
+                    "winnerUser.photoUrl",
+                    "loserUser.photoUrl"
+                ])
+            .where(
+                "winnerUser.username= :id",
+                {id: userId})
+            .orWhere(
+                "loserUser.username= :id",
+                {id: userId})
+            .getMany()
+        );
     }
 
     async findOneMatch(matchId: number): Promise<MatchEntity> {
