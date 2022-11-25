@@ -1,6 +1,6 @@
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { CreateUserDto, SettingsPayloadDto } from 'src/user/dto/user.dto';
+import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from 'src/user/dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
@@ -38,7 +38,7 @@ export class UserService {
     }
 
     /* post new user */
-    async postUser(newUser: CreateUserDto): Promise<UserEntity> {
+    public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
         const newEntity = new UserEntity(newUser);
 
         await this.userRepository.insert(newEntity);
@@ -52,29 +52,12 @@ export class UserService {
     **  Determine if value checks of keys are necessary.
     */
 
-    async updateUser(id: number, data: Object): Promise<UpdateResult> {
-        const   validData = new Set();
-
-        for (let [key, value] of Object.entries(data)) {
-            if (
-                (( key === "photoUrl" && isString(value) )
-                    || ( key === "nickName" && isString(value) )
-                    || ( key === "doubleAuth" && isBoolean(value) )
-                    || ( key === "status"
-                        && (value === "online"
-                            || value === "offline"
-                            || value === "playing") ))
-                && validData.has(key) == false
-            )
-                validData.add(key);
-            else
-                return new UpdateResult();
-        }
-        return await this.userRepository.update(id, data);
+    public async updateUser(id: number, dto: UpdateUserDto): Promise<UpdateResult> {
+        return await this.userRepository.update(id, dto);
     }
 
-    public async updateSettings(userId: number, dto: SettingsPayloadDto): Promise<UserEntity> {
-        this.userRepository.update();
+    public async updateSettings(userId: number, dto: SettingsPayloadDto): Promise<UpdateResult> {
+        return await this.userRepository.update(userId, dto);
     }
 
     /*

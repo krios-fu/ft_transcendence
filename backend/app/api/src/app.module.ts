@@ -12,6 +12,12 @@ import { UserRoomRolesModule } from './user_room_roles/user_room_roles.module';
 import { RolesModule } from './roles/roles.module';
 import { UserRoomModule } from './user_room/user_room.module';
 import { RoomRolesModule } from './room_roles/room_roles.module';
+import { AchievementsController } from './achievements/achievements.controller';
+import { AchievementsService } from './achievements/achievements.service';
+import { AchievementsModule } from './achievements/achievements.module';
+import { AchievementsUserController } from './achievements_user/achievements_user.controller';
+import { AchievementsUserService } from './achievements_user/achievements_user.service';
+import { AchievementsUserModule } from './achievements_user/achievements_user.module';
 
 @Module({
     imports: [
@@ -35,14 +41,17 @@ import { RoomRolesModule } from './room_roles/room_roles.module';
         UserRoomRolesModule,
         BanModule,
         RoomRolesModule,
+        AchievementsModule,
+        AchievementsUserModule,
     ],
-    controllers: [],
+    controllers: [AchievementsController, AchievementsUserController],
     //providers: [
     //    {
     //        provide: APP_GUARD,
     //        useClass: JwtAuthGuard,
     //    },
     //],
-    exports: []
+    exports: [],
+    providers: [AchievementsService, AchievementsUserService]
 })
 export class AppModule { }

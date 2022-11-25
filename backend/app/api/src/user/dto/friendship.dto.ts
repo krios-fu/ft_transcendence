@@ -1,10 +1,11 @@
-import { IsDate, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsObject } from "class-validator";
 import { FriendshipStatus } from "../entities/friendship.entity";
+import { UserEntity } from "../entities/user.entity";
 
 export class    FriendDto {
-    @IsString()
+    @IsObject()
     @IsNotEmpty()
-    user: string;
+    user: UserEntity;
 
     @IsEnum(FriendshipStatus)
     @IsNotEmpty()

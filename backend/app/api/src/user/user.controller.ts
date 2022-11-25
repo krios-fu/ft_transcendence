@@ -34,8 +34,7 @@ export class UserController {
     private readonly userLogger: Logger;
 
     /*
-    ** Find all users registered into
-    ** the the app.
+    ** Find all users registered into the app.
     */
 
     @Get()
@@ -44,10 +43,11 @@ export class UserController {
     }
 
     /*
-    **
-    **
+    ** Get request user info.
+    ** (User must be himself)
     */
 
+    //@UseGuards(MyGuard)
     @Get('me')
     public async findMe(@Req() req: IRequestUser) {
         if (req.username === undefined) {
@@ -58,8 +58,7 @@ export class UserController {
     }
 
     /*
-    **
-    **
+    ** Find one user registered into app by id.
     */
 
     @Get(':id')
@@ -76,31 +75,57 @@ export class UserController {
     ** Get all friends from user
     ** (user_id must be my id or I need to be an admin)
     */
+
     @Get(':user_id/friends')
     async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendDto[]> {
-        return this.friendshipService.getFriends(userId);
+        return await this.friendshipService.getFriends(userId);
     }
 
     /*
     ** Get my friends (I must be me)
     **
     */
-    @Get('me/friends')
-    public getMyFriends(@Req() req: IRequestUser): Promise<FriendDto[]> {
 
+    @Get('me/friends')
+    public async getMyFriends(@Req() req: IRequestUser): Promise<FriendDto[]> {
+        const username = req.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(req.username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return await this.friendshipService.getFriends(user.id);
     }
 
     /* Get one friend from user by id */
-    @Get(':id/friends/:id')
-    async getOneFriend( @Req() req: IRequestUser, @Param('id') id: string )
-                        : Promise<FriendDto> {
-        return this.friendshipService.getOneFriend(req.username, id);
+    @Get(':user_id/friends/:friend_id')
+    async getOneFriend( 
+        @Req() req: IRequestUser, 
+        @Param('friend_id', ParseIntPipe) friendId: number 
+    ): Promise<FriendDto> {
+        const username = req.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(req.username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.getOneFriend(user.id, friendId);
     }
 
     /* Create a new friendship */
     @Post(':id/friends')
-    async postFriend( @Req() req: IRequestUser, @Param('id') id: string )
-                        : Promise<FriendshipEntity> {
+    async postFriend( 
+        @Req() req: IRequestUser, 
+        @Param('id') id: string 
+    ): Promise<FriendshipEntity> {
         return this.friendshipService.addFriend(req.username, id);
     }
 
@@ -120,9 +145,11 @@ export class UserController {
     **  if username of the request matches the receiverId in friendship.
     */
 
-    @Patch('refuse/:id')
-    async refuseFriend( @Req() req: IRequestUser, @Param('id') id: string )
-                        : Promise<UpdateResult> {
+    @Patch(':user_id/friends/:friend_id/refuse/')
+    async refuseFriend( 
+        @Req() req: IRequestUser, 
+        @Param('id', ParseIntPipe) id: number 
+    ): Promise<UpdateResult> {
         return this.friendshipService.refuseFriend(req.username, id);
     }
 
@@ -140,7 +167,7 @@ export class UserController {
     @Post()
     async postUser(@Body() newUser: CreateUserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
-            this.userLogger.error('User with id ' + newUser.username + ' already exists in database');
+            this.userLogger.error(`User with id ${newUser.username} already exists in database`);
             throw new HttpException('User already exists',
                         HttpStatus.BAD_REQUEST);
         }
@@ -156,16 +183,19 @@ export class UserController {
 
     /* it is me! (or admin) */
     @Patch(':id')
-    public async updateUser( @Param('id', ParseIntPipe) id: number, @Body() body: UpdateUserDto)
-                    : Promise<UpdateResult> {
-        return this.userService.updateUser(id, body);
+    public async updateUser( 
+        @Param('id', ParseIntPipe) id: number, 
+        @Body() dto: UpdateUserDto
+    ): Promise<UserEntity> {
+        await this.userService.updateUser(id, dto);
+        return await this.userService.findOne(id);
     }
 
     @Patch(':id/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
         @Param(':id', ParseIntPipe) userId: number
-    ): Promise<UserEntity> {
+    ): Promise<UpdateResult> {
         const user = this.userService.findOne(userId);
         if (user === null) {
             this.userLogger.error(`User with id ${userId} not found in database`);

@@ -34,7 +34,7 @@ export class    FriendshipService {
     **  at the same time.
     */
 
-    public async addFriend(senderId : string, receiverId : string)
+    public async addFriend(senderId : number, receiverId : number)
                     : Promise<FriendshipEntity> {
         const   friendship = new FriendshipEntity();
         const   queryRunner = this.datasource.createQueryRunner();
@@ -46,15 +46,15 @@ export class    FriendshipService {
         try {
             users = await this.userRepository.find({
                 where: [
-                    { username: senderId },
-                    { username: receiverId }
+                    { id: senderId },
+                    { id: receiverId }
                 ]
             });
             if (users.length != 2)
                 throw new Error("Users not found.");
-            friendship.sender = users[0].username === senderId
+            friendship.sender = users[0].id === senderId
                 ? users[0] : users[1];
-            friendship.receiver = users[0].username === receiverId
+            friendship.receiver = users[0].id === receiverId
                 ? users[0] : users[1];
             if ( (await this.friendRepository.find({
                 where: {
@@ -74,7 +74,7 @@ export class    FriendshipService {
         return friendship;
     }
 
-    async getFriends(userId: string): Promise<FriendshipEntity[]> {
+    async getFriends(userId: number): Promise<FriendDto[]> {
         const friendships = await this.friendRepository.find({
             relations: {
                 sender: true,
@@ -93,14 +93,14 @@ export class    FriendshipService {
         });
         let friends: FriendDto[] = [];
 
-    //    for (let i = 0; i < friendships.length; ++i)
-    //   {
-    //        friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
-    //    }
-        return (friendships);
+        for (let i = 0; i < friendships.length; ++i)
+        {
+            friends.push(this.friendMapper.toFriendDto(userId, friendships[i]));
+        }
+        return (friends);
     }
 
-    async getOneFriend(userId: string, friendId: string): Promise<FriendDto> {
+    async getOneFriend(userId: number, friendId: number): Promise<FriendDto> {
         const friendship = await this.friendRepository.find({
             relations: {
                 sender: true,
@@ -129,7 +129,7 @@ export class    FriendshipService {
     **  where sender and receiver usernames match senderId and receiverId.
     */
 
-    async acceptFriend(receiverId: string, senderId: string)
+    async acceptFriend(receiverId: number, senderId: number)
                         :  Promise<UpdateResult> {
         return await this.friendRepository.update(
             {
@@ -146,7 +146,7 @@ export class    FriendshipService {
     **  where sender and receiver usernames match senderId and receiverId.
     */
 
-    async refuseFriend(receiverId: string, senderId: string)
+    async refuseFriend(receiverId: number, senderId: number)
                         :  Promise<UpdateResult> {
         return await this.friendRepository.update(
             {

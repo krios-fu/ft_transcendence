@@ -3,7 +3,8 @@ import {
 	ManyToOne,
   Column,
   JoinColumn,
-  PrimaryColumn,
+  Index,
+  PrimaryGeneratedColumn,
 } from "typeorm";
 import { UserEntity } from "src/user/entities/user.entity";
 import { FriendDto } from "src/user/dto/friendship.dto";
@@ -18,16 +19,19 @@ export enum FriendshipStatus {
 @Entity({
   name: 'friendship'
 })
+@Index(['senderId', 'receiverId'], { unique: true })
 export class  FriendshipEntity extends BaseEntity {
-  constructor(dto?: FriendDto) {
+  constructor(dto?: /*Create*/FriendDto) {
     super();
     if (dto !== undefined) {
 
     }
   }
+  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  id: number;
 
-  @PrimaryColumn({ name: 'sender_id' })
-  senderId: string
+  @Column({ name: 'sender_id' })
+  senderId: number
 
   @ManyToOne(() => UserEntity)
   @JoinColumn(
@@ -37,8 +41,8 @@ export class  FriendshipEntity extends BaseEntity {
   )
   sender : UserEntity
 
-  @PrimaryColumn({ name: 'receiver_id' })
-  receiverId: string
+  @Column({ name: 'receiver_id' })
+  receiverId: number
 
   @ManyToOne(() => UserEntity)
   @JoinColumn(
