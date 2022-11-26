@@ -93,12 +93,27 @@ export class    MenuRenderer {
             this._nickBTxt.visible = true;
         }
         else
+        {
             this._stageImage.visible = true;
+            this.showStageArrows();
+        }
     }
 
     private changeImage(image: Phaser.GameObjects.Image,
                         imagePaths: string[], element: number): void {
         image.setTexture(imagePaths[element]);
+    }
+
+    private showStageArrows(): void {
+        this._aArrows.setLeftPos({
+            x: 50,
+            y: 300
+        });
+        this._aArrows.setRightPos({
+            x: 750,
+            y: 300
+        });
+        this._aArrows.visible = true;
     }
 
     render(selectionStatus: SelectionStatus, player: string,
@@ -143,6 +158,7 @@ export class    MenuRenderer {
                 this._nickBTxt.visible = false;
                 this._stageImage.visible = true;
             }
+            this.showStageArrows();
         }
     }
 

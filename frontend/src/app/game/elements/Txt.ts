@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import { BaseScene } from '../scenes/BaseScene';
+import { PositionInit } from './MenuArrows';
 
 export interface    ITxtInitData {
     xPos: number;
@@ -40,6 +41,11 @@ export class    Txt {
 
     set visible(input: boolean) {
         this._text.setVisible(input);
+    }
+
+    setPos(data: PositionInit) {
+        this._text.x = data.x;
+        this._text.y = data.y;
     }
 
 }
