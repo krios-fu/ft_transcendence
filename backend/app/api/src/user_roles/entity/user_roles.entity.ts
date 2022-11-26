@@ -1,7 +1,7 @@
 
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { BaseEntity, Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 
 @Entity({ name: 'roles_user' })
@@ -14,14 +14,11 @@ export class UserRolesEntity extends BaseEntity {
         }
     }
 
-    @Column({
-        unique: true,
-        type: 'bigint',
-    })
+    @PrimaryGeneratedColumn('increment', { type: 'bigint' })
     @Generated('increment')
     id: number;
 
-    @PrimaryColumn({
+    @Column({
         type: 'bigint',
         name: 'user_id'
     })
@@ -34,7 +31,7 @@ export class UserRolesEntity extends BaseEntity {
     @JoinColumn({ name: 'user' })
     user: UserEntity;
 
-    @PrimaryColumn({
+    @Column({
         type: 'bigint',
         name: 'role_id'
     })

@@ -13,8 +13,8 @@ export class UserRoomRolesEntity extends BaseEntity {
          Object.assign(this, dto);
      }
    }
-   
-   @PrimaryGeneratedColumn('increment')
+
+   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
    id: number;
 
    @Column({

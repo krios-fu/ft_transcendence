@@ -7,6 +7,7 @@ import { UserRoomRepository } from './repository/user_room.repository';
 import { UserModule } from 'src/user/user.module';
 import { RoomModule } from 'src/room/room.module';
 import { RoomRolesModule } from 'src/room_roles/room_roles.module';
+import { BanModule } from 'src/ban/ban.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RoomRolesModule } from 'src/room_roles/room_roles.module';
     UserModule,
     RoomModule,
     RoomRolesModule,
+    BanModule,
   ],
   controllers: [UserRoomController],
   providers: [

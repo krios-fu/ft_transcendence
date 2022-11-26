@@ -152,9 +152,9 @@ export class UserController {
     **  if username of the request matches the receiverId in friendship.
     */
    
-    @Patch(':user_id/friends/:friend_id/accept/')
-    async acceptFriend(
-        @Req() req: IRequestUser, 
+    //UseGuards(ItIsMe)
+    @Patch(':user_id/friends/:friend_id/accept')
+    async acceptFriend( 
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -163,7 +163,7 @@ export class UserController {
             this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
             throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
         }
-        return this.friendshipService.acceptFriend(req.username, id);
+        return this.friendshipService.acceptFriend(userId, friendId);
     }
 
     /*
@@ -171,9 +171,9 @@ export class UserController {
     **  if username of the request matches the receiverId in friendship.
     */
 
-    @Patch(':user_id/friends/:friend_id/refuse/')
-    async refuseFriend( 
-        @Req() req: IRequestUser, 
+    //UseGuards(ItIsMe)
+    @Patch(':user_id/friends/:friend_id/refuse')
+    async refuseFriend(  
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {

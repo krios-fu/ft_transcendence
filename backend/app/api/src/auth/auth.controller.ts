@@ -52,6 +52,9 @@ export class AuthController {
             @Req() req: Request,
             @Res({ passthrough: true }) res: Response
         ) {
+        //if (!('refresh_token' in req.cookies)) {
+        //    throw new HttpException('user not authenticated', HttpStatus.UNAUTHORIZED);
+        //}
         const refreshToken: string = req.cookies['refresh_token'];
         const authUser: string = req.query.user as string;
         let authPayload: IAuthPayload;

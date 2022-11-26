@@ -99,7 +99,6 @@ export class AuthService {
         let tokenEntity: RefreshTokenEntity;
         let userEntity: UserEntity;
 
-
         userEntity = await this.userService.findOneByUsername(username);
         if (userEntity === null) {
             throw TokenError.NO_TOKEN_OR_USER;

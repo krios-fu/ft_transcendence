@@ -18,6 +18,6 @@ import { RoomModule } from 'src/room/room.module';
     BanRepository,
   ],
   controllers: [BanController],
-  exports: []
+  exports: [BanService]
 })
 export class BanModule { }

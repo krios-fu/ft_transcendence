@@ -23,7 +23,12 @@ export class AchievementsUserController {
 
     @Get(':id')
     public async getOneAchievementUser(@Param('id', ParseIntPipe) id: number): Promise<AchievementUserEntity> {
-        return await this.achievementsUserService.getOneAchievementUser(id);
+        const achUsr = await this.achievementsUserService.getOneAchievementUser(id);
+        if (achUsr === null) {
+            this.achievementsUserLogger.error(`No achievement user with id ${id} present in database`);
+            throw new HttpException('no achievement user in db', HttpStatus.BAD_REQUEST);
+        }
+        return achUsr;
     }
 
     @Post()

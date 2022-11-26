@@ -1,4 +1,4 @@
-import { Injectable, PreconditionFailedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -11,15 +11,11 @@ import { FriendMapper } from "../friendship.mapper";
 @Injectable()
 export class    FriendshipService {
     constructor(
-        @InjectRepository(UserEntity)
-        private readonly userRepository: UserRepository,
         @InjectRepository(FriendshipEntity)
         private readonly friendRepository: FriendshipRepository,
         private readonly friendMapper: FriendMapper,
-        private readonly datasource: DataSource,
-    ) {
-        console.log("FriendshipService inicializado");
-    }
+        //private readonly datasource: DataSource,
+    ) { }
 
     /*
     **  Checks that the two users exist, and starts a transaction
@@ -38,28 +34,28 @@ export class    FriendshipService {
                     : Promise<FriendshipEntity> {
         const   friendship = new FriendshipEntity(dto);
         const   { receiverId, senderId } = dto;
-        const   queryRunner = this.datasource.createQueryRunner();
+        //const   queryRunner = this.datasource.createQueryRunner();
         let     users: UserEntity[];
 
         //Start transaction
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
-        try {
-            if ( (await this.friendRepository.find({
-                where: {
-                    senderId: receiverId,
-                    receiverId: senderId
-                }
-            })).length != 0 )
-                throw new Error("Inverse friendship found.");
-            await this.friendRepository.insert(friendship);
-            await queryRunner.commitTransaction();
-        } catch (err) {
-            console.log(err);
-            return new FriendshipEntity();
-        } finally {
-            await queryRunner.release();
-        }
+        //await queryRunner.connect();
+        //await queryRunner.startTransaction();
+        //try {
+        //    if ( (await this.friendRepository.find({
+        //        where: {
+        //            senderId: receiverId,
+        //            receiverId: senderId
+        //        }
+        //    })).length != 0 )
+        //        throw new Error("Inverse friendship found.");
+        //    await this.friendRepository.insert(friendship);
+        //    await queryRunner.commitTransaction();
+        //} catch (err) {
+        //    console.log(err);
+        //    return new FriendshipEntity();
+        //} finally {
+        //    await queryRunner.release();
+        //}
         return friendship;
     }
 

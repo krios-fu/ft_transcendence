@@ -35,6 +35,7 @@ export class UserEntity extends BaseEntity {
 	@Column({
 		type: 'varchar',
 		unique: true,
+		nullable: true,
 		length: 12
 	})
 	nickName : string;
@@ -52,8 +53,9 @@ export class UserEntity extends BaseEntity {
 	})
 	defaultOffline: boolean;
 
-	@Column({ type: 'boolean' })
+	@Column({ 
+		type: 'boolean',
+		default: false
+	})
 	acceptedTerms: boolean;
-
-	//@Column() lastConnection : Date;
 }

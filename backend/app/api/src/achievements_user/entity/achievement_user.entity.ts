@@ -25,7 +25,7 @@ export class AchievementUserEntity extends BaseEntity {
 
     @Column({ 
         name: 'user_id',
-        type: 'number', 
+        type: 'bigint', 
         unique: true 
     })
     userId: number;
@@ -36,7 +36,7 @@ export class AchievementUserEntity extends BaseEntity {
 
     @Column({ 
         name: 'achievement_id',
-        type: 'number', 
+        type: 'bigint', 
         unique: true 
     })
     achievementId: number;

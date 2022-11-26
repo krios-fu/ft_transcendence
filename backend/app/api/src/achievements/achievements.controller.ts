@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/achievement.dto';
 import { AchievementEntity } from './entity/achievement.entity';
@@ -27,7 +27,12 @@ export class AchievementsController {
 
     @Get(':id')
     public async getOneAchievement(@Param('id', ParseIntPipe) id: number): Promise<AchievementEntity> {
-        return await this.achievementsService.getOneAchievement(id);
+        const user = await this.achievementsService.getOneAchievement(id);
+        if (user === null) {
+            this.achievementsLogger.error(`No achievement with id ${id} found in database`);
+            throw new HttpException('no achievement in db', HttpStatus.NOT_FOUND);
+        }
+        return user;
     }
 
     /*

@@ -16,9 +16,7 @@ export enum FriendshipStatus {
   REFUSED = "refused"
 }
 
-@Entity({
-  name: 'friendship'
-})
+@Entity({ name: 'friendship' })
 @Index(['senderId', 'receiverId'], { unique: true })
 export class  FriendshipEntity extends BaseEntity {
   constructor(dto?: CreateFriendDto) {
@@ -27,34 +25,49 @@ export class  FriendshipEntity extends BaseEntity {
       Object.assign(this, dto);
     }
   }
+  
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
   id: number;
 
-  @Column({ name: 'sender_id' })
-  senderId: number
+  @Column({ 
+    name: 'sender_id',
+    type: 'bigint',
+    nullable: false,
+    update: false,
+  })
+  senderId: number;
 
-  @ManyToOne(() => UserEntity)
-  @JoinColumn(
+  @ManyToOne(
+    () => UserEntity,
     {
-      name : 'senderId',
+      cascade: true,
+      eager: true,
     }
   )
-  sender : UserEntity
+  @JoinColumn({ name : 'senderId' })
+  sender: UserEntity;
 
-  @Column({ name: 'receiver_id' })
-  receiverId: number
+  @Column({ 
+    name: 'receiver_id',
+    type: 'bigint',
+    nullable: false,
+    update: false,
+  })
+  receiverId: number;
 
-  @ManyToOne(() => UserEntity)
-  @JoinColumn(
+  @ManyToOne(
+    () => UserEntity,
     {
-      name : 'receiverId'
+      cascade: true,
+      eager: true,
     }
   )
-  receiver : UserEntity
+  @JoinColumn({ name : 'receiverId' })
+  receiver: UserEntity;
 
   @Column({
     default: FriendshipStatus.PENDING
   })
-  status : FriendshipStatus
+  status: FriendshipStatus;
 
 }

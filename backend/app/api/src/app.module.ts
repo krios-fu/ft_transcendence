@@ -44,7 +44,7 @@ import { AchievementsUserModule } from './achievements_user/achievements_user.mo
         AchievementsModule,
         AchievementsUserModule,
     ],
-    controllers: [AchievementsController, AchievementsUserController],
+    controllers: [],
     //providers: [
     //    {
     //        provide: APP_GUARD,
@@ -52,6 +52,6 @@ import { AchievementsUserModule } from './achievements_user/achievements_user.mo
     //    },
     //],
     exports: [],
-    providers: [AchievementsService, AchievementsUserService]
+    providers: []
 })
 export class AppModule { }
