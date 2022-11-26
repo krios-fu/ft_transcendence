@@ -17,7 +17,7 @@ import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from './dto/user.query.dto';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
-import { FriendDto } from './dto/friendship.dto';
+import { CreateFriendDto, FriendDto, FriendshipPayload } from './dto/friendship.dto';
 import { FriendshipEntity } from './entities/friendship.entity';
 import { UserService } from './services/user.service';
 import { FriendshipService } from './services/friendship.service';
@@ -83,7 +83,6 @@ export class UserController {
 
     /*
     ** Get my friends (I must be me)
-    **
     */
 
     @Get('me/friends')
@@ -101,7 +100,10 @@ export class UserController {
         return await this.friendshipService.getFriends(user.id);
     }
 
-    /* Get one friend from user by id */
+    /* 
+    ** Get one friend from user by id
+    */
+
     @Get(':user_id/friends/:friend_id')
     async getOneFriend( 
         @Req() req: IRequestUser, 
@@ -121,12 +123,28 @@ export class UserController {
     }
 
     /* Create a new friendship */
-    @Post(':id/friends')
+    // @UseGuards(Myself)
+    @Post(':user_id/friends')
     async postFriend( 
         @Req() req: IRequestUser, 
-        @Param('id') id: string 
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Body() dto: FriendshipPayload,
     ): Promise<FriendshipEntity> {
-        return this.friendshipService.addFriend(req.username, id);
+        const username = req.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(req.username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        if (await this.userService.findOne(userId) === null) {
+            this.userLogger.error(`No user with id ${userId} in database`);
+            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.addFriend(new CreateFriendDto(user.id, dto));
     }
 
     /*
@@ -135,8 +153,16 @@ export class UserController {
     */
    
     @Patch(':user_id/friends/:friend_id/accept/')
-    async acceptFriend( @Req() req: IRequestUser, @Param('id') id: string )
-                        : Promise<UpdateResult> {
+    async acceptFriend(
+        @Req() req: IRequestUser, 
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('friend_id', ParseIntPipe) friendId: number,
+    ): Promise<UpdateResult> {
+        if ((await this.userService.findAllUsers({ filter: { id: [ userId, friendId ] } }))
+            .length != 2) {
+            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
         return this.friendshipService.acceptFriend(req.username, id);
     }
 
@@ -148,9 +174,15 @@ export class UserController {
     @Patch(':user_id/friends/:friend_id/refuse/')
     async refuseFriend( 
         @Req() req: IRequestUser, 
-        @Param('id', ParseIntPipe) id: number 
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
-        return this.friendshipService.refuseFriend(req.username, id);
+        if ((await this.userService.findAllUsers({ filter: { id: [ userId, friendId ] } }))
+            .length != 2) {
+            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.refuseFriend(userId, friendId);
     }
 
     /*

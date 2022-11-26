@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsNotEmpty, IsObject } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsObject } from "class-validator";
 import { FriendshipStatus } from "../entities/friendship.entity";
 import { UserEntity } from "../entities/user.entity";
 
@@ -14,4 +14,27 @@ export class    FriendDto {
     @IsDate()
     @IsNotEmpty()
     since: Date;
+}
+
+export class FriendshipPayload {
+    @IsNumber()
+    @IsNotEmpty()
+    receiverId: number;
+
+    @IsEnum(FriendshipStatus)
+    @IsNotEmpty()
+    status: FriendshipStatus;
+}
+
+export class CreateFriendDto extends FriendshipPayload {
+    constructor(senderId: number, payload?: FriendshipPayload) {
+        super();
+        this.senderId = senderId;
+        if (payload !== undefined) {
+            Object.assign(this, payload);
+        }
+    }
+    @IsNumber()
+    @IsNotEmpty()
+    senderId: number;
 }

@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString } from "class-validator";
 import { Request } from "express";
 
 export interface IAuthPayload {

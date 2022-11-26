@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { UserEntity } from "src/user/entities/user.entity";
-import { FriendDto } from "src/user/dto/friendship.dto";
+import { CreateFriendDto } from "src/user/dto/friendship.dto";
 import { BaseEntity } from "src/common/classes/base.entity";
 
 export enum FriendshipStatus {
@@ -21,10 +21,10 @@ export enum FriendshipStatus {
 })
 @Index(['senderId', 'receiverId'], { unique: true })
 export class  FriendshipEntity extends BaseEntity {
-  constructor(dto?: /*Create*/FriendDto) {
+  constructor(dto?: CreateFriendDto) {
     super();
     if (dto !== undefined) {
-
+      Object.assign(this, dto);
     }
   }
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })

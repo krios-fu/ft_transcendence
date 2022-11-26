@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, PreconditionFailedException } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { FriendshipRepository } from 'src/user/repositories/friendship.repository';
 import { FriendshipEntity, FriendshipStatus } from 'src/user/entities/friendship.entity';
-import { FriendDto } from 'src/user/dto/friendship.dto';
+import { CreateFriendDto, FriendDto } from 'src/user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 import { FriendMapper } from "../friendship.mapper";
 
@@ -34,9 +34,10 @@ export class    FriendshipService {
     **  at the same time.
     */
 
-    public async addFriend(senderId : number, receiverId : number)
+    public async addFriend(dto: CreateFriendDto)
                     : Promise<FriendshipEntity> {
-        const   friendship = new FriendshipEntity();
+        const   friendship = new FriendshipEntity(dto);
+        const   { receiverId, senderId } = dto;
         const   queryRunner = this.datasource.createQueryRunner();
         let     users: UserEntity[];
 
@@ -44,18 +45,6 @@ export class    FriendshipService {
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            users = await this.userRepository.find({
-                where: [
-                    { id: senderId },
-                    { id: receiverId }
-                ]
-            });
-            if (users.length != 2)
-                throw new Error("Users not found.");
-            friendship.sender = users[0].id === senderId
-                ? users[0] : users[1];
-            friendship.receiver = users[0].id === receiverId
-                ? users[0] : users[1];
             if ( (await this.friendRepository.find({
                 where: {
                     senderId: receiverId,
@@ -101,7 +90,7 @@ export class    FriendshipService {
     }
 
     async getOneFriend(userId: number, friendId: number): Promise<FriendDto> {
-        const friendship = await this.friendRepository.find({
+        const friendship = await this.friendRepository.findOne({
             relations: {
                 sender: true,
                 receiver: true
@@ -119,9 +108,9 @@ export class    FriendshipService {
                 }
             ]
         });
-        if (friendship.length != 1)
+        if (friendship === null)
             return new FriendDto();
-        return this.friendMapper.toFriendDto(userId, friendship[0]);
+        return this.friendMapper.toFriendDto(userId, friendship);
     }
 
     /*
