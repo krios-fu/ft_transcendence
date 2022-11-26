@@ -136,6 +136,8 @@ export class    MenuRenderer {
             {
                 this._heroAImage.visible = false;
                 this._heroBImage.visible = false;
+                this._aArrows.visible = false;
+                this._bArrows.visible = false;
                 this._vsTxt.visible = false;
                 this._nickATxt.visible = false;
                 this._nickBTxt.visible = false;
