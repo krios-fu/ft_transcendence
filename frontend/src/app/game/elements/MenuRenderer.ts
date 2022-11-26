@@ -2,6 +2,7 @@ import {
     ISelectionData,
     MenuScene
 } from "../scenes/MenuScene";
+import { MenuArrows } from "./MenuArrows";
 import { SelectionStatus } from "./MenuSelector";
 import { Txt } from "./Txt";
 
@@ -13,6 +14,8 @@ export class    MenuRenderer {
     private _heroAImage: Phaser.GameObjects.Image;
     private _heroBImage: Phaser.GameObjects.Image;
     private _stageImage: Phaser.GameObjects.Image;
+    private _aArrows: MenuArrows;
+    private _bArrows: MenuArrows;
     private _vsTxt: Txt;
     private _nickATxt: Txt;
     private _nickBTxt: Txt;
@@ -36,6 +39,14 @@ export class    MenuRenderer {
             'metropolisMenu',
             'wakandaMenu'
         ];
+        (this._aArrows = new MenuArrows(scene,
+            { x: 50, y: 300 },
+            { x: 350, y: 300 }
+        )).visible = false;
+        (this._bArrows = new MenuArrows(scene,
+            { x: 450, y: 300 },
+            { x: 750, y: 300 }
+        )).visible = false;
         (this._vsTxt = new Txt(scene, {
             xPos: 400,
             yPos: 300,
@@ -73,6 +84,10 @@ export class    MenuRenderer {
         {
             this._heroAImage.visible = true;
             this._heroBImage.visible = true;
+            if (!initData.heroAConfirmed)
+                this._aArrows.visible = true;
+            if (!initData.heroBConfirmed)
+                this._bArrows.visible = true;
             this._vsTxt.visible = true;
             this._nickATxt.visible = true;
             this._nickBTxt.visible = true;
@@ -92,7 +107,16 @@ export class    MenuRenderer {
 
         if (selectionStatus === SelectionStatus.Hero)
         {
-            heroImages = confirm ? this._heroConfirmImages : this._heroImages;
+            if (confirm)
+            {
+                if (player == "PlayerA")
+                    this._aArrows.visible = false;
+                else
+                    this._bArrows.visible = false;
+                heroImages = this._heroConfirmImages;
+            }
+            else
+                heroImages = this._heroImages;
             if (player === "PlayerA")
                 this.changeImage(this._heroAImage, heroImages, element);
             else
