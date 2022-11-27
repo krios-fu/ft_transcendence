@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
 
@@ -11,12 +12,13 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class HeaderComponent implements OnInit {
 
-
+  @Output() searchUser = new EventEmitter();
   public formMessage= new FormGroup({
     message : new FormControl('')
   })
 
-  constructor( private route : ActivatedRoute) {
+  constructor( private route : ActivatedRoute,
+    private http: HttpClient ) {
     const room = this.route.snapshot.paramMap.get('id');
     this.formMessage.patchValue({ room } );
   }
@@ -32,6 +34,13 @@ export class HeaderComponent implements OnInit {
     console.log( message, room)
     if( message.trim() == '' )
       return false;
+      this.http.get(`http://localhost:3000/users/${message}`)
+      .subscribe(
+        user => {
+          this.searchUser.emit(user)
+          console.log(user);
+        }
+      )
     this.formMessage.controls['message'].reset();
     return true;
   }

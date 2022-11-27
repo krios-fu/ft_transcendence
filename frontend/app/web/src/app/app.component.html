@@ -1,4 +1,4 @@
-<app-header></app-header>
+<app-header (searchUser)="getSearch($event)" ></app-header>
 <section class="row">
 
 	<div class="column1 " style="
@@ -14,9 +14,11 @@
 	<div class="column2 ">
 		<router-outlet name="game"></router-outlet>
 	</div>
-	<div class="column3">
-		<div>
+
+		<div class="column3">
+      <div  style="color: white">
+        <app-search *ngIf="this.search" [user]="this.search"></app-search>
+      </div>
 			<router-outlet name="chat"></router-outlet>
 		</div>
-	</div>
 </section>

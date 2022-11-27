@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
+import { UserDto } from './dtos/user.dto';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 
@@ -10,7 +11,7 @@ import { UsersService } from './services/users.service';
 export class AppComponent {
 
   hiden = false;
-
+  search = {} as UserDto;
 
 
   constructor(private userService: UsersService, 
@@ -26,7 +27,12 @@ export class AppComponent {
 
   logout(){
     this.authService.logout();
-  }  
+  } 
+
+  getSearch(user : UserDto){
+    console.log("APPCOMPONENT event serach", user);
+    this.search = user;
+  }
   // minNavegation() {
   //   this.hiden = !this.hiden;
   // }
