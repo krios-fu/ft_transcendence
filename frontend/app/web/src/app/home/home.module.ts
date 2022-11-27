@@ -17,6 +17,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { FriendOnlineComponent } from './friend/friend-online/friend-online.component';
 import { ChatModule } from '../room/chat/chat.module';
+import { LoginComponent } from '../login/login.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
 
 
 
@@ -28,6 +31,7 @@ import { ChatModule } from '../room/chat/chat.module';
     RoomComponent, 
     SettingComponent,
     FriendOnlineComponent,
+    // LoginComponent
 
   ],
   imports: [
@@ -46,7 +50,11 @@ import { ChatModule } from '../room/chat/chat.module';
   ],
   exports:[
     HomeComponent,
-  ]
+  ], providers:[{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true,
+  }]
 })
 export class HomeModule {
   constructor( router : Router ) {

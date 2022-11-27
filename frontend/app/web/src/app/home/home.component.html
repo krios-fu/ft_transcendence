@@ -1,47 +1,48 @@
- 
+<div>
+  <router-outlet> </router-outlet>
 
-    <div>
-      <router-outlet> </router-outlet>
-      <!-- <app-navheader></app-navheader> -->
-    </div>
+  <div style="color: white; 
 
-    <div style="color: white; 
-    /* overflow: hidden; */
- 
-    position: absolute;
-    justify-content:space-around;
-    /* align-items: center; */
-    /* align-content: center; */
-    display: flex;
-    /* height: -20%; */
+position: absolute;
+justify-content:space-around;
 
-    background: rgb(4, 20, 51);
-    overflow: hidden;
+display: flex;
+
+background: rgb(4, 20, 51);
+overflow: hidden;
+margin-left: 10px;
 
 border-radius: 50px;
-border: 1px solid rgba(245, 245, 245, 0.29);
-  
-    bottom: 1vh;">
+/* border: 1px solid rgba(245, 245, 245, 0.29); */
+border: outset 4px silver;
+
+bottom: 1vh;">
+
     <div>
       <button mat-icon-button class="icon_logout" routerLink="/home/profile">
         <mat-icon>arrow_back</mat-icon>
-      </button> 
+      </button>
     </div>
     <div>
+      <!-- [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()"> -->
       <a mat-icon-button class="icon_nav" href="/login">
-        <mat-icon matBadge="15" matBadgeColor="warn" matBadgeSize="small" [matBadgeHidden]="hidden"
-          (click)="toggleBadgeVisibility()">people
+        <mat-icon matBadge="15" matBadgeColor="warn" matBadgeSize="small">
+
+          people
         </mat-icon>
       </a>
     </div>
-      <div>
-        <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/home/setting" >
-          <mat-icon>manage_accounts</mat-icon>
-        </a>
-      </div>
-      <div>
-        <a mat-icon-button class="icon_logout" (click)="logout()">
-          <mat-icon>logout</mat-icon>
-        </a>
-      </div>
+    <div>
+      <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/home/setting">
+        <mat-icon>manage_accounts</mat-icon>
+      </a>
     </div>
+    <!-- > -->
+    <div>
+      <a mat-icon-button class="icon_logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+
+      </a>
+    </div>
+  </div>
+</div>

@@ -16,6 +16,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { HeaderComponent } from './home/header/header.component';
 import {ReactiveFormsModule, FormsModule} from "@angular/forms";
 import { MatIconModule } from '@angular/material/icon';
+import { LoginComponent } from './login/login.component';
 
 
 const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
@@ -24,6 +25,7 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
   declarations: [
     AppComponent,
     HeaderComponent,
+    // LoginComponent
     // HomeComponent,
 
   ],
@@ -31,12 +33,9 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    LoginModule,
-    // ChatModule,
     FormsModule,
     ReactiveFormsModule,
 
-    // HomeModule,
     MatIconModule,
     MatTreeModule,
     MatBadgeModule,

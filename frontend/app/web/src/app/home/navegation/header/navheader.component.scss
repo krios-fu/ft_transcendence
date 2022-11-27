@@ -19,11 +19,13 @@
 }
 
 div{
-  border: 1px solid rgba(245, 245, 245, 0.29);
+  // border: 1px solid rgba(245, 245, 245, 0.29);
+  border: outset 2px silver;
+
   //border-bottom: none;
-  &:last-child{
-    border-bottom: 1px solid rgba(245, 245, 245, 0.29);
-  }
+  // &:last-child{
+  //   border-bottom: 1px solid rgba(245, 245, 245, 0.29);
+  // }
 
 }
 
@@ -56,12 +58,14 @@ div{
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    scrollbar-base-color : whitesmoke;
 
  
   
   }
 
 .effect{
+  
 
   animation: bounce-in 2s ease;
   animation: fade-in 2s linear both;

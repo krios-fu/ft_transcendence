@@ -1,18 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from "./home.component";
-import { LoginComponent } from "../login/login.component";
 import { SettingComponent } from './profile/setting/setting.component';
 import { NavHeaderComponent } from './navegation/header/navheader.component';
-import { ChatModule } from '../room/chat/chat.module';
-import { ChatComponent } from '../room/chat/chat.component';
+import { AuthGuard } from './../guards/auth.guard';
+
 
 
 const HomeRoutes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'profile', component: NavHeaderComponent, },
-  {path: 'chat', loadChildren: 
-  () => import('../room/chat/chat.module').then(m => m.ChatModule), outlet: 'chat'},
+  { path: 'home', component: HomeComponent,  },
+  { path: 'profile', component: NavHeaderComponent, canActivate: [AuthGuard] },
+  {
+    path: 'chat', loadChildren:
+      () => import('../room/chat/chat.module').then(m => m.ChatModule), outlet: 'chat'
+  },
+  {
+    path: 'login', loadChildren: () => import('../login/login.module')
+      .then(m => m.LoginModule), outlet: 'game'
+  },
 
   { path: 'setting', component: SettingComponent, },
 ];

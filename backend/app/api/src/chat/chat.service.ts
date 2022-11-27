@@ -5,16 +5,16 @@ import {ChatRepository} from "./repository/chat.repository";
 import {ChatDto} from "./dtos/chat.dto";
 import {ChatMapper} from "./mapper/chat.mapper";
 import {MembershipEntity} from "./entities/membership.entity";
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class ChatService {
     constructor(
         @InjectRepository(ChatEntity)
         private chatRepository: ChatRepository,
-        private chatMapper: ChatMapper
+        private chatMapper: ChatMapper,
         )
     {
-        console.log('chat repo start')
     }
 
     async findChats(): Promise<ChatEntity[]>{

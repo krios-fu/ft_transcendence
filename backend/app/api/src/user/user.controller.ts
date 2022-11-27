@@ -30,19 +30,19 @@ export class UserController {
     }
 
     @Get(':id')
-    @Public()
+    // @Public()
     async findOneUser(@Param('id') id: string): Promise<UserEntity> {
         return this.userService.findOne(id);
     }
 
     @Get(':id/chat')
-    @Public()
+    // @Public()
    async findChats(@Param('id') id: string) {
         return await this.chatService.findChatsUser(id);
    }
 
    @Get(':id/chat/:id_friend')
-   @Public()
+//    @Public()
   async findChat(@Param('id') id: string, @Param('id_friend') id_friend: string) {
     return  await this.chatService.findChatUser(id, id_friend);
     

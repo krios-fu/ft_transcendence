@@ -14,12 +14,14 @@
 }
 
 .start{
+	// border: outset 3px silver;
+
   a{
     display: block;
     color: white;
     font-size: 11px;
     h1:hover{
-      color: lawngreen;
+      color: goldenrod;
     }
     text-decoration: none;
   }

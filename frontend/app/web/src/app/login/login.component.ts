@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable, Subscription} from "rxjs";
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -9,9 +10,11 @@ import {Observable, Subscription} from "rxjs";
 })
 export class LoginComponent implements OnInit {
 
-  constructor( private http : HttpClient) { }
+  constructor( private http : HttpClient, private authService: AuthService) { }
 
   ngOnInit(): void {
+    if (this.authService.isAuthenticated())
+      this.authService.redirectHome();
   }
 
   login()

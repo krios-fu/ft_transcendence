@@ -88,6 +88,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401) {
+                        console.log('ERROR 401')
                         window.sessionStorage.removeItem('access_token');;
                         window.sessionStorage.removeItem('username');
                         this.authService.redirectLogin();

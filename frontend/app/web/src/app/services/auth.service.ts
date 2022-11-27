@@ -51,7 +51,8 @@ export class AuthService {
     }
 
     redirectLogin(): void {
-        this.router.navigate(['/login']);
+        this.router.navigateByUrl('/login');
+
     }
 
     /* Solo permite ejecución a usuarios logeados */
@@ -59,7 +60,8 @@ export class AuthService {
         this.cookies.delete('request_token');
         sessionStorage.removeItem('access_token');
         sessionStorage.removeItem('username');
-        this.router.navigate(['/login']);
+        this.router.navigateByUrl('/login');
+
     }
 
     isAuthenticated(): boolean {
