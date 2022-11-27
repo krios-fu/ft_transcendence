@@ -1,22 +1,17 @@
-import { Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
 import { RoomModule } from './room/room.module';
-import { RoomChatModule } from './room-chat/room-chat.module';
 import { BanModule } from './ban/ban.module';
 import { UserRolesModule } from './user_roles/user_roles.module';
 import { UserRoomRolesModule } from './user_room_roles/user_room_roles.module';
 import { RolesModule } from './roles/roles.module';
 import { UserRoomModule } from './user_room/user_room.module';
 import { RoomRolesModule } from './room_roles/room_roles.module';
-import { AchievementsController } from './achievements/achievements.controller';
-import { AchievementsService } from './achievements/achievements.service';
 import { AchievementsModule } from './achievements/achievements.module';
-import { AchievementsUserController } from './achievements_user/achievements_user.controller';
-import { AchievementsUserService } from './achievements_user/achievements_user.service';
 import { AchievementsUserModule } from './achievements_user/achievements_user.module';
 
 @Module({
@@ -35,7 +30,6 @@ import { AchievementsUserModule } from './achievements_user/achievements_user.mo
         }),
         RolesModule,
         RoomModule,
-        RoomChatModule,
         UserRoomModule,
         UserRolesModule,
         UserRoomRolesModule,
@@ -45,13 +39,16 @@ import { AchievementsUserModule } from './achievements_user/achievements_user.mo
         AchievementsUserModule,
     ],
     controllers: [],
-    //providers: [
+    providers: [
     //    {
     //        provide: APP_GUARD,
     //        useClass: JwtAuthGuard,
     //    },
-    //],
-    exports: [],
-    providers: []
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: ClassSerializerInterceptor,
+        }
+    ],
+    exports: []
 })
 export class AppModule { }

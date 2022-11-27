@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/services/user.service';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
@@ -11,6 +13,7 @@ export class UserRolesService {
     constructor (
         @InjectRepository(UserRolesEntity)
         private readonly userRolesRepository: UserRolesRepository,
+        private readonly userService: UserService,
     ) { }
     
     public async findAllUserRoles(queryParams: UserRolesQueryDto): Promise<UserRolesEntity[]> {
@@ -61,6 +64,28 @@ export class UserRolesService {
                 roleId: roleId
             }
         });
+    }
+
+    /* 
+    **  ~~  [ Validation guard services ]  ~~
+    **
+    **
+    */
+
+    public async validateAdminRole(username: string | undefined): Promise<boolean> {
+        let validation: boolean = false;
+
+        if (username === undefined) {
+            return false;
+        }
+        this.userService.findOneByUsername(username).then(async (usr: UserEntity) => {
+            this.getAllRolesFromUser(usr.id).then(
+                (usrRoles: UserRolesEntity[]) => {
+                    validation = usrRoles.filter(usrRole => usrRole.role.role == 'admin').length > 0;
+                }
+            );
+        });
+        return validation;
     }
 }
                                                           

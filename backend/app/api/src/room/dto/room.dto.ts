@@ -14,3 +14,8 @@ export class CreateRoomDto {
 }
 
 export class UpdateRoomDto extends PartialType(CreateRoomDto) { }
+
+export class RoomMsgDto {
+    @IsString() room: string;
+    @IsString() message: string;
+}

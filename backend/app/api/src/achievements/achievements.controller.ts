@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { SiteAdminGuard } from 'src/user_roles/guard/site-admin.guard';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/achievement.dto';
 import { AchievementEntity } from './entity/achievement.entity';
@@ -39,7 +40,7 @@ export class AchievementsController {
     ** Create a new achievement for the application.
     */
    
-// @UseGuards(IsAdmin)
+   @UseGuards(SiteAdminGuard)
    @Post()
    public async createAchievement(@Body() dto: CreateAchievementDto): Promise<AchievementEntity> {
         return await this.achievementsService.createAchievement(dto);
@@ -49,7 +50,7 @@ export class AchievementsController {
    ** Remove an achievement from database.
    */
 
-// @UseGuards(IsAdmin)   
+   @UseGuards(SiteAdminGuard)   
    @Delete(':id')
    public async deleteAchievement(@Param('id', ParseIntPipe) id: number): Promise<void> {
         await this.achievementsService.deleteAchievement(id);

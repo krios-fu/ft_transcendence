@@ -11,7 +11,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { RoomMsgDto } from './room-msg.dto';
+import { RoomMsgDto } from 'src/room/dto/room.dto';
 
 @UseGuards(JwtAuthGuard)
 @WebSocketGateway({
@@ -21,7 +21,7 @@ import { RoomMsgDto } from './room-msg.dto';
         credentials: true,
     }
 })
-export class RoomChatGateway implements 
+export class RoomGateway implements 
     OnGatewayInit,
     OnGatewayConnection,
     OnGatewayDisconnect {

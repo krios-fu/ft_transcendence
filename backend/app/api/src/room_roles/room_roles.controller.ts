@@ -10,8 +10,6 @@ import {
   Param, 
   Delete, 
   ParseIntPipe, 
-  ClassSerializerInterceptor, 
-  UseInterceptors, 
   Logger,
   HttpException,
   HttpStatus,
@@ -23,7 +21,6 @@ import { RolesService } from 'src/roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 
 @Controller('room_roles')
-@UseInterceptors(ClassSerializerInterceptor)
 export class RoomRolesController {
     constructor
     (

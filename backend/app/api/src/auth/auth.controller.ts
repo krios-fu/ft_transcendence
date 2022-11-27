@@ -25,7 +25,11 @@ export class AuthController {
     constructor(
         private authService: AuthService,
         private readonly logger: Logger
-    ) { }
+    ) { 
+        this.authLogger = new Logger(AuthController.name);
+    }
+
+    private readonly authLogger: Logger;
 
     @Public()
     @Get('42')
@@ -52,15 +56,16 @@ export class AuthController {
             @Req() req: Request,
             @Res({ passthrough: true }) res: Response
         ) {
-        //if (!('refresh_token' in req.cookies)) {
-        //    throw new HttpException('user not authenticated', HttpStatus.UNAUTHORIZED);
-        //}
+        if (!('refresh_token' in req.cookies)) {
+            this.authLogger.error('Unauthorized request: no refresh token present in cookies');
+            throw new HttpException('user not authenticated', HttpStatus.UNAUTHORIZED);
+        }
         const refreshToken: string = req.cookies['refresh_token'];
         const authUser: string = req.query.user as string;
         let authPayload: IAuthPayload;
 
-        if (authUser === null || refreshToken === null) {
-            throw new HttpException('User not authenticated', HttpStatus.UNAUTHORIZED);
+        if (authUser === null) {
+            throw new HttpException('user not authenticated', HttpStatus.UNAUTHORIZED);
         }
         try {
             authPayload = await this.authService.refreshToken(refreshToken, authUser);

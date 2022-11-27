@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomEntity } from './entity/room.entity';
 import { RoomRepository } from './repository/room.repository';
 import { UserModule } from 'src/user/user.module';
+import { RoomGateway } from './room.gateway';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from 'src/user/user.module';
   providers: [
     RoomService,
     RoomRepository,
+    RoomGateway
   ],
   exports: [RoomService]
 })

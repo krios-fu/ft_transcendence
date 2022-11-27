@@ -5,7 +5,7 @@ import { AchievementsUserService } from './achievements_user.service';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';
 
-@Controller('achievements-user')
+@Controller('achievements_user')
 export class AchievementsUserController {
     constructor (
         private readonly achievementsService: AchievementsService,

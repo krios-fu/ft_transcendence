@@ -7,6 +7,8 @@ import { UpdateResult } from 'typeorm';
 import { isBoolean, isString } from 'class-validator';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
+import { Request } from 'express';
+import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 
 @Injectable()
 export class UserService {
@@ -67,8 +69,29 @@ export class UserService {
     **  delete or remove.
     */
 
-    async deleteUser(id: number): Promise<void> {
+    public async deleteUser(id: number): Promise<void> {
         await this.userRepository.softDelete(id);
     }
 
+    /*
+    **  ~~   [ Validation guard services ]   ~~
+    **
+    **  Access user_id value in param/body, compare with
+    **  request user identity, return true if match
+    */
+
+    public async validateIdentity(req: IRequestUser): Promise<boolean> {
+        let validate: boolean = false;
+        const userId = (req.method === 'POST') ?
+            Number(req.body['user_id']) :
+            Number(req.param['user_id']);
+
+        if (req.username === undefined || userId !== userId) {
+            return false;
+        }
+        this.findOne(userId).then(
+            (user: UserEntity) => validate = (user.username === req.username)
+        );
+        return validate;
+    }
 }
