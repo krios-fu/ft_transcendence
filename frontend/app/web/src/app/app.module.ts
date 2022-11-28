@@ -19,45 +19,44 @@ import { MatIconModule } from '@angular/material/icon';
 import { SearchComponent } from './search/search.component';
 import { MatChipList, MatChipsModule, MAT_CHIPS_DEFAULT_OPTIONS} from '@angular/material/chips'
 import { MDCChipSet } from '@material/chips';
+import { GameModule } from "./game/game.module";
 
 const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    SearchComponent,
-    // MatChip,
-    
-    // MatChipList,
-    // LoginComponent
-    // HomeComponent,
-
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-
-    MatChipsModule,
-    MatIconModule,
-    MatTreeModule,
-    MatBadgeModule,
-    MatTreeModule,
-    MatButtonModule,
-    SocketIoModule.forRoot(config),
-    BrowserAnimationsModule,
-  ],
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true,
-  },    
-  CookieService
-],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        HeaderComponent,
+        SearchComponent,
+        // MatChip,
+        // MatChipList,
+        // LoginComponent
+        // HomeComponent,
+    ],
+    providers: [{
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        },
+        CookieService
+    ],
+    bootstrap: [AppComponent],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatChipsModule,
+        MatIconModule,
+        MatTreeModule,
+        MatBadgeModule,
+        MatTreeModule,
+        MatButtonModule,
+        SocketIoModule.forRoot(config),
+        BrowserAnimationsModule,
+        // GameModule,
+    ]
 })
 export class AppModule {
   constructor(router : Router) {

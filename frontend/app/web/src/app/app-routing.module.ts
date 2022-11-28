@@ -15,13 +15,7 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   { path: 'login', component: LoginComponent, },
-  // { path: 'login', component: LoginComponent , outlet: 'game' },
-  // {path: 'login', loadChildren: ()=>import('./login/login.module').then(m => m.LoginModule)}
-
-  // {path: 'chat', loadChildren: () => import('./room/chat/chat.module').then(m => m.ChatModule),},
 ];
-
-// { path: '**', redirectTo: 'home/profile', pathMatch: 'full', },
 
 
 @NgModule({
