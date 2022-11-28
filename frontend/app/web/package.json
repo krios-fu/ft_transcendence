@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "@material/chips": "^14.0.0",
+    "phaser": "^3.55.2",
     "ngx-cookie-service": "^13.0.1",
     "ngx-socket-io": "^4.2.0",
     "rxjs": "~7.5.0",
