@@ -24,7 +24,6 @@ interface IRequestProfile extends Request {
 export class AuthController {
     constructor(
         private authService: AuthService,
-        private readonly logger: Logger
     ) { 
         this.authLogger = new Logger(AuthController.name);
     }
@@ -40,6 +39,7 @@ export class AuthController {
             @Res({ passthrough: true }) res: Response
         ) {
         if (req.user === null) {
+            this.authLogger.error('Fortytwo strategy did not provide user profile to auth service');
             throw new HttpException
                 (
                     'fortytwo strategy did not provide user profile to auth service',
@@ -47,6 +47,11 @@ export class AuthController {
                 );
         }
         return this.authService.authUser(req.user, res);
+    }
+
+    @Get('google')
+    public async authFromGoogle() {
+
     }
 
     @Public()
@@ -70,7 +75,7 @@ export class AuthController {
         try {
             authPayload = await this.authService.refreshToken(refreshToken, authUser);
         } catch (err) {
-            this.logger.error(`Caught exception in refreshToken controller: ${err}`);
+            this.authLogger.error(`Caught exception in refreshToken controller: ${err}`);
             res.clearCookie('refresh_cookie');
             throw new HttpException(err, HttpStatus.UNAUTHORIZED);
         }

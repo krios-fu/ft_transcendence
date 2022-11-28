@@ -54,7 +54,7 @@ export class AuthService {
             maxAge: 3600 * 24 * 7,
             sameSite: 'none',
             secure: true,
-        })
+        });
         return {
             'accessToken': this.signJwt(username),
             'username': username,

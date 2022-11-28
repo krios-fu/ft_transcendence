@@ -15,6 +15,7 @@ export class UserEntity extends BaseEntity {
 		super();
 		if (dto !== undefined) {
 			Object.assign(this, dto);
+			this.nickName = dto.username;
 		}
 	}
 
@@ -35,7 +36,6 @@ export class UserEntity extends BaseEntity {
 	@Column({
 		type: 'varchar',
 		unique: true,
-		nullable: true,
 		length: 12
 	})
 	nickName : string;
