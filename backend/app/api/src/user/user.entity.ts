@@ -3,8 +3,13 @@ import {
 	CreateDateColumn,
 	Entity,
 	PrimaryColumn,
-	UpdateDateColumn
+	UpdateDateColumn,
+	ManyToMany,
+	OneToMany, JoinColumn, JoinTable
 } from "typeorm";
+import {ChatEntity} from "../chat/entities/chat.entity";
+import {MessageEntity} from "../chat/entities/message.entity";
+import {MembershipEntity} from "../chat/entities/membership.entity";
 
 export enum Category {
 	Pending,
@@ -35,6 +40,7 @@ export class UserEntity {
 	@Column()
 	photoUrl : string;
 
+
   	@Column()
 	profileUrl : string;
 
@@ -63,5 +69,12 @@ export class UserEntity {
 
 	@UpdateDateColumn()
 	lastConnection : Date;
+
+
+	@OneToMany((type) => MessageEntity, (message) => message.author )
+	messages : MessageEntity[];
+
+	@OneToMany(()=>MembershipEntity, (membership) => membership.user, )
+	membership : MembershipEntity[];
 
 }

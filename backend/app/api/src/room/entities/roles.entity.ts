@@ -51,7 +51,7 @@ export class RolesEntity {
     ) {
         this.user = user;
         this.room = room;
-        this.role = role,
+        this.role = role;
         this.silencedDate = date;
     }
 }

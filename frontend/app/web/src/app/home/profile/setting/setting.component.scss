@@ -1,0 +1,58 @@
+.head{
+	display: flex; 
+	position: relative; 
+	align-items: center;  
+	justify-content: center;
+	height: 60px;
+	padding: 40px;
+}
+
+.avatar {
+	position: relative;
+	background: lawngreen;
+	//z-index: 1;
+	left: 5px;
+	border-radius: 50%;
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	margin: 0;
+	border: 2px solid rgba(255, 255, 255, 0.24);
+  
+	img {
+	  width: 100%;
+	  height: auto;
+  
+	}
+  }
+
+div {
+	font-size:smaller;
+	border: outset 2px silver;
+
+	
+		// border: 1px solid rgba(245, 245, 245, 0.29);
+		// //border-bottom: none;
+		// &:last-child{
+		//   border-bottom: 1px solid rgba(245, 245, 245, 0.29);
+		// }
+}
+
+.example-form mat-slide-toggle {
+	margin: 11px 0;
+	padding: 5px;
+	font-size: medium;
+	display: block;
+
+  }
+
+
+  button {
+	background-color: transparent; 
+	border: none; 
+	color: white;
+	// font-size: 50px;
+	&:hover{
+		color: rgba(255,215,64);
+	}
+  }

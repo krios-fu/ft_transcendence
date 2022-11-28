@@ -14,10 +14,13 @@ import { BlockController } from './block/block.controller';
 import { BlockService } from './block/block.service';
 import { BlockRepository } from './block/block.repository';
 import { BlockEntity } from './block/block.entity';
-
+import { ChatService } from 'src/chat/chat.service';
+import { ChatEntity } from 'src/chat/entities/chat.entity';
+import { ChatMapper } from 'src/chat/mapper/chat.mapper';
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserEntity, FriendshipEntity, BlockEntity])
+        TypeOrmModule.forFeature([UserEntity, FriendshipEntity, BlockEntity, ChatEntity])
+        
     ],
     exports: [UserService], //Usado por el módulo externo AuthModule
     controllers: [UserController, FriendshipController, BlockController],
@@ -29,7 +32,9 @@ import { BlockEntity } from './block/block.entity';
         FriendshipRepository,
         FriendMapper,
         BlockService,
-        BlockRepository
+        BlockRepository,
+        ChatService,
+        ChatMapper
     ]
 })
 export class UserModule {

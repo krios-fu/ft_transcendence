@@ -1,35 +1,80 @@
 import { AuthService } from './auth.service';
-import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
-import { Payload } from '../user/user.dto';
 import {
     Controller,
     Get,
-    UseGuards,
+    HttpException,
+    HttpStatus,
+    Logger,
+    Post,
     Req,
+    Res,
+    UseGuards,
 } from '@nestjs/common';
 import { Public } from '../decorators/public.decorator';
+import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
+import { Request, Response } from 'express';
+import { UserDto } from 'src/user/user.dto';
+import { IAuthPayload, IJwtPayload, IRequestUser } from 'src/interfaces/request-payload.interface';
 
-interface IRequestPayload extends Request {
-    user: Payload;
+interface IRequestProfile extends Request {
+    user: UserDto;
 };
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {
-        console.log("AuthController inicializado");
+    constructor(
+        private authService: AuthService,
+        private readonly logger: Logger
+    ) { }
+
+    @Public()
+    @Get('42')
+    @UseGuards(FortyTwoAuthGuard)
+    async authFromFT
+        (
+            @Req() req: IRequestProfile,
+            @Res({ passthrough: true }) res: Response
+        ) {
+        if (req.user === null) {
+            throw new HttpException
+                (
+                    'fortytwo strategy did not provide user profile to auth service',
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                );
+        }
+        return this.authService.authUser(req.user, res);
     }
 
-    @Get("42")
     @Public()
-    @UseGuards(FortyTwoAuthGuard)
-    authFromFT() { /* no */ }
+    @Get('token')
+    async refreshToken
+        (
+            @Req() req: Request,
+            @Res({ passthrough: true }) res: Response
+        ) {
+        const refreshToken: string = req.cookies['refresh_token'];
+        const authUser: string = req.query.user as string;
+        let authPayload: IAuthPayload;
 
-    @Get("42/redirect")
-    @Public()
-    @UseGuards(FortyTwoAuthGuard)
-    async authFromFTRedirect(@Req() req: IRequestPayload): Promise<any> {
-        const user = req.user;
-        return this.authService.authUser(user);
+        if (authUser === null || refreshToken === null) {
+            throw new HttpException('User not authenticated', HttpStatus.UNAUTHORIZED);
+        }
+        try {
+            authPayload = await this.authService.refreshToken(refreshToken, authUser);
+        } catch (err) {
+            this.logger.error(`Caught exception in refreshToken controller: ${err}`);
+            res.clearCookie('refresh_cookie');
+            throw new HttpException(err, HttpStatus.UNAUTHORIZED);
+        }
+        return authPayload;
     }
 
+    @Post('logout')
+    logout
+        (
+            @Req() req: IRequestUser,
+            @Res({ passthrough: true }) res: Response
+        ) {
+        this.authService.logout(req.username, res);
+    }
 }

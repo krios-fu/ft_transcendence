@@ -4,16 +4,19 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
+import { ChatModule } from './chat/chat.module';
 import { RoomModule } from './room/room.module';
 import { MatchModule } from './match/match.module';
 import { GameModule } from './game/game.module';
 import { WinnerModule } from './match/winner/winner.module';
 import { LoserModule } from './match/loser/loser.module';
 
+
 @Module({
     imports: [
         AuthModule,
         UserModule,
+        ChatModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,

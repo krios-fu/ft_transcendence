@@ -1,0 +1,12 @@
+<div *ngIf="user.username" style="padding: 20px; font-size: small;">
+
+<div style="float: right;">
+	<mat-chip-list >
+		<mat-chip >
+			<img class="avatar" src={{user.photoUrl}} alt={{user.username}} />
+			
+			<span style="padding-left:10px;"> {{user.username}} </span>
+		</mat-chip>
+	</mat-chip-list>
+</div>
+</div>
