@@ -23,7 +23,7 @@ import { LoserModule } from './match/loser/loser.module';
 @Module({
     imports: [
         UserModule,
-        //AuthModule,
+        AuthModule,
         ChatModule,
         TypeOrmModule.forRoot({
             type: 'postgres',

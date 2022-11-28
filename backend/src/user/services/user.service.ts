@@ -41,6 +41,7 @@ export class UserService {
 
     /* post new user */
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
+        console.log(newUser);
         const newEntity = new UserEntity(newUser);
 
         await this.userRepository.insert(newEntity);
