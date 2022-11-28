@@ -1,0 +1,31 @@
+
+.tree{
+  background: none;
+  // border: 1px solid rgba(245, 245, 245, 0.29);
+  font-family: 'Super Mario World Text Box', sans-serif;
+  font-size: 9px;
+
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  font-size: 9px;
+
+  &:hover{
+    color: goldenrod;
+  }
+}
+
+.effect{
+
+  animation: bounce-in 2s ease;
+  animation: fade-in 2s linear both;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+

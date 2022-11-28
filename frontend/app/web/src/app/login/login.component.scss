@@ -1,0 +1,37 @@
+
+.master{
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  h2{
+    font-size: 11px;
+    color:lawngreen;
+    font-family: 'Andale Mono'
+  }
+}
+
+.start{
+	// border: outset 3px silver;
+
+  a{
+    display: block;
+    color: white;
+    font-size: 11px;
+    h1:hover{
+      color: goldenrod;
+    }
+    text-decoration: none;
+  }
+}
+
+.pulse {
+  animation: pulse 1s infinite ease-in-out alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(0.8); }
+  to { transform: scale(1.2); }
+}

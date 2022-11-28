@@ -4,38 +4,10 @@ HOST=http://c3r5s2:3000
 
 #Check if TOKEN42 environment variable is set
 
-if [ -z "$TOKEN42" ]
-then
-	echo "Missing TOKEN42 environment variable."
-	exit
-fi
 
-function check_invalid_token ()
-{
-	if [ $? -eq 0 ]
-	then
-		echo -e "\n\nGet a valid TOKEN42"
-	else
-		echo ""
-	fi
-}
-
-if [ $1 = "get-users" ]
-then
-	curl -i -s $HOST/users -H "Authorization: Bearer $TOKEN42" \
-		| tee /dev/tty | grep -q "401 Unauthorized"
-	check_invalid_token
-	exit
-fi
-
-# -X POST is not necessary. POST is sent automatically when adding -d
-
-if [ $1 = "post-user" ]
-then
 	if [ -n "$2" ]
 	then
-		curl -i -s $HOST/users/new \
-			-H "Authorization: Bearer $TOKEN42" \
+		curl -i -s $HOST/users/new\
 			-H "Content-Type: application/json" \
 			-d '{
 				"username":"'$2'",
@@ -45,12 +17,9 @@ then
 				"email":"'$2'@mail.com",
 				"photoUrl":"'$2'-photoUrl"
 				}' | tee /dev/tty | grep -q "401 Unauthorized"
-		check_invalid_token
 	else
 		echo "Pass a username as second argument"
 	fi
-	exit
-fi
 
 # Need to pass a json object as third argument. The only properties
 # accepted bu the rout are: nickName (string), photoUrl (string),
@@ -134,5 +103,41 @@ then
 	else
 		echo "Pass a username as second argument"
 	fi
+	exit
+fi
+
+if [ $1 = "block-friend" ]
+then
+	if [ -n "$2" ]
+	then
+		curl -i -s -X POST $HOST/block/$2 \
+			-H "Authorization: Bearer $TOKEN42" \
+			| tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
+	else
+		echo "Pass a username as second argument"
+	fi
+	exit
+fi
+
+if [ $1 = "unblock-friend" ]
+then
+	if [ -n "$2" ]
+	then
+		curl -i -s -X DELETE $HOST/block/$2 \
+			-H "Authorization: Bearer $TOKEN42" \
+			| tee /dev/tty | grep -q "401 Unauthorized"
+		check_invalid_token
+	else
+		echo "Pass a username as second argument"
+	fi
+	exit
+fi
+
+if [ $1 = "get-blocked-friends" ]
+then
+	curl -i -s $HOST/block -H "Authorization: Bearer $TOKEN42" \
+		| tee /dev/tty | grep -q "401 Unauthorized"
+	check_invalid_token
 	exit
 fi

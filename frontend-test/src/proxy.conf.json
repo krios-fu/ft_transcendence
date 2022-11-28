@@ -1,9 +1,0 @@
-{
-    "http://localhost:3000/auth/42": 
-    {
-        "target": "http://localhost:3000/auth/42",
-        "secure": false,
-        "logLevel": "debug",
-        "changeOrigin": true
-    }
-}

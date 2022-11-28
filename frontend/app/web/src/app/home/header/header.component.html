@@ -1,0 +1,15 @@
+<nav class="header">
+  <div class="logo" style="right: 0; min-width: 21rem">
+    <h1>
+      <span>PING PONG</span>
+      <span>PING PONG</span>
+    </h1>
+  </div>
+  <div style="width: 20%; right: 0; position: absolute;">
+    <div class="search-box">
+      <form (ngSubmit)="search()" [formGroup]="formMessage">
+        <input formControlName="message" type="text" class="search-input" placeholder="Search">
+      </form>
+    </div>
+  </div>
+</nav>
