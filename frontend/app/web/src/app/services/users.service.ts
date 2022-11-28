@@ -21,10 +21,10 @@ export class UsersService {
 
     getUser(username: string): Observable<IUser> {
       /* username = username.trim() */
-      const userParam = new HttpParams().set('id', username);
+      // const userParam = new HttpParams().set('id', username);
       
 
-      return this.http.get<IUser>( 'http://localhost:3000/users/' + username );
+      return this.http.get<IUser>( 'http://localhost:3000/users/me');
       // .pipe(tap((user) => console.log('tapped: ' + JSON.stringify(user))))
         // 'http://localhost:3000/users/', {
         //   observe: 'body',
