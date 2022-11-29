@@ -20,6 +20,7 @@ import { ChatModule } from '../room/chat/chat.module';
 import { LoginComponent } from '../login/login.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
+import { GameComponent } from '../game/game.component';
 
 
 
@@ -31,6 +32,7 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     RoomComponent, 
     SettingComponent,
     FriendOnlineComponent,
+    // GameComponent
     // LoginComponent
 
   ],
