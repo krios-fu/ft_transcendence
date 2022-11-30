@@ -51,7 +51,7 @@ import { GameComponent } from '../game/game.component';
     // ChatModule
   ],
   exports:[
-    HomeComponent,
+    // HomeComponent,
   ], providers:[{
     provide: HTTP_INTERCEPTORS,
     useClass: AuthInterceptor,

@@ -10,7 +10,7 @@ import { StartScene } from "./scenes/StartScene";
 @Component({
     selector: 'app-game',
     templateUrl: './game.component.html',
-    styleUrls: ['./game.component.css']
+    styleUrls: ['./game.component.scss']
 })
 export class    GameComponent implements OnInit {
 
