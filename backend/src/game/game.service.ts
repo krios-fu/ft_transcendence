@@ -27,13 +27,15 @@ export class    GameService {
         this.gamePlayers = new Map<string, [UserEntity, UserEntity]>;
     }
 
-    startGame(gameId: string): [UserEntity, UserEntity] {
-        let nextPlayers: [UserEntity, UserEntity] =
-                            this.queueService.getNextPlayers(gameId);
+    startGame(gameId: string): [[UserEntity, UserEntity], number] {
+        let nextPlayers: [UserEntity, UserEntity] = [undefined, undefined];
+        let gameType: number;
         let currentPlayers: [UserEntity, UserEntity];
     
+        [nextPlayers[0], nextPlayers[1], gameType] =
+                                    this.queueService.getNextPlayers(gameId);
         if (nextPlayers[0] === undefined)
-            return (nextPlayers);
+            return ([nextPlayers, gameType]);
         currentPlayers = this.gamePlayers.get(gameId);
         if (currentPlayers === undefined)
         {
@@ -43,9 +45,7 @@ export class    GameService {
         }
         currentPlayers[0] = nextPlayers[0];
         currentPlayers[1] = nextPlayers[1];
-        this.queueService.remove(gameId, nextPlayers[0].username);
-        this.queueService.remove(gameId, nextPlayers[1].username);
-        return (nextPlayers);
+        return ([nextPlayers, gameType]);
     }
 
     private isOfficial(gameId: string): boolean {

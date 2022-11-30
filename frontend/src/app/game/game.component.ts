@@ -1,7 +1,9 @@
 import { Component, OnInit } from "@angular/core"
 import * as Phaser from 'phaser'
 import * as SockIO from 'socket.io-client'
+import { ClassicPlayerScene } from "./scenes/ClassicPlayerScene";
 import { EndScene } from "./scenes/EndScene";
+import { MenuHeroScene } from "./scenes/MenuHeroScene";
 import { MenuScene } from "./scenes/MenuScene";
 import { PlayerScene } from "./scenes/PlayerScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
@@ -44,15 +46,20 @@ export class    GameComponent implements OnInit {
                     new StartScene(this.socket, "Game1");
         const   menuScene: MenuScene =
                     new MenuScene(this.socket, "Game1");
+        const   menuHeroScene: MenuHeroScene =
+                    new MenuHeroScene(this.socket, "Game1");
         const   playerScene: PlayerScene =
                     new PlayerScene(this.socket, "Game1");
+        const   classicPlayerScene: ClassicPlayerScene =
+                    new ClassicPlayerScene(this.socket, "Game1");
         const   spectatorScene: SpectatorScene =
                     new SpectatorScene(this.socket, "Game1");
         const   endScene: EndScene =
                     new EndScene(this.socket, "Game1");
             
         this.config.scene = [
-            startScene, menuScene, playerScene, spectatorScene, endScene
+            startScene, menuScene, menuHeroScene, playerScene,
+            classicPlayerScene, spectatorScene, endScene
         ];
         this.game = new Phaser.Game(this.config);
     }
@@ -66,4 +73,15 @@ export class    GameComponent implements OnInit {
         });
         this.queueButtonClick = true;
     }
+
+    addToHeroQueue() {
+        /*if (this.queueButtonClick)
+            return ;*/
+        this.socket.emit("addToGameHeroQueue", {
+            room: "Game1",
+            username: this.username
+        });
+        this.queueButtonClick = true;
+    }
+
 }

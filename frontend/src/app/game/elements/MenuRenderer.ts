@@ -22,19 +22,16 @@ export class    MenuRenderer {
 
     constructor(scene: MenuScene, initData: ISelectionData) {
         this._heroImages = [
-            'aquamanMenu', //Provisional, none image
             'aquamanMenu',
             'supermanMenu',
             'blackPantherMenu'
         ];
         this._heroConfirmImages = [
-            'aquamanConfirm', //Provisional, none image
             'aquamanConfirm',
             'supermanConfirm',
             'blackPantherConfirm'
         ];
         this._stageImages = [
-            'atlantisMenu', //Provisional, none image
             'atlantisMenu',
             'metropolisMenu',
             'wakandaMenu'

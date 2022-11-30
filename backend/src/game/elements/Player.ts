@@ -14,40 +14,43 @@ export interface    IPlayerInit {
     paddle: IPaddleInit;
     score: number;
     nick: string;
-    hero: Hero; //0: Aquaman, 1: BlackPanther, 2: Superman
+    hero?: Hero; //0: Aquaman, 1: BlackPanther, 2: Superman
     gameWidth: number;
     gameHeight: number;
 }
 
 export interface    IPlayerClientStart {
     paddle: IPaddleClientStart;
-    hero: IHeroClientStart;
+    hero?: IHeroClientStart;
     score: number;
     nick: string;
 }
 
 export interface    IPlayerData {
     paddle: IPaddleData;
-    hero: IHeroData;
+    hero?: IHeroData;
     score: number;
 }
 
 export class    Player {
 
     private _paddle: Paddle;
-    private _hero: Hero;
+    private _hero?: Hero;
     private _score: number;
     private _nick: string;
     private _paddleMoves: number[]; //0: down, 1: up
-    private _heroInvocation: number;
+    private _heroInvocation?: number;
 
     constructor(init: IPlayerInit) {
         this._paddle = new Paddle(init.paddle);
-        this._hero = init.hero;
+        if (init.hero)
+        {
+            this._hero = init.hero;
+            this._heroInvocation = -1;
+        }
         this._score = init.score;
         this._nick = init.nick;
         this._paddleMoves = [];
-        this._heroInvocation = -1;
     }
 
     get score(): number {
@@ -70,26 +73,31 @@ export class    Player {
         this._score = input;
     }
 
+    //1: Down, 2: Up
     addPaddleMove(move: number): void {
-        if (move != 0 && move != 1)
+        if (move != 1 && move != 2)
             return ;
-        this._paddleMoves.push(move);
+        this._paddleMoves.push(move - 1); //Convert to 0: Down, 1: Up
     }
 
-    //0: S, 1: W
+    //1: S, 2: W
     addHeroInvocation(invocation: number): void {
-        if (invocation != 0 && invocation != 1)
+        if (!this._hero
+            || (invocation != 1 && invocation != 2))
             return ;
-        this._heroInvocation = invocation;
+        this._heroInvocation = invocation - 1; //Convert to 0: S, 1: W
     }
 
     update(seconds: number, gameHeight: number): void {
-        if (this._heroInvocation != -1)
+        if (this._hero)
         {
-            this._hero.invocation(this._heroInvocation);
-            this._heroInvocation = -1;
+            if (this._heroInvocation != -1)
+            {
+                this._hero.invocation(this._heroInvocation);
+                this._heroInvocation = -1;
+            }
+            this._hero.update(seconds);
         }
-        this._hero.update(seconds);
         this._paddle.update(this._paddleMoves, gameHeight);
         this._paddleMoves = [];
     }
@@ -101,7 +109,7 @@ export class    Player {
     data(): IPlayerData {
         return ({
             paddle: this._paddle.data(),
-            hero: this._hero.data(),
+            hero: this.hero ? this._hero.data() : undefined,
             score: this._score
         });
     }
@@ -109,7 +117,7 @@ export class    Player {
     clientStartData(): IPlayerClientStart {
         return ({
             paddle: this._paddle.clientStartData(),
-            hero: this._hero.clientStartData(),
+            hero: this.hero ? this._hero.clientStartData() : undefined,
             score: this._score,
             nick: this._nick
         });

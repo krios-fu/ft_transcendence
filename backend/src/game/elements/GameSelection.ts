@@ -1,12 +1,10 @@
 export enum HeroId {
-    None,
     Aquaman,
     Superman,
     BlackPanther
 }
 
 export enum StageId {
-    None,
     Atlantis,
     Metropolis,
     Wakanda
@@ -44,11 +42,11 @@ export class    GameSelection {
     constructor(nickPlayerA: string, nickPlayerB: string) {
         this._nickPlayerA = nickPlayerA;
         this._nickPlayerB = nickPlayerB;
-        this._heroA = HeroId.None;
-        this._heroB = HeroId.None;
+        this._heroA = HeroId.Aquaman;
+        this._heroB = HeroId.Aquaman;
         this._heroAConfirmed = false;
         this._heroBConfirmed = false;
-        this._stage = StageId.None;
+        this._stage = StageId.Atlantis;
         this._status = SelectionStatus.Hero;
     }
 
@@ -74,7 +72,7 @@ export class    GameSelection {
     }
 
     private heroLeft(hero: HeroId): HeroId {
-        if (hero === HeroId.None)
+        if (hero === HeroId.Aquaman)
             hero = HeroId.BlackPanther;
         else
             --hero;
@@ -83,14 +81,14 @@ export class    GameSelection {
 
     private heroRight(hero: HeroId): HeroId {
         if (hero === HeroId.BlackPanther)
-            hero = HeroId.None;
+            hero = HeroId.Aquaman;
         else
             ++hero;
         return (hero);
     }
 
     private stageLeft(stage: StageId): StageId {
-        if (stage === StageId.None)
+        if (stage === StageId.Atlantis)
             stage = StageId.Wakanda;
         else
             --stage;
@@ -99,7 +97,7 @@ export class    GameSelection {
 
     private stageRight(stage: StageId): StageId {
         if (stage === StageId.Wakanda)
-            stage = StageId.None;
+            stage = StageId.Atlantis;
         else
             ++stage;
         return (stage);

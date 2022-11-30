@@ -8,8 +8,8 @@ import {
     IBallClientStart,
     IBallData
 } from './Ball'
-import { HeroCreator } from './HeroCreator';
 import { IGameSelectionData } from './GameSelection';
+import { HeroCreator } from './HeroCreator';
 
 export enum    GameState {
     Running,
@@ -21,6 +21,13 @@ export interface    IGameClientStart {
     playerA: IPlayerClientStart;
     playerB: IPlayerClientStart;
     ball: IBallClientStart;
+}
+
+export interface    IInputData {
+    aMove?: number;
+    bMove?: number;
+    aHero?: number;
+    bHero?: number;
 }
 
 export interface    IGameData {
@@ -38,13 +45,13 @@ export interface    IGameResult {
 
 export class   Game {
 
-    private _width: number; //Make it static
-    private _height: number; //Make it static
-    private _playerA: Player;
-    private _playerB: Player;
-    private _ball: Ball;
-    private _lastUpdate: number; //timestamp milliseconds
-    private _state: GameState;
+    protected   _width: number; //Make it static
+    protected   _height: number; //Make it static
+    protected   _playerA: Player;
+    protected   _playerB: Player;
+    protected   _ball: Ball;
+    protected   _lastUpdate: number; //timestamp milliseconds
+    protected   _state: GameState;
 
     private static  winScore: number = 3;
 
@@ -62,9 +69,10 @@ export class   Game {
                 yPos: 300,
                 side: 0
             },
+            hero: gameSelection.heroAConfirmed
+                    ? heroCreator.create(gameSelection.heroA, 0) : undefined,
             score: 0,
             nick: gameSelection.nickPlayerA,
-            hero: heroCreator.create(gameSelection.heroA, 0),
             gameWidth: this._width,
             gameHeight: this._height
         });
@@ -76,9 +84,10 @@ export class   Game {
                 yPos: 300,
                 side: 1
             },
+            hero: gameSelection.heroBConfirmed
+                    ? heroCreator.create(gameSelection.heroB, 1) : undefined,
             score: 0,
             nick: gameSelection.nickPlayerB,
-            hero: heroCreator.create(gameSelection.heroB, 1),
             gameWidth: this._width,
             gameHeight: this._height
         });
@@ -153,11 +162,11 @@ export class   Game {
         });
     }
 
-    private deltaTime(currentTime: number): number {
+    protected deltaTime(currentTime: number): number {
         return ((currentTime - this._lastUpdate) / 1000);
     }
 
-    private checkBorderCollision(ballXDisplacement: number,
+    protected checkBorderCollision(ballXDisplacement: number,
                                     ballYDisplacement: number): number {
         let border: number;
 
@@ -170,53 +179,41 @@ export class   Game {
         return (border);
     }
 
-    private ballUpdate(secondsElapsed: number): boolean {
+    protected ballUpdate(secondsElapsed: number): boolean {
         const   ballXDisplacement: number =
                     this._ball.displacement('x', secondsElapsed);
         const   ballYDisplacement: number =
                     this._ball.displacement('y', secondsElapsed);
         let     border: number;
-        
-        /*
-        **  Hero collisions do not work with ball next
-        **  position (ballDisplacement) at the moment.
-        */
-        if (this._ball.checkHeroCollision(this._playerA.hero/*,
-                ballXDisplacement, ballYDisplacement*/))
-            return (false);
-        else if (this._ball.checkHeroCollision(this._playerB.hero/*,
-                    ballXDisplacement, ballYDisplacement*/))
-            return (false);
-        else if (this._ball.checkPaddleCollision(this._playerA.paddle,
+    
+        if (this._ball.checkPaddleCollision(this._playerA.paddle,
                     this._playerB.paddle, ballXDisplacement))
             return (false);
-        border = this.checkBorderCollision(ballXDisplacement,
-                    ballYDisplacement);
-        if (border >= 0 && border < 4)
-        {
-            if (border === 0 || border === 2)
-                return (true);
-            return (false);
-        }
         else
-            this._ball.move(ballXDisplacement, ballYDisplacement);
+        {
+            border = this.checkBorderCollision(ballXDisplacement,
+                                                ballYDisplacement);
+            if (border >= 0 && border < 4)
+            {
+                if (border === 0 || border === 2)
+                    return (true);
+                return (false);
+            }
+            else
+                this._ball.move(ballXDisplacement, ballYDisplacement);
+        }
         return (false);
     }
 
-    addPaddleAMove(move: number): void {
-        this._playerA.addPaddleMove(move);
-    }
-
-    addPaddleBMove(move: number): void {
-        this._playerB.addPaddleMove(move);
-    }
-
-    addHeroAInvocation(invocation: number): void {
-        this._playerA.addHeroInvocation(invocation);
-    }
-
-    addHeroBInvocation(invocation: number): void {
-        this._playerB.addHeroInvocation(invocation);
+    addInput(data: IInputData): void {
+        if (data.aMove)
+            this._playerA.addPaddleMove(data.aMove);
+        else if (data.bMove)
+            this._playerB.addPaddleMove(data.bMove);
+        else if (data.aHero)
+            this._playerA.addHeroInvocation(data.aHero);
+        else if (data.bHero)
+            this._playerB.addHeroInvocation(data.bHero);
     }
 
     update(): boolean {
@@ -232,9 +229,6 @@ export class   Game {
             if (this.getWinnerNick() != "")
                 this._state = GameState.Finished;
         }
-        // Sets hero's position to initial one if its action ended.
-        this._playerA.checkHeroEnd();
-        this._playerB.checkHeroEnd();
         this._lastUpdate = currentTime;
         return (pointTransition);
     }

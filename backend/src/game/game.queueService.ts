@@ -5,72 +5,146 @@ import {
 } from "../user/entities/user.entity";
 import { UserService } from "../user/services/user.service";
 
+interface   IQueueElement
+{
+    user: UserEntity;
+    insertTime: number;
+}
+
 @Injectable()
 export class    GameQueueService {
-    private gameQueue: Map<string, UserEntity[]>;
+    private gameQueue: Map<string, IQueueElement[]>;
+    private gameHeroQueue: Map<string, IQueueElement[]>
 
     constructor(
         private readonly userService: UserService,
     ) {
-        this.gameQueue = new Map<string, UserEntity[]>;
+        this.gameQueue = new Map<string, IQueueElement[]>;
+        this.gameHeroQueue = new Map<string, IQueueElement[]>;
     }
 
-    getNextPlayers(gameId: string): [UserEntity, UserEntity] {
-        let queue: UserEntity[] = this.gameQueue.get(gameId);
+    /*
+    **  Second element in response tuple indicates:
+    **  0 === Classic game
+    **  1 === Hero game
+    */
+    private getNextQueue(gameId): [IQueueElement[], number] {
+        let queue: IQueueElement[] = this.gameQueue.get(gameId) || [];
+        let queueHero: IQueueElement[] = this.gameHeroQueue.get(gameId) || [];
+    
+        if (queue.length < 2 && queueHero.length < 2)
+            return ([[], undefined]);
+        if (queue.length < 2 && queueHero.length > 1)
+            return ([queueHero, 1]);
+        if (queueHero.length < 2 && queue.length > 1)
+            return ([queue, 0]);
+        if (queue[0].insertTime < queueHero[0].insertTime)
+            return ([queue, 0]);
+        return ([queueHero, 1]);
+    }
+
+    /*
+    **  Third element in response tuple indicates:
+    **  0 === Classic game
+    **  1 === Hero game
+    */
+    getNextPlayers(gameId: string): [UserEntity, UserEntity, number] {
+        let [queue, type]: [IQueueElement[], number] =
+                                                this.getNextQueue(gameId);
         let playerA: UserEntity = undefined;
         let playerB: UserEntity = undefined;
         let maxCategoryDiff: number = 0;
         let categoryDiff: number;
 
-        if (!queue
-            || queue.length < 2)
-            return ([playerA, playerB]);
-        playerA = queue[0];
+        if (!queue.length)
+            return ([playerA, playerB, type]);
+        playerA = queue[0].user;
         while (playerB === undefined)
         {
             for (let i: number = 1; i < queue.length; ++i)
             {
                 categoryDiff = Math.abs(
-                    playerA.category - queue[i].category
+                    playerA.category - queue[i].user.category
                 );
                 if (categoryDiff <= maxCategoryDiff
-                    || queue[i].category === Category.Pending)
+                    || queue[i].user.category === Category.Pending)
                 {
-                    playerB = queue[i];
+                    playerB = queue[i].user;
                     break ;
                 }
             }
             ++maxCategoryDiff;
         }
-        return ([playerA, playerB]);
+        this.removeFromQueue(queue, playerA.username);
+        this.removeFromQueue(queue, playerB.username);
+        return ([playerA, playerB, type]);
     }
 
-    private findByUsername(username: string, queue: UserEntity[]): number {
-        return (queue.findIndex((elem) => elem.username === username));
+    private findByUsername(username: string, queue: IQueueElement[]): number {
+        return (queue.findIndex((elem) => elem.user.username === username));
     }
 
-    async add(gameId: string, username: string): Promise<void> {
-        let targetIndex: number;
-        let userEntity: UserEntity = await this.userService.findOneByUsername(username);
-        let queue: UserEntity[] = this.gameQueue.get(gameId);
+    async add(gameId: string, hero: boolean, username: string): Promise<void> {
+        let     targetIndex: number;
+        const   userEntity: UserEntity =
+                                    await this.userService.findOneByUsername(username);
+        let     queue: IQueueElement[] = hero
+                                    ? this.gameHeroQueue.get(gameId)
+                                    : this.gameQueue.get(gameId);
     
         if (!queue)
-            queue = this.gameQueue.set(gameId, []).get(gameId);
+        {
+            if (hero)
+                queue = this.gameHeroQueue.set(gameId, []).get(gameId);
+            else
+                queue = this.gameQueue.set(gameId, []).get(gameId);
+        }
         targetIndex = this.findByUsername(username, queue);
         if (targetIndex === -1
             && userEntity)
-            queue.push(userEntity);
+        {
+            queue.push({
+                user: userEntity,
+                insertTime: Date.now()
+            });
+        }
     }
 
-    remove(gameId: string, username: string): void {
+    private removeFromQueue(queue: IQueueElement[], username: string): void {
         let targetIndex: number;
-        let queue: UserEntity[] = this.gameQueue.get(gameId);
+    
+        if (queue)
+        {
+            targetIndex = this.findByUsername(username, queue);
+            if (targetIndex !== -1)
+                queue.splice(targetIndex, 1);
+        }
+    }
 
-        if (!queue || username === "")
+    removeAll(gameId: string, username: string): void {        
+        let queue: IQueueElement[] = this.gameQueue.get(gameId);
+        let queueHero: IQueueElement[] = this.gameHeroQueue.get(gameId);
+
+        if (username === "")
             return ;
-        targetIndex = this.findByUsername(username, queue);
-        if (targetIndex !== -1)
-            queue.splice(targetIndex, 1);
+        this.removeFromQueue(queue, username);
+        this.removeFromQueue(queueHero, username);
+    }
+
+    removeClassic(gameId, username: string): void {
+        let queue: IQueueElement[] = this.gameQueue.get(gameId);
+
+        if (username === "")
+            return ;
+        this.removeFromQueue(queue, username);
+    }
+
+    removeHero(gameId, username: string): void {
+        let queueHero: IQueueElement[] = this.gameHeroQueue.get(gameId);
+
+        if (username === "")
+            return ;
+        this.removeFromQueue(queueHero, username);
     }
 
 }
