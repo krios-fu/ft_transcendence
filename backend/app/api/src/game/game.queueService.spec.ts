@@ -55,15 +55,16 @@ describe('GameQueueService', () => {
     describe('getNextPlayers()', () => {
         it('should return players of same Category', async () => {
             const   gameId: string = "Game1";
-            const   output: [ UserEntity, UserEntity ] = [ mockUsers[0], mockUsers[0] ];
+            const   output: [ UserEntity, UserEntity, number ] =
+                                [ mockUsers[0], mockUsers[0], 0 ];
 
             jest.spyOn(repository, 'findOne')
             .mockResolvedValueOnce({...mockUsers[0]})
             .mockResolvedValueOnce({...mockUsers[4]})
             .mockResolvedValueOnce({...mockUsers[0]});
-            await service.add(gameId, "first");
-            await service.add(gameId, "second");
-            await service.add(gameId, "third");
+            await service.add(gameId, false, "first");
+            await service.add(gameId, false, "second");
+            await service.add(gameId, false, "third");
             expect(
                 service.getNextPlayers(gameId)
             ).toEqual(output);
@@ -73,15 +74,16 @@ describe('GameQueueService', () => {
     describe('getNextPlayers()', () => {
         it('should return players of nearest category', async () => {
             const   gameId: string = "Game1";
-            const   output: [ UserEntity, UserEntity ] = [ mockUsers[0], mockUsers[3] ];
+            const   output: [ UserEntity, UserEntity, number ] =
+                                [ mockUsers[0], mockUsers[3], 0 ];
 
             jest.spyOn(repository, 'findOne')
             .mockResolvedValueOnce({...mockUsers[0]})
             .mockResolvedValueOnce({...mockUsers[4]})
             .mockResolvedValueOnce({...mockUsers[3]});
-            await service.add(gameId, "first");
-            await service.add(gameId, "second");
-            await service.add(gameId, "third");
+            await service.add(gameId, false, "first");
+            await service.add(gameId, false, "second");
+            await service.add(gameId, false, "third");
             expect(
                 service.getNextPlayers(gameId)
             ).toEqual(output);
@@ -91,15 +93,16 @@ describe('GameQueueService', () => {
     describe('getNextPlayers()', () => {
         it('should return players of nearest category', async () => {
             const   gameId: string = "Game1";
-            const   output: [ UserEntity, UserEntity ] = [ mockUsers[4], mockUsers[4] ];
+            const   output: [ UserEntity, UserEntity, number ] =
+                                [ mockUsers[4], mockUsers[4], 0 ];
 
             jest.spyOn(repository, 'findOne')
             .mockResolvedValueOnce({...mockUsers[4]})
             .mockResolvedValueOnce({...mockUsers[4]})
             .mockResolvedValueOnce({...mockUsers[3]});
-            await service.add(gameId, "first");
-            await service.add(gameId, "second");
-            await service.add(gameId, "third");
+            await service.add(gameId, false, "first");
+            await service.add(gameId, false, "second");
+            await service.add(gameId, false, "third");
             expect(
                 service.getNextPlayers(gameId)
             ).toEqual(output);
@@ -109,7 +112,8 @@ describe('GameQueueService', () => {
     describe('getNextPlayers()', () => {
         it('should return players of nearest category', async () => {
             const   gameId: string = "Game1";
-            const   output: [ UserEntity, UserEntity ] = [ mockUsers[2], mockUsers[3] ];
+            const   output: [ UserEntity, UserEntity, number ] =
+                                [ mockUsers[2], mockUsers[3], 0 ];
 
             jest.spyOn(repository, 'findOne')
             .mockResolvedValueOnce({...mockUsers[2]})
@@ -117,11 +121,11 @@ describe('GameQueueService', () => {
             .mockResolvedValueOnce({...mockUsers[4]})
             .mockResolvedValueOnce({...mockUsers[3]})
             .mockResolvedValueOnce({...mockUsers[1]});
-            await service.add(gameId, "first");
-            await service.add(gameId, "second");
-            await service.add(gameId, "third");
-            await service.add(gameId, "fourth");
-            await service.add(gameId, "fifth");
+            await service.add(gameId, false, "first");
+            await service.add(gameId, false, "second");
+            await service.add(gameId, false, "third");
+            await service.add(gameId, false, "fourth");
+            await service.add(gameId, false, "fifth");
             expect(
                 service.getNextPlayers(gameId)
             ).toEqual(output);

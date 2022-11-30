@@ -2,24 +2,19 @@ import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
 import { MatchScene } from './MatchScene';
 
-export class    PlayerScene extends MatchScene {
+export class    ClassicPlayerScene extends MatchScene {
 
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-    powerKeys: any;
 
     constructor(
         socket: SocketIO.Socket, room: string
     ) {
-        super("Player", socket, room);
+        super("ClassicPlayer", socket, room);
     }
 
     override create() {
         //Activate keyboard input
         this.cursors = this.input.keyboard.createCursorKeys(); //up, left, down, right
-        this.powerKeys = this.input.keyboard.addKeys({
-            up: 'W',
-            down: 'S'
-        });
         super.create();
     }
 
@@ -28,10 +23,6 @@ export class    PlayerScene extends MatchScene {
             this.socket.emit('paddleUp');
         else if (this.cursors?.down.isDown)
             this.socket.emit('paddleDown');
-        if (this.powerKeys.up.isDown)
-            this.socket.emit('heroUp');
-        else if (this.powerKeys.down.isDown)
-            this.socket.emit('heroDown');
     }
 
 }

@@ -5,14 +5,12 @@ import {
 import { MenuRenderer } from "./MenuRenderer";
 
 enum    Hero {
-    None,
     Aquaman,
     Superman,
     BlackPanther
 }
 
 enum    Stage {
-    None,
     Atlantis,
     Metropolis,
     Wakanda
@@ -49,7 +47,7 @@ export class    MenuSelector {
     }
 
     private heroLeft(hero: Hero, player: string): number {
-        if (hero === Hero.None)
+        if (hero === Hero.Aquaman)
             hero = Hero.BlackPanther;
         else
             --hero;
@@ -59,7 +57,7 @@ export class    MenuSelector {
 
     private heroRight(hero: Hero, player: string): number {
         if (hero === Hero.BlackPanther)
-            hero = Hero.None;
+            hero = Hero.Aquaman;
         else
             ++hero;
         this._renderer.render(this._status, player, hero, false);
@@ -67,7 +65,7 @@ export class    MenuSelector {
     }
 
     private stageLeft(stage: Stage, player: string): number {
-        if (stage === Stage.None)
+        if (stage === Stage.Atlantis)
             stage = Stage.Wakanda;
         else
             --stage;
@@ -77,7 +75,7 @@ export class    MenuSelector {
 
     private stageRight(stage: Stage, player: string): number {
         if (stage === Stage.Wakanda)
-            stage = Stage.None;
+            stage = Stage.Atlantis;
         else
             ++stage;
         this._renderer.render(this._status, player, stage, false);
