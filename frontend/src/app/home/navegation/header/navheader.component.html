@@ -3,17 +3,17 @@ position: relative;
 align-items: center;  
 justify-content: center;
 height: 60px;
-padding: 40px;">
+padding: 40px;" *ngIf="user">
   <figure class="avatar">
-    <img src={{getPhoto()}} alt={{getName()}} />
+    <img src={{user.photoUrl}}  />
   </figure>
 </div>
 <div style="display: flex; 
 position: relative; 
 align-items: center;  
 justify-content: space-around;
-">
-  <h1 style="font-size: 14px;">{{getName()}}</h1>
+" *ngIf="user">
+  <h1   style="font-size: 14px;">{{user.username}}</h1>
 </div>
 
 <div style="display: flex; justify-content: space-between; align-items: center; padding: 21px">

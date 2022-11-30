@@ -48,7 +48,7 @@ export class ChatIdComponent implements OnInit {
         console.log('-->',id)
       // this.chat.joinRoom(id);
       // friend chat
-      this.http.get('http://localhost:3000/users/' + this.login)
+      this.http.get('http://localhost:3000/users/me')
         .subscribe((user) => {
           console.log(user);
           this.user = Object.assign(user);
