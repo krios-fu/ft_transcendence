@@ -14,10 +14,7 @@ export interface IJwtPayload {
     iat: number
 };
 
-export interface IRequestPayload extends Request {
-    jwtPayload: IJwtPayload;
-};
-
 export interface IRequestUser extends Request {
-    username: string;
+    user: IJwtPayload;
+    username: string; /* delete this! */
 };

@@ -47,14 +47,15 @@ export class UserController {
     ** (User must be himself)
     */
 
-    //@UseGuards(MyGuard)
     @Get('me')
     public async findMe(@Req() req: IRequestUser) {
-        if (req.username === undefined) {
+        const username = req.user.data.username;
+
+        if (username === undefined) {
             this.userLogger.error('Cannot find username for client in request body');
             throw new HttpException('user has no valid credentials', HttpStatus.BAD_REQUEST);
         }
-        return await this.userService.findAllUsers({ "filter": { "username": [req.username] } });
+        return await this.userService.findAllUsers({ "filter": { "username": [username] } });
     }
 
     /*
