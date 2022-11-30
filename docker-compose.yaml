@@ -56,10 +56,10 @@ services:
     networks:
       - webapp-network
     volumes:
-      - ./frontend/app/web:/usr/src/app/web/
+      - ./frontend/:/usr/src/
     depends_on:     # ???
       - backend
-    working_dir: /usr/src/app/web
+    working_dir: /usr/src/
     # The first time, we entered the empty image,
     # installed angular cli, and generated new workspace with "ng new"
     command: sh -c "npm install && npm start"

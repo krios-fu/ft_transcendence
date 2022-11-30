@@ -61,7 +61,7 @@ export class AuthController {
             @Req() req: Request,
             @Res({ passthrough: true }) res: Response
         ) {
-        if (!('refresh_token' in req.cookies)) {
+        if (('refresh_token' in req.cookies) === false) {
             this.authLogger.error('Unauthorized request: no refresh token present in cookies');
             throw new HttpException('user not authenticated', HttpStatus.UNAUTHORIZED);
         }

@@ -36,7 +36,7 @@ export class AuthService {
             loggedUser = await this.userService.postUser(userProfile);
         }
         tokenEntity = await this.refreshTokenRepository.findOne({
-            relations: { authUser: true},
+            relations: { authUser: true },
             where: {
                 authUser: { username: loggedUser.username }
             }
