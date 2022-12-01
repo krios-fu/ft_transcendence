@@ -11,7 +11,7 @@ fi
 
 while [[ $COUNTER -le $1 ]]
 do
-    curl -s $HOST/users/new \
+    curl -s $HOST/users \
             -H "Content-Type: application/json" \
             -d '{
                 "username":"user-'$COUNTER'",
