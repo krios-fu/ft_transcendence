@@ -25,6 +25,7 @@ export class    MatchScene extends BaseScene {
         if (Object.keys(initData).length != 0)
             this.initData = initData;
         this.socket.once("end", (data) => {
+            this.match?.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });

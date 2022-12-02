@@ -61,4 +61,11 @@ export class    Match {
         this._ball.update(data.ball);
     }
 
+    destroy(): void {
+        this._scoreTxt.destroy();
+        this._ball.destroy();
+        this._playerA.destroy();
+        this._playerB.destroy();
+    }
+
 }

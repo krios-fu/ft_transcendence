@@ -67,4 +67,10 @@ export class    Player {
         this._score = data.score;
     }
 
+    destroy(): void {
+        this._paddle.destroy();
+        if (this._hero)
+            this._hero.destroy();
+    }
+
 }

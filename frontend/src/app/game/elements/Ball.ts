@@ -45,4 +45,8 @@ export class    Ball {
         this._ball.y = data.yPos;
     }
 
+    destroy(): void {
+        this._ball.destroy();
+    }
+
 }

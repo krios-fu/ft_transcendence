@@ -45,4 +45,10 @@ export class    Hero {
         this._lowerSprite.x = data.lowXPos;
         this._lowerSprite.y = data.lowYPos;
     }
+
+    destroy(): void {
+        this._lowerSprite.destroy();
+        this._upperSprite.destroy();
+    }
+
 }
