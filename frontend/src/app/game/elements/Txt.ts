@@ -48,4 +48,8 @@ export class    Txt {
         this._text.y = data.y;
     }
 
+    destroy(): void {
+        this._text.destroy();
+    }
+
 }

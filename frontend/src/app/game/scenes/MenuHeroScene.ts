@@ -1,5 +1,6 @@
 import { Socket } from "socket.io-client";
 import { IMatchInitData } from "../elements/Match";
+import { MenuHeroRenderer } from "../elements/MenuHeroRenderer";
 import { MenuSelector } from "../elements/MenuSelector";
 import {
     IMenuInit,
@@ -8,6 +9,9 @@ import {
 } from "./MenuScene";
 
 export class    MenuHeroScene extends MenuScene {
+
+    private _menuHeroRenderer?: MenuHeroRenderer;
+
     selector?: MenuSelector;
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     enter?: any; //Enter key
@@ -20,6 +24,8 @@ export class    MenuHeroScene extends MenuScene {
         this.role = initData.role;
         this.initData = initData.selection;
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
+            if (this._menuHeroRenderer)
+                this._menuHeroRenderer.destroy();
             this.removeAllSocketListeners();
             if (this.role != "Spectator")
                 this.scene.start("Player", gameData);
@@ -27,6 +33,8 @@ export class    MenuHeroScene extends MenuScene {
                 this.scene.start(this.role, gameData);
         });
         this.socket.once("end", (data) => {
+            if (this._menuHeroRenderer)
+                this._menuHeroRenderer.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
@@ -48,7 +56,11 @@ export class    MenuHeroScene extends MenuScene {
     override create() {
         if (!this.initData)
             return ;
-        this.selector = new MenuSelector(this, this.initData);
+        this._menuHeroRenderer = new MenuHeroRenderer(
+            this,
+            this.initData
+        );
+        this.selector = new MenuSelector(this.initData, this._menuHeroRenderer);
         this.socket.on("leftSelection", (data: ISelectionData) => {
             this.selector?.serverUpdate(data);
         });

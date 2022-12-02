@@ -1,8 +1,5 @@
-import {
-    ISelectionData,
-    MenuScene
-} from "../scenes/MenuScene";
-import { MenuRenderer } from "./MenuRenderer";
+import { ISelectionData } from "../scenes/MenuScene";
+import { MenuHeroRenderer } from "./MenuHeroRenderer";
 
 enum    Hero {
     Aquaman,
@@ -30,16 +27,16 @@ export class    MenuSelector {
     private _heroBConfirmed: boolean;
     private _stage: number;
     private _status: SelectionStatus;
-    private _renderer: MenuRenderer;
+    private _renderer: MenuHeroRenderer;
 
-    constructor(scene: MenuScene, initData: ISelectionData) {
+    constructor(initData: ISelectionData, renderer: MenuHeroRenderer) {
         this._heroA = initData.heroA;
         this._heroB = initData.heroB;
         this._heroAConfirmed = initData.heroAConfirmed;
         this._heroBConfirmed = initData.heroBConfirmed;
         this._stage = initData.stage;
         this._status = initData.status;
-        this._renderer = new MenuRenderer(scene, initData);
+        this._renderer = renderer;
     }
 
     get finished(): boolean {

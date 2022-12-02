@@ -235,10 +235,14 @@ export class    GameUpdateService {
             return ;
         if (this.gameSelections.get(gameId) != undefined)
             this.gameSelections.delete(gameId);
-        gameSelection = this.gameSelections.set(gameId, new GameSelection(
-            players[0].username,
-            players[1].username
-        )).get(gameId);
+        gameSelection = this.gameSelections.set(gameId, new GameSelection({
+            nickPlayerA: players[0].username,
+            nickPlayerB: players[1].username,
+            categoryA: players[0].category,
+            categoryB: players[1].category,
+            avatarA: players[0].photoUrl,
+            avatarB: players[1].photoUrl
+        })).get(gameId);
         selectionData = gameSelection.data;
         await this.prepareClients(gameId, gameType, players, selectionData);
         if (gameType === 0)

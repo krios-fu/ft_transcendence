@@ -14,6 +14,7 @@ export class    StartScene extends BaseScene {
 
     init() {
         this.socket.once("newGame", (data: IMenuInit) => {
+            this.initTxt?.destroy();
             this.removeAllSocketListeners();
             if (data.hero)
                 this.scene.start("MenuHero", data);
@@ -21,10 +22,12 @@ export class    StartScene extends BaseScene {
                 this.scene.start("Menu", data);
         });
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
+            this.initTxt?.destroy();
             this.removeAllSocketListeners();
             this.scene.start("Spectator", gameData);
         });
         this.socket.once("end", (data: any) => {
+            this.initTxt?.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });

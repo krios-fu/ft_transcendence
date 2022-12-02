@@ -1,11 +1,15 @@
 import { Socket } from "socket.io-client";
 import { IMatchInitData } from "../elements/Match";
-import { PlayerInfo } from "../elements/PlayerInfo";
+import { MenuRenderer } from "../elements/MenuRenderer";
 import { BaseScene } from "./BaseScene";
 
 export interface   ISelectionData {
     nickPlayerA: string;
     nickPlayerB: string;
+    categoryA: string;
+    categoryB: string;
+    avatarA: string;
+    avatarB: string;
     heroA: number;
     heroB: number;
     heroAConfirmed: boolean;
@@ -25,8 +29,8 @@ export class    MenuScene extends BaseScene {
 
     role: string;
     initData?: ISelectionData;
-    playerInfoA?: PlayerInfo;
-    playerInfoB?: PlayerInfo;
+
+    private _menuRenderer?: MenuRenderer;
 
     constructor(sock: Socket, room: string, sceneName: string = "") {
         if (sceneName != "")
@@ -40,6 +44,8 @@ export class    MenuScene extends BaseScene {
         this.role = initData.role;
         this.initData = initData.selection;
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
+            if (this._menuRenderer)
+                this._menuRenderer.destroy();
             this.removeAllSocketListeners();
             if (this.role != "Spectator")
                 this.scene.start("ClassicPlayer", gameData);
@@ -47,31 +53,30 @@ export class    MenuScene extends BaseScene {
                 this.scene.start(this.role, gameData);
         });
         this.socket.once("end", (data) => {
+            if (this._menuRenderer)
+                this._menuRenderer.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
     }
 
     preload() {
-        /*if (!this.initData)
+        if (!this.initData)
             return ;
-        this.load.image('playerA', this.initData.aAvatarUrl);
-        this.load.image('playerB', this.initData.bAvatarUrl);*/
+        this.load.image('playerA', "https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg"/*this.initData.avatarA*/);
+        this.load.image('playerB', "https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg"/*this.initData.avatarB*/);
+        this.initData.avatarA = 'playerA';
+        this.initData.avatarB = 'playerB';
     }
 
     create() {
         if (!this.initData)
             return ;
-        this.playerInfoA = new PlayerInfo(this, {
-            nickname: this.initData.nickPlayerA,
-            x: 200,
-            y: 300
-        });
-        this.playerInfoB = new PlayerInfo(this, {
-            nickname: this.initData.nickPlayerB,
-            x: 600,
-            y: 300
-        });
+        this._menuRenderer = new MenuRenderer(
+            this,
+            this.initData,
+            false
+        );
     }
 
 }

@@ -1,3 +1,5 @@
+import { Category } from "src/user/entities/user.entity";
+
 export enum HeroId {
     Aquaman,
     Superman,
@@ -17,9 +19,22 @@ export enum SelectionStatus {
     Canceled
 }
 
+export interface    IGameSelectionInit {
+    nickPlayerA: string;
+    nickPlayerB: string;
+    categoryA: Category;
+    categoryB: Category;
+    avatarA: string;
+    avatarB: string;
+}
+
 export interface    IGameSelectionData {
     nickPlayerA: string;
     nickPlayerB: string;
+    categoryA: string;
+    categoryB: string;
+    avatarA: string;
+    avatarB: string;
     heroA: HeroId;
     heroB: HeroId;
     heroAConfirmed: boolean;
@@ -32,6 +47,10 @@ export class    GameSelection {
 
     private _nickPlayerA: string;
     private _nickPlayerB: string;
+    private _categoryA: Category;
+    private _categoryB: Category;
+    private _avatarA: string;
+    private _avatarB: string;
     private _heroA: HeroId;
     private _heroB: HeroId;
     private _heroAConfirmed: boolean;
@@ -39,9 +58,13 @@ export class    GameSelection {
     private _stage: number;
     private _status: SelectionStatus;
 
-    constructor(nickPlayerA: string, nickPlayerB: string) {
-        this._nickPlayerA = nickPlayerA;
-        this._nickPlayerB = nickPlayerB;
+    constructor(initData: IGameSelectionInit) {
+        this._nickPlayerA = initData.nickPlayerA;
+        this._nickPlayerB = initData.nickPlayerB;
+        this._categoryA = initData.categoryA;
+        this._categoryB = initData.categoryB;
+        this._avatarA = initData.avatarA;
+        this._avatarB = initData.avatarB;
         this._heroA = HeroId.Aquaman;
         this._heroB = HeroId.Aquaman;
         this._heroAConfirmed = false;
@@ -58,10 +81,20 @@ export class    GameSelection {
         return (this._status === SelectionStatus.Finished);
     }
 
+    private stringifyCategory(cat: Category): string {
+        const   s: string[] = ["Iron", "Bronze", "Silver", "Gold", "Platinum"];
+
+        return (s[cat]);
+    }
+
     get data(): IGameSelectionData {
         return ({
             nickPlayerA: this._nickPlayerA,
             nickPlayerB: this._nickPlayerB,
+            categoryA: this.stringifyCategory(this._categoryA),
+            categoryB: this.stringifyCategory(this._categoryB),
+            avatarA: this._avatarA,
+            avatarB: this._avatarB,
             heroA: this._heroA,
             heroB: this._heroB,
             heroAConfirmed: this._heroAConfirmed,
