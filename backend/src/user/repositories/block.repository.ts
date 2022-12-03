@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { BlockEntity } from './block.entity';
 import { Injectable } from '@nestjs/common';
+import { BlockEntity } from '../entities/block.entity';
 
 @Injectable()
 export class BlockRepository extends Repository<BlockEntity> { }

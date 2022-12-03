@@ -10,7 +10,7 @@ import {
 import { UserEntity } from "src/user/entities/user.entity";
 import { CreateFriendDto } from "src/user/dto/friendship.dto";
 import { BaseEntity } from "src/common/classes/base.entity";
-import { BlockEntity } from "../block/block.entity";
+import { BlockEntity } from "./block.entity";
 
 export enum FriendshipStatus {
 	PENDING = "pending",

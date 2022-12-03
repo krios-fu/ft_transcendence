@@ -83,11 +83,12 @@ export class AuthController {
     }
 
     @Post('logout')
-    logout
+    public logout
         (
             @Req() req: IRequestUser,
             @Res({ passthrough: true }) res: Response
         ) {
-        this.authService.logout(req.username, res);
+        const username = req.user.data.username;
+        this.authService.logout(username, res);
     }
 }

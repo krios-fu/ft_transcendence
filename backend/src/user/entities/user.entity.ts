@@ -39,11 +39,11 @@ export class UserEntity extends BaseEntity {
 	})
 	readonly username : string;
 	
-	@Column() firstName : string;
-	@Column() lastName : string;
-	@Column() email : string;
-	@Column() photoUrl : string;
-  	@Column() profileUrl : string;
+	@Column({ type: 'varchar' }) firstName : string;
+	@Column({ type: 'varchar' }) lastName : string;
+	@Column({ type: 'varchar' }) email : string;
+	@Column({ type: 'varchar' }) photoUrl : string;
+  	@Column({ type: 'varchar' }) profileUrl : string;
 
 	@Column({
 		type: 'varchar',
@@ -84,6 +84,6 @@ export class UserEntity extends BaseEntity {
 	@OneToMany((type) => MessageEntity, (message) => message.author )
 	messages : MessageEntity[];
 
-	@OneToMany(()=>MembershipEntity, (membership) => membership.user, )
+	@OneToMany(() => MembershipEntity, (membership) => membership.user, )
 	membership : MembershipEntity[];
 }

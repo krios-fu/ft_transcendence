@@ -17,24 +17,34 @@ import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from './dto/user.query.dto';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
-import { CreateFriendDto, FriendDto, FriendshipPayload } from './dto/friendship.dto';
+import { BlockPayloadDto, CreateFriendDto, FriendshipPayload } from './dto/friendship.dto';
 import { FriendshipEntity } from './entities/friendship.entity';
 import { UserService } from './services/user.service';
 import { FriendshipService } from './services/friendship.service';
 import { UserEntity } from './entities/user.entity';
+import { BlockService } from './services/block.service';
 
 @Controller('users')
 export class UserController {
     constructor(
         private readonly userService: UserService,
+        private readonly blockService: BlockService,
         private readonly friendshipService: FriendshipService,
     ) { 
         this.userLogger = new Logger(UserController.name);
     }
     private readonly userLogger: Logger;
 
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
+    **                                               **
+    **              ( user endpoints )               **
+    **                                               **
+    ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+
     /*
     ** Find all users registered into the app.
+    ** Accepts query as optional parameter.
     */
 
     @Get()
@@ -71,129 +81,6 @@ export class UserController {
         }
         return user;
     }
-
-    /*
-    ** Get all friends from user
-    ** (user_id must be my id or I need to be an admin)
-    */
-
-    @Get(':user_id/friends')
-    async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendshipEntity[]> {
-        return await this.friendshipService.getFriends(userId);
-    }
-
-    /*
-    ** Get my friends (I must be me)
-    */
-
-    @Get('me/friends')
-    public async getMyFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
-        const username = req.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.username);
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-        }
-        return await this.friendshipService.getFriends(user.id);
-    }
-
-    /* 
-    ** Get one friend from user by id
-    */
-
-    @Get(':user_id/friends/:friend_id')
-    async getOneFriend( 
-        @Req() req: IRequestUser, 
-        @Param('friend_id', ParseIntPipe) friendId: number 
-    ): Promise<FriendshipEntity> {
-        const username = req.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.username);
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-        }
-        return this.friendshipService.getOneFriend(user.id, friendId);
-    }
-
-    /* Create a new friendship */
-    // @UseGuards(Myself)
-    @Post(':user_id/friends')
-    async postFriend( 
-        @Req() req: IRequestUser, 
-        @Param('user_id', ParseIntPipe) userId: number,
-        @Body() dto: FriendshipPayload,
-    ): Promise<FriendshipEntity> {
-        const username = req.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.username);
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-        }
-        if (await this.userService.findOne(userId) === null) {
-            this.userLogger.error(`No user with id ${userId} in database`);
-            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
-        }
-        return this.friendshipService.addFriend(new CreateFriendDto(user.id, dto));
-    }
-
-    /*
-    **  Changes a friendship's status from PENDING to CONFIRMED
-    **  if username of the request matches the receiverId in friendship.
-    */
-   
-    //UseGuards(ItIsMe)
-    @Patch(':user_id/friends/:friend_id/accept')
-    async acceptFriend( 
-        @Param('user_id', ParseIntPipe) userId: number,
-        @Param('friend_id', ParseIntPipe) friendId: number,
-    ): Promise<UpdateResult> {
-        if ((await this.userService.findAllUsers({ filter: { id: [ userId, friendId ] } }))
-            .length != 2) {
-            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
-            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
-        }
-        return this.friendshipService.acceptFriend(userId, friendId);
-    }
-
-    /*
-    **  Changes a friendship's status from PENDING to REFUSED
-    **  if username of the request matches the receiverId in friendship.
-    */
-
-    //UseGuards(ItIsMe)
-    @Patch(':user_id/friends/:friend_id/refuse')
-    async refuseFriend(  
-        @Param('user_id', ParseIntPipe) userId: number,
-        @Param('friend_id', ParseIntPipe) friendId: number,
-    ): Promise<UpdateResult> {
-        if ((await this.userService.findAllUsers({ filter: { id: [ userId, friendId ] } }))
-            .length != 2) {
-            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
-            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
-        }
-        return this.friendshipService.refuseFriend(userId, friendId);
-    }
-
-    /*
-    **  IMPORTANT!
-    **
-    **  A Friendship is deleted only when at least one of the two users'
-    **  account is deleted. No matter the status of the friendship.
-    **
-    **  Therefore, no @Delete route for /users/friends is provided.
-    */
 
     /* role guards ?? (or admin) */
     /* it is me! */
@@ -243,4 +130,197 @@ export class UserController {
 	public async remove( @Param('id', ParseIntPipe) id: number ): Promise<void> {
 		return this.userService.deleteUser(id);
 	} 
+
+
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
+    **                                               **
+    **           ( friendship endpoints )            **
+    **                                               **
+    ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+    /*
+    ** Get all friends from user
+    ** (user_id must be my id or I need to be an admin)
+    */
+
+    @Get(':user_id/friends')
+    public async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendshipEntity[]> {
+        return await this.friendshipService.getFriends(userId);
+    }
+
+    /*
+    ** Get my friends (I must be me)
+    */
+
+    @Get('me/friends')
+    public async getMyFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return await this.friendshipService.getFriends(user.id);
+    }
+
+    /* 
+    ** Get one friend from user by id
+    */
+
+    @Get('me/friends/:friend_id')
+    public async getOneFriend( 
+        @Req() req: IRequestUser, 
+        @Param('friend_id', ParseIntPipe) friendId: number 
+    ): Promise<FriendshipEntity> {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.getOneFriend(user.id, friendId);
+    }
+
+    /* 
+    ** Create a new friendship for requesting user.
+    ** User ID must be read from credentials in request.
+    */
+
+    @Post('me/friends')
+    async postFriend( 
+        @Req() req: IRequestUser, 
+        @Body() dto: FriendshipPayload,
+    ): Promise<FriendshipEntity> {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.addFriend(new CreateFriendDto(user.id, dto));
+    }
+
+    /*
+    **  Changes a friendship's status from PENDING to CONFIRMED
+    **  if username of the request matches the receiverId in friendship.
+    */
+   
+    //UseGuards(ItIsMe)
+    @Patch(':user_id/friends/:friend_id/accept')
+    async acceptFriend( 
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('friend_id', ParseIntPipe) friendId: number,
+    ): Promise<UpdateResult> {
+        if ((await this.userService.findAllUsers({ filter: { id: [ userId, friendId ] } }))
+            .length != 2) {
+            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.acceptFriend(userId, friendId);
+    }
+
+    /*
+    **  Changes a friendship's status from PENDING to REFUSED
+    **  if username of the request matches the receiverId in friendship.
+    */
+
+    //UseGuards(ItIsMe)
+    @Patch(':user_id/friends/:friend_id/refuse')
+    async refuseFriend(  
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('friend_id', ParseIntPipe) friendId: number,
+    ): Promise<UpdateResult> {
+        if ((await this.userService.findAllUsers({ filter: { id: [ userId, friendId ] } }))
+            .length != 2) {
+            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.refuseFriend(userId, friendId);
+    }
+
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
+    **                                               **
+    **              ( block endpoints )              **
+    **                                               **
+    ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+    @Get('me/blocked')
+    async getBlockedFriends(@Req() req: IRequestUser ): Promise<FriendshipEntity[]> {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error(`User requesting service is not logged in`);
+            throw new HttpException('user not logged int', HttpStatus.UNAUTHORIZED);
+        }
+        const me = await this.userService.findOneByUsername(username);
+        if (me === null) {
+            this.userLogger.error(`User with login ${username} not found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.blockService.getBlockedFriends(me.id);
+    }
+
+    /*
+    **  Changes a friendship's status from CONFIRMED to BLOCKED,
+    **  and adds a row in BlockEntity table.
+    */
+
+    @Post('me/blocked')
+    async blockFriend(
+        @Req() req: IRequestUser,
+        @Body() dto: BlockPayloadDto,
+    ): Promise<UpdateResult> {
+        const username = req.user.data.username;
+        const me = await this.userService.findOneByUsername(username);
+
+        if (me === null) {
+            this.userLogger.error(`User with username ${username} not found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        const friendship = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
+        if (friendship === null) {
+            this.userLogger.error(`No friendship between users ${me.id} and ${dto.blockReceiverId}`);
+            throw new HttpException('no friendship in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.blockService.blockFriend({ 
+            'friendshipId': friendship.id, 
+            'senderId': me.id
+        });
+    }
+
+    /*
+    **  The friendship blocker requests to unblock the friendship.
+    */
+
+    @Delete('me/blocked/:id')
+    public async unblockFriend( 
+        @Req() req: IRequestUser, 
+        @Param('id', ParseIntPipe) id: number 
+    ): Promise<UpdateResult> {
+        const username = req.user.data.username;
+        if (username == null) {
+            this.userLogger.error(`Request user is not logged in`);
+            throw new HttpException('user not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const me = await this.userService.findAllUsers(
+        { 
+            "filter": { "username": [username] } 
+        });
+        if (me === null) {
+            this.userLogger.error(`User with login ${username} not found in database`);
+            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+        }
+        return await this.blockService.unblockFriend(me[0].id, id);
+    }
 }

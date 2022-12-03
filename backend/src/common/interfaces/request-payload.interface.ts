@@ -1,4 +1,3 @@
-import { IsNotEmpty, IsString } from "class-validator";
 import { Request } from "express";
 
 export interface IAuthPayload {
@@ -16,5 +15,5 @@ export interface IJwtPayload {
 
 export interface IRequestUser extends Request {
     user: IJwtPayload;
-    username: string; /* delete this! */
+    //username: string; /* delete this! */
 };

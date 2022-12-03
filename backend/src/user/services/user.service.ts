@@ -39,7 +39,6 @@ export class UserService {
         return user;
     }
 
-    /* post new user */
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
         console.log(newUser);
         const newEntity = new UserEntity(newUser);
@@ -83,15 +82,16 @@ export class UserService {
 
     public async validateIdentity(req: IRequestUser): Promise<boolean> {
         let validate: boolean = false;
+        const username = req.user.data.username;
         const userId = (req.method === 'POST') ?
             Number(req.body['user_id']) :
             Number(req.param['user_id']);
 
-        if (req.username === undefined || userId !== userId) {
+        if (username === undefined || userId !== userId) {
             return false;
         }
         this.findOne(userId).then(
-            (user: UserEntity) => validate = (user.username === req.username)
+            (user: UserEntity) => validate = (user.username === username)
         );
         return validate;
     }

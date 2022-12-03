@@ -26,7 +26,7 @@ export class AuthService {
         });
     }
 
-    async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
+    public async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
         const username: string = userProfile.username;
         let   loggedUser: UserEntity;
         let   tokenEntity: RefreshTokenEntity;

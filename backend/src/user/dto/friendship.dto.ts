@@ -38,3 +38,19 @@ export class CreateFriendDto extends FriendshipPayload {
     @IsNotEmpty()
     senderId: number;
 }
+
+export class BlockPayloadDto {
+    @IsNumber()
+    @IsNotEmpty()
+    blockReceiverId: number;
+}
+
+export class CreateBlockDto {
+    @IsNumber()
+    @IsNotEmpty()
+    friendshipId: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    senderId: number;
+}
