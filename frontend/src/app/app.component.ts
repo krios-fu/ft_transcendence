@@ -11,7 +11,7 @@ import { UsersService } from './services/users.service';
 export class AppComponent {
 
   hiden = false;
-  search = {} as UserDto;
+  search = [] as UserDto [];
 
 
   constructor(private userService: UsersService, 
@@ -29,7 +29,7 @@ export class AppComponent {
     this.authService.logout();
   } 
 
-  getSearch(user : UserDto){
+  getSearch(user : UserDto []){
     console.log("APPCOMPONENT event serach", user);
     this.search = user;
   }

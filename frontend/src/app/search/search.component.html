@@ -1,16 +1,17 @@
-<div *ngIf="user.username" style=" padding: 20px; font-size: small;">
+<div *ngIf="users" style=" padding: 20px; font-size: small;">
 
 <div style="float: right;">
-	<mat-chip-list >
+	<mat-chip-list style="padding-top: 10px;" >
 		<mat-chip style="text-align: center;
 		align-items: center;
 		justify-content: space-between;
-		padding-left:0; height: 50px;
+		padding-left:0;  height: 50px;
 		border-radius: 22px;
 	box-shadow: 10px rgb(255, 255, 255);
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: rgb(34, 1, 55);
+	/* background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%); */
 	color: white;
-	border: outset 3px silver;">
+	border: outset 3px silver; margin-top: 10px;" *ngFor="let user of users">
 			<img class="avatar"  style="padding-left:0;" src={{user.photoUrl}} alt={{user.username}} />
 			
 			<span style="padding-left:10px;"> {{user.username}} </span>

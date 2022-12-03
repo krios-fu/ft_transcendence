@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit {
       this.http.get<UserDto[]>(`http://localhost:3000/users/?filter[username]=${message}`)
       .subscribe(
        ( user : UserDto[]) => {
-          this.searchUser.emit(user[0])
+          this.searchUser.emit(user)
           console.log('SERACH --->', user);
         }
       )

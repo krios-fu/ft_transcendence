@@ -8,7 +8,7 @@ import { UserDto } from '../dtos/user.dto';
 })
 export class SearchComponent implements OnInit {
 
-  @Input() user = {} as UserDto;
+  @Input() users = [] as UserDto [];
   constructor() { 
   }
 
