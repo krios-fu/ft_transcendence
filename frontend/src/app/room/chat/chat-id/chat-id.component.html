@@ -52,6 +52,9 @@
 	  <div *ngFor="let msg of viewMessage()">
 		<div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.content}}</div>
 		<ng-template #other>
+			<!-- <div *ngIf="this.chat.count_new_msg !== 0">
+				<h2>new message</h2>
+			</div> -->
 		  <div class="message">
 			<figure class="avatar">
 			  <img src={{user.photoUrl}}>

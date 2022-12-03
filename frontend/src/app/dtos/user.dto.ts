@@ -6,6 +6,8 @@ export class UserDto {
 	profileUrl: string;
 	email: string;
 	photoUrl: string;
+
+	
   
 	constructor(
 		username:string,
