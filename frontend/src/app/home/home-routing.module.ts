@@ -9,23 +9,37 @@ import { GameComponent } from '../game/game.component';
 
 
 const HomeRoutes: Routes = [
-  { path: 'home', component: HomeComponent,  },
-  { path: 'profile', component: NavHeaderComponent, canActivate: [AuthGuard] },
   {
-    path: 'chat', loadChildren:
-      () => import('../room/chat/chat.module').then(m => m.ChatModule), outlet: 'chat'
+    path: 'home',
+    component: HomeComponent,
   },
   {
-    path: 'login', loadChildren: () => import('../login/login.module')
-      .then(m => m.LoginModule), outlet: 'game'
+    path: 'profile',
+    component: NavHeaderComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'chat',
+    loadChildren: () => import('../room/chat/chat.module').then(m => m.ChatModule), outlet: 'chat',
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('../login/login.module').then(m => m.LoginModule),
+    outlet: 'game', canActivate: [AuthGuard]
   },
 
   {
-    // path: 'room', loadChildren: () => import('../game/game.module').then(m => m.GameModule), outlet: 'game'
-    path: 'room', component: GameComponent, outlet: 'game',
+    path: 'room',
+    component: GameComponent, outlet: 'game',
+    canActivate: [AuthGuard]
   },
 
-  { path: 'setting', component: SettingComponent, },
+  {
+    path: 'setting',
+    component: SettingComponent,
+    canActivate: [AuthGuard]
+  },
 ];
 
 @NgModule({

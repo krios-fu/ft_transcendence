@@ -9,52 +9,41 @@ import { Payload, UserDto } from "../../../dtos/user.dto";
   templateUrl: './navheader.component.html',
   styleUrls: ['./navheader.component.scss']
 })
-export class NavHeaderComponent implements OnInit{
+export class NavHeaderComponent implements OnInit {
 
   status_room = false;
   plus_minus = "chevron_right";
 
- user : any;
+  user: UserDto | undefined;
 
   constructor(private http: HttpClient,
     private usersService: UsersService,
-    private authService: AuthService,) {
-  
-      console.log("CONSTRUCTOR NAVHEADER")
-    // this.user = null;
-
+    private authService: AuthService,
+  ) {
+    this.user = undefined;
   }
 
-  // @Input() profile = {};
 
-
+  /*
+  ** GET USER PROFILE
+  */
   ngOnInit() {
-    console.log("ON INIT")
 
-
-    // const username = this.authService.getAuthUser() as string;
-    // this.user = null;
-    this.user = this.usersService.getUser();
-
-        console.log('------->', this.user)
-    
-      // .subscribe(
-      //    (user) => {
-      //     this.user = user;
-      //   }
-      // );
+    this.usersService.getUser()
+      .subscribe((user: UserDto[]) => {
+        this.user = user[0];
+      })
 
   }
 
 
-  getName() {
-
+  getUsername() {
     return this.user?.username;
-}
-    // return "MARVIN"
+  }
+  // return "MARVIN"
   // }
 
-getPhoto() {
+  getPhotoUrl() {
     return this.user?.photoUrl;
   }
 

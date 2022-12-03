@@ -27,8 +27,6 @@ export class UsersService {
     // }
 
     getUser() {
-      
-
-      return this.http.get<UserDto>('http://localhost:3000/users/me');
+      return this.http.get<UserDto[]>('http://localhost:3000/users/me');
     }
 }
