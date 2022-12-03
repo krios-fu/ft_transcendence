@@ -6,9 +6,10 @@
       This padding value depends on the mat-icon-button width. -->
       
       <mat-tree-node class="effect" style="font-size: smaller;" *matTreeNodeDef="let node; when: !hasChild" matTreeNodePadding="2px" >
-       <a [routerLink]="[ '/', { outlets: {  chat: ['chat', node.name ] } }]">
+       <a [routerLink]="[ '/', { outlets: {  chat: ['chat', node.name ] } }]" >
         <!-- <a [routerLink]="['../chat', node.name ]" > -->
           <!-- <a [routerLink]="['../chat', node.name]"> -->
+            
         # {{node.name}}
       </a>
     </mat-tree-node>

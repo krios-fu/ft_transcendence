@@ -1,6 +1,7 @@
 import * as SocketIO from 'socket.io-client'
 import { Txt } from '../elements/Txt';
 import { BaseScene } from './BaseScene'
+import { IMenuInit } from './MenuScene';
 
 export class    EndScene extends BaseScene {
 
@@ -14,9 +15,13 @@ export class    EndScene extends BaseScene {
 
     init(data: any) {
         this.winner = data.winner;
-        this.socket.once("newGame", (gameData: any) => {
+        this.socket.once("newGame", (data: IMenuInit) => {
+            this.initTxt?.destroy();
             this.removeAllSocketListeners();
-            this.scene.start("Menu", gameData);
+            if (data.hero)
+                this.scene.start("MenuHero", data);
+            else
+                this.scene.start("Menu", data);
         });
     }
 

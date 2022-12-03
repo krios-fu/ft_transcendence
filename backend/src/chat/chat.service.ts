@@ -34,12 +34,12 @@ export class ChatService {
         });
     }
 
-    async findChatsUser(id_user: string ): Promise<ChatEntity[]>{
+    async findChatsUser(id_user: number ): Promise<ChatEntity[]>{
         return await this.chatRepository.find({
             where:{
                 membership : {
                     user: {
-                        nickName : id_user,
+                        id : id_user,
                     }
                 }
             },
@@ -51,12 +51,12 @@ export class ChatService {
         })
     }
 
-    async findChatUser(id_user: string, id_friend : string): Promise<ChatEntity[]>{
+    async findChatUser(id_user: number, id_friend : number): Promise<ChatEntity[]>{
         let chats = await this.chatRepository.find({
             where:{
                 membership : {
                     user: {
-                        nickName : id_user,
+                        id : id_user,
                     }
                 }
             },
@@ -68,8 +68,8 @@ export class ChatService {
         })
 
     return  chats.filter((chat) => { 
-                return chat.membership[0].user.username == id_friend
-                || chat.membership[1].user.username == id_friend
+                return chat.membership[0].user.id == id_friend
+                || chat.membership[1].user.id == id_friend
             }
         );
 

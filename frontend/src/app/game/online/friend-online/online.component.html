@@ -1,0 +1,11 @@
+
+
+<div style="display: flex; align-items: center; justify-content: center; " >
+	<div *ngFor=" let friend of friends;" style="margin: 10px; display:grid; align-items: center; justify-content: center;" >
+		<figure class="avatar">
+			<img
+				src={{friend.photoUrl}} alt="krios-fu"/>
+			</figure>
+			<div style="font-size:5px; padding: 5px; ">{{friend.username}}</div>
+	</div>
+</div>

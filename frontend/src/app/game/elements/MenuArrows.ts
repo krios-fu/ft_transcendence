@@ -49,4 +49,9 @@ export class    MenuArrows {
         this._right.setPos(data);
     }
 
+    destroy(): void {
+        this._left.destroy();
+        this._right.destroy();
+    }
+
 }

@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, throwError } from 'rxjs';
+import { UserDto } from '../dtos/user.dto';
 
 export interface IUser {
   username: string;
@@ -19,17 +20,13 @@ export class UsersService {
       private http: HttpClient,
     ) { }
 
-    getUser(username: string): Observable<IUser> {
-      /* username = username.trim() */
-      // const userParam = new HttpParams().set('id', username);
+    // getUser(): Observable<IUser> {
       
 
-      return this.http.get<IUser>( 'http://localhost:3000/users/me');
-      // .pipe(tap((user) => console.log('tapped: ' + JSON.stringify(user))))
-        // 'http://localhost:3000/users/', {
-        //   observe: 'body',
-        //   params: userParam,
-        //   responseType: 'json',
-        // }).pipe(tap((user) => console.log('tapped: ' + JSON.stringify(user))))
+    //   return this.http.get<IUser>( 'http://localhost:3000/users/me');
+    // }
+
+    getUser() {
+      return this.http.get<UserDto[]>('http://localhost:3000/users/me');
     }
 }

@@ -84,10 +84,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
           });
           this.authService.redirectHome();
 
-          const username: string = this.authService.getAuthUser() as string;
-          this.usersService.getUser(username)
+          // const username: string = this.authService.getAuthUser() as string;
+          this.usersService.getUser()
             .subscribe({
-              next: (userDto: UserDto) => {
+              next: (userDto : any ) => {
                 this.user = userDto.username;
                 this.firstName = userDto.firstName;
                 this.lastName = userDto.lastName;

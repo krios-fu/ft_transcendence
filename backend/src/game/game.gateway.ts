@@ -86,14 +86,12 @@ export class    GameGateway implements OnGatewayInit,
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
 
-            this.queueService.remove("Game1", username);
             for (const room of rooms)
             {
                 if (room.includes("Player"))
-                {
                     this.handlePlayerDisconnect(room);
-                    break ;
-                }
+                else
+                    this.queueService.removeAll(room, username);
             }
         });
         ++this.mockUserNum; //Provisional
@@ -112,7 +110,19 @@ export class    GameGateway implements OnGatewayInit,
         if (!client.rooms.has(data.room))
             return ;
         //Need to implement user authentication
-        await this.queueService.add(data.room, data.username);
+        await this.queueService.add(data.room, false, data.username);
+        this.updateService.attemptGameInit(data.room);
+    }
+
+    @SubscribeMessage('addToGameHeroQueue')
+    async addToGameHeroQueue(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() data: any
+    ) {
+        if (!client.rooms.has(data.room))
+            return ;
+        //Need to implement user authentication
+        await this.queueService.add(data.room, true, data.username);
         this.updateService.attemptGameInit(data.room);
     }
 
@@ -161,7 +171,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
         
-        this.updateService.paddleInput(room, player, 1);
+        this.updateService.paddleInput(room, player, 2);
     }
 
     @SubscribeMessage('paddleDown')
@@ -170,7 +180,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
         
-        this.updateService.paddleInput(room, player, 0);
+        this.updateService.paddleInput(room, player, 1);
     }
 
     @SubscribeMessage('heroUp')
@@ -179,7 +189,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
-        this.updateService.heroInput(room, player, 1);
+        this.updateService.heroInput(room, player, 2);
     }
 
     @SubscribeMessage('heroDown')
@@ -188,7 +198,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
-        this.updateService.heroInput(room, player, 0);
+        this.updateService.heroInput(room, player, 1);
     }
 
   }

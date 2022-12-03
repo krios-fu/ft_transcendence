@@ -99,10 +99,10 @@ export class RoomComponent implements AfterViewInit{
 //         }
 // });
     
-    console.log(`http://localhost:3000/users/${lol}/chat`);
-    this.http.get(`http://localhost:3000/users/${lol}/chat`)
+    this.http.get(`http://localhost:3000/users/me/chats`)
     .subscribe( entity => {
       let data = Object.assign(entity);
+      console.log('CHATS -->', data)
       let user_sesion = lol;
       // TREE_CHAT[1].children?.pop();
       for (let chat in data){

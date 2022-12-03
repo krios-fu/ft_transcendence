@@ -41,4 +41,8 @@ export class    Paddle {
         this._paddle.y = data.yPos;
     }
 
+    destroy(): void {
+        this._paddle.destroy();
+    }
+
 }

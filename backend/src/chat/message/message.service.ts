@@ -33,9 +33,12 @@ export class MessageService {
 
 		let msg = new MessageEntity();
 
-		msg.author = await this.userService.findOne(message.sender);
+		let reciver = await this.userService.findOneByUsername(message.reciver);
+
+		msg.author = await this.userService.findOneByUsername(message.sender);
+		
 		msg.chat = (await this.chatService.findOne(
-			(await this.chatService.findChatUser(msg.author.nickName, message.reciver))[0].id
+			(await this.chatService.findChatUser(msg.author.id, reciver.id))[0].id
 		))[0];
 		msg.content = message.content; 
 		await this.messageRepository.insert(msg)

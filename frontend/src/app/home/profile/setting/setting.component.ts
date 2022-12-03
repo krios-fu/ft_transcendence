@@ -21,16 +21,16 @@ export class SettingComponent implements OnInit{
     acceptTerms: ['', Validators.requiredTrue],
   });
   
-  user : UserDto | null;
+  user : any;
   constructor(private http : HttpClient,
     private usersService: UsersService,
     private authService: AuthService, 
     private _formBuilder: FormBuilder) { 
       const username = this.authService.getAuthUser() as string;
     this.user = null;
-    this.usersService.getUser(username)
+    this.usersService.getUser()
       .subscribe({
-        next: (user : UserDto) => {
+        next: (user ) => {
           this.user = user;
         }
       })

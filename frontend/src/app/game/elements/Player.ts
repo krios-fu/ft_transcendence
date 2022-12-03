@@ -15,32 +15,35 @@ import {
 
 export interface    IPlayerInitData {
     paddle: IPaddleInitData;
-    hero: IHeroInitData;
+    hero?: IHeroInitData;
     score: number;
     nick: string;
 }
 
 export interface    IPlayerData {
     paddle: IPaddleData,
-    hero: IHeroData,
+    hero?: IHeroData,
     score: number
 }
 
 export class    Player {
 
     private _paddle: Paddle;
-    private _hero: Hero;
+    private _hero?: Hero;
     private _score: number;
     private _nick: string;
 
     constructor(scene: MatchScene, initData: IPlayerInitData) {
         this._paddle = new Paddle(scene, initData.paddle);
-        if (initData.hero.name === "aquaman")
-            this._hero = new Aquaman(scene, initData.hero);
-        else if (initData.hero.name === "superman")
-            this._hero = new Superman(scene, initData.hero);
-        else
-            this._hero = new BlackPanther(scene, initData.hero);
+        if (initData.hero)
+        {
+            if (initData.hero.name === "aquaman")
+                this._hero = new Aquaman(scene, initData.hero);
+            else if (initData.hero.name === "superman")
+                this._hero = new Superman(scene, initData.hero);
+            else
+                this._hero = new BlackPanther(scene, initData.hero);
+        }
         this._score = initData.score;
         this._nick = initData.nick;
     }
@@ -59,8 +62,15 @@ export class    Player {
 
     update(data: IPlayerData): void {
         this._paddle.update(data.paddle);
-        this._hero.update(data.hero);
+        if (data.hero && this._hero)
+            this._hero.update(data.hero);
         this._score = data.score;
+    }
+
+    destroy(): void {
+        this._paddle.destroy();
+        if (this._hero)
+            this._hero.destroy();
     }
 
 }

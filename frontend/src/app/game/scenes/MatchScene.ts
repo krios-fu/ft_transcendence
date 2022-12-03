@@ -1,7 +1,8 @@
 import * as SocketIO from 'socket.io-client'
 import {
     Match,
-    IMatchInitData
+    IMatchInitData,
+    IMatchData
 } from '../elements/Match';
 import { Txt } from '../elements/Txt';
 import { BaseScene } from './BaseScene';
@@ -24,10 +25,11 @@ export class    MatchScene extends BaseScene {
         if (Object.keys(initData).length != 0)
             this.initData = initData;
         this.socket.once("end", (data) => {
+            this.match?.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
-        this.socket.on("matchUpdate", (data) => {
+        this.socket.on("matchUpdate", (data: IMatchData) => {
             this.match?.update(data);
         });
         this.socket.on("served", () => {
@@ -62,7 +64,7 @@ export class    MatchScene extends BaseScene {
         if (this.initData != undefined)
             this.match = new Match(this, this.initData);        
         this.createInitText();
-        this.initData = undefined;           
+        this.initData = undefined;
     }
 
 }

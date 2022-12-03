@@ -62,7 +62,7 @@ export class Chat implements OnInit{
   }
 
   getMessageApi(login : string){
-    this.http.get(`http://localhost:3000/users/${this.authService.getAuthUser()}/chat/${login}`)
+    this.http.get(`http://localhost:3000/users/me/chat/${login}`)
     .subscribe((entity : any) => {
       let data = Object.assign(entity); 
       this.id = data[0].id;

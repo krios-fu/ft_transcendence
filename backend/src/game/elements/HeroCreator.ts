@@ -137,8 +137,6 @@ export class    HeroCreator {
     }
 
     create(heroId: HeroId, playerSide: number): Hero {
-        if (heroId === HeroId.None)
-            return (this.aquaman(playerSide));
         if (heroId === HeroId.Aquaman)
             return (this.aquaman(playerSide));
         if (heroId === HeroId.Superman)
