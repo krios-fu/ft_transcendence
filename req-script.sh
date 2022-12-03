@@ -7,7 +7,7 @@ HOST=http://c3r5s2:3000
 
 	if [ -n "$2" ]
 	then
-		curl -i -s $HOST/users/new\
+		curl -i -s $HOST/users/\
 			-H "Content-Type: application/json" \
 			-d '{
 				"username":"'$2'",

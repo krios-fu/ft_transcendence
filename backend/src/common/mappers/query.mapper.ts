@@ -1,3 +1,4 @@
+import { FindOperator, Like } from "typeorm";
 import { IQueryParams } from "../interfaces/queryparams.interface";
 
 export class QueryMapper {
@@ -19,7 +20,12 @@ export class QueryMapper {
             this.where = [];
             for (let key in filter) {
                 filter[key].forEach((value: string) => {
-                    this.where.push({ [key]: value });
+                    if (key === 'username' || key === 'roomName') {
+                        this.where.push({ [key]: Like(`${value}%`) });
+                    }
+                    else {
+                        this.where.push({ [key]: value });
+                    }
                 });
             }
         }
@@ -27,5 +33,5 @@ export class QueryMapper {
     take?: number;
     skip?: number;
     order?: { [key: string]: string }
-    where?: { [key: string]: string }[];
+    where?: { [key: string]: FindOperator<string> | string}[];
 }

@@ -33,7 +33,8 @@ import { LoserModule } from './match/loser/loser.module';
             password: process.env.DB_PASSWD,
             database: process.env.DB_NAME,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true
+            synchronize: true,
+            logging: true
         }),
         RolesModule,
         RoomModule,
