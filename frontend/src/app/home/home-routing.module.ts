@@ -5,6 +5,7 @@ import { SettingComponent } from './profile/setting/setting.component';
 import { NavHeaderComponent } from './navegation/header/navheader.component';
 import { AuthGuard } from './../guards/auth.guard';
 import { GameComponent } from '../game/game.component';
+import { ProfileUserComponent } from './profile/profile-user/profile-user.component';
 
 
 
@@ -16,6 +17,11 @@ const HomeRoutes: Routes = [
   {
     path: 'profile',
     component: NavHeaderComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile/:id',
+    component: ProfileUserComponent,
     canActivate: [AuthGuard]
   },
   {

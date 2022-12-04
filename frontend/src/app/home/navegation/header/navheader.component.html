@@ -16,7 +16,7 @@ justify-content: space-around;
   <h1   style="font-size: 14px;">{{getUsername()}}</h1>
 </div>
 
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
+<div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
   <span>
     <mat-icon>emoji_events</mat-icon>
     <h3 style="color : goldenrod;">42</h3>
@@ -29,8 +29,6 @@ justify-content: space-around;
     <mat-icon>trending_down</mat-icon>
     <h3 style="color : rgb(255,0,47);">42</h3>
   </span>
-
-
 </div>
 
 <a mat-icon-button (click)="plus()" class="tree" style="margin: 5px; box-shadow: inset 4px white;">

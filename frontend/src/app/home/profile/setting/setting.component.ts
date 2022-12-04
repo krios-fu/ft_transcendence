@@ -26,12 +26,11 @@ export class SettingComponent implements OnInit{
     private usersService: UsersService,
     private authService: AuthService, 
     private _formBuilder: FormBuilder) { 
-      const username = this.authService.getAuthUser() as string;
     this.user = null;
-    this.usersService.getUser()
+    this.usersService.getUser('me')
       .subscribe({
-        next: (user ) => {
-          this.user = user;
+        next: (user  ) => {
+          this.user = user[0];
         }
       })
       this.messageEvent.emit(false);

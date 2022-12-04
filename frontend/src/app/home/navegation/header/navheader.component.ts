@@ -29,7 +29,7 @@ export class NavHeaderComponent implements OnInit {
   */
   ngOnInit() {
 
-    this.usersService.getUser()
+    this.usersService.getUser('me')
       .subscribe((user: UserDto[]) => {
         this.user = user[0];
       })
@@ -40,8 +40,7 @@ export class NavHeaderComponent implements OnInit {
   getUsername() {
     return this.user?.username;
   }
-  // return "MARVIN"
-  // }
+
 
   getPhotoUrl() {
     return this.user?.photoUrl;
