@@ -44,7 +44,7 @@ export  class   PlayerInfo {
         this.scaleImage(this._photo,
             hero ? 100 : 200
         );
-        this._photoShape = scene.add.graphics();
+        this._photoShape = scene.make.graphics({});
         this._photoShape.fillCircle(
             hero ? info.x - 60 : info.x,
             hero ? info.y : info.y - 110,
@@ -76,7 +76,6 @@ export  class   PlayerInfo {
         this._category.destroy();
         this._nickname.destroy();
         this._photo.clearMask(true);
-        this._mask.destroy();
         this._photoShape.destroy();
         this._photo.destroy();
     }
