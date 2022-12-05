@@ -14,6 +14,7 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
+    ParseFilePipe,
     
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
@@ -155,8 +156,8 @@ export class UserController {
     ) // <-- aqui los parseos de tamaño y seguridad
     public async uploadAvatar(
         @UploadedFile(
-            new ParseFilePipeBuilder({
-
+            new ParseFilePipe({
+                validators: []
             })
         ) avatar: Express.Multer.File
     ) {

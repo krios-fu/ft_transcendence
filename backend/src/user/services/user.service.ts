@@ -69,6 +69,14 @@ export class UserService {
     **  delete or remove.
     */
 
+    public async uploadAvatar(): Promise<UpdateResult> {
+
+    }
+
+    public async removeAvatar(): Promise<UpdateResult> {
+        
+    }
+
     public async deleteUser(id: number): Promise<void> {
         await this.userRepository.softDelete(id);
     }
