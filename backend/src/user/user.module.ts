@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendshipEntity } from './entities/friendship.entity';
 import { UserEntity } from './entities/user.entity';
-import { FriendMapper } from './friendship.mapper';
 import { FriendshipRepository } from './repositories/friendship.repository';
 import { UserRepository } from './repositories/user.repository';
 import { FriendshipService } from './services/friendship.service';
@@ -28,10 +27,8 @@ import { BlockRepository } from './repositories/block.repository';
     providers: [
         UserService,
         UserRepository,
-        FriendMapper,
         FriendshipService,
         FriendshipRepository,
-        FriendMapper,
         BlockService,
         BlockRepository,
         ChatService,

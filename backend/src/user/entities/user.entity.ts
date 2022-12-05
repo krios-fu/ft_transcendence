@@ -35,7 +35,10 @@ export class UserEntity extends BaseEntity {
 	id: number;
 
 	@Column({ 
-		unique: true 
+		type: 'varchar',
+		unique: true,
+		nullable: false,
+		length: 8
 	})
 	readonly username : string;
 	
@@ -48,7 +51,8 @@ export class UserEntity extends BaseEntity {
 	@Column({
 		type: 'varchar',
 		unique: true,
-		length: 12
+		nullable: false,
+		length: 8
 	})
 	nickName : string;
 

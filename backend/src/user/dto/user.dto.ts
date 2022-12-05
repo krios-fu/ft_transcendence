@@ -43,7 +43,7 @@ export class UpdateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    @Length(9, 12)
+    @Length(3, 8)
     nickName?: string;
 
     @IsBoolean()
@@ -55,10 +55,10 @@ export class UpdateUserDto {
     @IsNotEmpty()
     ranking?: number;
 
-    @IsOptional()
-    @IsNumber()
-    @IsNotEmpty()
-    category?: Category;
+    //@IsOptional()
+    //@IsNumber()
+    //@IsNotEmpty()
+    //category?: Category;
 }
 
 export class SettingsPayloadDto {
@@ -73,6 +73,5 @@ export class SettingsPayloadDto {
     @IsBoolean()
     @IsNotEmpty()
     readonly doubleAuth?: boolean;
-
 }
 

@@ -10,14 +10,12 @@ import { FriendshipEntity, FriendshipStatus } from 'src/user/entities/friendship
 import { CreateFriendDto } from 'src/user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 import { BlockEntity } from "../entities/block.entity";
-//import { FriendMapper } from "../friendship.mapper";
 
 @Injectable()
 export class    FriendshipService {
     constructor(
         @InjectRepository(FriendshipEntity)
         private readonly friendRepository: FriendshipRepository,
-   //     private readonly friendMapper: FriendMapper,
         private readonly datasource: DataSource,
     ) { }
 
@@ -76,28 +74,28 @@ export class    FriendshipService {
         return friendship;
     }
 
-    async getFriends(userId: number): Promise<FriendshipEntity[]> {
+    public async getFriends(userId: number): Promise<FriendshipEntity[]> {
         return (await this.friendRepository.createQueryBuilder("friendship")
             .leftJoinAndSelect(
                 "friendship.sender",
                 "sender",
-                "sender.username!= :id",
+                "sender.id!= :id",
                 {id: userId})
             .leftJoinAndSelect(
                 "friendship.receiver",
                 "receiver",
-                "receiver.username!= :id",
+                "receiver.id!= :id",
                 {id: userId})
             .where(
                 "friendship.senderId= :id"
-                + "AND friendship.status= :status",
+                + " AND friendship.status= :status",
                 {
                     id: userId,
                     status: FriendshipStatus.CONFIRMED
                 })
             .orWhere(
                 "friendship.receiverId= :id"
-                + "AND friendship.status= :status",
+                + " AND friendship.status= :status",
                 {
                     id: userId,
                     status: FriendshipStatus.CONFIRMED
@@ -105,6 +103,39 @@ export class    FriendshipService {
             .getMany()
         );
     }
+
+    public async getPossibleFriends(id: number): Promise<FriendshipEntity[]> {
+        return await this.friendRepository.createQueryBuilder('friendship')
+            .leftJoinAndSelect(
+                'friendship.sender', 
+                'user',
+                'user.id = :sender_id',
+                { sender_id: id }
+            )
+            .leftJoinAndSelect(
+                'friendship.receiver',
+                'user',
+                'user.id = :receiver_id',
+                { receiver_id: id}
+            )
+            .where(
+                'friendship.senderId=:id'
+                + ' AND friendship.status=:status',
+                {
+                    id: id,
+                    status: FriendshipStatus.CONFIRMED || FriendshipStatus.PENDING,
+                }
+            )
+            .orWhere(
+                'friendship.receiverId'
+                + ' AND friendship.status=:status',
+                {
+                    id: id,
+                    status: FriendshipStatus.CONFIRMED || FriendshipStatus.PENDING,
+                }
+            ).getMany();
+    }
+
 
     public async getOneFriend(userId: number, friendId: number)
                         : Promise<FriendshipEntity> {
@@ -121,8 +152,8 @@ export class    FriendshipService {
                 {id: userId})
             .where(
                 "friendship.senderId= :uId"
-                + "AND friendship.receiverId= :fId"
-                + "AND friendship.status= :status",
+                + " AND friendship.receiverId= :fId"
+                + " AND friendship.status= :status",
                 {
                     uId: userId,
                     fId: friendId,
@@ -130,8 +161,8 @@ export class    FriendshipService {
                 })
             .orWhere(
                 "friendship.receiverId= :uId"
-                + "AND friendship.senderId= :fId"
-                + "AND friendship.status= :status",
+                + " AND friendship.senderId= :fId"
+                + " AND friendship.status= :status",
                 {
                     uId: userId,
                     fId: friendId,
@@ -149,7 +180,7 @@ export class    FriendshipService {
             )
             .where(
                 'friendship.senderId = :id'
-                + 'AND friendship.status = :status',
+                + ' AND friendship.status = :status',
                 {
                     id:     id,
                     status: FriendshipStatus.BLOCKED
@@ -157,7 +188,7 @@ export class    FriendshipService {
             )
             .orWhere(
                 'friendship.receiverId = :id'
-                + 'AND friendship.status = "status',
+                + ' AND friendship.status = "status',
                 {
                     id:     id,
                     status: FriendshipStatus.BLOCKED
@@ -185,9 +216,9 @@ export class    FriendshipService {
             )
             .where(
                 'friendship.senderId = :user_id '
-                + 'AND friendship.receiverId = :blocked_id'
-                + 'AND friendship.status = :status'
-                + 'AND friendship.block.',
+                + ' AND friendship.receiverId = :blocked_id'
+                + ' AND friendship.status = :status'
+                + ' AND friendship.block.',
                 {
                     user_id:    userId,
                     blocked_id: blockedId,
@@ -196,8 +227,8 @@ export class    FriendshipService {
                 })
             .orWhere(
                 'friendship.receiverId = :user_id'
-                + 'AND friendship.senderId = :blocked_id'
-                + 'AND friendship.status = "status',
+                + ' AND friendship.senderId = :blocked_id'
+                + ' AND friendship.status = "status',
                 {
                     user_id:    userId,
                     blocked_id: blockedId,
@@ -239,6 +270,11 @@ export class    FriendshipService {
             { status: FriendshipStatus.REFUSED }
         );
     }
+
+    /*
+    ** Update the status to BLOCKED of a friendship,
+    ** needs id from previous created friendship.
+    */
 
     public async blockFriend(id: number, block: BlockEntity): Promise<UpdateResult> {
         return await this.friendRepository.update(

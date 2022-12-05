@@ -1,11 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBlockDto, FriendDto } from 'src/user/dto/friendship.dto';
-import { FriendMapper } from 'src/user/friendship.mapper';
-import {
-    FriendshipEntity,
-    FriendshipStatus
-} from 'src/user/entities/friendship.entity';
+import { CreateBlockDto } from 'src/user/dto/friendship.dto';
+import { FriendshipEntity } from 'src/user/entities/friendship.entity';
 import { UpdateResult } from 'typeorm';
 import { BlockRepository } from "../repositories/block.repository";
 import { BlockEntity } from "../entities/block.entity";
@@ -15,7 +11,6 @@ import { FriendshipService } from "./friendship.service";
 export class    BlockService {
     constructor(
         private readonly friendshipService: FriendshipService,
-        private readonly friendMapper: FriendMapper,
         @InjectRepository(BlockEntity)
         private readonly blockRepository: BlockRepository,
     ) { }

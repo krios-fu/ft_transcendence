@@ -27,13 +27,13 @@ export class BlockEntity extends BaseEntity {
     friendshipId: number;
 
     @OneToOne(() => FriendshipEntity, (friendship) => friendship.block)
-    @JoinColumn({ name: 'frinedshipId' })
+    @JoinColumn({ name: 'frinedship_id' })
     friendship: FriendshipEntity
 
     @Column({ name: 'block_sender_id' })
     blockSenderId: number;
 
     @ManyToOne(() => UserEntity)
-    @JoinColumn({ name: 'blockSenderId' })
+    @JoinColumn({ name: 'blockSender_id' })
     blockSender: UserEntity
 }

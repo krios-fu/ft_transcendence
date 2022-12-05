@@ -20,7 +20,7 @@ export class QueryMapper {
             this.where = [];
             for (let key in filter) {
                 filter[key].forEach((value: string) => {
-                    if (key === 'username' || key === 'roomName') {
+                    if (key === 'nickName' || key === 'roomName') {
                         this.where.push({ [key]: Like(`${value}%`) });
                     }
                     else {
