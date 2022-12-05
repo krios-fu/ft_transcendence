@@ -36,6 +36,10 @@ export class    StartScene extends BaseScene {
         });
     }
 
+    preload() {
+        this.load.image('startBackground', '/assets/game_start_background.png');
+    }
+
     create() {
         this.startTitles = new StartTitles(this);
     }

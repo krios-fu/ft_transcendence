@@ -3,6 +3,7 @@ import { Txt } from "./Txt";
 
 export  class   StartTitles {
 
+    private _background: Phaser.GameObjects.Image;
     private _mainText: Txt;
     private _waitingText: Txt;
     private _tween: Phaser.Tweens.Tween;
@@ -10,6 +11,7 @@ export  class   StartTitles {
     private _padB: Phaser.GameObjects.Rectangle;
 
     constructor(scene: BaseScene) {
+        this._background = scene.add.image(400, 300, 'startBackground');
         this._padA = scene.add.rectangle(200, 200, 20, 100, 0xffffff);
         this._padB = scene.add.rectangle(600, 200, 20, 100, 0xffffff);
         this._mainText = new Txt(scene, {
@@ -44,7 +46,8 @@ export  class   StartTitles {
             style: {
                 fontFamily: 'Courier',
                 fontSize: '30px',
-                color: '#fff'
+                color: '#fff',
+                backgroundColor: '#000'
             },
             xOrigin: 0.5,
             yOrigin: 0.5,
@@ -79,6 +82,7 @@ export  class   StartTitles {
     }
 
     destroy(): void {
+        this._background.destroy();
         this._mainText.destroy();
         this._waitingText.destroy();
         this._tween.stop();
