@@ -24,6 +24,7 @@ import { FriendshipService } from './services/friendship.service';
 import { UserEntity } from './entities/user.entity';
 import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
+import { chatPayload } from 'src/chat/dtos/chat.dto';
 
 @Controller('users')
 export class UserController {
@@ -136,13 +137,13 @@ export class UserController {
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
-    **           ( friendship endpoints )            **
+    **           ( chat endpoints )            **
     **                                               **
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     /*
-    ** Get all friends from user
-    ** (user_id must be my id or I need to be an admin)
+    ** 
+    ** 
     */
 
     @Get('me/chats')
@@ -184,6 +185,38 @@ export class UserController {
      return  await this.chatService.findChatUser(user.id, friend.id);
      
    }
+
+   @Post('me/chat')
+   async postChat (
+        @Req() req: IRequestUser,
+        @Body() payload: chatPayload){
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user1 = await this.userService.findOneByUsername(username);
+
+        console.log(user1);
+        if (user1 === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const user2 = await this.userService.findOne(payload.friendId);
+
+        return this.chatService.post(user1, user2);
+
+   }
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
+    **                                               **
+    **           ( friendship endpoints )            **
+    **                                               **
+    ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+    /*
+    ** Get all friends from user
+    ** (user_id must be my id or I need to be an admin)
+    */
 
     @Get(':user_id/friends')
     public async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendshipEntity[]> {
@@ -242,12 +275,15 @@ export class UserController {
         @Req() req: IRequestUser, 
         @Body() dto: FriendshipPayload,
     ): Promise<FriendshipEntity> {
+        console.log('frienddd', dto);
         const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
             throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
         }
         const user = await this.userService.findOneByUsername(username);
+        console.log('frienddd', user);
+
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);

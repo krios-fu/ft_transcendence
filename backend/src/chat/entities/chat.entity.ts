@@ -12,6 +12,10 @@ import {MembershipEntity} from "./membership.entity";
     }
 )
 export class ChatEntity {
+    constructor (){
+        this.begin_at = new Date();
+    }
+    
     @PrimaryGeneratedColumn()
     id : number;
 

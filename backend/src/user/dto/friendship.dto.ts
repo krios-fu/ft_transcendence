@@ -21,9 +21,9 @@ export class FriendshipPayload {
     @IsNotEmpty()
     receiverId: number;
 
-    @IsEnum(FriendshipStatus)
-    @IsNotEmpty()
-    status: FriendshipStatus;
+    // @IsEnum(FriendshipStatus)
+    // @IsNotEmpty()
+    // status: FriendshipStatus;
 }
 
 export class CreateFriendDto extends FriendshipPayload {

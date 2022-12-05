@@ -5,6 +5,7 @@ import { Chat } from '../chat';
 import { FormControl, FormGroup } from '@angular/forms'; //
 import { UserDto } from 'src/app/dtos/user.dto';
 import { IUser, UsersService } from 'src/app/services/users.service';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
   selector: 'app-chat-id',
@@ -31,9 +32,9 @@ export class ChatIdComponent implements OnInit {
 
   constructor(public chat: Chat,
     private route: ActivatedRoute,
-    private usersService: UsersService,
-    private router_: Router,
+    private chatService: ChatService,
     private http: HttpClient) {
+
     this.unfold = 'unfold_less';
     console.log("CHAT COMPONENT", this.route.params)
     // this.login = this.route.snapshot.paramMap.get('id')?.toString();
@@ -41,28 +42,29 @@ export class ChatIdComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(({ id }) => {
-      this.formMessage.patchValue({ id });
+    this.formMessage.patchValue({ id });
 
 
       this.login = id;
 
       this.chat.resetChat();
+      delete this.user;
 
-        console.log('-->',id)
       // this.chat.joinRoom(id);
       // friend chat
+
       
       this.http.get(`http://localhost:3000/users/me/chat/${this.login}`)
         .subscribe((entity) => {
           console.log(`CHAT ID: ${this.login}`, entity);
           let friend = Object.assign(entity)
-          if(friend[0].membership[0].user.username == this.login)
+          if( friend[0].membership[0].user.username == this.login)
             this.user = friend[0].membership[0].user
           else 
-          this.user = friend[0].membership[1].user
+            this.user = friend[0].membership[1].user
 
           // this.user = Object.assign(user[0].);
-        });
+        } );
       this.chat.getMessageApi(id);
     });
   }

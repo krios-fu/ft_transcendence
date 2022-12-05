@@ -13,6 +13,14 @@ import {ChatEntity} from "./chat.entity";
 )
 
 export class MembershipEntity{
+
+    constructor( chat: ChatEntity, user : UserEntity){
+
+        this.begin_at = new Date();
+        this.user = user;
+        this.chat = chat;
+    }
+
     @PrimaryGeneratedColumn()
     id: number;
 

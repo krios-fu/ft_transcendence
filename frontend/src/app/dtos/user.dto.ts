@@ -1,5 +1,6 @@
 
 export class UserDto {
+	id : number;
 	username: string;
 	firstName: string;
 	lastName: string;
@@ -10,6 +11,7 @@ export class UserDto {
 	
   
 	constructor(
+		id: number,
 		username:string,
 		firstName:string,
 		lastName:string,
@@ -17,6 +19,7 @@ export class UserDto {
 		email:string,
 		photoUrl:string
 	) {
+		this.id = id;
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;

@@ -6,6 +6,8 @@ import {ChatDto} from "./dtos/chat.dto";
 import {ChatMapper} from "./mapper/chat.mapper";
 import {MembershipEntity} from "./entities/membership.entity";
 import { UserService } from 'src/user/services/user.service';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { MembershipRepository } from './repository/membership.repository';
 
 @Injectable()
 export class ChatService {
@@ -13,6 +15,8 @@ export class ChatService {
         @InjectRepository(ChatEntity)
         private chatRepository: ChatRepository,
         private chatMapper: ChatMapper,
+        @InjectRepository(MembershipEntity)
+        private membershipRepository: MembershipRepository
         )
     {
     }
@@ -77,10 +81,23 @@ export class ChatService {
     
 
 
-    async post(chat:  ChatDto): Promise<ChatEntity>{
-        const mapper = this.chatMapper.toEntity(chat)
+    async post(user1 : UserEntity, user2: UserEntity): Promise<ChatEntity>{
 
-        await this.chatRepository.insert(mapper);
-            throw  new HttpException('Chat alrady exists', HttpStatus.BAD_REQUEST)
+        const chat_checker = await this.findChatUser(user1.id, user2.id);
+            if (chat_checker.length > 0){
+                console.log('')
+                return chat_checker[0];
+            }
+
+        let chat = new ChatEntity();
+        await this.chatRepository.insert(chat);
+
+
+        let membership1  = new MembershipEntity(chat, user1);
+        let membership2  = new MembershipEntity(chat, user2);
+
+        await this.membershipRepository.insert(membership1);
+        await this.membershipRepository.insert(membership2);
+        return chat;
     }
 }
