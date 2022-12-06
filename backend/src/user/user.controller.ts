@@ -175,6 +175,7 @@ export class UserController {
         **      upload: edit user entity with new path to image
         **      -> path to image created by nest
         */
+       console.log('test');
     }
 
     /*
