@@ -82,7 +82,6 @@ export class UserEntity extends BaseEntity {
 	})
 	nickName : string;
 
-	@Exclude()
 	@Column({
 		type: 'boolean',
 		default: false
