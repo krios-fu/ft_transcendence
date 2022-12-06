@@ -1,6 +1,7 @@
 import {
     IsBoolean, 
     IsEmail, 
+    IsEnum, 
     IsNotEmpty, 
     IsNumber, 
     IsOptional, 
@@ -54,11 +55,18 @@ export class UpdateUserDto {
     @IsNumber()
     @IsNotEmpty()
     ranking?: number;
+}
 
-    //@IsOptional()
-    //@IsNumber()
-    //@IsNotEmpty()
-    //category?: Category;
+export class UserGameStats {
+    @IsOptional()
+    @IsNotEmpty()
+    @IsNumber()
+    ranking?: number;
+
+    @IsOptional()
+    @IsNotEmpty()
+    @IsEnum(Category)
+    category?: Category;
 }
 
 export class SettingsPayloadDto {

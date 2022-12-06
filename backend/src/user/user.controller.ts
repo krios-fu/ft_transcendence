@@ -15,6 +15,7 @@ import {
     UploadedFile,
     UseInterceptors,
     ParseFilePipe,
+    ParseFilePipeBuilder,
     
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
@@ -151,16 +152,23 @@ export class UserController {
     @UseInterceptors(
         FileInterceptor(
             'avatar',
-            { dest: './uploads/' }
+            { dest: './uploads/' },
+        //    fileFilter()
         )
     ) // <-- aqui los parseos de tamaño y seguridad
     public async uploadAvatar(
         @UploadedFile(
-            new ParseFilePipe({
-                validators: []
-            })
+            new ParseFilePipeBuilder()
+                .addFileTypeValidator({ fileType: 'jpeg' })
+                .addFileTypeValidator({ fileType: 'jpg' })
+                .addFileTypeValidator({ fileType: 'png' })
+                .addMaxSizeValidator({ maxSize: 6000 })
+                .build({
+                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                })
         ) avatar: Express.Multer.File
     ) {
+
         /* check if there was a previous avatar
         ** if true: remove
         ** upload new avatar

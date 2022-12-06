@@ -65,11 +65,11 @@ export class    GameService {
         let resultB: Promise<UpdateResult>;
     
         try {
-            resultA = this.userService.updateUser(playerA.id, {
+            resultA = this.userService.updateUserStats(playerA.id, {
                 ranking: playerA.ranking,
                 category: playerA.category
             });
-            resultB = this.userService.updateUser(playerB.id, {
+            resultB = this.userService.updateUserStats(playerB.id, {
                 ranking: playerB.ranking,
                 category: playerB.category
             });
