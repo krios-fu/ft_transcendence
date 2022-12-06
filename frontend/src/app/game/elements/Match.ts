@@ -15,6 +15,7 @@ export interface    IMatchInitData {
     playerA: IPlayerInitData;
     playerB: IPlayerInitData;
     ball: IBallInitData;
+    stage: string;
 }
 
 export interface    IMatchData {
@@ -28,6 +29,7 @@ export class    Match {
     private _playerA: Player;
     private _playerB: Player;
     private _ball: Ball;
+    private _stage?: Phaser.GameObjects.Image;
     private _scoreTxt: Txt;
     private _scoreNicks: string;
 
@@ -35,6 +37,16 @@ export class    Match {
         this._playerA = new Player(scene, initData.playerA);
         this._playerB = new Player(scene, initData.playerB);
         this._ball = new Ball(scene, initData.ball);
+        if (initData.playerA.hero)
+        {
+            this._stage = scene.add.image(
+                Number(scene.game.config.width) / 2,
+                Number(scene.game.config.height),
+                initData.stage
+            );
+            this._stage.setOrigin(0.5, 1);
+            this._stage.depth = -1;
+        }
         this._scoreNicks =
             ` ${initData.playerA.nick} - ${initData.playerB.nick} `;
         this._scoreTxt = new Txt(scene, {
@@ -66,6 +78,7 @@ export class    Match {
         this._ball.destroy();
         this._playerA.destroy();
         this._playerB.destroy();
+        this._stage?.destroy();
     }
 
 }

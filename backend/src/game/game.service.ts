@@ -27,6 +27,10 @@ export class    GameService {
         this.gamePlayers = new Map<string, [UserEntity, UserEntity]>;
     }
 
+    getPlayers(gameId: string): [UserEntity, UserEntity] {
+        return (this.gamePlayers.get(gameId));
+    }
+
     startGame(gameId: string): [[UserEntity, UserEntity], number] {
         let nextPlayers: [UserEntity, UserEntity] = [undefined, undefined];
         let gameType: number;

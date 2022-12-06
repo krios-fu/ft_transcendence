@@ -30,16 +30,6 @@ export interface    IBallData {
     yVel: number;
 }
 
-/*
-**  IMPORTANT IDEA
-**
-**  Check ball xVelocity to know which collisions to check
-**  from: Paddles, World Right, World Left.
-**
-**  Check ball yVelocity to know which collisions to check
-**  from: World Up, World Down
-*/
-
 export class    Ball {
 
     private _radius: number;
@@ -212,15 +202,18 @@ export class    Ball {
     //0: left, 1: right, 2: none
     checkPaddleCollision(paddleA: Paddle, paddleB: Paddle,
                             ballXDisplacement:number): boolean {
-        if (this.checkCollisionPaddleLeft(paddleA, ballXDisplacement))
+        if (this._xVelocity < 0)
         {
-            this.collisionPaddleLeft(paddleA);
-            return (true);
+            if (this.checkCollisionPaddleLeft(paddleA, ballXDisplacement))
+            {
+                this.collisionPaddleLeft(paddleA);
+                return (true);
+            }
         }
         else if (this.checkCollisionPaddleRight(paddleB, ballXDisplacement))
         {
             this.collisionPaddleRight(paddleB);
-            return (true)
+            return (true);
         }
         return (false);
     }
@@ -228,22 +221,28 @@ export class    Ball {
     //0: left, 1: up, 2: right, 3: down, 4: none
     checkBorderCollision(xDisplacement: number, yDisplacement: number,
                             gameWidth: number, gameHeight: number): number {
-        if (this.checkCollisionLeft(xDisplacement))
+        if (this._xVelocity < 0)
         {
-            this.collisionLeft(gameWidth, gameHeight);
-            return (0);
+            if (this.checkCollisionLeft(xDisplacement))
+            {
+                this.collisionLeft(gameWidth, gameHeight);
+                return (0);
+            }
         }
-        if (this.checkCollisionUp(yDisplacement))
-        {
-            this.collisionUp();
-            return (1);
-        }
-        if (this.checkCollisionRight(gameWidth, xDisplacement))
+        else if (this.checkCollisionRight(gameWidth, xDisplacement))
         {
             this.collisionRight(gameWidth, gameHeight);
             return (2);
         }
-        if (this.checkCollisionDown(gameHeight, yDisplacement))
+        if (this._yVelocity < 0)
+        {
+            if (this.checkCollisionUp(yDisplacement))
+            {
+                this.collisionUp();
+                return (1);
+            }
+        }
+        else if (this.checkCollisionDown(gameHeight, yDisplacement))
         {
             this.collisionDown(gameHeight);
             return (3);

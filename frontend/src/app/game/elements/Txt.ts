@@ -27,6 +27,10 @@ export class    Txt {
         this._text.setDepth(initData.depth);
     }
 
+    get element(): Phaser.GameObjects.Text {
+        return (this._text);
+    }
+
     get content(): string {
         return (this._text.text);
     }
@@ -41,6 +45,14 @@ export class    Txt {
 
     set visible(input: boolean) {
         this._text.setVisible(input);
+    }
+
+    get shadowOffsetX(): number {
+        return (this._text.style.shadowOffsetX);
+    }
+
+    setShadowOffset(x: number, y: number) {
+        this._text.setShadowOffset(x, y);
     }
 
     setPos(data: PositionInit) {
