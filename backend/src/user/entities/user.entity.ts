@@ -35,20 +35,50 @@ export class UserEntity extends BaseEntity {
 	id: number;
 
 	@Column({ 
-		unique: true 
+		type: 'varchar',
+		unique: true,
+		nullable: false,
+		length: 8
 	})
 	readonly username : string;
 	
-	@Column({ type: 'varchar' }) firstName : string;
-	@Column({ type: 'varchar' }) lastName : string;
-	@Column({ type: 'varchar' }) email : string;
-	@Column({ type: 'varchar' }) photoUrl : string;
-  	@Column({ type: 'varchar' }) profileUrl : string;
+	@Column({ 
+		type: 'varchar',
+		nullable: false,
+
+ 	})
+  	firstName : string;
+	
+	@Column({ 
+		type: 'varchar',
+		nullable: false,
+ 	})
+  	lastName : string;
+	
+	@Column({ 
+		type: 'varchar',
+		nullable: false,
+ 	})
+  	email : string;
+	
+	@Column({ 
+		type: 'varchar',
+		nullable: false,
+ 	})
+  	photoUrl : string;
+	
+  	@Column({ 
+		type: 'varchar',
+		nullable: false,
+ 	})
+  	profileUrl : string;
+	
 
 	@Column({
 		type: 'varchar',
 		unique: true,
-		length: 12
+		nullable: false,
+		length: 8
 	})
 	nickName : string;
 
@@ -72,6 +102,7 @@ export class UserEntity extends BaseEntity {
 	acceptedTerms: boolean;
 
 	@Column({
+		type: 'bigint',
 		default: 1500
 	})
 	ranking: number;
@@ -81,7 +112,7 @@ export class UserEntity extends BaseEntity {
 	})
 	category : Category;
 
-	@OneToMany((type) => MessageEntity, (message) => message.author )
+	@OneToMany(() => MessageEntity, (message) => message.author )
 	messages : MessageEntity[];
 
 	@OneToMany(() => MembershipEntity, (membership) => membership.user, )

@@ -12,6 +12,11 @@ import {
     HttpException,
     HttpStatus,
     Req,
+    UploadedFile,
+    UseInterceptors,
+    ParseFilePipe,
+    ParseFilePipeBuilder,
+    
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -25,6 +30,7 @@ import { UserEntity } from './entities/user.entity';
 import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UserController {
@@ -72,14 +78,29 @@ export class UserController {
     }
 
     /*
-    ** Find one user registered into app by id.
+    ** Find one user registered into app by id (regex: param must be a number).
     */
 
-    @Get(':id')
+    @Get('$(0-9)*^')
     async findOneUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
         const user = await this.userService.findOne(id);
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);
+            throw new HttpException('no user in db', HttpStatus.NOT_FOUND);
+        }
+        return user;
+    }
+
+    /*
+    ** Find one user registered into the app by username.
+    ** (regex: param must be only ascii characters).
+    */
+
+    @Get('$(A-Za-z\-)*^')
+    public async findOneUserByUsername(@Param('id') id: string): Promise<UserEntity> {
+        const user = await this.userService.findOneByUsername(id);
+        if (user === null) {
+            this.userLogger.error(`User with login ${id} not found in database`);
             throw new HttpException('no user in db', HttpStatus.NOT_FOUND);
         }
         return user;
@@ -158,6 +179,45 @@ export class UserController {
         }
         return this.userService.updateSettings(user.id, settingsDto);
     }
+ 
+
+    @Post('me/avatar/upload')
+    @UseInterceptors(
+        FileInterceptor(
+            'avatar',
+            { dest: './uploads/' },
+        //    fileFilter()
+        )
+    ) // <-- aqui los parseos de tamaño y seguridad
+    public async uploadAvatar(
+        @UploadedFile(
+            new ParseFilePipeBuilder()
+                .addFileTypeValidator({ fileType: 'jpeg' })
+                .addFileTypeValidator({ fileType: 'jpg' })
+                .addFileTypeValidator({ fileType: 'png' })
+                .addMaxSizeValidator({ maxSize: 6000 })
+                .build({
+                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+                })
+        ) avatar: Express.Multer.File
+    ) {
+
+        /* check if there was a previous avatar
+        ** if true: remove
+        ** upload new avatar
+        **      upload: edit user entity with new path to image
+        **      -> path to image created by nest
+        */
+       console.log('test');
+    }
+
+    /*
+    **  Remove an avatar previously uploaded by user.
+    **  (what if user has no uploaded avatar but is still working with default provided by 42??)
+    **  (what if user removes custom avatar? do we return to default one? is there a default avatar??)
+    **/
+
+    @Delete('me/avatar')
 
     /* it is me! (or admin) */
     @Delete(':id')

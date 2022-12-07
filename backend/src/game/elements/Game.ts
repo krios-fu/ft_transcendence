@@ -8,7 +8,10 @@ import {
     IBallClientStart,
     IBallData
 } from './Ball'
-import { IGameSelectionData } from './GameSelection';
+import {
+    IGameSelectionData,
+    StageId
+} from './GameSelection';
 import { HeroCreator } from './HeroCreator';
 
 export enum    GameState {
@@ -21,6 +24,7 @@ export interface    IGameClientStart {
     playerA: IPlayerClientStart;
     playerB: IPlayerClientStart;
     ball: IBallClientStart;
+    stage?: string;
 }
 
 export interface    IInputData {
@@ -50,6 +54,7 @@ export class   Game {
     protected   _playerA: Player;
     protected   _playerB: Player;
     protected   _ball: Ball;
+    private     _stage?: StageId;  
     protected   _lastUpdate: number; //timestamp milliseconds
     protected   _state: GameState;
 
@@ -98,6 +103,8 @@ export class   Game {
             xVel: 0,
             yVel: 0
         });
+        if (gameSelection.heroAConfirmed)
+            this._stage = gameSelection.stage;
         this._lastUpdate = Date.now();
         this._state = GameState.Running;
     }
@@ -241,11 +248,22 @@ export class   Game {
         });
     }
 
+    private stringifyStage(id: StageId): string {
+        if (!this._playerA.hero)
+            return (undefined);
+        if (id === StageId.Atlantis)
+            return ('atlantis');
+        if (id === StageId.Metropolis)
+            return ('metropolis');
+        return ('wakanda');
+    }
+
     clientStartData(): IGameClientStart {
         return ({
             playerA: this._playerA.clientStartData(),
             playerB: this._playerB.clientStartData(),
-            ball: this._ball.clientStartData()
+            ball: this._ball.clientStartData(),
+            stage: this.stringifyStage(this._stage)
         });
     }
 

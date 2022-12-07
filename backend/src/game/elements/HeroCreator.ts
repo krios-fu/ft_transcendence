@@ -62,26 +62,26 @@ export class    HeroCreator {
         if (playerSide === 0) //0: left, else: right
         {
             sprite.xPosInit = 0;
-            sprite.yPosInit = upperSprite ? this._gameHeight * 0.25
-                                                : this._gameHeight * 0.75;
+            sprite.yPosInit = upperSprite ? this._gameHeight * 0.3
+                                                : this._gameHeight * 0.6;
             sprite.xPosEnd = 335;
             sprite.yPosEnd = sprite.yPosInit;
             sprite.xVelocity = 800;
             sprite.yVelocity = 0;
             sprite.xOrigin = 1;
-            sprite.yOrigin = 0.5;
+            sprite.yOrigin = 0;
         }
         else
         {
             sprite.xPosInit = this._gameWidth;
-            sprite.yPosInit = upperSprite ? this._gameHeight * 0.25
-                                                : this._gameHeight * 0.75;
+            sprite.yPosInit = upperSprite ? this._gameHeight * 0.35
+                                                : this._gameHeight * 0.65;
             sprite.xPosEnd = 465;
             sprite.yPosEnd = sprite.yPosInit;
             sprite.xVelocity = -800;
             sprite.yVelocity = 0;
             sprite.xOrigin = 0;
-            sprite.yOrigin = 0.5;
+            sprite.yOrigin = 0;
         }
         sprite.xPos = sprite.xPosInit;
         sprite.yPos = sprite.yPosInit;

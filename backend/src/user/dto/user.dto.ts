@@ -1,6 +1,7 @@
 import {
     IsBoolean, 
     IsEmail, 
+    IsEnum, 
     IsNotEmpty, 
     IsNumber, 
     IsOptional, 
@@ -43,7 +44,7 @@ export class UpdateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    // @Length(9, 12)
+    @Length(3, 8)
     nickName?: string;
 
     @IsBoolean()
@@ -65,10 +66,17 @@ export class UpdateUserDto {
     @IsNumber()
     @IsNotEmpty()
     ranking?: number;
+}
+
+export class UserGameStats {
+    @IsOptional()
+    @IsNotEmpty()
+    @IsNumber()
+    ranking?: number;
 
     @IsOptional()
-    @IsNumber()
     @IsNotEmpty()
+    @IsEnum(Category)
     category?: Category;
 }
 

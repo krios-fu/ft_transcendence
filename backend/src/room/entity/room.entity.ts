@@ -31,12 +31,6 @@ export class RoomEntity extends BaseEntity {
     roomName!: string;
 
     @Column({ 
-        type: 'date' ,
-        name: 'created_at'
-    })
-    createdAt!: Date;
-
-    @Column({ 
         type: 'bigint',
         name: 'owner_id'
     })

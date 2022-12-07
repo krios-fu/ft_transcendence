@@ -1,13 +1,16 @@
+import { 
+    CreateUserDto, 
+    SettingsPayloadDto, 
+    UpdateUserDto, 
+    UserGameStats 
+} from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from 'src/user/dto/user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
-import { isBoolean, isString } from 'class-validator';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { Request } from 'express';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 
 @Injectable()
@@ -65,6 +68,18 @@ export class UserService {
         return await this.userRepository.update(id, dto);
     }
 
+    /*
+    ** Update user entity in database's parameters only related to
+    ** game stats { ranking, category } 
+    **
+    ** This service must not be publicly accessible by route endpoint,
+    ** only for internal server logic.
+    */
+
+    public async updateUserStats(id: number, userInfo: UserGameStats): Promise<UpdateResult> {
+        return await this.userRepository.update(id, userInfo);
+    }
+
     public async updateSettings(userId: number, dto: SettingsPayloadDto): Promise<UpdateResult> {
         return await this.userRepository.update(userId, dto);
     }
@@ -75,6 +90,14 @@ export class UserService {
     **  Determine which type of repository method is most appropriate,
     **  delete or remove.
     */
+
+    //public async uploadAvatar(): Promise<UpdateResult> {
+//
+    //}
+//
+    //public async removeAvatar(): Promise<UpdateResult> {
+    //    /* remove file from filesystem */
+    //}
 
     public async deleteUser(id: number): Promise<void> {
         await this.userRepository.softDelete(id);

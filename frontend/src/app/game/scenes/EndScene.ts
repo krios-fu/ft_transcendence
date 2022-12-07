@@ -1,11 +1,12 @@
 import * as SocketIO from 'socket.io-client'
-import { Txt } from '../elements/Txt';
+import { IResultData, Result } from '../elements/Result';
 import { BaseScene } from './BaseScene'
 import { IMenuInit } from './MenuScene';
 
 export class    EndScene extends BaseScene {
 
-    winner?: string;
+    resultData?: IResultData;
+    result?: Result;
 
     constructor(
         sock: SocketIO.Socket, room: string
@@ -13,10 +14,10 @@ export class    EndScene extends BaseScene {
         super("End", sock, room);
     }
 
-    init(data: any) {
-        this.winner = data.winner;
+    init(data: IResultData) {
+        this.resultData = data;
         this.socket.once("newGame", (data: IMenuInit) => {
-            this.initTxt?.destroy();
+            this.result?.destroy();
             this.removeAllSocketListeners();
             if (data.hero)
                 this.scene.start("MenuHero", data);
@@ -25,20 +26,8 @@ export class    EndScene extends BaseScene {
         });
     }
 
-    createInitText() {
-        //Init screen setup
-        this.initTxt = new Txt(this, {
-            xPos: 400,
-            yPos: 250,
-            content: `${this.winner} wins!`,
-            style: { fontSize: '20px', color: '#fff' },
-            xOrigin: 0.5,
-            yOrigin: 0.5,
-            depth: 1
-        });
-    }
-
     create() {
-        this.createInitText();
+        if (this.resultData)
+            this.result = new Result(this, this.resultData);
     }
 }

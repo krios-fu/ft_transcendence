@@ -81,7 +81,7 @@ export class    GameSelection {
         return (this._status === SelectionStatus.Finished);
     }
 
-    private stringifyCategory(cat: Category): string {
+    static stringifyCategory(cat: Category): string {
         const   s: string[] = ["Iron", "Bronze", "Silver", "Gold", "Platinum"];
 
         return (s[cat]);
@@ -91,8 +91,8 @@ export class    GameSelection {
         return ({
             nickPlayerA: this._nickPlayerA,
             nickPlayerB: this._nickPlayerB,
-            categoryA: this.stringifyCategory(this._categoryA),
-            categoryB: this.stringifyCategory(this._categoryB),
+            categoryA: GameSelection.stringifyCategory(this._categoryA),
+            categoryB: GameSelection.stringifyCategory(this._categoryB),
             avatarA: this._avatarA,
             avatarB: this._avatarB,
             heroA: this._heroA,

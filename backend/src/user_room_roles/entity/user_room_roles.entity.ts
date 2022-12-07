@@ -48,6 +48,6 @@ export class UserRoomRolesEntity extends BaseEntity {
          eager: true,
       }
    )
-   @JoinColumn({ name: 'role' })
-   role: string;
+   @JoinColumn({ name: 'role_id' })
+   role: RolesEntity;
 }

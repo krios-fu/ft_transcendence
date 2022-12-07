@@ -47,7 +47,7 @@ export class  FriendshipEntity extends BaseEntity {
       eager: true,
     }
   )
-  @JoinColumn({ name : 'senderId' })
+  @JoinColumn({ name : 'sender_id' })
   sender: UserEntity;
 
   @Column({ 
@@ -65,7 +65,7 @@ export class  FriendshipEntity extends BaseEntity {
       eager: true,
     }
   )
-  @JoinColumn({ name : 'receiverId' })
+  @JoinColumn({ name : 'receiver_id' })
   receiver: UserEntity;
 
   @Column({

@@ -63,8 +63,8 @@ export class    MenuScene extends BaseScene {
     preload() {
         if (!this.initData)
             return ;
-        this.load.image('playerA', "https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg"/*this.initData.avatarA*/);
-        this.load.image('playerB', "https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg"/*this.initData.avatarB*/);
+        this.load.image('playerA', this.initData.avatarA);
+        this.load.image('playerB', this.initData.avatarB);
         this.initData.avatarA = 'playerA';
         this.initData.avatarB = 'playerB';
     }

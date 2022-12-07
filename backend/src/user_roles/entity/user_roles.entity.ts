@@ -28,7 +28,7 @@ export class UserRolesEntity extends BaseEntity {
         () => UserEntity,
         { cascade: true },
     )
-    @JoinColumn({ name: 'user' })
+    @JoinColumn({ name: 'user_id' })
     user: UserEntity;
 
     @Column({
@@ -41,6 +41,6 @@ export class UserRolesEntity extends BaseEntity {
         () => RolesEntity,
         { cascade: true },
     )
-    @JoinColumn({ name: "role" })
+    @JoinColumn({ name: "role_id" })
     role: RolesEntity;
 }

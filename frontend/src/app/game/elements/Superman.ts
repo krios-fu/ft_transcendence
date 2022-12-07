@@ -13,8 +13,8 @@ export class    Superman extends Hero {
             this._upperSprite.flipX = true;
             this._lowerSprite.flipX = true;
         }
-        this._upperSprite.scale = 0.37; //Provisional. It should not be necessary to scale
-        this._lowerSprite.scale = 0.37; //Provisional. It should not be necessary to scale
+        this._upperSprite.scale = 0.4; //Provisional. It should not be necessary to scale
+        this._lowerSprite.scale = 0.4; //Provisional. It should not be necessary to scale
     }
 
 }

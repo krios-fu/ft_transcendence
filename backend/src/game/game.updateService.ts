@@ -133,9 +133,21 @@ export class    GameUpdateService {
         }, 10000);
     }
 
-    private gameEnd(gameId: string, gameResult: IGameResult): void {        
+    private gameEnd(gameId: string, gameResult: IGameResult): void {
+        const   players : [UserEntity, UserEntity] =
+                            this.gameService.getPlayers(gameId);
+          
         this.socketHelper.emitToRoom(this.server, gameId, "end", {
-            winner: gameResult.winnerNick
+            aNick: players[0].nickName,
+            bNick: players[1].nickName,
+            aCategory: GameSelection.stringifyCategory(players[0].category),
+            bCategory: GameSelection.stringifyCategory(players[1].category),
+            aScore: players[0].nickName === gameResult.winnerNick
+                        ? gameResult.winnerScore : gameResult.loserScore,
+            bScore: players[1].nickName === gameResult.winnerNick
+                        ? gameResult.winnerScore : gameResult.loserScore,
+            aAvatar: players[0].photoUrl,
+            bAvatar: players[1].photoUrl
         });
         this.gameService.endGame(gameId, gameResult);
         this.socketHelper.clearRoom(this.server, `${gameId}-PlayerA`);
