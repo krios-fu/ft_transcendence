@@ -159,3 +159,29 @@
 	height: auto;
   
   }
+
+  .chat_ball {
+	width: 20%;
+	height: 50%;
+	float: right;
+	display: flex;
+	position:absolute;
+	bottom: 0vh;
+	right: 0;
+	z-index: 0;
+	overflow: hidden;
+	border-radius: 22px;
+	box-shadow: 0 10px 30px black;
+	background: linear-gradient(90deg, rgba(17, 21, 23, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+
+	// border: 1px solid rgba(245, 245, 245, 0.29);
+	border: outset 3px silver;
+
+	flex-direction: column;
+	animation: fade-in 2s linear both;
+  
+	@keyframes fade-in {
+	  from { opacity: 0; }
+	  to { opacity: 1; }
+	}
+  }

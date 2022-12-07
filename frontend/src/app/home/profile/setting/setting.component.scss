@@ -38,14 +38,36 @@ div {
 		// }
 }
 
+.example-form2 {
+	min-width: 150px;
+	max-width: 500px;
+	width: 100%;
+  }
+  
+  .example-full-width {
+	width: 100%;
+	color: white;
+	font-size: small;
+	margin-top: 10px;
+  }
+
 .example-form mat-slide-toggle {
 	margin: 11px 0;
 	padding: 5px;
 	font-size: medium;
 	display: block;
+	
 
   }
 
+  :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+    background-color: #0ad7ea ;
+
+}
+
+:host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+    background-color: #ffffff ;
+}
 
   button {
 	background-color: transparent; 
@@ -53,6 +75,6 @@ div {
 	color: white;
 	// font-size: 50px;
 	&:hover{
-		color: rgba(255,215,64);
+		color: rgb(10, 223, 17);
 	}
   }

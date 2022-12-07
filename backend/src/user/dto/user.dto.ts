@@ -43,12 +43,23 @@ export class UpdateUserDto {
 
     @IsString()
     @IsNotEmpty()
-    @Length(9, 12)
+    // @Length(9, 12)
     nickName?: string;
 
     @IsBoolean()
     @IsNotEmpty()
     doubleAuth?: boolean;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    acceptedTerms?: boolean;
+
+
+    @IsBoolean()
+    @IsNotEmpty()
+    deaultOffline?: boolean;
+
+    
 
     @IsOptional()
     @IsNumber()
@@ -64,7 +75,7 @@ export class UpdateUserDto {
 export class SettingsPayloadDto {
     @IsBoolean()
     @IsNotEmpty()
-    readonly isInvisible?: boolean;
+    readonly defaultOffline?: boolean;
 
     @IsBoolean()
     @IsNotEmpty()
@@ -73,6 +84,11 @@ export class SettingsPayloadDto {
     @IsBoolean()
     @IsNotEmpty()
     readonly doubleAuth?: boolean;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(3, 8)
+    nickName?: string;
 
 }
 

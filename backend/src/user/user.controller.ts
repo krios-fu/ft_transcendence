@@ -115,17 +115,48 @@ export class UserController {
         return await this.userService.findOne(id);
     }
 
-    @Patch(':id/settings')
+    @Patch('me')
+    public async updateMeUser( 
+        @Req()  req: IRequestUser, 
+        @Body() dto: UpdateUserDto
+    ): Promise<UserEntity> {
+
+        console.log('UPDATE USER', dto);
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(req.user.data.username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        await this.userService.updateUser(user.id, dto);
+        return await this.userService.findOne(user.id);
+    }
+
+    @Patch('me/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
-        @Param(':id', ParseIntPipe) userId: number
+        @Req()  req: IRequestUser, 
+
     ): Promise<UpdateResult> {
-        const user = this.userService.findOne(userId);
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(req.user.data.username);
         if (user === null) {
-            this.userLogger.error(`User with id ${userId} not found in database`);
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        if (user === null) {
+            this.userLogger.error(`User with id ${user.id} not found in database`);
             throw new HttpException('no user in database', HttpStatus.BAD_REQUEST);
         }
-        return this.userService.updateSettings(userId, settingsDto);
+        return this.userService.updateSettings(user.id, settingsDto);
     } 
 
     /* it is me! (or admin) */

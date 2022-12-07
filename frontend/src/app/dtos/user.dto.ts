@@ -7,6 +7,9 @@ export class UserDto {
 	profileUrl: string;
 	email: string;
 	photoUrl: string;
+	doubleAuth: boolean;
+	acceptedTerms: boolean;
+	defaultOffline: boolean;
 
 	
   
@@ -17,7 +20,10 @@ export class UserDto {
 		lastName:string,
 		profileUrl:string,
 		email:string,
-		photoUrl:string
+		photoUrl:string,
+		doubleAuth: boolean,
+		acceptedTerms: boolean,
+		defaultOffline: boolean,
 	) {
 		this.id = id;
 		this.username = username;
@@ -26,6 +32,9 @@ export class UserDto {
 		this.profileUrl = profileUrl;
 		this.email = email;
 		this.photoUrl = photoUrl;
+		this.acceptedTerms = acceptedTerms;
+		this.doubleAuth = doubleAuth;
+		this.defaultOffline = defaultOffline;
 	}
   }
   

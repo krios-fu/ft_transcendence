@@ -40,6 +40,7 @@ Mixins
   {
 	position: absolute;
 	width: 15rem;
+	float: left;
   
 	z-index: 2;
 	overflow: hidden;
@@ -51,7 +52,9 @@ Mixins
 
 	box-shadow: 0 10px 30px black;
 	// right: -8vw;
-	right: 1vw;
+	right: 0;
+
+	// right: 1vw;
 
 	bottom: 1vh;
 	background: linear-gradient(180deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);

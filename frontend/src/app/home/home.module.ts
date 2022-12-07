@@ -22,6 +22,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
 import { GameComponent } from '../game/game.component';
 import { ProfileUserComponent } from './profile/profile-user/profile-user.component';
+import {MatInputModule} from '@angular/material/input';
 
 
 
@@ -50,6 +51,7 @@ import { ProfileUserComponent } from './profile/profile-user/profile-user.compon
     ScrollingModule,
     FormsModule,
     MatSlideToggleModule,
+    MatInputModule,
     // ChatModule
   ],
   exports:[
