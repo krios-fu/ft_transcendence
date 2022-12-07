@@ -50,15 +50,11 @@ export class ChatIdComponent implements OnInit {
       this.chat.resetChat();
       delete this.user;
 
-      // this.chat.joinRoom(id);
-      // friend chat
-
-      
       this.http.get(`http://localhost:3000/users/me/chat/${this.login}`)
         .subscribe((entity) => {
           console.log(`CHAT ID: ${this.login}`, entity);
           let friend = Object.assign(entity)
-          if( friend[0].membership[0].user.username == this.login)
+          if( friend[0].membership[0].user.nickName == this.login)
             this.user = friend[0].membership[0].user
           else 
             this.user = friend[0].membership[1].user

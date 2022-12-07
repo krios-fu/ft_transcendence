@@ -33,7 +33,7 @@
 				</h2>
 			</mat-label>
 			<input #login ngModule name="nickName" style="color: white; font-size: large; margin-top: 40px;" matInput
-				value={{this.user.nickName}}>
+				value={{this.user.nickName}} onKeyPress="if(event.keyCode == 13) event.returnValue = false;" (click)="changeDetected()">
 		</mat-form-field>
 		<br>
 		<br>

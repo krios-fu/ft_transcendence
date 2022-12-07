@@ -38,26 +38,26 @@ export class ProfileUserComponent implements OnInit {
     this.route.params.subscribe(({ id }) => {
       // this.formMessage.patchValue({ id });
 
-      this.http.get<UserDto[]>(`${this.urlApi}users?filter[username]=${id}`)
+      this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
           this.user = user[0];
           console.log(this.user.username, this.user.id);
           this.chatService.createChat(this.user.id);
           
-          this.http.get(`${this.urlApi}users/me/friends/${this.user?.id}`)
-          .subscribe( (data : any )=> {
-            console.log('FRIEND', data);
-            // if( data.status === 404 )
-            //   this.
+          // this.http.get(`${this.urlApi}users/me/friends/${this.user?.id}`)
+          // .subscribe( (data : any )=> {
+          //   console.log('FRIEND', data);
+          //   // if( data.status === 404 )
+          //   //   this.
             
-          })
+          // })
           
         })
     })
   }
 
-  getUsername() {
-    return this.user?.username;
+  getNickName() {
+    return this.user?.nickName;
   }
 
 

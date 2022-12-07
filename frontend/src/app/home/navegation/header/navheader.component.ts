@@ -37,8 +37,8 @@ export class NavHeaderComponent implements OnInit {
   }
 
 
-  getUsername() {
-    return this.user?.username;
+  getNickname() {
+    return this.user?.nickName;
   }
 
 

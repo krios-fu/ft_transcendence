@@ -1,6 +1,7 @@
 
 export class UserDto {
 	id : number;
+	nickName: string;
 	username: string;
 	firstName: string;
 	lastName: string;
@@ -15,6 +16,7 @@ export class UserDto {
   
 	constructor(
 		id: number,
+		nickName: string,
 		username:string,
 		firstName:string,
 		lastName:string,
@@ -26,6 +28,7 @@ export class UserDto {
 		defaultOffline: boolean,
 	) {
 		this.id = id;
+		this.nickName = nickName;
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;

@@ -1,72 +1,67 @@
 <div [ngClass]="state" *ngIf="user && login">
 	<div class="chat-title">
-  
-	  <div
-		style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
-  
-		<div class="badge">
-  
-		  <button class="avatar" href="#">
-			<img src={{user.photoUrl}} alt="krios-fu" />
-		  </button>
+
+		<div
+			style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
+
+			<div class="badge">
+
+				<button class="avatar" href="#">
+					<img src={{user.photoUrl}} alt="krios-fu" />
+				</button>
+			</div>
+
+			<div *ngIf="this.chat.count_new_msg" matBadge="{{this.chat.count_new_msg}}" matBadgeOverlap="true"
+				matBadgeSize="small" matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="hidden"
+				style="position: absolute; left: 32px; bottom: 6px ; "></div>
+			<span>{{login}}</span>
 		</div>
-  
-		<div *ngIf="this.chat.count_new_msg" matBadge="{{this.chat.count_new_msg}}" matBadgeOverlap="true"
-		  matBadgeSize="small" matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="hidden"
-		  style="position: absolute; left: 32px; bottom: 6px ; "></div>
-		<span>{{login}}</span>
-	  </div>
-  
-  
-	  <!--    <mat-icon matBadge="15" matBadgeColor="warn" [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()">message</mat-icon>-->
-  
-  
-	  <div class="icon" style=" display: flex; color : white; align-items: center; align-content: center;">
-		<button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()">
-		  <mat-icon>{{unfold}}</mat-icon>
-		</button>
-  
-  
-		<button mat-icon-button routerLink="../">
-		  <mat-icon>close</mat-icon>
-		</button>
-		<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
-		  <mat-icon>more_vert</mat-icon>
-		</button>
-		<mat-menu #menu="matMenu">
-		  <!--disabled option -->
-		  <button mat-menu-item>
-			<mat-icon>block</mat-icon>
-			<span>Block</span>
-		  </button>
-		  <button mat-menu-item>
-			<mat-icon>notifications_off</mat-icon>
-			<span>Disable alerts</span>
-		  </button>
-		</mat-menu>
-	  </div>
-  
+
+
+		<div class="icon" style=" display: flex; color : white; align-items: center; align-content: center;">
+			<button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()">
+				<mat-icon>{{unfold}}</mat-icon>
+			</button>
+
+			<button mat-icon-button routerLink="../">
+				<mat-icon>close</mat-icon>
+			</button>
+			<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
+				<mat-icon>more_vert</mat-icon>
+			</button>
+			<mat-menu #menu="matMenu">
+				<!--disabled option -->
+				<button mat-menu-item>
+					<mat-icon>block</mat-icon>
+					<span>Block</span>
+				</button>
+				<button mat-menu-item>
+					<mat-icon>notifications_off</mat-icon>
+					<span>Disable alerts</span>
+				</button>
+			</mat-menu>
+		</div>
+
 	</div>
-  
+
 	<div class="messages">
-	  <div *ngFor="let msg of viewMessage()">
-		<div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.content}}</div>
-		<ng-template #other>
-			<!-- <div *ngIf="this.chat.count_new_msg !== 0">
-				<h2>new message</h2>
-			</div> -->
-		  <div class="message">
-			<figure class="avatar">
-			  <img src={{user.photoUrl}}>
-			</figure> {{msg.content}}
-		  </div>
-		</ng-template>
-	  </div>
+		<div *ngFor="let msg of viewMessage()">
+			<div *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.content}}
+			</div>
+			<ng-template #other>
+				<div class="message">
+					<figure class="avatar">
+						<img src={{user.photoUrl}}>
+					</figure> {{msg.content}}
+				</div>
+			</ng-template>
+		</div>
 	</div>
 	<div class="message-box">
-	  <form (ngSubmit)="sendMessage()" [formGroup]="formMessage" class="users-type">
-		<input formControlName="message" type="text" class="message-input" placeholder="Type message...">
-		<button type="submit" class="message-submit">Send</button>
-	  </form>
+		<form (ngSubmit)="sendMessage()" [formGroup]="formMessage" class="users-type">
+			<textarea formControlName="message" type="submit" class="message-input"
+				placeholder="Type message..."></textarea>
+			<button type="submit" class="message-submit">Send</button>
+		</form>
 	</div>
-  </div>
+</div>

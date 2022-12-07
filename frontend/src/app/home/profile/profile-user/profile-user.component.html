@@ -13,7 +13,7 @@ position: relative;
 align-items: center;  
 justify-content: space-around;
 " *ngIf="user">
-	<h1 style="font-size: 14px;">{{getUsername()}}</h1>
+	<h1 style="font-size: 14px;">{{getNickName()}}</h1>
 </div>
 
 <div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
@@ -39,7 +39,7 @@ justify-content: space-around;
 		</a>
 	</span>
 	<span>
-		<a mat-icon-button class="send_friendship" [routerLink]="[ '/', { outlets: {  chat: ['chat', getUsername() ] } }]" >
+		<a mat-icon-button class="send_friendship" [routerLink]="[ '/', { outlets: {  chat: ['chat', getNickName() ] } }]" >
 			<mat-icon >chat</mat-icon>
 		</a>
 	</span>
