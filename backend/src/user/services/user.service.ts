@@ -85,9 +85,9 @@ export class UserService {
     */
 
     //public async uploadAvatar(): Promise<UpdateResult> {
-//
+
     //}
-//
+
     //public async removeAvatar(): Promise<UpdateResult> {
     //    /* remove file from filesystem */
     //}
@@ -118,4 +118,10 @@ export class UserService {
         );
         return validate;
     }
+
+    public filterAvatarFilenames() {
+
+    }
+
+    /* public  */
 }

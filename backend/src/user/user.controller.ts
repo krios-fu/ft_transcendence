@@ -14,7 +14,6 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    ParseFilePipe,
     ParseFilePipeBuilder,
     
 } from '@nestjs/common';
@@ -30,6 +29,7 @@ import { UserEntity } from './entities/user.entity';
 import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Controller('users')
 export class UserController {
@@ -148,29 +148,29 @@ export class UserController {
         return this.userService.updateSettings(userId, settingsDto);
     }
 
-    @Post('me/avatar/upload')
-    @UseInterceptors(
-        FileInterceptor(
-            'avatar',
-            { dest: './uploads/' },
-        //    fileFilter()
-        )
-    ) // <-- aqui los parseos de tamaño y seguridad
+    @Post('me/avatar')
+    @UseInterceptors(FileInterceptor(
+        'avatar', 
+        {
+            storage: diskStorage({
+                destination: './uploads',
+                filename: (
+                    req:  IRequestUser, 
+                    file: Express.Multer.File,
+                    cb:   Function) => {
+                    const filename = `${req.user.data.username}.`;
+                }
+            }),
+        },
+        fileFilter: (req: IRequestUser, file: Express.Multer.File, cb: Function) => {
+            
+        }
+    )) // <-- aqui los parseos de tamaño y seguridad
     public async uploadAvatar(
-        @UploadedFile(
-            new ParseFilePipeBuilder()
-                .addFileTypeValidator({ fileType: 'jpeg' })
-                .addFileTypeValidator({ fileType: 'jpg' })
-                .addFileTypeValidator({ fileType: 'png' })
-                .addMaxSizeValidator({ maxSize: 6000 })
-                .build({
-                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                })
-        ) avatar: Express.Multer.File
+        @UploadedFile() avatar: Express.Multer.File
     ) {
 
-        /* check if there was a previous avatar
-        ** if true: remove
+        /* 
         ** upload new avatar
         **      upload: edit user entity with new path to image
         **      -> path to image created by nest

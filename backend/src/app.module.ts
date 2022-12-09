@@ -18,6 +18,7 @@ import { MatchModule } from './match/match.module';
 import { GameModule } from './game/game.module';
 import { WinnerModule } from './match/winner/winner.module';
 import { LoserModule } from './match/loser/loser.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 
 @Module({
@@ -25,6 +26,9 @@ import { LoserModule } from './match/loser/loser.module';
         UserModule,
         AuthModule,
         ChatModule,
+        MulterModule.register({
+            dest: './uploads',
+        }),
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
