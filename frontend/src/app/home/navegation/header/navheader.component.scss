@@ -1,24 +1,42 @@
-.avatar {
+.icon-display {
+  transform: scale(0.6) translateX(42px);
+  color: greenyellow;
+  box-shadow: inset 4px;
+}
+
+.badge {
+
+
+  display: flex;
   position: relative;
-  background: lawngreen;
-  //z-index: 1;
-  left: 5px;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   margin: 0;
-  padding:0;
-  border: 3px solid rgba(255, 255, 255, 0.24);
+  position: relative;
+  overflow: initial;
 
-  img {
-    width: 100%;
-    height: auto;
 
+  .avatar {
+    position: relative;
+    left: 5px;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 3px solid rgba(233, 233, 233, 0.24);
+
+    img {
+      width: 100%;
+      height: auto;
+
+    }
   }
 }
 
-div{
+div {
   // border: 1px solid rgba(245, 245, 245, 0.29);
   border: outset 2px silver;
 
@@ -30,48 +48,53 @@ div{
 }
 
 
-.icon_nav{
+.icon_nav {
   color: white;
 
-  &:hover{
+  &:hover {
     color: rgb(237, 235, 139);
   }
 }
 
-.icon_logout{
+.icon_logout {
   color: white;
 
-  &:hover{
+  &:hover {
     color: rgb(215, 20, 20);
   }
 }
 
-.tree{
-	font-family: 'Super Mario World Text Box', sans-serif;
-	font-size: 12px;
+.tree {
+  font-family: 'Super Mario World Text Box', sans-serif;
+  font-size: 12px;
   padding: 10px;
   margin-top: 15px;
-  }
+}
 
 .cdk-virtual-scroll-content-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    scrollbar-base-color : whitesmoke;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  scrollbar-base-color: whitesmoke;
 
- 
-  
-  }
 
-.effect{
-  
+
+}
+
+.effect {
+
 
   animation: bounce-in 2s ease;
   animation: fade-in 2s linear both;
 
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 }

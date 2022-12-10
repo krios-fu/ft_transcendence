@@ -92,11 +92,11 @@ export class RoomComponent implements AfterViewInit {
       .subscribe(entity => {
         let data = Object.assign(entity);
         for (let chat in data) {
-          const { membership } = data[chat];
-          let { nickName, username } = membership[0].user;
+          const { users } = data[chat];
+          let { nickName, username } = users[0];
           if (username === user_sesion) {
-            console.log(membership[1])
-            nickName = membership[1].user.nickName;
+            console.log('CHAT MEMBERSHIP',users)
+            nickName = users[1].nickName;
           }
           this.statusTree = true;
           if (!(TREE_CHAT[1].children?.find((child) => {
