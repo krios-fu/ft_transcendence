@@ -180,7 +180,6 @@ export class UserController {
         return this.userService.updateSettings(user.id, settingsDto);
     }
 
-<<<<<<< HEAD
     @Post('me/avatar')
     @UseInterceptors(FileInterceptor(
         'avatar', 
@@ -199,17 +198,6 @@ export class UserController {
             
         }
     )) // <-- aqui los parseos de tamaño y seguridad
-=======
-
-    @Post('me/avatar/upload')
-    @UseInterceptors(
-        FileInterceptor(
-            'avatar',
-            { dest: './uploads/' },
-            //    fileFilter()
-        )
-    ) // <-- aqui los parseos de tamaño y seguridad
->>>>>>> main
     public async uploadAvatar(
         @UploadedFile() avatar: Express.Multer.File
     ) {
