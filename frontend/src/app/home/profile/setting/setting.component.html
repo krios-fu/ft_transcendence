@@ -18,23 +18,41 @@
 <div style="font-size:x-small; padding: 15px; justify-content: center;">
 
 
+
 	<form class="example-form" #form="ngForm" (ngSubmit)="alertFormValues(form.form, login.value)" *ngIf="this.user">
 
-		<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.doubleAuth" name="doubleAuth">2FA
-			Authentication</mat-slide-toggle>
-		<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.acceptedTerms" name="acceptedTerms">Accept
-			Terms of Service</mat-slide-toggle>
-		<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.defaultOffline" name="defaultOffline">
-			Online</mat-slide-toggle>
-		<mat-form-field class="example-full-width">
-			<mat-label style="color: red;  padding-top: 10px;">
-				<h2>
-					Nickname<br> size min/max: 3/8 chararter
-				</h2>
-			</mat-label>
-			<input #login ngModule name="nickName" style="color: white; font-size: large; margin-top: 40px;" matInput
-				value={{this.user.nickName}} onKeyPress="if(event.keyCode == 13) event.returnValue = false;" (click)="changeDetected()">
-		</mat-form-field>
+		<div style="justify-content: center; align-items: center; align-content: center; padding: 10px;">
+			<mat-form-field class="example-full-width">
+				<mat-label style="color: red;">
+					<h2>
+						Change nickname<br> size min/max: 3/8 chararter
+					</h2>
+				</mat-label>
+				<input #login ngModule name="nickName" style="color: white; font-size: large; margin-top: 40px;"
+					matInput value={{this.user.nickName}}
+					onKeyPress="if(event.keyCode == 13) event.returnValue = false;" (click)="changeDetected()">
+			</mat-form-field>
+		</div>
+
+		<div>
+			<input style="display: none;" type="file" (change)="onFile($event)" #fileInput>
+			<button style="justify-content: center; align-items: center; 
+		display: flex;" (click)="fileInput.click()">
+				<mat-icon style="margin: 5px;">upload_file</mat-icon> SELECT AVATAR<span
+					style="margin-left: 5px; color: green">{{namePhoto}}</span>
+			</button>
+		</div>
+
+		<div style="padding: 5px;">
+			<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.doubleAuth" name="doubleAuth">2FA
+				Authentication</mat-slide-toggle>
+			<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.acceptedTerms" name="acceptedTerms">
+				Accept
+				Terms of Service</mat-slide-toggle>
+			<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.defaultOffline" name="defaultOffline">
+				Online</mat-slide-toggle>
+		</div>
+
 		<br>
 		<br>
 		<br>

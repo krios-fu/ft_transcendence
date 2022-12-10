@@ -36,6 +36,7 @@ export class ChatService {
         return await this.chatRepository.find({
             relations: {
                 users: true,
+                messages: true,
             },
             where: {
                 users: {
