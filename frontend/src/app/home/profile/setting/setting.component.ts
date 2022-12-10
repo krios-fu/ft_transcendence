@@ -16,6 +16,8 @@ export class SettingComponent implements OnInit {
 
 
   isChecked = true;
+  namePhoto = '';
+  urlPreview = ''
   formGroup = this._formBuilder.group({
     doubleAuth: false,
     acceptedTerms: [false, Validators.requiredTrue],
@@ -40,6 +42,7 @@ export class SettingComponent implements OnInit {
           this.formGroup.get("acceptedTerms")?.setValue(this.user.acceptedTerms, { emitEvent: true });
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });
           this.formGroup.get("nickName")?.setValue(this.user.nickName, { emitEvent: true });
+          this. urlPreview = this.user?.photoUrl;
 
 
         }
@@ -51,6 +54,20 @@ export class SettingComponent implements OnInit {
   }
 
 
+  onFile(event : any ){
+    const file = event.target.files[0];
+    this.namePhoto = event.target.files[0].name;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.urlPreview = reader.result as string;
+    }
+
+    reader.readAsDataURL(file);
+    this.changeDetected();
+
+    console.log("file", file);
+  }
 
 
   changeDetected() {
@@ -79,7 +96,7 @@ export class SettingComponent implements OnInit {
   }
 
   getPhoto(): string {
-      return this.user?.photoUrl;
+      return this.urlPreview;
   }
 
 

@@ -42,7 +42,7 @@ export class ChatIdComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(({ id }) => {
-    this.formMessage.patchValue({ id });
+      this.formMessage.patchValue({ id });
 
 
       this.login = id;
@@ -53,12 +53,10 @@ export class ChatIdComponent implements OnInit {
       this.http.get(`http://localhost:3000/users/me/chat/${this.login}`)
         .subscribe((entity) => {
           console.log(`CHAT ID: ${this.login}`, entity);
-          let friend = Object.assign(entity)
-          if( friend[0].nickName == this.login)
-            this.user = friend[0].users[0]
-          else 
-            this.user = friend[0].users[1]
-        } );
+          let chats = Object.assign(entity)
+          this.user = (chats[0].users[0].nickName == this.login)
+            ? chats[0].users[0] : chats[0].users[1];
+        });
       this.chat.getMessageApi(id);
     });
   }
