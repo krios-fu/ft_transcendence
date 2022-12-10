@@ -54,12 +54,10 @@ export class ChatIdComponent implements OnInit {
         .subscribe((entity) => {
           console.log(`CHAT ID: ${this.login}`, entity);
           let friend = Object.assign(entity)
-          if( friend[0].membership[0].user.nickName == this.login)
-            this.user = friend[0].membership[0].user
+          if( friend[0].nickName == this.login)
+            this.user = friend[0].users[0]
           else 
-            this.user = friend[0].membership[1].user
-
-          // this.user = Object.assign(user[0].);
+            this.user = friend[0].users[1]
         } );
       this.chat.getMessageApi(id);
     });

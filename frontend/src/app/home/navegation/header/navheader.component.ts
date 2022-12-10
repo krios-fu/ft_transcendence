@@ -16,6 +16,9 @@ export class NavHeaderComponent implements OnInit {
 
   user: UserDto | undefined;
 
+  color_icon = '';
+  online_icon = '';
+
   constructor(private http: HttpClient,
     private usersService: UsersService,
     private authService: AuthService,
@@ -25,13 +28,16 @@ export class NavHeaderComponent implements OnInit {
 
 
   /*
-  ** GET USER PROFILE
+  ** green: '#49ff01'
+  ** Red: '#ff0000'
   */
   ngOnInit() {
 
     this.usersService.getUser('me')
       .subscribe((user: UserDto[]) => {
         this.user = user[0];
+        this.color_icon = (this.user.defaultOffline) ? '#49ff01' : '#ff0000';
+        this.online_icon = (this.user.defaultOffline) ? 'sentiment_very_satisfied' : 'sentiment_very_dissatisfied';
       })
 
   }

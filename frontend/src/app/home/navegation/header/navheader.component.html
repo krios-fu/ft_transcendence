@@ -1,13 +1,13 @@
-<div style="	display: flex; 
-position: relative; 
-align-items: center;  
-justify-content: center;
-height: 60px;
-padding: 40px;" *ngIf="user">
+
+<div class="badge">
+
   <figure class="avatar">
     <img src={{getPhotoUrl()}}  />
   </figure>
+  <mat-icon  [ngStyle]="{'color': color_icon}" class="icon-display" 
+  style="position: absolute; bottom: -5px;">{{online_icon}}</mat-icon>
 </div>
+<!-- </div> -->
 <div style="display: flex; 
 position: relative; 
 align-items: center;  

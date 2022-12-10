@@ -16,7 +16,7 @@ import {
     UseInterceptors,
     ParseFilePipe,
     ParseFilePipeBuilder,
-    
+
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -179,14 +179,14 @@ export class UserController {
         }
         return this.userService.updateSettings(user.id, settingsDto);
     }
- 
+
 
     @Post('me/avatar/upload')
     @UseInterceptors(
         FileInterceptor(
             'avatar',
             { dest: './uploads/' },
-        //    fileFilter()
+            //    fileFilter()
         )
     ) // <-- aqui los parseos de tamaño y seguridad
     public async uploadAvatar(
@@ -208,7 +208,7 @@ export class UserController {
         **      upload: edit user entity with new path to image
         **      -> path to image created by nest
         */
-       console.log('test');
+        console.log('test');
     }
 
     /*
@@ -249,7 +249,10 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-        return await this.chatService.findChatsUser(user.id);
+
+        let lol = await this.chatService.findChatsUser(user.id);
+        console.log('chats:',  lol);
+        return lol;
     }
 
     @Get('me/chat/:nick_friend')
@@ -294,6 +297,7 @@ export class UserController {
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
         const user2 = await this.userService.findOne(payload.friendId);
+        console.log(user2)
 
         return this.chatService.post(user1, user2);
 

@@ -14,9 +14,9 @@ export class ChatMapper{
     toDto(chatEntity : ChatEntity): ChatDto{
         const newDto = new ChatDto;
 
-        newDto.id = chatEntity.id;
-        newDto.membership = chatEntity.membership;
-        newDto.messages = chatEntity.messages;
+        // newDto.id = chatEntity.id;
+        // newDto.membership = chatEntity.membership;
+        // newDto.messages = chatEntity.messages;
 
         return  newDto;
     }
