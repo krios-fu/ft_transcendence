@@ -24,7 +24,7 @@ HOST=http://c3r5s2:3000
 # Need to pass a json object as third argument. The only properties
 # accepted bu the rout are: nickName (string), photoUrl (string),
 # doubleAuth (boolean) and status ("online", "offline", "playing").
-#
+# 
 # Example JSON object:
 # '{"nickname":"theGreat","doubleAuth":true,"status":"playing"}'
 

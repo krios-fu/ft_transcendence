@@ -8,7 +8,7 @@ import { ChatModule } from './room/chat/chat.module';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home/profile', pathMatch: 'full',  },
+  { path: '', redirectTo: '/home/profile', pathMatch: 'full', },
   {
     path: 'home', component: HomeComponent,
     loadChildren: () => import('./home/home.module').then(m => m.HomeModule),

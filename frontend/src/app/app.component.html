@@ -1,25 +1,22 @@
-<app-header (searchUser)="getSearch($event)" ></app-header>
+<app-header (searchUser)="getSearch($event)"></app-header>
 <section class="row">
 
 	<div class="column1 " style="
-  border: outset 4px silver;
-  /* border-bottom: none; */
-  &:last-child{
-  border-bottom: 1px solid rgba(245, 245, 245, 0.29);
-  border-bottom: turquoise;}
-  ">
+  border: outset 4px silver;">
 
-	<router-outlet></router-outlet>
+		<router-outlet></router-outlet>
 	</div>
 	<div class="column2" style="border: outset 4px silver;">
 		<router-outlet name="game"></router-outlet>
-    <!-- <app-game></app-game> -->
+		<!-- <app-game></app-game> -->
 	</div>
 
-		<div class="column3">
-      <div  style="color: white">
-        <app-search *ngIf="this.search" [user]="this.search"></app-search>
-      </div>
-			<router-outlet name="chat"></router-outlet>
+	<div class="column3">
+		<div style="color: white">
+			<app-search *ngIf="this.search" [users]="this.search"></app-search>
 		</div>
+
+		<router-outlet name="chat"></router-outlet>
+		<!-- <div class="chat_ball"></div> -->
+	</div>
 </section>

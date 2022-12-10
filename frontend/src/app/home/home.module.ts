@@ -21,6 +21,8 @@ import { LoginComponent } from '../login/login.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
 import { GameComponent } from '../game/game.component';
+import { ProfileUserComponent } from './profile/profile-user/profile-user.component';
+import {MatInputModule} from '@angular/material/input';
 
 
 
@@ -32,6 +34,7 @@ import { GameComponent } from '../game/game.component';
     RoomComponent, 
     SettingComponent,
     FriendOnlineComponent,
+    ProfileUserComponent,
     // GameComponent
     // LoginComponent
 
@@ -48,6 +51,7 @@ import { GameComponent } from '../game/game.component';
     ScrollingModule,
     FormsModule,
     MatSlideToggleModule,
+    MatInputModule,
     // ChatModule
   ],
   exports:[

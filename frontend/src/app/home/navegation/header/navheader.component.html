@@ -1,22 +1,22 @@
-<div style="	display: flex; 
-position: relative; 
-align-items: center;  
-justify-content: center;
-height: 60px;
-padding: 40px;" *ngIf="user">
+
+<div class="badge">
+
   <figure class="avatar">
     <img src={{getPhotoUrl()}}  />
   </figure>
+  <mat-icon  [ngStyle]="{'color': color_icon}" class="icon-display" 
+  style="position: absolute; bottom: -5px;">{{online_icon}}</mat-icon>
 </div>
+<!-- </div> -->
 <div style="display: flex; 
 position: relative; 
 align-items: center;  
 justify-content: space-around;
 " *ngIf="user">
-  <h1   style="font-size: 14px;">{{getUsername()}}</h1>
+  <h1   style="font-size: 14px;">{{getNickname()}}</h1>
 </div>
 
-<div style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
+<div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
   <span>
     <mat-icon>emoji_events</mat-icon>
     <h3 style="color : goldenrod;">42</h3>
@@ -29,8 +29,6 @@ justify-content: space-around;
     <mat-icon>trending_down</mat-icon>
     <h3 style="color : rgb(255,0,47);">42</h3>
   </span>
-
-
 </div>
 
 <a mat-icon-button (click)="plus()" class="tree" style="margin: 5px; box-shadow: inset 4px white;">

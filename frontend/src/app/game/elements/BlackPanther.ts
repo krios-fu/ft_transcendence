@@ -14,8 +14,8 @@ export class    BlackPanther extends Hero {
             this._upperSprite.flipX = true;
             this._lowerSprite.flipX = true;
         }
-        this._upperSprite.scale = 0.65; //Provisional. It should not be necessary to scale
-        this._lowerSprite.scale = 0.65; //Provisional. It should not be necessary to scale
+        this._upperSprite.scale = 0.5; //Provisional. It should not be necessary to scale
+        this._lowerSprite.scale = 0.5; //Provisional. It should not be necessary to scale
     }
 
 }

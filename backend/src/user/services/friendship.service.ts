@@ -55,6 +55,8 @@ export class    FriendshipService {
                 ? users[0] : users[1];
             friendship.receiver = users[0].id === receiverId
                 ? users[0] : users[1];
+            friendship.senderId = friendship.sender.id;
+            friendship.receiverId = friendship.receiver.id;
             if ( (await queryRunner.manager.find(FriendshipEntity, {
                 where: {
                     senderId: receiverId,
@@ -143,12 +145,12 @@ export class    FriendshipService {
             .leftJoinAndSelect(
                 "friendship.sender",
                 "sender",
-                "sender.username!= :id",
+                "sender.id!= :id",
                 {id: userId})
             .leftJoinAndSelect(
                 "friendship.receiver",
                 "receiver",
-                "receiver.username!= :id",
+                "receiver.id!= :id",
                 {id: userId})
             .where(
                 "friendship.senderId= :uId"

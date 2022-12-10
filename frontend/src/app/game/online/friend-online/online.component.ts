@@ -24,8 +24,8 @@ export class OnlineComponent implements OnInit {
 		photoUrl:string */
   
 
-    const b = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    this.friends.push(b);
+    // const b = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
+    // this.friends.push(b);
     // const c = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
     // this.friends.push(c);
     // const d = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )

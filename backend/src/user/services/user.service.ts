@@ -42,6 +42,13 @@ export class UserService {
         return user;
     }
 
+    public async findOneByNickName(nickName: string): Promise<UserEntity> {
+        const user = await this.userRepository.findOne({ 
+            where: { nickName: nickName },
+        });
+        return user;
+    }
+
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
         console.log(newUser);
         const newEntity = new UserEntity(newUser);

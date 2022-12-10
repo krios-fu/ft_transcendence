@@ -51,6 +51,17 @@ export class UpdateUserDto {
     @IsNotEmpty()
     doubleAuth?: boolean;
 
+    @IsBoolean()
+    @IsNotEmpty()
+    acceptedTerms?: boolean;
+
+
+    @IsBoolean()
+    @IsNotEmpty()
+    deaultOffline?: boolean;
+
+    
+
     @IsOptional()
     @IsNumber()
     @IsNotEmpty()
@@ -72,7 +83,7 @@ export class UserGameStats {
 export class SettingsPayloadDto {
     @IsBoolean()
     @IsNotEmpty()
-    readonly isInvisible?: boolean;
+    readonly defaultOffline?: boolean;
 
     @IsBoolean()
     @IsNotEmpty()
@@ -81,5 +92,11 @@ export class SettingsPayloadDto {
     @IsBoolean()
     @IsNotEmpty()
     readonly doubleAuth?: boolean;
+
+    @IsString()
+    @IsNotEmpty()
+    @Length(3, 8)
+    nickName?: string;
+
 }
 

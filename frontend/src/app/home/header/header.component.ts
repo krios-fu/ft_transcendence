@@ -34,10 +34,10 @@ export class HeaderComponent implements OnInit {
     const { message, room } = this.formMessage.value;
     if( message.trim() == '' )
       return false;
-      this.http.get<UserDto[]>(`http://localhost:3000/users/?filter[username]=${message}`)
+      this.http.get<UserDto[]>(`http://localhost:3000/users/?filter[nickName]=${message}`)
       .subscribe(
        ( user : UserDto[]) => {
-          this.searchUser.emit(user[0])
+          this.searchUser.emit(user)
           console.log('SERACH --->', user);
         }
       )

@@ -65,6 +65,7 @@ export class Chat implements OnInit{
     this.http.get(`http://localhost:3000/users/me/chat/${login}`)
     .subscribe((entity : any) => {
       let data = Object.assign(entity); 
+      console.log('Chatt mesasge', data);
       this.id = data[0].id;
       this.socket.emit('join_room', this.id);
       console.log(this.id);

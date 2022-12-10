@@ -16,6 +16,7 @@ import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common
 import { throwError } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { SettingComponent } from './profile/setting/setting.component';
+import { SearchComponent } from '../search/search.component';
 
 
 
@@ -36,6 +37,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   @ViewChild(NavHeaderComponent) navHeader: any;
   @ViewChild(ChatComponent) chat: any;
+
 
   constructor(private route: ActivatedRoute,
     private http: HttpClient,
@@ -85,7 +87,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
           this.authService.redirectHome();
 
           // const username: string = this.authService.getAuthUser() as string;
-          this.usersService.getUser()
+          this.usersService.getUser('me')
             .subscribe({
               next: (userDto : any ) => {
                 this.user = userDto.username;

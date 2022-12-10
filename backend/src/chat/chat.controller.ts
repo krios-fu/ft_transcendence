@@ -27,9 +27,9 @@ export class ChatController {
         return chat;
     }
 
-    @Post()
-    @Public()
-    async newChat(@Body() newChat: ChatDto): Promise<ChatEntity>{
-        return this.chatService.post(newChat);
-    }
+    // @Post()
+    // @Public()
+    // async newChat(@Body() newChat: ChatDto): Promise<ChatEntity>{
+    //     // return this.chatService.post(newChat);
+    // }
 }

@@ -20,9 +20,12 @@ export class   GameHero extends Game {
         **  Hero collisions do not work with ball next
         **  position (ballDisplacement) at the moment.
         */
-        if (this._ball.checkHeroCollision(this._playerA.hero/*,
+        if (this._ball.xVelocity < 0)
+        {
+            if (this._ball.checkHeroCollision(this._playerA.hero/*,
                 ballXDisplacement, ballYDisplacement*/))
             return (false);
+        }
         else if (this._ball.checkHeroCollision(this._playerB.hero/*,
                     ballXDisplacement, ballYDisplacement*/))
             return (false);

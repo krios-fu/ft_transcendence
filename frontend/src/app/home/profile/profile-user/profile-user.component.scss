@@ -1,0 +1,78 @@
+.avatar {
+	position: relative;
+	background: lawngreen;
+	//z-index: 1;
+	left: 5px;
+	border-radius: 50%;
+	width: 60px;
+	height: 60px;
+	overflow: hidden;
+	margin: 0;
+	padding:0;
+	border: 3px solid rgba(255, 255, 255, 0.24);
+  
+	img {
+	  width: 100%;
+	  height: auto;
+  
+	}
+  }
+  
+  div{
+	// border: 1px solid rgba(245, 245, 245, 0.29);
+	border: outset 2px silver;
+  
+	//border-bottom: none;
+	// &:last-child{
+	//   border-bottom: 1px solid rgba(245, 245, 245, 0.29);
+	// }
+  
+  }
+  
+  
+  .icon_nav{
+	color: white;
+  
+	&:hover{
+	  color: rgb(237, 235, 139);
+	}
+  }
+  
+  .send_friendship{
+	color: white;
+  
+	&:hover{
+	  color: rgb(28, 225, 71);
+	}
+  }
+  
+  .tree{
+	  font-family: 'Super Mario World Text Box', sans-serif;
+	  font-size: 12px;
+	padding: 10px;
+	margin-top: 15px;
+	}
+  
+  .cdk-virtual-scroll-content-wrapper {
+	  display: flex;
+	  flex-direction: row;
+	  justify-content: center;
+	  align-items: center;
+	  scrollbar-base-color : whitesmoke;
+  
+   
+	
+	}
+  
+  .effect{
+	
+  
+	animation: bounce-in 2s ease;
+	animation: fade-in 2s linear both;
+  
+	@keyframes fade-in {
+	  from { opacity: 0; }
+	  to { opacity: 1; }
+	}
+  }
+  

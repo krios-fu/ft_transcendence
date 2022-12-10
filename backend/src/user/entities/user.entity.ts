@@ -1,10 +1,10 @@
-import { Exclude } from "class-transformer";
-import { MembershipEntity } from "src/chat/entities/membership.entity";
+import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import {
 	Column,
 	Entity,
+	ManyToMany,
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from "typeorm";
@@ -82,6 +82,7 @@ export class UserEntity extends BaseEntity {
 	})
 	nickName : string;
 
+	// @Exclude()
 	@Column({
 		type: 'boolean',
 		default: false
@@ -114,6 +115,8 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(() => MessageEntity, (message) => message.author )
 	messages : MessageEntity[];
 
-	@OneToMany(() => MembershipEntity, (membership) => membership.user, )
-	membership : MembershipEntity[];
+	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
+	chats : ChatEntity[];
+	// @OneToMany(() => MembershipEntity, (membership) => membership.user, )
+	// membership : MembershipEntity[];
 }
