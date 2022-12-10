@@ -31,6 +31,8 @@ import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { uploadAvatarSettings } from './config/upload-avatar.config';
+import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
 
 @Controller('users')
 export class UserController {
@@ -182,32 +184,21 @@ export class UserController {
 
     @Post('me/avatar')
     @UseInterceptors(FileInterceptor(
-        'avatar', 
-        {
-            storage: diskStorage({
-                destination: './uploads',
-                filename: (
-                    req:  IRequestUser, 
-                    file: Express.Multer.File,
-                    cb:   Function) => {
-                    const filename = `${req.user.data.username}.`;
-                }
-            }),
-        },
-        fileFilter: (req: IRequestUser, file: Express.Multer.File, cb: Function) => {
-            
-        }
-    )) // <-- aqui los parseos de tamaño y seguridad
+        'avatar', uploadAvatarSettings
+    ))
     public async uploadAvatar(
-        @UploadedFile() avatar: Express.Multer.File
+        @Req() req: IRequestUser,
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
     ) {
+        const username: string = req.user.data.username;
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
 
-        /* 
-        ** upload new avatar
-        **      upload: edit user entity with new path to image
-        **      -> path to image created by nest
-        */
-        console.log('test');
+        console.log(`Debugger: ${avatar.path}`);
+        return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
     }
 
     /*

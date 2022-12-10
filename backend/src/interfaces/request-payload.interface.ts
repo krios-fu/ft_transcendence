@@ -18,5 +18,6 @@ export interface IRequestPayload extends Request {
 };
 
 export interface IRequestUser extends Request {
-    username: string;
+    //username: string;
+    user: IJwtPayload;
 };

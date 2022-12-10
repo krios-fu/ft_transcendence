@@ -90,10 +90,7 @@ export class UserService {
     **  Determine which type of repository method is most appropriate,
     **  delete or remove.
     */
-
-    //public async uploadAvatar(): Promise<UpdateResult> {
-
-    //}
+    
 
     //public async removeAvatar(): Promise<UpdateResult> {
     //    /* remove file from filesystem */
