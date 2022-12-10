@@ -8,7 +8,6 @@ const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
 export class FileTypeValidatorPipe implements PipeTransform {
     transform(value: Express.Multer.File, metadata: ArgumentMetadata) {
         const filename: string = value.filename;
-        var  validator: boolean = false;
 
         console.log(`Debugger: ${filename}`);
         console.log(`Debugger: ${detectFile(filename)}`)
