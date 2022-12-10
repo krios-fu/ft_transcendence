@@ -1,7 +1,18 @@
 <div>
   <router-outlet> </router-outlet>
 
-  <div style="color: white; 
+
+
+  <div *ngIf="friend_state" >
+    <mat-tab-group >
+      <mat-tab  label="Friends"> 
+			
+    </mat-tab>
+      <mat-tab  label="Pendding"> Content 2 </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div style="color: #ffffff; 
 
 position: absolute;
 justify-content:space-around;
@@ -16,7 +27,7 @@ border-radius: 50px;
 /* border: 1px solid rgba(245, 245, 245, 0.29); */
 border: outset 4px silver;
 
-bottom: 1vh;">
+bottom: 1vh;" >
 
     <div>
       <button mat-icon-button class="icon_logout" routerLink="/home/profile">
@@ -25,9 +36,9 @@ bottom: 1vh;">
     </div>
     <div>
       <!-- [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()"> -->
-      <a mat-icon-button class="icon_nav" href="/login">
-        <mat-icon matBadge="15" matBadgeColor="warn" matBadgeSize="small">
 
+      <a mat-icon-button class="icon_nav"  (click)="hello()">
+        <mat-icon matBadge="{{nPenddingFriends}}" matBadgeColor="warn" matBadgeSize="small">
           people
         </mat-icon>
       </a>

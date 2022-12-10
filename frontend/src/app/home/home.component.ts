@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
 
 import { HttpClient } from "@angular/common/http";
 import { MatExpansionModule } from '@angular/material/expansion';
 import { Chat } from '../room/chat/chat';
 import { Payload, UserDto } from '../dtos/user.dto';
-import { Observable } from 'rxjs';
+import { filter, Observable, Subscription } from 'rxjs';
 import { ChatComponent } from '../room/chat/chat.component';
 import { ChatModule } from "../room/chat/chat.module";
 
@@ -16,7 +16,6 @@ import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common
 import { throwError } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { SettingComponent } from './profile/setting/setting.component';
-import { SearchComponent } from '../search/search.component';
 
 
 
@@ -25,17 +24,23 @@ import { SearchComponent } from '../search/search.component';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   lol = false;
   user: string = "";
   firstName: string = "";
   lastName: string = "";
   hidden = false;
+  friend_state = false;
+  friends = { } as UserDto [];
+
+  nPenddingFriends = 0;
+  public subscriber: Subscription;
+
 
   outlet_chat = false;
 
-  @ViewChild(NavHeaderComponent) navHeader: any;
+  @ViewChild(NavHeaderComponent) navHeader!: any;
   @ViewChild(ChatComponent) chat: any;
 
 
@@ -44,8 +49,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     public usersService: UsersService,
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
+    private router: Router,
   ) { 
-    console.log("HOME COMPONENT");
+    this.subscriber = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+      ).subscribe((event) => {
+        if (this.authService.isAuthenticated() !== false) {
+          this.getPenddingFriends();
+        }
+        });
   }
 
   ngOnInit(): void {
@@ -67,7 +79,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
     if (this.authService.isAuthenticated() === false) {
       this.authService.redirectLogin();
     }
+  }
 
+  ngOnDestroy(): void {
+    this.subscriber?.unsubscribe();
   }
 
   loginUser(code: string) {
@@ -112,6 +127,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
 
+  getPenddingFriends(){
+      this.usersService.getFriends('me')
+      .subscribe( (data : any) => {
+        this.nPenddingFriends = data.length;
+        console.log(this.nPenddingFriends);
+      })
+  }
+
 
 
   send_chat_profile(e: any) {
@@ -122,6 +145,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
+  }
+
+  hello(){
+    this.friend_state = !this.friend_state;
+
+    console.log('HELLO WORLD');
   }
 
 

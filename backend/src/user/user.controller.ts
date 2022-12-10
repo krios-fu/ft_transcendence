@@ -313,10 +313,10 @@ export class UserController {
     ** (user_id must be my id or I need to be an admin)
     */
 
-    @Get(':user_id/friends')
-    public async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendshipEntity[]> {
-        return await this.friendshipService.getFriends(userId);
-    }
+    // @Get(':user_id/friends')
+    // public async getFriends(@Param('user_id', ParseIntPipe) userId: number): Promise<FriendshipEntity[]> {
+    //     return await this.friendshipService.getFriends(userId);
+    // }
 
 
     /*
@@ -326,6 +326,7 @@ export class UserController {
     @Get('me/friends')
     public async getMyFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
         const username = req.user.data.username;
+        console.log('GET FRIENDS', username);
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
             throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
@@ -336,6 +337,23 @@ export class UserController {
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
         return await this.friendshipService.getFriends(user.id);
+    }
+
+
+    @Get('me/friends/as_pendding')
+    public async getFriendsAsPendding(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
+        const username = req.user.data.username;
+        console.log('GET FRIENDS', username);
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return await this.friendshipService.getPossibleFriends(user.id);
     }
 
     /* 

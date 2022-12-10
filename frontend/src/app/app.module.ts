@@ -59,6 +59,6 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
     ]
 })
 export class AppModule {
-  constructor(router : Router) {
+  constructor() {
   }
 }

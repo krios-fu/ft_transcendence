@@ -23,44 +23,44 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
 import { GameComponent } from '../game/game.component';
 import { ProfileUserComponent } from './profile/profile-user/profile-user.component';
 import {MatInputModule} from '@angular/material/input';
+import {MatTabsModule} from '@angular/material/tabs';
+import { SearchComponent } from '../search/search.component';
 
 
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    
-    NavHeaderComponent,
-    RoomComponent, 
-    SettingComponent,
-    FriendOnlineComponent,
-    ProfileUserComponent,
-    // GameComponent
-    // LoginComponent
-
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatExpansionModule,
-    HomeRoutingModule,
-    MatIconModule,
-    MatBadgeModule,
-    MatTreeModule,
-    MatButtonModule,
-    ScrollingModule,
-    FormsModule,
-    MatSlideToggleModule,
-    MatInputModule,
-    // ChatModule
-  ],
-  exports:[
+    declarations: [
+        HomeComponent,
+        NavHeaderComponent,
+        RoomComponent,
+        SettingComponent,
+        FriendOnlineComponent,
+        ProfileUserComponent,
+        // GameComponent
+        // LoginComponent
+    ],
+    exports: [
     // HomeComponent,
-  ], providers:[{
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true,
-  }]
+    ], providers: [{
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        }],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatExpansionModule,
+        HomeRoutingModule,
+        MatIconModule,
+        MatBadgeModule,
+        MatTreeModule,
+        MatButtonModule,
+        ScrollingModule,
+        FormsModule,
+        MatSlideToggleModule,
+        MatInputModule,
+        MatTabsModule,
+    ]
 })
 export class HomeModule {
   constructor( router : Router ) {

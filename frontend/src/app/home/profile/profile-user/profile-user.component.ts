@@ -41,7 +41,6 @@ export class ProfileUserComponent implements OnInit {
       this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
           this.user = user[0];
-          console.log(this.user.username, this.user.id);
           this.chatService.createChat(this.user.id);
           
           // this.http.get(`${this.urlApi}users/me/friends/${this.user?.id}`)
@@ -66,8 +65,6 @@ export class ProfileUserComponent implements OnInit {
   }
 
   post_friendship(){
-
-  
 
     this.http.post(`${this.urlApi}users/me/friends`, {
       receiverId: this.user?.id,
