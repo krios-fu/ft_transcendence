@@ -80,6 +80,10 @@ span{
   padding-left:10px; font-size: xx-small;
 }
 
+::ng-deep .mat-icon {
+  color: white;
+}
+
 ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
   color: white!important;
 }

@@ -13,7 +13,7 @@
 		
 		background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 		color: white;
-		border: outset 3px silver; margin-top: 10px;" [routerLink]="['/home/profile/', user.nickName]">
+		border: outset 3px silver; margin-top: 10px;" [routerLink]="['/home/profile/', user.nickName]" (click)="clearUser()">
 		
 				<img class="avatar" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
 				<span style="padding-left:10px;"> {{user.nickName}} </span>
