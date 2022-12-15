@@ -61,7 +61,7 @@ export class AuthService {
         };
     }
 
-    async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
+    public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
         let tokenEntity: RefreshTokenEntity;
 
         try {  
@@ -82,7 +82,7 @@ export class AuthService {
         }
     }
 
-    async logout(username: string, res: Response): Promise<void> {
+    public async logout(username: string, res: Response): Promise<void> {
         let tokenEntity: RefreshTokenEntity;
 
         try {
@@ -95,7 +95,7 @@ export class AuthService {
         res.clearCookie('refresh_token');
     }
 
-    async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
+    public async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
         let tokenEntity: RefreshTokenEntity;
         let userEntity: UserEntity;
 
@@ -114,4 +114,6 @@ export class AuthService {
         }
         return tokenEntity;
     }
+
+    public 
 }

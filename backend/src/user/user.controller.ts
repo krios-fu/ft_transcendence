@@ -33,6 +33,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { uploadAvatarSettings } from './config/upload-avatar.config';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
+import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 
 @Controller('users')
 export class UserController {
@@ -69,13 +70,7 @@ export class UserController {
     */
 
     @Get('me')
-    public async findMe(@Req() req: IRequestUser) {
-        const username = req.user.data.username;
-
-        if (username === undefined) {
-            this.userLogger.error('Cannot find username for client in request body');
-            throw new HttpException('user has no valid credentials', HttpStatus.BAD_REQUEST);
-        }
+    public async findMe(@UserCreds() username: string) {
         return await this.userService.findAllUsers({ "filter": { "username": [username] } });
     }
 
@@ -162,15 +157,10 @@ export class UserController {
     @Patch('me/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
-        @Req() req: IRequestUser,
+        @UserCreds() username: string,
 
     ): Promise<UpdateResult> {
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
@@ -218,7 +208,7 @@ export class UserController {
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
-    **           ( chat endpoints )            **
+    **               ( chat endpoints )              **
     **                                               **
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 

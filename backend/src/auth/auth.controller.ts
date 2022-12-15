@@ -15,6 +15,7 @@ import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/user/dto/user.dto';
 import { IAuthPayload, IRequestUser } from 'src/common/interfaces/request-payload.interface';
+import { totp } from 'otplib';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;
@@ -49,9 +50,10 @@ export class AuthController {
         return this.authService.authUser(req.user, res);
     }
 
-    @Get('google')
-    public async authFromGoogle() {
-
+    @Public()
+    @Get('doubleAuth')
+    public async twoFactorAuth() {
+ //       const token = 
     }
 
     @Public()
