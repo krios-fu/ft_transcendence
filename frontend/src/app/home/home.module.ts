@@ -25,6 +25,8 @@ import { ProfileUserComponent } from './profile/profile-user/profile-user.compon
 import {MatInputModule} from '@angular/material/input';
 import {MatTabsModule} from '@angular/material/tabs';
 import { SearchComponent } from '../search/search.component';
+import {  MatChipsModule } from '@angular/material/chips'
+
 
 
 
@@ -53,7 +55,7 @@ import { SearchComponent } from '../search/search.component';
         HomeRoutingModule,
         MatIconModule,
         MatBadgeModule,
-        MatTreeModule,
+        MatChipsModule,
         MatButtonModule,
         ScrollingModule,
         FormsModule,

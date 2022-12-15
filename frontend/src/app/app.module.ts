@@ -51,7 +51,6 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
         MatIconModule,
         MatTreeModule,
         MatBadgeModule,
-        MatTreeModule,
         MatButtonModule,
         SocketIoModule.forRoot(config),
         BrowserAnimationsModule,

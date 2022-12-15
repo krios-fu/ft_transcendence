@@ -36,15 +36,7 @@ justify-content: space-around;
   ROOM AND DM
 </a>
 
-<cdk-virtual-scroll-viewport *ngIf="status_room" class="efecct"
-  style="height: 45vh; position: relative; color: white;
-  /* box-shadow: 0 0 4px 0 goldenrod; */
-	border-radius: 20px;
-  flex-direction:column-reverse;" itemSize="5">
-  <app-room></app-room>
-
-</cdk-virtual-scroll-viewport>
-
+<app-room *ngIf="status_room"></app-room>
 
 <div style="margin-top: 40px;" class="effect" *ngIf="!status_room">
   <div style="display: flex; justify-content: center; padding: 10px;">

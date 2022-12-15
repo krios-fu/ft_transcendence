@@ -1,5 +1,4 @@
-
-.tree{
+.tree {
   background: none;
   // border: 1px solid rgba(245, 245, 245, 0.29);
   font-family: 'Super Mario World Text Box', sans-serif;
@@ -12,20 +11,75 @@ a {
   color: white;
   font-size: 9px;
 
-  &:hover{
+  &:hover {
     color: goldenrod;
   }
 }
 
-.effect{
+.effect {
 
   animation: bounce-in 2s ease;
   animation: fade-in 2s linear both;
 
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 }
 
 
+.avatar {
+  position: relative;
+  // background: lawngreen;
+  //z-index: 1;
+  // left: 5px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 3px solid rgba(255, 255, 255, 0.24);
+
+
+  img {
+    width: 100%;
+    height: auto;
+
+  }
+}
+
+.scroll {
+  height: 30vh;
+  position: relative;
+  color: white;
+  /* box-shadow: 0 0 4px 0 goldenrod; */
+  border-radius: 20px;
+  flex-direction: column-reverse;
+
+}
+
+.tag {
+  padding-left: 0;
+  border-radius: 22px;
+  box-shadow: 10px rgb(255, 255, 255);
+
+  background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+  color: white;
+  border: outset 3px silver;
+  margin-top: 10px;
+
+}
+
+span{
+  padding-left:10px; font-size: xx-small;
+}
+
+::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+  color: white!important;
+}
