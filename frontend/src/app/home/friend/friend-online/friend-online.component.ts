@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 
@@ -8,25 +9,23 @@ import { UserDto } from 'src/app/dtos/user.dto';
 })
 export class FriendOnlineComponent implements OnInit {
 
-  friends = [] as UserDto [];
+  friends = [] as UserDto[];
 
-  constructor() { 
+  urlApi = 'http://localhost:3000/'
+  constructor(private http: HttpClient) {
     console.log("CONSTRUCTOR APP-FRIEND-ONLINE")
   }
 
   ngOnInit(): void {
-/* 
-    username:string,
-		firstName:string,
-		lastName:string,
-		profileUrl:string,
-		email:string,
-		// photoUrl:string */
-    // const a = new UserDto("laumoral", "Laura Daniela", "Morales Gutiérrez", "https://cdn.intra.42.fr/users/c04467f143bf1c9f0dd51ac50b742b36/laumoral.jpg","laumoral@student.42madrid.com", "https://cdn.intra.42.fr/users/c04467f143bf1c9f0dd51ac50b742b36/laumoral.jpg");
-    // this.friends.push(a);
-
-    // const b = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    // this.friends.push(b);
+    this.http.get<any[]>(this.urlApi + 'users/me/friends')
+      .subscribe((friends: any[]) => {
+        for (let friend in friends) {
+          const { receiver } = friends[friend];
+          const { sender } = friends[friend];
+          const user = (receiver) ? receiver : sender;
+          if (user.defaultOffline)
+            this.friends.push(user);
+        }
+      })
   }
-
 }

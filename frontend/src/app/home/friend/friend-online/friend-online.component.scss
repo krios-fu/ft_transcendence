@@ -1,58 +1,66 @@
-
 @property --rotate {
 	syntax: "<angle>";
 	initial-value: 132deg;
 	inherits: false;
-  }
+}
 
+a {
+	color: white;
+	text-decoration: none;
+}
 
-
-
-
-  
 .avatar {
 	position: relative;
 	background: greenyellow;
-	//z-index: 1;
-	left: 5px;
 	border-radius: 50%;
 	width: 50px;
 	height: 50px;
 	overflow: hidden;
 	margin: 0;
-	padding:0;
+	padding: 0;
 	border: 4px solid rgba(255, 255, 255, 0.24);
-	// transform: scale(0.8);
 
 
-	// &:hover{
-		content: "";
-		// width: 104%;
-		// height: 102%;
-		// border-radius: 10px;
-		// border-;
-		background-image: linear-gradient(
-		  var(--rotate)
-		  , #5ddcff, #82e33c 43%, #6700c2);
-		//   position: absolute;
-		//   z-index: -1;
-		  top: -1%;
-		  left: -2%;
-		  animation: spin 2.5s linear infinite;
+	content: "";
+	background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
+	// top: -1%;
+	// left: -2%;
+	animation: spin 2.5s linear infinite;
 	//   }
-  
+
 	img {
-	  width: 100%;
-	  height: auto;
-  
+		width: 100%;
+		height: auto;
+
 	}
-	
-  }
-  @keyframes spin {
+
+}
+
+// div {
+// 	border: outset 2px silver;
+//   }
+
+@keyframes spin {
 	0% {
-	  --rotate: 0deg;
+		--rotate: 0deg;
 	}
+
 	100% {
-	  --rotate: 360deg;
+		--rotate: 360deg;
 	}
-  }
+
+
+}
+
+.effect {
+	animation: bounce-in 2s ease;
+	animation: fade-in 2s linear both;
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+}
