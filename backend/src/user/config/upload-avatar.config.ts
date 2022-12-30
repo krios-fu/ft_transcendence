@@ -1,9 +1,9 @@
 import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
 import { diskStorage } from "multer";
 import * as fs from "fs";
-import { IRequestUser } from "src/interfaces/request-payload.interface";
 import { extname } from "path";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { IRequestUser } from "src/common/interfaces/request-payload.interface";
 
 export const uploadAvatarSettings: MulterOptions = {
     storage: diskStorage({

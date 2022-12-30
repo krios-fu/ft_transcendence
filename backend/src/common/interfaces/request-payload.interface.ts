@@ -7,7 +7,8 @@ export interface IAuthPayload {
 
 export interface IJwtPayload {
     data: {
-        username: string
+        username: string,
+        validated: boolean
     },
     expiresIn: number,
     iat: number

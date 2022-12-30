@@ -30,7 +30,6 @@ import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { uploadAvatarSettings } from './config/upload-avatar.config';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
@@ -136,16 +135,10 @@ export class UserController {
     @Patch('me')
     public async updateMeUser(
         @Req() req: IRequestUser,
+        @UserCreds() username: string,
         @Body() dto: UpdateUserDto
     ): Promise<UserEntity> {
-
-        console.log('UPDATE USER', dto);
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
@@ -169,7 +162,7 @@ export class UserController {
             this.userLogger.error(`User with id ${user.id} not found in database`);
             throw new HttpException('no user in database', HttpStatus.BAD_REQUEST);
         }
-        return this.userService.updateSettings(user.id, settingsDto);
+        return this.userService.updateUser(user.id, settingsDto);
     }
 
     @Post('me/avatar')
@@ -373,7 +366,7 @@ export class UserController {
 
     //UseGuards(ItIsMe)
     @Patch(':user_id/friends/:friend_id/accept')
-    async acceptFriend(
+    public async acceptFriend(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -392,7 +385,7 @@ export class UserController {
 
     //UseGuards(ItIsMe)
     @Patch(':user_id/friends/:friend_id/refuse')
-    async refuseFriend(
+    public async refuseFriend(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -411,7 +404,7 @@ export class UserController {
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     @Get('me/blocked')
-    async getBlockedFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
+    public async getBlockedFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
         const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error(`User requesting service is not logged in`);

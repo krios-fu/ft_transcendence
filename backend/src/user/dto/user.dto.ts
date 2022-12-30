@@ -32,7 +32,7 @@ export class CreateUserDto {
     readonly email: string;
 
     @IsString()
-    @IsNotEmpty()
+    /*@IsNotEmpty(): Photo URL can be empty !*/
     readonly photoUrl: string;
 }
 
@@ -59,8 +59,6 @@ export class UpdateUserDto {
     @IsBoolean()
     @IsNotEmpty()
     deaultOffline?: boolean;
-
-    
 
     @IsOptional()
     @IsNumber()
@@ -89,14 +87,19 @@ export class SettingsPayloadDto {
     @IsNotEmpty()
     readonly acceptedTerms?: boolean;
 
-    @IsBoolean()
-    @IsNotEmpty()
-    readonly doubleAuth?: boolean;
-
     @IsString()
     @IsNotEmpty()
     @Length(3, 8)
     nickName?: string;
+}
 
+export class DoubleAuthPayload {
+    @IsBoolean()
+    @IsNotEmpty()
+    readonly doubleAuth: boolean;
+
+    @IsString()
+    @IsNotEmpty()
+    doubleAuthSecret: string;
 }
 
