@@ -1,5 +1,6 @@
 import { 
     CreateUserDto, 
+    DoubleAuthPayload, 
     SettingsPayloadDto, 
     UpdateUserDto, 
     UserGameStats 
@@ -57,31 +58,11 @@ export class UserService {
         return newEntity;
     }
 
-    /*
-    **  Do not need to query the database to check for existing nickname
-    **  because nickname column is set as unique at user.entity.
-    **
-    **  Determine if value checks of keys are necessary.
-    */
-
-    public async updateUser(id: number, dto: UpdateUserDto): Promise<UpdateResult> {
-        return await this.userRepository.update(id, dto);
-    }
-
-    /*
-    ** Update user entity in database's parameters only related to
-    ** game stats { ranking, category } 
-    **
-    ** This service must not be publicly accessible by route endpoint,
-    ** only for internal server logic.
-    */
-
-    public async updateUserStats(id: number, userInfo: UserGameStats): Promise<UpdateResult> {
+    public async updateUser(
+        id: number, 
+        userInfo: UpdateUserDto | UserGameStats | SettingsPayloadDto | DoubleAuthPayload
+    ): Promise<UpdateResult> {
         return await this.userRepository.update(id, userInfo);
-    }
-
-    public async updateSettings(userId: number, dto: SettingsPayloadDto): Promise<UpdateResult> {
-        return await this.userRepository.update(userId, dto);
     }
 
     /*
@@ -90,11 +71,8 @@ export class UserService {
     **  Determine which type of repository method is most appropriate,
     **  delete or remove.
     */
+    
 
-    //public async uploadAvatar(): Promise<UpdateResult> {
-//
-    //}
-//
     //public async removeAvatar(): Promise<UpdateResult> {
     //    /* remove file from filesystem */
     //}

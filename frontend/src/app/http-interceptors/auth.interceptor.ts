@@ -32,7 +32,7 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    console.error(JSON.stringify(err));
+                    console.error(JSON.stringify(err)); /* ??? */
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
                     } else {

@@ -9,6 +9,7 @@ import { FortyTwoStrategy } from './strategy/fortytwo.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
+import { TwoFactorStrategy } from './strategy/two-factor.strategy';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
     providers: [
         AuthService,
         JwtStrategy,
+        TwoFactorStrategy,
         FortyTwoStrategy,
         RefreshTokenRepository,
         Logger,

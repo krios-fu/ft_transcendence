@@ -14,7 +14,6 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    ParseFilePipe,
     ParseFilePipeBuilder,
 
 } from '@nestjs/common';
@@ -31,6 +30,9 @@ import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { uploadAvatarSettings } from './config/upload-avatar.config';
+import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
+import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 
 @Controller('users')
 export class UserController {
@@ -67,13 +69,7 @@ export class UserController {
     */
 
     @Get('me')
-    public async findMe(@Req() req: IRequestUser) {
-        const username = req.user.data.username;
-
-        if (username === undefined) {
-            this.userLogger.error('Cannot find username for client in request body');
-            throw new HttpException('user has no valid credentials', HttpStatus.BAD_REQUEST);
-        }
+    public async findMe(@UserCreds() username: string) {
         return await this.userService.findAllUsers({ "filter": { "username": [username] } });
     }
 
@@ -139,16 +135,10 @@ export class UserController {
     @Patch('me')
     public async updateMeUser(
         @Req() req: IRequestUser,
+        @UserCreds() username: string,
         @Body() dto: UpdateUserDto
     ): Promise<UserEntity> {
-
-        console.log('UPDATE USER', dto);
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
@@ -160,15 +150,10 @@ export class UserController {
     @Patch('me/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
-        @Req() req: IRequestUser,
+        @UserCreds() username: string,
 
     ): Promise<UpdateResult> {
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
@@ -177,38 +162,26 @@ export class UserController {
             this.userLogger.error(`User with id ${user.id} not found in database`);
             throw new HttpException('no user in database', HttpStatus.BAD_REQUEST);
         }
-        return this.userService.updateSettings(user.id, settingsDto);
+        return this.userService.updateUser(user.id, settingsDto);
     }
 
-
-    @Post('me/avatar/upload')
-    @UseInterceptors(
-        FileInterceptor(
-            'avatar',
-            { dest: './uploads/' },
-            //    fileFilter()
-        )
-    ) // <-- aqui los parseos de tamaño y seguridad
+    @Post('me/avatar')
+    @UseInterceptors(FileInterceptor(
+        'avatar', uploadAvatarSettings
+    ))
     public async uploadAvatar(
-        @UploadedFile(
-            new ParseFilePipeBuilder()
-                .addFileTypeValidator({ fileType: 'jpeg' })
-                .addFileTypeValidator({ fileType: 'jpg' })
-                .addFileTypeValidator({ fileType: 'png' })
-                .addMaxSizeValidator({ maxSize: 6000 })
-                .build({
-                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                })
-        ) avatar: Express.Multer.File
+        @Req() req: IRequestUser,
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
     ) {
+        const username: string = req.user.data.username;
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
 
-        /* check if there was a previous avatar
-        ** if true: remove
-        ** upload new avatar
-        **      upload: edit user entity with new path to image
-        **      -> path to image created by nest
-        */
-        console.log('test');
+        console.log(`Debugger: ${avatar.path}`);
+        return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
     }
 
     /*
@@ -228,7 +201,7 @@ export class UserController {
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
-    **           ( chat endpoints )            **
+    **               ( chat endpoints )              **
     **                                               **
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -393,7 +366,7 @@ export class UserController {
 
     //UseGuards(ItIsMe)
     @Patch(':user_id/friends/:friend_id/accept')
-    async acceptFriend(
+    public async acceptFriend(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -412,7 +385,7 @@ export class UserController {
 
     //UseGuards(ItIsMe)
     @Patch(':user_id/friends/:friend_id/refuse')
-    async refuseFriend(
+    public async refuseFriend(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -431,7 +404,7 @@ export class UserController {
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     @Get('me/blocked')
-    async getBlockedFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
+    public async getBlockedFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
         const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error(`User requesting service is not logged in`);

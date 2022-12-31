@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
@@ -45,7 +46,6 @@ export class UserEntity extends BaseEntity {
 	@Column({ 
 		type: 'varchar',
 		nullable: false,
-
  	})
   	firstName : string;
 	
@@ -82,12 +82,19 @@ export class UserEntity extends BaseEntity {
 	})
 	nickName : string;
 
-	// @Exclude()
 	@Column({
 		type: 'boolean',
 		default: false
 	})
 	doubleAuth : boolean;
+
+	@Exclude()
+	@Column({ 
+		type: 'varchar', 
+		nullable: true, 
+		default: null 
+	})
+	doubleAuthSecret: string;
 
 	@Column({
 		type: 'boolean',
@@ -117,6 +124,4 @@ export class UserEntity extends BaseEntity {
 
 	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
 	chats : ChatEntity[];
-	// @OneToMany(() => MembershipEntity, (membership) => membership.user, )
-	// membership : MembershipEntity[];
 }
