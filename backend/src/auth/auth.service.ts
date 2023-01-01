@@ -67,14 +67,14 @@ export class AuthService {
         if (tokenEntity === null) {
             const newToken = new RefreshTokenEntity({
                 authUser: user,
-                expiresIn: new Date(Date.now() + (3600 * 24 * 7))
+                expiresIn: new Date(Date.now() + (1000 * 3600 * 24 * 7))
             });
 
             tokenEntity = await this.refreshTokenRepository.save(newToken);
         }
         res.cookie('refresh_token', tokenEntity.token, {
             httpOnly: true,
-            maxAge: 3600 * 24 * 7,
+            maxAge: 1000 * 3600 * 24 * 7,
             sameSite: 'none',
             secure: true,
         });
@@ -84,15 +84,30 @@ export class AuthService {
         };
     }
 
+    public async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
+        let tokenEntity: RefreshTokenEntity;
+        let userEntity: UserEntity;
+
+        userEntity = await this.userService.findOneByUsername(username);
+        if (userEntity === null) {
+            throw TokenError.NO_TOKEN_OR_USER;
+        }
+        tokenEntity = await this.refreshTokenRepository.findOne({
+            relations: { authUser: true },
+            where: {
+                authUser: { username: userEntity.username }
+            }
+        });
+        if (tokenEntity === null) {
+            throw TokenError.NO_TOKEN_OR_USER;
+        }
+        return tokenEntity;
+    }
+
     public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
         let tokenEntity: RefreshTokenEntity;
-
-        try {  
-            tokenEntity = await this.getTokenByUsername(username);
-        } catch (err) {
-            console.error(`Caught exception in refreshToken: ${err}`);
-            throw err;
-        }
+  
+        tokenEntity = await this.getTokenByUsername(username);
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
@@ -116,26 +131,6 @@ export class AuthService {
         }
         await this.refreshTokenRepository.delete(tokenEntity);
         res.clearCookie('refresh_token');
-    }
-
-    public async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
-        let tokenEntity: RefreshTokenEntity;
-        let userEntity: UserEntity;
-
-        userEntity = await this.userService.findOneByUsername(username);
-        if (userEntity === null) {
-            throw TokenError.NO_TOKEN_OR_USER;
-        }
-        tokenEntity = await this.refreshTokenRepository.findOne({
-            relations: { authUser: true },
-            where: {
-                authUser: { username: userEntity.username }
-            }
-        });
-        if (tokenEntity === null) {
-            throw TokenError.NO_TOKEN_OR_USER;
-        }
-        return tokenEntity;
     }
 
     public async generateNew2FASecret(username: string, id: number): Promise<string> {

@@ -46,7 +46,6 @@ export class AuthService {
     }
 
     redirectHome(): void {
-        // this.router.navigate(['/home/profile']);
         this.router.navigate(['/home/profile']);
     }
 
@@ -57,9 +56,9 @@ export class AuthService {
 
     /* Solo permite ejecución a usuarios logeados */
     logout(): void {
-        this.cookies.delete('request_token');
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('username');
+        this.cookies.delete('request_token', '/', 'http://localhost:3000', true, 'None');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('username');
         this.router.navigateByUrl('/login');
 
     }
@@ -72,15 +71,15 @@ export class AuthService {
     }
 
     setAuthInfo(authPayload: IAuthPayload) {
-        sessionStorage.setItem('access_token', authPayload.accessToken);
-        sessionStorage.setItem('username', authPayload.username);
+        localStorage.setItem('access_token', authPayload.accessToken);
+        localStorage.setItem('username', authPayload.username);
     }
 
     getAuthToken(): string | null {
-        return sessionStorage.getItem('access_token');
+        return localStorage.getItem('access_token');
     }
 
     getAuthUser(): string | null {
-        return sessionStorage.getItem('username');
+        return localStorage.getItem('username');
     }
 }

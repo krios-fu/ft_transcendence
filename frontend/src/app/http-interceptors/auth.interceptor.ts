@@ -27,12 +27,10 @@ export class AuthInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
         const reqAuth = this.setAuthHeaders(req);
-
         return next.handle(reqAuth)
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    console.error(JSON.stringify(err)); /* ??? */
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
                     } else {
@@ -46,7 +44,7 @@ export class AuthInterceptor implements HttpInterceptor {
                             return err;
                         });
                     }
-                }),
+                })
             );
     }
 
@@ -66,8 +64,8 @@ export class AuthInterceptor implements HttpInterceptor {
                     })
                 )
         }
-        this.isRequestingNewCreds = true;
         this.newCredsSubject.next(true);
+        this.isRequestingNewCreds = true;
         return this.authService.refreshToken()
             .pipe
             (
@@ -88,9 +86,8 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401) {
-                        console.log('ERROR 401')
-                        window.sessionStorage.removeItem('access_token');;
-                        window.sessionStorage.removeItem('username');
+                        window.localStorage.removeItem('access_token');;
+                        window.localStorage.removeItem('username');
                         this.authService.redirectLogin();
                     }
                     return throwError(() => err);
