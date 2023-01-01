@@ -56,7 +56,7 @@ export class AuthService {
 
     /* Solo permite ejecución a usuarios logeados */
     logout(): void {
-        this.cookies.delete('request_token', '/', 'http://localhost:3000', true, 'None');
+        this.cookies.delete('refresh_token', '/', 'localhost', true, 'None');
         localStorage.removeItem('access_token');
         localStorage.removeItem('username');
         this.router.navigateByUrl('/login');
