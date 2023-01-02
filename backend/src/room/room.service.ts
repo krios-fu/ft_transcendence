@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
-import { CreateRoomDto } from "./dto/room.dto";
+import { CreateRoomDto, UpdateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { UpdateResult } from "typeorm";
@@ -33,10 +33,8 @@ export class RoomService {
         return (await room).owner;
     }
 
-    public async updateRoomOwner(roomId: number, newOwnerId: number): Promise<UpdateResult> {
-        return await this.roomRepository.update(roomId, {
-            ownerId: newOwnerId,
-        });
+    public async updateRoom(roomId: number, dto: UpdateRoomDto): Promise<UpdateResult> {
+        return await this.roomRepository.update(roomId, dto);
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {

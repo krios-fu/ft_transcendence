@@ -2,6 +2,7 @@ import { Exclude } from "class-transformer";
 import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
+import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 import {
 	Column,
 	Entity,
@@ -64,6 +65,7 @@ export class UserEntity extends BaseEntity {
 	@Column({ 
 		type: 'varchar',
 		nullable: false,
+		default: DEFAULT_AVATAR_PATH
  	})
   	photoUrl : string;
 	

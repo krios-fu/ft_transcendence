@@ -16,9 +16,14 @@ import { Body,
     Post, 
     Put, 
     Query,
-    UseGuards
+    UploadedFile,
+    UseGuards,
+    UseInterceptors
 } from "@nestjs/common";
 import { RoomQueryDto } from "./dto/room.query.dto";
+import { uploadRoomAvatarSettings } from "src/common/config/upload-avatar.config";
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
 
 @Controller('room')
 export class RoomController {
@@ -30,13 +35,11 @@ export class RoomController {
     }
     private readonly roomLogger: Logger;
 
-    /* Get all created rooms */
     @Get()
     public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[]> {
         return await this.roomService.findAllRooms(queryParams);
     }
 
-    /* Get a room by name */
     @Get(':room_id')
     public async findOne(@Param('room_id', ParseIntPipe) roomId: number): Promise<RoomEntity> {
         const room = await this.roomService.findOne(roomId);
@@ -47,13 +50,11 @@ export class RoomController {
         return room;
     }
 
-    /* Get owner of a room */
     @Get(':room_id/owner')
     public async findOneOwner(@Param('room_id', ParseIntPipe) roomId: number): Promise<UserEntity> {
         return await this.roomService.findRoomOwner(roomId)
     }
 
-    /* Give a room a new owner */
     @Put(':room_id/owner/:owner_id')
     public async updateRoomOwner(
         @Param('room_id', ParseIntPipe)  roomId: number,
@@ -65,10 +66,9 @@ export class RoomController {
         if (await this.userService.findOne(newOwnerId) === null) {
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }
-        return await this.roomService.updateRoomOwner(roomId, newOwnerId);
+        return await this.roomService.updateRoom(roomId, { ownerId: newOwnerId });
     }
 
-    /* Create a new room */
     @Post()
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
@@ -87,5 +87,28 @@ export class RoomController {
     @Delete(':room_id')
     public async removeRoom(@Param('room_id', ParseIntPipe) id: number): Promise<void> {
         return await this.roomService.removeRoom(id);
+        /* need to remove avatar too */
+    }
+
+    /* upload a room avatar */
+    @Post(':room_id/avatar')
+    @UseInterceptors(FileInterceptor(
+        'avatar', uploadRoomAvatarSettings
+    ))
+    public async uploadRoomAvatar
+        (
+            @Param('room_id', ParseIntPipe) roomId: number,
+            @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
+        ): Promise<UpdateResult> {
+        console.log(`[uploadRoomAvatar] debug: ${avatar.path}`);
+        /* check if room exists needed, not sure if here or in interceptor */
+        return this.roomService.updateRoom(roomId, { photoUrl: avatar.path })
+    }
+
+    /* remove a room avatar */
+    @Delete(':room_id/avatar')
+    public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) roomId: number): Promise<UpdateResult> {
+        /* same as above */
+        return this.roomService.updateRoom(roomId, { photoUrl: null })
     }
 }

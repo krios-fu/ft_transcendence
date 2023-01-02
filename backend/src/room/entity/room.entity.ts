@@ -20,7 +20,7 @@ export class RoomEntity extends BaseEntity {
         }
     }
     @PrimaryGeneratedColumn('increment')
-    id!: number;
+    readonly id!: number;
 
     @Column({
         type: 'varchar',
@@ -35,6 +35,15 @@ export class RoomEntity extends BaseEntity {
         name: 'owner_id'
     })
     ownerId!: number;
+
+    @Column({
+        type: 'varchar',
+        //length: 
+        nullable: true,
+        unique: true,
+        default: null
+    })
+    photoUrl: string;
 
     @ManyToOne(
         () => UserEntity, 
