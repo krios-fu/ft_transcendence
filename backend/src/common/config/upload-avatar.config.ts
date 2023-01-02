@@ -64,5 +64,7 @@ export const uploadRoomAvatarSettings: MulterOptions = {
             }
             cb(null, `room-${roomId}.${extname(file.filename)}`) /* !!! */
         }
-    })
+    }),
+    limits: { fileSize: 6000000 },
+    fileFilter: filterFileByType
 }
