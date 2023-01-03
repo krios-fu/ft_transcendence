@@ -76,10 +76,7 @@ export class UserService {
     */
 
     public async deleteAvatar(id: number, filePath: string): Promise<UpdateResult> {
-        /* remove file from filesystem */
-
-        /* primero chequiar si el avatar existe en local */
-        if (filePath == DEFAULT_AVATAR_PATH) {
+        if (filePath === DEFAULT_AVATAR_PATH) {
             throw new NotFoundException('user has no avatar uploaded');
         }
         try {
@@ -92,7 +89,14 @@ export class UserService {
         return await this.userRepository.update(id, { photoUrl: DEFAULT_AVATAR_PATH });
     }
 
-    public async deleteUser(id: number): Promise<void> {
+    public async deleteUser(user: UserEntity): Promise<void> {
+        const { id, photoUrl } = user;
+        if (photoUrl !== DEFAULT_AVATAR_PATH) {
+            try {
+                fs.accessSync(photoUrl, fs.constants.W_OK);
+                fs.unlinkSync(photoUrl);
+            } catch (err) { }
+        }
         await this.userRepository.softDelete(id);
     }
 

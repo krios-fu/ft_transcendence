@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
@@ -81,7 +81,7 @@ export class UserRoomService {
             where: { id: id },
         });
         if (roomRole === null) {
-            return ;
+            throw new NotFoundException('resource not found');
         }
         await this.userRoomRepository.delete(id);
         if (await this.roomRolesService.isRole('official', roomRole.roomId) === true) {
@@ -89,8 +89,9 @@ export class UserRoomService {
         }
         const isEmpty = await this.getAllUsersInRoom(roomRole.roomId);
         if (isEmpty.length === 0) {
-        await this.roomService.removeRoom(roomRole.roomId);
+            await this.roomService.removeRoom(roomRole.room);
         }
+        /* new owner logic goes here */
     }
 
     public async findUserRoomIds(userId: number, roomId: number): Promise<UserRoomEntity> {

@@ -4,13 +4,14 @@ import { UserEntity } from "src/user/entities/user.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { UserService } from "src/user/services/user.service";
 import { UpdateResult } from "typeorm";
-import { Body, 
+import { BadRequestException, Body, 
     Controller, 
     Delete, 
     Get, 
     HttpException, 
     HttpStatus, 
     Logger, 
+    NotFoundException, 
     Param, 
     ParseIntPipe, 
     Post, 
@@ -41,32 +42,32 @@ export class RoomController {
     }
 
     @Get(':room_id')
-    public async findOne(@Param('room_id', ParseIntPipe) roomId: number): Promise<RoomEntity> {
-        const room = await this.roomService.findOne(roomId);
+    public async findOne(@Param('room_id', ParseIntPipe) id: number): Promise<RoomEntity> {
+        const room = await this.roomService.findOne(id);
         if (room === null) {
-            this.roomLogger.error('Room with id ' + roomId + ' not found in database');
+            this.roomLogger.error('Room with id ' + id + ' not found in database');
             throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
         }
         return room;
     }
 
     @Get(':room_id/owner')
-    public async findOneOwner(@Param('room_id', ParseIntPipe) roomId: number): Promise<UserEntity> {
-        return await this.roomService.findRoomOwner(roomId)
+    public async findOneOwner(@Param('room_id', ParseIntPipe) id: number): Promise<UserEntity> {
+        return await this.roomService.findRoomOwner(id)
     }
 
     @Put(':room_id/owner/:owner_id')
     public async updateRoomOwner(
-        @Param('room_id', ParseIntPipe)  roomId: number,
+        @Param('room_id', ParseIntPipe)  id: number,
         @Param('owner_id', ParseIntPipe) newOwnerId: number
     ): Promise<UpdateResult> {
-        if (await this.roomService.findOne(roomId) === null) {
+        if (await this.roomService.findOne(id) === null) {
             throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }
         if (await this.userService.findOne(newOwnerId) === null) {
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }
-        return await this.roomService.updateRoom(roomId, { ownerId: newOwnerId });
+        return await this.roomService.updateRoom(id, { ownerId: newOwnerId });
     }
 
     @Post()
@@ -82,33 +83,47 @@ export class RoomController {
         return await this.roomService.createRoom(dto);
     }
 
-    /* Destroy a room */
     /* required room owner || web admin */
     @Delete(':room_id')
     public async removeRoom(@Param('room_id', ParseIntPipe) id: number): Promise<void> {
-        return await this.roomService.removeRoom(id);
+        const room = await this.roomService.findOne(id);
+        if (room === null) {
+            this.roomLogger.error(`No room with id ${id} present in database`);
+            throw new NotFoundException('no resource to delete');
+        }
+        return await this.roomService.removeRoom(room);
         /* need to remove avatar too */
     }
 
-    /* upload a room avatar */
     @Post(':room_id/avatar')
     @UseInterceptors(FileInterceptor(
         'avatar', uploadRoomAvatarSettings
     ))
     public async uploadRoomAvatar
         (
-            @Param('room_id', ParseIntPipe) roomId: number,
+            @Param('room_id', ParseIntPipe) id: number,
             @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
         ): Promise<UpdateResult> {
         console.log(`[uploadRoomAvatar] debug: ${avatar.path}`);
         /* check if room exists needed, not sure if here or in interceptor */
-        return this.roomService.updateRoom(roomId, { photoUrl: avatar.path })
+        return this.roomService.updateRoom(id, { photoUrl: avatar.path })
     }
 
-    /* remove a room avatar */
     @Delete(':room_id/avatar')
-    public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) roomId: number): Promise<UpdateResult> {
+    public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) id: number): Promise<UpdateResult> {
         /* same as above */
-        return this.roomService.updateRoom(roomId, { photoUrl: null })
+        const room = await this.roomService.findOne(id);
+
+        if (room === null) {
+            this.roomLogger.error(`No room present with id ${id}`);
+            throw new BadRequestException('no room in db');
+        }
+        const { photoUrl } = room;
+
+        if (photoUrl === null) {
+            this.roomLogger.error(`Room with id ${id} has no avatar to remove`);
+            throw new NotFoundException('no resource to delete');
+        }
+        return this.roomService.removeRoomAvatar(id, photoUrl);
     }
 }

@@ -27,7 +27,7 @@ import { MulterModule } from '@nestjs/platform-express';
         AuthModule,
         ChatModule,
         MulterModule.register({
-            dest: './uploads',
+            dest: './public',
         }),
         TypeOrmModule.forRoot({
             type: 'postgres',

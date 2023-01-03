@@ -14,7 +14,8 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    ParseFilePipeBuilder,
+    UseGuards,
+    NotFoundException,
 
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
@@ -134,9 +135,8 @@ export class UserController {
 
     @Patch('me')
     public async updateMeUser(
-        @Req() req: IRequestUser,
-        @UserCreds() username: string,
-        @Body() dto: UpdateUserDto
+        @Body() dto: UpdateUserDto,
+        @UserCreds() username: string
     ): Promise<UserEntity> {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
@@ -150,8 +150,7 @@ export class UserController {
     @Patch('me/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
-        @UserCreds() username: string,
-
+        @UserCreds() username: string
     ): Promise<UpdateResult> {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
@@ -175,17 +174,18 @@ export class UserController {
         'avatar', uploadUserAvatarSettings
     ))
     public async uploadMyAvatar(
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File,
         @UserCreds() username: string,
-        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
+        @Req() req: Request
     ) {
         const user: UserEntity = await this.userService.findOneByUsername(username);
-
+        console.log(`roquost: ${JSON.stringify(req.body)}, ${JSON.stringify(req.headers)}`)
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
 
-        console.log(`Debugger: ${avatar.path}`);
+        console.log(`[uploadMyAvatar] Debugger: ${avatar.path}`);
         return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
     }
 
@@ -208,8 +208,6 @@ export class UserController {
             this.userLogger.error(`User with id ${userId} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-
-        console.log(`Debugger: ${avatar.path}`);
         return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
     }
 
@@ -248,8 +246,14 @@ export class UserController {
 
     /* it is me! (or admin) */
     @Delete(':id')
+    //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.userService.deleteUser(id);
+        const user = await this.userService.findOne(id);
+        if (user === null) {
+            this.userLogger.error(`User with id ${id} not found in database`);
+            throw new NotFoundException('resource not found');
+        }
+        return this.userService.deleteUser(user);
     }
 
 

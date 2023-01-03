@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto, UpdateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -7,6 +7,7 @@ import { UpdateResult } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
 import { QueryMapper } from "src/common/mappers/query.mapper";
 import { UserEntity } from "src/user/entities/user.entity";
+import * as fs from 'fs';
 
 @Injectable()
 export class RoomService {
@@ -41,14 +42,23 @@ export class RoomService {
         return await this.roomRepository.save(new RoomEntity(dto));
     }
 
-    public async removeRoom(roomId: number): Promise<void> {
-        await this.roomRepository.softDelete(roomId);
+    public async removeRoom(room: RoomEntity): Promise<void> {
+        const { id, photoUrl } = room;
+        if (photoUrl !== null) {
+            fs.unlinkSync(photoUrl);
+        }
+        await this.roomRepository.softDelete(id);
     }
 
     public async findOneRoomByName(name: string): Promise<RoomEntity> {
         return await this.roomRepository.findOne({
             where: { roomName: name }
         });
+    }
+
+    public async removeRoomAvatar(roomId: number, photoUrl: string): Promise<UpdateResult> {
+        fs.unlinkSync(photoUrl);
+        return await this.updateRoom(roomId, { photoUrl: photoUrl });
     }
 
     ///**************** room auth services *****************/
