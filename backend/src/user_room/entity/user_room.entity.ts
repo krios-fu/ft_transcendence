@@ -29,6 +29,7 @@ export class UserRoomEntity extends BaseEntity {
         {
             cascade: true,
             eager: true,
+            onDelete: 'CASCADE'
         }
     )
     @JoinColumn({ name: 'user_id' })
@@ -46,6 +47,7 @@ export class UserRoomEntity extends BaseEntity {
         {
             cascade: true,
             eager: true,
+            onDelete: 'CASCADE'
         }
     )
     @JoinColumn({ name: 'room_id' })

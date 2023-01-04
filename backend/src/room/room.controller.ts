@@ -25,6 +25,7 @@ import { RoomQueryDto } from "./dto/room.query.dto";
 import { uploadRoomAvatarSettings } from "src/common/config/upload-avatar.config";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
+import * as fs from 'fs';
 
 @Controller('room')
 export class RoomController {
@@ -92,28 +93,28 @@ export class RoomController {
             throw new NotFoundException('no resource to delete');
         }
         return await this.roomService.removeRoom(room);
-        /* need to remove avatar too */
     }
 
     /* must be owner */
     @Post(':room_id/avatar')
-    @UseInterceptors(FileInterceptor(
-        'avatar', uploadRoomAvatarSettings
-    ))
+    @UseInterceptors(
+        FileInterceptor('avatar', uploadRoomAvatarSettings)
+    )
     public async uploadRoomAvatar
         (
             @Param('room_id', ParseIntPipe) id: number,
             @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
         ): Promise<UpdateResult> {
-        console.log(`[uploadRoomAvatar] debug: ${avatar.path}`);
-        /* check if room exists needed, not sure if here or in interceptor */
+        if (await this.roomService.findOne(id) === null) {
+            fs.unlinkSync(avatar.path);
+            throw new BadRequestException('no room in db');
+        }
         return this.roomService.updateRoom(id, { photoUrl: avatar.path })
     }
 
     /* must be owner */
     @Delete(':room_id/avatar')
     public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) id: number): Promise<UpdateResult> {
-        /* same as above */
         const room = await this.roomService.findOne(id);
 
         if (room === null) {

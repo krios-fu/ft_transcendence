@@ -47,7 +47,7 @@ export class RoomService {
         if (photoUrl !== null) {
             fs.unlinkSync(photoUrl);
         }
-        await this.roomRepository.softDelete(id);
+        await this.roomRepository.delete(id);
     }
 
     public async findOneRoomByName(name: string): Promise<RoomEntity> {

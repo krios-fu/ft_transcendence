@@ -1,17 +1,17 @@
-import sys, requests, argparse, os, mimetypes
+import sys, requests, argparse, os, mimetypes, json
 from dotenv import load_dotenv
+from pygments import highlight, lexers, formatters
 
 token_url = 'http://localhost:3000/auth/generate'
 avatar_url = 'http://localhost:3000/users/me/avatar'
 
-room_url = 'http://localhost:3000/room/1/avatar'
-
 avatar_path = './default-avatar.jpeg'
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser(prog='img-test')
     parser.add_argument('USER')
+    parser.add_argument('OPTION',
+        choices={'post', 'postr', 'del', 'delr', 'delroom', 'deluser'})
     return parser.parse_args()
 
 
@@ -34,37 +34,79 @@ def get_auth_headers(user: str):
     r = requests.post(token_url, json=token_creds, timeout=0.2)
     return r.json()['accessToken']
 
-def post_avatar(access_token: str):
+def post_avatar(auth_header: str):
     content = mimetypes.guess_type(avatar_path)
     files = { 'avatar': ('avatar.jpeg', open(avatar_path, 'rb'), content[0], {'Expires': 0}) }
-    headers = { 'Authorization': f'Bearer {access_token}' }
-    r = requests.post(avatar_url, files=files, headers=headers)
-    print(f'response: {r.json()}')
+    return requests.post(avatar_url, files=files, headers=auth_header)
 
-def del_avatar(access_token: str):
-    headers = { 'Authorization': f'Bearer {access_token}' }
-    r = requests.delete(avatar_url, headers=headers)
-    print(f'response: {r.json()}')
+def post_avatar_room(auth_header: str):
+    id = input('input room id...')
+    content = mimetypes.guess_type(avatar_path)
+    files = { 'avatar': ('avatar.jpeg', open(avatar_path, 'rb'), content[0], {'Expires': 0}) }
+    return requests.post(f'http://localhost:3000/room/{id}/avatar',
+        files=files, headers=auth_header)
 
-def get_me(access_token: str):
-    r = requests.get(
-        'http://localhost:3000/users/me',
-        headers={ 'Authorization': f'Bearer {access_token}' }
-    )
-    print(f'json: {r.json()}')
-    return r.json()['id']
+def del_avatar(auth_header: str):
+    return requests.delete(avatar_url, headers=auth_header)
+
+def del_avatar_room(auth_header: str):
+    id = input('input room id...')
+    return requests.delete(f'http://localhost:3000/room/{id}/avatar',
+        headers=auth_header)
+
+def del_room(auth_header: str):
+    id = input('input room id...')
+    return requests.delete(f'http://localhost:3000/room/{id}',
+        headers=auth_header)
+
+def del_user(auth_header: str):
+    id = get_me(auth_header)
+    return requests.delete(f'http://localhost:3000/users/{id}',
+        headers=auth_header)
+
+def get_me(auth_header: str):
+    res = requests.get('http://localhost:3000/users/me',
+        headers=auth_header)
+    #print(f'json: {r.json()}')
+    print(highlight(
+        json.dumps(res.json(), indent=2),
+        lexers.JsonLexer(),
+        formatters.TerminalFormatter()))
+    body = res.json()[0]
+    return body['id']
+
+test_opts = {
+    'post': post_avatar,
+    'postr': post_avatar_room,
+    'del': del_avatar,
+    'delr': del_avatar_room,
+    'delroom': del_room,
+    'deluser': del_user
+}
 
 def main():
     args = parse_arguments()
-    access_token = get_auth_headers(args.USER)
+    try:
+        access_token = get_auth_headers(args.USER)
+        auth_header = { 'Authorization': f'Bearer {access_token}' }
+        res = test_opts[args.OPTION](auth_header)
 
-    print(f'access_token: {access_token}')
-    post_avatar(access_token)
-    id = get_me(access_token)
-    r = requests.delete(f'http://localhost:3000/users/{id}',
-        headers={'Authorization': f'Bearer {access_token}'}
-    )
-    print(f'response: {r.json()}')
+        if res.content:
+            print(highlight(
+                json.dumps(res.json(), indent=2),
+                lexers.JsonLexer(),
+                formatters.TerminalFormatter()))
+        print('[ x ] Request successfully done!')
+    except Exception as e:
+        print(f'ded: {e}', file=sys.stderr)
+        raise e
+
+    #post_avatar(access_token)
+    #id = get_me(access_token)
+    #r = requests.delete(f'http://localhost:3000/users/{id}',
+    #    headers={'Authorization': f'Bearer {access_token}'}
+    #)
+    #print(f'response: {r.json()}')
     #del_avatar(access_token)
     #get_me(access_token)
 

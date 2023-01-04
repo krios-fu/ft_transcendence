@@ -1,4 +1,5 @@
 import { Exclude } from "class-transformer";
+import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
 import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
@@ -8,6 +9,7 @@ import {
 	Entity,
 	ManyToMany,
 	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
@@ -126,4 +128,12 @@ export class UserEntity extends BaseEntity {
 
 	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
 	chats : ChatEntity[];
+
+	@OneToOne
+	(
+		() => RefreshTokenEntity,
+		(tokenEntity) => tokenEntity.authUser,
+		{ cascade: true }
+	)
+	token: RefreshTokenEntity
 }

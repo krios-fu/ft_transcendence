@@ -26,15 +26,17 @@ export const uploadUserAvatarSettings: MulterOptions = {
             const dir = './public/users/';
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
+            } else {
+                cb(null, dir);
             }
-            cb(null, dir);
         },
         filename: (req: IRequestUser, file: Express.Multer.File, cb): void => {
             const username = req.user?.data?.username;
             if (username === undefined || file.originalname === undefined) {
                 cb(new BadRequestException('no user in request'), null);
+            } else {
+                cb(null, `${username}${extname(file.originalname)}`);
             }
-            cb(null, `${username}${extname(file.originalname)}`);
         },
     }),
     limits: { fileSize: 6000000 },
@@ -52,10 +54,11 @@ export const uploadRoomAvatarSettings: MulterOptions = {
         },
         filename: (req: IRequestUser, file: Express.Multer.File, cb): void => {
             const roomId = req.params['room_id'];
-            if (roomId === undefined) {
-                cb(new BadRequestException('no room id provided'), null);
+            if (roomId === undefined || isNaN(Number(roomId))) {
+                cb(new BadRequestException('no valid room id provided'), null);
+            } else {
+                cb(null, `room-${roomId}${extname(file.originalname)}`)
             }
-            cb(null, `room-${roomId}${extname(file.originalname)}`)
         }
     }),
     limits: { fileSize: 6000000 },

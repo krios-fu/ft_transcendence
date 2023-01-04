@@ -1,3 +1,4 @@
+import { BaseEntity } from "src/common/classes/base.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -7,15 +8,15 @@ export interface RefreshTokenOptions {
 }
 
 @Entity({ name: 'refresh_token' })
-export class RefreshTokenEntity {
+export class RefreshTokenEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     token: string;
 
-    @OneToOne(
-        () => UserEntity, 
-        {
-            cascade: true,
-        }
+    @OneToOne
+    (
+        () => UserEntity,
+        (user) => user.token,
+		{ onDelete: 'CASCADE' }
     )
     @JoinColumn({ name: 'token_user' })
     authUser: UserEntity;
@@ -26,6 +27,7 @@ export class RefreshTokenEntity {
     expiresIn: Date;
 
     constructor(refreshToken?: RefreshTokenOptions) {
+        super();
         if (refreshToken != undefined) {
             this.authUser = refreshToken.authUser;
             this.expiresIn = refreshToken.expiresIn;

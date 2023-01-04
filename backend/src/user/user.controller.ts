@@ -16,6 +16,7 @@ import {
     UseInterceptors,
     UseGuards,
     NotFoundException,
+    HttpCode,
 
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
@@ -217,7 +218,8 @@ export class UserController {
     **/
 
     @Delete('me/avatar')
-    public async deleteMyAvatar(@UserCreds() username: string) {
+    @HttpCode(204)
+    public async deleteMyAvatar(@UserCreds() username: string): Promise<void> {
         const user: UserEntity = await this.userService.findOneByUsername(username);
 
         if (user === null) {
@@ -229,8 +231,9 @@ export class UserController {
     }
 
     @Delete(':id/avatar')
+    @HttpCode(204)
     //@UseGuards(IdentityGuard)
-    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<UpdateResult> {
+    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
         const user: UserEntity = await this.userService.findOne(userId);
 
         if (user === null) {
@@ -244,6 +247,7 @@ export class UserController {
 
     /* it is me! (or admin) */
     @Delete(':id')
+    @HttpCode(204)
     //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const user = await this.userService.findOne(id);
