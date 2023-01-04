@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 token_url = 'http://localhost:3000/auth/generate'
 avatar_url = 'http://localhost:3000/users/me/avatar'
 
+room_url = 'http://localhost:3000/room/1/avatar'
+
 avatar_path = './default-avatar.jpeg'
 
 
@@ -14,7 +16,6 @@ def parse_arguments():
 
 
 def get_auth_headers(user: str):
-    # get env variables
     load_dotenv()
     api_id = os.getenv('FORTYTWO_APP_ID')
     secret_id = os.getenv('FORTYTWO_APP_SECRET')
@@ -31,46 +32,44 @@ def get_auth_headers(user: str):
         'app_secret': secret_id
     }
     r = requests.post(token_url, json=token_creds, timeout=0.2)
-
-    # can we generate a token for an already existing user??
     return r.json()['accessToken']
 
 def post_avatar(access_token: str):
-    """ with open(avatar_path, 'rb+') as f:
-        img = f.read()
-     """
     content = mimetypes.guess_type(avatar_path)
-    print(content[0])
     files = { 'avatar': ('avatar.jpeg', open(avatar_path, 'rb'), content[0], {'Expires': 0}) }
-    print(f'files: {files}')
     headers = { 'Authorization': f'Bearer {access_token}' }
     r = requests.post(avatar_url, files=files, headers=headers)
     print(f'response: {r.json()}')
 
-# def del_avatar():
-#
-#
-#
+def del_avatar(access_token: str):
+    headers = { 'Authorization': f'Bearer {access_token}' }
+    r = requests.delete(avatar_url, headers=headers)
+    print(f'response: {r.json()}')
+
+def get_me(access_token: str):
+    r = requests.get(
+        'http://localhost:3000/users/me',
+        headers={ 'Authorization': f'Bearer {access_token}' }
+    )
+    print(f'json: {r.json()}')
+    return r.json()['id']
 
 def main():
     args = parse_arguments()
     access_token = get_auth_headers(args.USER)
 
     print(f'access_token: {access_token}')
-#    r = requests.post()
     post_avatar(access_token)
+    id = get_me(access_token)
+    r = requests.delete(f'http://localhost:3000/users/{id}',
+        headers={'Authorization': f'Bearer {access_token}'}
+    )
+    print(f'response: {r.json()}')
+    #del_avatar(access_token)
+    #get_me(access_token)
 
 if __name__ == '__main__':
     sys.exit(main())
 
-
-
-# create user and post credentials
-#   post valid avatar
-#   post valid avatar in wrong body format
-#   post without avatar
-#   post invalid file
-#   post invalid file with .jpg ext
-
-#   remove avatar
-#   remove avatar with no avatar
+# TODO:
+# OPTIONS: post_avatar, post_avatar_room, remove_avatar, remove_avatar_room, remove_room, remove_user

@@ -75,7 +75,7 @@ export class UserService {
     **  delete or remove.
     */
 
-    public async deleteAvatar(id: number, filePath: string): Promise<UpdateResult> {
+    public async deleteAvatar(id: number, filePath: string): Promise<UpdateResult> { /* needs cleanup */
         if (filePath === DEFAULT_AVATAR_PATH) {
             throw new NotFoundException('user has no avatar uploaded');
         }

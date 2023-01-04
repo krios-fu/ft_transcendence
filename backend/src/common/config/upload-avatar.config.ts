@@ -2,10 +2,10 @@ import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer
 import { diskStorage } from "multer";
 import * as fs from "fs";
 import { extname } from "path";
-import { BadRequestException, HttpException, HttpStatus, UnprocessableEntityException } from "@nestjs/common";
+import { BadRequestException, UnprocessableEntityException } from "@nestjs/common";
 import { IRequestUser } from "src/common/interfaces/request-payload.interface";
 
-export const DEFAULT_AVATAR_PATH = './uploads/users/default.jpg';
+export const DEFAULT_AVATAR_PATH = 'public/default-avatar.jpg';
 
 function filterFileByType
     (
@@ -25,15 +25,14 @@ export const uploadUserAvatarSettings: MulterOptions = {
         destination: (req, file, cb) => {
             const dir = './public/users/';
             if (!fs.existsSync(dir)) {
-                const val = fs.mkdirSync(dir, { recursive: true });
-                console.log(`Testing mkdir ret: ${val}`);
+                fs.mkdirSync(dir, { recursive: true });
             }
             cb(null, dir);
         },
-        filename: (req: IRequestUser, file: Express.Multer.File, cb) => {
+        filename: (req: IRequestUser, file: Express.Multer.File, cb): void => {
             const username = req.user?.data?.username;
             if (username === undefined || file.originalname === undefined) {
-                cb(new BadRequestException(), null);
+                cb(new BadRequestException('no user in request'), null);
             }
             cb(null, `${username}${extname(file.originalname)}`);
         },
@@ -47,22 +46,16 @@ export const uploadRoomAvatarSettings: MulterOptions = {
         destination: (req, file, cb) => {
             const dir = './public/room/';
             if (!fs.existsSync(dir)) {
-                const val = fs.mkdirSync(dir, { recursive: true });
-                console.log(`Testing mkdir ret: ${val}`);
+                fs.mkdirSync(dir, { recursive: true });
             }
             cb(null, dir);
         },
-        filename: 
-            (
-                req: IRequestUser,
-                file: Express.Multer.File,
-                cb
-            ): void => {
+        filename: (req: IRequestUser, file: Express.Multer.File, cb): void => {
             const roomId = req.params['room_id'];
             if (roomId === undefined) {
                 cb(new BadRequestException('no room id provided'), null);
             }
-            cb(null, `room-${roomId}.${extname(file.originalname)}`)
+            cb(null, `room-${roomId}${extname(file.originalname)}`)
         }
     }),
     limits: { fileSize: 6000000 },

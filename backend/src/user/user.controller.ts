@@ -179,13 +179,11 @@ export class UserController {
         @Req() req: Request
     ) {
         const user: UserEntity = await this.userService.findOneByUsername(username);
-        console.log(`roquost: ${JSON.stringify(req.body)}, ${JSON.stringify(req.headers)}`)
+
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-
-        console.log(`[uploadMyAvatar] Debugger: ${avatar.path}`);
         return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
     }
 

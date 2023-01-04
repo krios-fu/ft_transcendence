@@ -95,6 +95,7 @@ export class RoomController {
         /* need to remove avatar too */
     }
 
+    /* must be owner */
     @Post(':room_id/avatar')
     @UseInterceptors(FileInterceptor(
         'avatar', uploadRoomAvatarSettings
@@ -109,6 +110,7 @@ export class RoomController {
         return this.roomService.updateRoom(id, { photoUrl: avatar.path })
     }
 
+    /* must be owner */
     @Delete(':room_id/avatar')
     public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) id: number): Promise<UpdateResult> {
         /* same as above */
