@@ -5,7 +5,7 @@ import { extname } from "path";
 import { BadRequestException, UnprocessableEntityException } from "@nestjs/common";
 import { IRequestUser } from "src/common/interfaces/request-payload.interface";
 
-export const DEFAULT_AVATAR_PATH = 'public/default-avatar.jpg';
+export const DEFAULT_AVATAR_PATH = 'http://localhost:3000/default-avatar.jpg';
 
 function filterFileByType
     (
@@ -23,7 +23,7 @@ function filterFileByType
 export const uploadUserAvatarSettings: MulterOptions = {
     storage: diskStorage({
         destination: (req, file, cb) => {
-            const dir = './public/users/';
+            const dir = 'public/users/';
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             } else {
@@ -46,7 +46,7 @@ export const uploadUserAvatarSettings: MulterOptions = {
 export const uploadRoomAvatarSettings: MulterOptions = {
     storage: diskStorage({
         destination: (req, file, cb) => {
-            const dir = './public/room/';
+            const dir = 'public/room/';
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             }

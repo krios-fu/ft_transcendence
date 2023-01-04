@@ -185,7 +185,8 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-        return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
     /*
@@ -207,7 +208,8 @@ export class UserController {
             this.userLogger.error(`User with id ${userId} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-        return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
 

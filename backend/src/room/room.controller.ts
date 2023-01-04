@@ -109,7 +109,8 @@ export class RoomController {
             fs.unlinkSync(avatar.path);
             throw new BadRequestException('no room in db');
         }
-        return this.roomService.updateRoom(id, { photoUrl: avatar.path })
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return this.roomService.updateRoom(id, { photoUrl: photoUrl })
     }
 
     /* must be owner */
