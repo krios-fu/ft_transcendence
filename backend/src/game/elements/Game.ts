@@ -194,7 +194,7 @@ export class   Game {
         let     border: number;
     
         if (this._ball.checkPaddleCollision(this._playerA.paddle,
-                    this._playerB.paddle, ballXDisplacement))
+                this._playerB.paddle, ballXDisplacement, ballYDisplacement))
             return (false);
         else
         {

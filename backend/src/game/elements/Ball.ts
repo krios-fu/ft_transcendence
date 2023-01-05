@@ -39,6 +39,8 @@ export class    Ball {
     private _yVelocity: number; // pixels/second
     private _serveSide: number; // -1 left, 1 right
 
+    private readonly _paddleHitVelocity = 300;
+
     constructor(init: IBallInit) {
         this._radius = init.radius;
         this._xPosition = init.xPos;
@@ -83,46 +85,137 @@ export class    Ball {
             return (this._yVelocity * seconds);
     }
 
-    private checkCollisionPaddleLeft(paddle: Paddle,
-                                ballXDisplacement: number): boolean {
-        let ballLeftBorder = this._xPosition - this._radius;
-        let paddleRightBorder = paddle.xPos + paddle.halfWidth;
+    /*
+    **  Returns y value of intersection between paddle's x axis
+    **  and ball's trajectory line.
+    */
+    private yIntersectionPaddle(paddleX: number, xDisplacement: number,
+                                yDisplacement: number): number {
+        const   slope = yDisplacement / xDisplacement;
 
-        return (
-            ballLeftBorder > paddleRightBorder
-            && ballLeftBorder + ballXDisplacement <= paddleRightBorder
-            && Math.abs(this._yPosition - paddle.yPos)
-                <= paddle.halfHeight + this._radius
-        );
+        return ((slope * (paddleX - this._xPosition)) + this._yPosition);
+    }
+
+    private checkCollisionPaddleLeft(paddle: Paddle,
+                                        ballXDisplacement: number,
+                                        ballYDisplacement: number): boolean {
+        const   ballLeftBorder = this._xPosition - this._radius;
+        const   xNoCollisionDest = ballLeftBorder + ballXDisplacement;
+        let     yIntersection: number;
+
+        if (ballLeftBorder > paddle.rightBorder
+            && xNoCollisionDest <= paddle.rightBorder)
+        {
+            yIntersection = this.yIntersectionPaddle(paddle.xPos,
+                                                        ballXDisplacement,
+                                                        ballYDisplacement);
+            if (Math.abs(this._yPosition - paddle.yPos)
+                <= paddle.halfHeight + this._radius)
+            {
+                this.collisionPaddleLeft(paddle, yIntersection,
+                                            xNoCollisionDest,
+                                            ballYDisplacement);
+                return (true);
+            }
+        }
+        return (false);
     }
 
     private checkCollisionPaddleRight(paddle: Paddle,
-                                ballXDisplacement: number): boolean {
-        let ballRightBorder = this._xPosition + this._radius;
-        let paddleLeftBorder = paddle.xPos - paddle.halfWidth;
+                                        ballXDisplacement: number,
+                                        ballYDisplacement: number): boolean {
+        const   ballRightBorder = this._xPosition + this._radius;
+        const   xNoCollisionDest = ballRightBorder + ballXDisplacement;
+        let     yIntersection: number;
 
-        return (
-            ballRightBorder < paddleLeftBorder
-            && ballRightBorder + ballXDisplacement >= paddleLeftBorder
-            && Math.abs(this._yPosition - paddle.yPos)
-                <= paddle.halfHeight + this._radius
-        );
+        if (ballRightBorder < paddle.leftBorder
+            && xNoCollisionDest >= paddle.leftBorder)
+        {
+            yIntersection = this.yIntersectionPaddle(paddle.xPos,
+                                                        ballXDisplacement,
+                                                        ballYDisplacement);
+            if (Math.abs(yIntersection - paddle.yPos)
+                <= paddle.halfHeight + this._radius)
+            {
+                this.collisionPaddleRight(paddle, yIntersection,
+                                            xNoCollisionDest,
+                                            ballYDisplacement);
+                return (true);
+            }
+        }
+        return (false);
     }
 
-    private checkCollisionUp(yDisplacement: number): boolean {
-        return (this._yPosition - this._radius + yDisplacement <= 0);
+    private checkCollisionUp(xDisplacement: number,
+                                yDisplacement: number): boolean {
+        const   yNoCollisionDest = this._yPosition - this._radius
+                                    + yDisplacement;
+    
+        if (yNoCollisionDest <= 0)
+        {
+            this.collisionUp(xDisplacement, yNoCollisionDest);
+            return (true);
+        }
+        return (false);
     }
 
-    private checkCollisionDown(gameHeight: number, yDisplacement: number): boolean {
-        return (this._yPosition + this._radius + yDisplacement >= gameHeight);
+    private checkCollisionDown(gameHeight: number, xDisplacement: number,
+                                yDisplacement: number): boolean {
+        const   yNoCollisionDest = this._yPosition + this._radius
+                                    + yDisplacement;
+
+        if (yNoCollisionDest >= gameHeight)
+        {
+            this.collisionDown(gameHeight, xDisplacement, yNoCollisionDest);
+            return (true);
+        }
+        return (false);
     }
 
-    private checkCollisionRight(gameWidth: number, xDisplacement: number): boolean {
-        return (this._xPosition + this._radius + xDisplacement >= gameWidth);
+    private checkCollisionRight(gameWidth: number, gameHeight: number,
+                                    xDisplacement: number): boolean {
+        if (this._xPosition + this._radius + xDisplacement >= gameWidth)
+        {
+            this.collisionRight(gameWidth, gameHeight);
+            return (true);
+        }
+        return (false);
     }
 
-    private checkCollisionLeft(xDisplacement: number): boolean {
-        return (this._xPosition - this._radius + xDisplacement <= 0);
+    private checkCollisionLeft(gameWidth: number, gameHeight: number,
+                                xDisplacement: number): boolean {
+        if (this._xPosition - this._radius + xDisplacement <= 0)
+        {
+            this.collisionLeft(gameWidth, gameHeight);
+            return (true);
+        }
+        return (false);
+    }
+
+    private paddleBounceX(xNoCollisionDest: number, prevVelocityX: number,
+                            paddleBorder: number): number {
+        const   bounceAmount: number = (xNoCollisionDest - paddleBorder) * -1;
+        let     result: number = paddleBorder;
+    
+        if (prevVelocityX === this._xVelocity * -1)
+            result += bounceAmount;
+        else
+        {
+            // Rule of Three
+            result += ((this._xVelocity * bounceAmount) / prevVelocityX) * -1;
+        }
+        return (result);
+    }
+
+    private paddleBounceY(yDisplacement: number, prevVelocityY: number,
+                            yIntersection: number): number {
+        const   noCollisionDest: number = this._yPosition + yDisplacement;
+        const   bounceAmount: number = noCollisionDest - yIntersection;
+        let     result: number = yIntersection;
+
+        // Rule of Three
+        result += (this._yVelocity * bounceAmount) / prevVelocityY;
+        return (result);
     }
 
     /*
@@ -133,36 +226,56 @@ export class    Ball {
     **  paddle height percentage with ball
     **  velocity range (-ballHitVelocity - +ballHitVelocity).
     */
-    private collisionPaddleLeft(paddle: Paddle): void {
-        const   ballHitVelocity = 300;
-        const   paddleHitHeight = this._yPosition - paddle.yPos
+    private collisionPaddleLeft(paddle: Paddle, yIntersection: number,
+                                    xNoCollisionDest: number,
+                                    yDisplacement: number): void {
+        const   prevVelocityX = this._xVelocity;
+        const   prevVelocityY = this._yVelocity;
+        const   paddleHitHeight = yIntersection - paddle.yPos
                                     + paddle.halfHeight;
         
-        this._xPosition = paddle.xPos + paddle.halfWidth + this._radius;
-        this._xVelocity = ballHitVelocity;
+        this._xVelocity = this._paddleHitVelocity;
         this._yVelocity = ((paddleHitHeight / paddle.height)
-                            * (ballHitVelocity * 2)) - ballHitVelocity;
+                            * (this._paddleHitVelocity * 2))
+                            - this._paddleHitVelocity;
+        this._xPosition = this.paddleBounceX(xNoCollisionDest, prevVelocityX,
+                                                paddle.rightBorder)
+                                                + this._radius;
+        this._yPosition = this.paddleBounceY(yDisplacement, prevVelocityY,
+                                                yIntersection);
     }
 
-    private collisionPaddleRight(paddle: Paddle): void {
-        const   ballHitVelocity = 300;
-        const   paddleHitHeight = this._yPosition - paddle.yPos
+    private collisionPaddleRight(paddle: Paddle, yIntersection: number,
+                                    xNoCollisionDest: number,
+                                    yDisplacement: number): void {
+        const   prevVelocityX = this._xVelocity;
+        const   prevVelocityY = this._yVelocity;
+        const   paddleHitHeight = yIntersection - paddle.yPos
                                     + paddle.halfHeight;
         
-        this._xPosition = paddle.xPos - paddle.halfWidth - this._radius;
-        this._xVelocity = ballHitVelocity;
+        this._xVelocity = this._paddleHitVelocity;
         this._yVelocity = ((paddleHitHeight / paddle.height)
-                            * (ballHitVelocity * 2)) - ballHitVelocity;
+                            * (this._paddleHitVelocity * 2))
+                            - this._paddleHitVelocity;
         this._xVelocity *= -1;
+        this._xPosition = this.paddleBounceX(xNoCollisionDest, prevVelocityX,
+                                                paddle.leftBorder)
+                                                - this._radius;
+        this._yPosition = this.paddleBounceY(yDisplacement, prevVelocityY,
+                                                yIntersection);
     }
 
-    private collisionUp(): void {
-        this._yPosition = 0 + this._radius;
+    private collisionUp(xDisplacement: number, yNoCollisionDest: number): void {
+        this._xPosition += xDisplacement;
+        this._yPosition = (yNoCollisionDest * -1) + this._radius;
         this._yVelocity *= -1;
     }
 
-    private collisionDown(gameHeight: number): void {
-        this._yPosition = gameHeight - this._radius;
+    private collisionDown(gameHeight: number, xDisplacement: number,
+                            yNoCollisionDest: number): void {
+        this._xPosition += xDisplacement;
+        this._yPosition = gameHeight - (yNoCollisionDest - gameHeight)
+                            - this._radius;
         this._yVelocity *= -1;
     }
 
@@ -199,22 +312,18 @@ export class    Ball {
         return (false);
     }
 
-    //0: left, 1: right, 2: none
     checkPaddleCollision(paddleA: Paddle, paddleB: Paddle,
-                            ballXDisplacement:number): boolean {
+                            ballXDisplacement:number,
+                            ballYDisplacement: number): boolean {
         if (this._xVelocity < 0)
         {
-            if (this.checkCollisionPaddleLeft(paddleA, ballXDisplacement))
-            {
-                this.collisionPaddleLeft(paddleA);
+            if (this.checkCollisionPaddleLeft(paddleA, ballXDisplacement,
+                                                ballYDisplacement))
                 return (true);
-            }
         }
-        else if (this.checkCollisionPaddleRight(paddleB, ballXDisplacement))
-        {
-            this.collisionPaddleRight(paddleB);
+        else if (this.checkCollisionPaddleRight(paddleB, ballXDisplacement,
+                                                ballYDisplacement))
             return (true);
-        }
         return (false);
     }
 
@@ -223,30 +332,19 @@ export class    Ball {
                             gameWidth: number, gameHeight: number): number {
         if (this._xVelocity < 0)
         {
-            if (this.checkCollisionLeft(xDisplacement))
-            {
-                this.collisionLeft(gameWidth, gameHeight);
+            if (this.checkCollisionLeft(gameWidth, gameHeight, xDisplacement))
                 return (0);
-            }
         }
-        else if (this.checkCollisionRight(gameWidth, xDisplacement))
-        {
-            this.collisionRight(gameWidth, gameHeight);
+        else if (this.checkCollisionRight(gameWidth, gameHeight, xDisplacement))
             return (2);
-        }
         if (this._yVelocity < 0)
         {
-            if (this.checkCollisionUp(yDisplacement))
-            {
-                this.collisionUp();
+            if (this.checkCollisionUp(xDisplacement, yDisplacement))
                 return (1);
-            }
         }
-        else if (this.checkCollisionDown(gameHeight, yDisplacement))
-        {
-            this.collisionDown(gameHeight);
+        else if (this.checkCollisionDown(gameHeight, xDisplacement,
+                                            yDisplacement))
             return (3);
-        }
         return (4);
     }
 
