@@ -228,8 +228,8 @@ export class   Game {
         const   secondsElapsed: number = this.deltaTime(currentTime);
         let     pointTransition: boolean = false;     
         
-        this._playerA.update(secondsElapsed, this._height);
-        this._playerB.update(secondsElapsed, this._height);
+        this._playerA.updatePaddle(this._height);
+        this._playerB.updatePaddle(this._height);
         if (this.ballUpdate(secondsElapsed))
         {
             pointTransition = true;

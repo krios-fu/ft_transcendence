@@ -1,3 +1,4 @@
+import { Vector } from "../utils/Vector";
 import { Hero } from "./Hero";
 import { Paddle } from "./Paddle";
 
@@ -293,20 +294,20 @@ export class    Ball {
         this._yPosition = (gameHeight / 2) - this._radius;
     }
 
-    /*
-    **  Does not work with ball next position (ballDisplacement) at the moment.
-    **  Working with ball current position for now.
-    */
-    checkHeroCollision(hero: Hero/*, ballXDisplacement: number,
-                        ballYDisplacement: number*/): boolean {
-        let ballVelocities: [number, number] =
-                hero.checkBallHit(this._xPosition, this._yPosition,
-                                    this.radius);
+    checkHeroCollision(hero: Hero, secondsElapsed: number): boolean {
+        const   ballData: IBallData =
+                hero.checkBallHit({
+                    pos: new Vector(this._xPosition, this._yPosition),
+                    vel: new Vector(this._xVelocity, this._yVelocity),
+                    radius: this.radius
+                }, secondsElapsed);
 
-        if (ballVelocities)
+        if (ballData)
         {
-            this.xVelocity = ballVelocities[0];
-            this.yVelocity = ballVelocities[1];
+            this._xPosition = ballData.xPos;
+            this._yPosition = ballData.yPos;
+            this._xVelocity = ballData.xVel;
+            this._yVelocity = ballData.yVel;
             return (true);
         }
         return (false);
