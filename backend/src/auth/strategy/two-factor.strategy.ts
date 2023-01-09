@@ -6,11 +6,13 @@ import {
 import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
 import { UserService } from 'src/user/services/user.service';
+import { UserRolesService } from 'src/user_roles/user_roles.service';
 
 @Injectable()
 export class TwoFactorStrategy extends PassportStrategy(Strategy, 'two-factor') {
 constructor (
     private readonly userService: UserService,
+    private readonly userRolesService: UserRolesService
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -34,6 +36,10 @@ constructor (
 
         if (user === undefined) {
             this.jwtLogger.error(`User ${username} validated by jwt not found in database`);
+            throw new UnauthorizedException();
+        }
+        if (await this.userRolesService.validateGlobalRole(user.username, 'banned') === true) {
+            this.jwtLogger.error(`User ${username} is banned from the server`);
             throw new UnauthorizedException();
         }
         if (jwtPayload.data.validated === true || user.doubleAuth === false || user.doubleAuthSecret === null) {

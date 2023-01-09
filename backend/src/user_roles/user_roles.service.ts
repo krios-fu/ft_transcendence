@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { filter } from 'rxjs';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
@@ -72,21 +73,11 @@ export class UserRolesService {
     **
     */
 
-    public async validateAdminRole(username: string | undefined): Promise<boolean> {
-        let validation: boolean = false;
+    public async validateGlobalRole(username: string, roles: string[]): Promise<boolean> {
+        const user: UserEntity = await this.userService.findOneByUsername(username);
 
-        if (username === undefined) {
-            return false;
-        }
-        this.userService.findOneByUsername(username).then(async (usr: UserEntity) => {
-            this.getAllRolesFromUser(usr.id).then(
-                (usrRoles: UserRolesEntity[]) => {
-                    validation = usrRoles.filter(usrRole => usrRole.role.role == 'admin').length > 0;
-                }
-            );
-        });
-        return validation;
+        return (await this.getAllRolesFromUser(user.id))
+            .map(userRole => userRole.role.role)
+            .some(role => roles.includes(role))
     }
-
 }
-                                                          

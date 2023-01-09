@@ -65,7 +65,7 @@ export class RoomRolesController {
             throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
         }
         if (await this.rolesService.findOne(roleId) === null) {
-            this.roomRoleLogger.error('No role with id ' + roomId + ' found in database');
+            this.roomRoleLogger.error(`'No role with id ${roomId} found in database`);
         }
         return this.roomRolesService.create(dto);
     }
