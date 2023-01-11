@@ -25,11 +25,7 @@ export class   GameHero extends Game {
         const   secondsElapsed: number = this.deltaTime(currentTime);
         let     pointTransition: boolean = false;     
     
-        this._playerA.updatePaddle(this._height);
-        this._playerB.updatePaddle(this._height);
-        //Just marks corresponding hero sprite as active
-        this._playerA.processHeroInvocation();
-        this._playerB.processHeroInvocation();
+        this.processInput();
         if (this.ballUpdate(secondsElapsed))
         {
             pointTransition = true;
