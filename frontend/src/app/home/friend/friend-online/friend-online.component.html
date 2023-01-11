@@ -1,11 +1,22 @@
 
-
-<div style="display: flex; align-items: center; justify-content: center; " >
-	<div *ngFor=" let friend of friends" style="margin: 10px; display:grid; align-items: center; justify-content: center;" >
-		<figure class="avatar">
-			<img
-				src={{friend.photoUrl}} alt="krios-fu"/>
-			</figure>
-			<div style="font-size:5px; padding: 5px; ">{{friend.username}}</div>
+	<div style="margin-top: 40px; border: outset 2px silver;" class="effect"  *ngIf="friends.length != 0">
+	<div style="display: flex; justify-content: center; padding: 10px; border: outset 2px silver;">
+	  <h1 style="font-size: 10px;">Friends online</h1>
 	</div>
+	<cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"
+	  style=" height: 10vh; position: relative; color: white;" itemSize="5">
+	  <section>
+		  <div style="display: flex; align-items: center; justify-content: center;">	
+			<div *ngFor=" let friend of friends" style="margin: 10px; display:grid; align-items: center; justify-content: center;" >
+				<a [routerLink]="['/home/profile/', friend.nickName]"  >
+					<figure class="avatar">
+						<img style="padding: 0;"
+						src={{friend.photoUrl}} alt="{{friend.nickName}}"/>
+					</figure>
+					<div style="font-size:8px; padding-top: 8px; ">{{friend.nickName}}</div>
+				</a>
+			</div>
+		</div>
+	</section>
+  </cdk-virtual-scroll-viewport>
 </div>

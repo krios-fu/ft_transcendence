@@ -1,7 +1,10 @@
 
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 
-
+::ng-deep .mat-tab-label{
+  color: white;
+  font-size: smaller;
+}
 
 
 .cdk-virtual-scroll-viewport {

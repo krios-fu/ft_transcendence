@@ -5,41 +5,7 @@ import { HttpClient } from "@angular/common/http";
 import { AuthService } from 'src/app/services/auth.service';
 import { ActivatedRoute, Router, RouterLinkActive } from '@angular/router';
 import { UsersService } from 'src/app/services/users.service';
-
-
-
-interface FoodNode {
-  name: string;
-  children?: FoodNode[];
-}
-
-let TREE_CHAT: FoodNode[] = [
-  {
-    name: 'Rooms',
-    children: [
-      {
-        name: 'public',
-        children: [{ name: '42' }, { name: 'metropolis' }, { name: 'wakanda' }, { name: 'atlantis' }
-        ],
-      },
-      {
-        name: 'private',
-        children: [{ name: 'metropolis' }, { name: 'wakanda' }, { name: 'atlantis' }
-        ],
-      },
-    ],
-  },
-  {
-    name: 'Dm',
-    children: [],
-  },
-];
-
-interface ExampleFlatNode {
-  expandable: boolean;
-  name: string;
-  level: number;
-}
+import { UserDto } from '../dtos/user.dto';
 
 
 
@@ -50,38 +16,14 @@ interface ExampleFlatNode {
 })
 export class RoomComponent implements AfterViewInit {
 
+ public CHATS_USERS = [] as UserDto[];
+
   statusTree = false;
-
-
-  private _transformer = (node: FoodNode, level: number) => {
-    return {
-      expandable: !!node.children && node.children.length > 0,
-      name: node.name,
-      level: level,
-    };
-  };
-
-  treeControl = new FlatTreeControl<ExampleFlatNode>(
-    node => node.level,
-    node => node.expandable,
-  );
-
-  treeFlattener = new MatTreeFlattener(
-    this._transformer,
-    node => node.level,
-    node => node.expandable,
-    node => node.children,
-  );
-
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   constructor(private http: HttpClient,
     private authService: AuthService,
     public router: Router,
-    private usersService: UsersService,
-    routeActivate: ActivatedRoute,
   ) {
-
 
   }
 
@@ -91,27 +33,20 @@ export class RoomComponent implements AfterViewInit {
     this.http.get(`http://localhost:3000/users/me/chats`)
       .subscribe(entity => {
         let data = Object.assign(entity);
+        let user_save: UserDto;
         for (let chat in data) {
           const { users } = data[chat];
-          let { nickName, username } = users[0];
+          user_save = users[0] as UserDto;
+          let { username } = user_save;
           if (username === user_sesion) {
-            console.log('CHAT MEMBERSHIP',users)
-            nickName = users[1].nickName;
+            user_save = users[1] as UserDto;
           }
-          this.statusTree = true;
-          if (!(TREE_CHAT[1].children?.find((child) => {
-            return child.name === nickName
+          if (!(this.CHATS_USERS.find((user) => {
+            return user.nickName === user_save.nickName;
           })))
-            TREE_CHAT[1].children?.push({
-              name: nickName,
-            })
+            this.CHATS_USERS.push(user_save);
         }
-        this.dataSource.data = TREE_CHAT;
       });
+    console.log('NEW VERSION', this.CHATS_USERS);
   }
-
-
-
-  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
-
 }
