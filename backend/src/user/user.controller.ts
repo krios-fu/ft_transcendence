@@ -14,8 +14,9 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    ParseFilePipe,
-    ParseFilePipeBuilder,
+    UseGuards,
+    NotFoundException,
+    HttpCode,
 
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
@@ -31,6 +32,9 @@ import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
+import { UserCreds } from 'src/common/decorators/user-cred.decorator';
+import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
 
 @Controller('users')
 export class UserController {
@@ -67,13 +71,7 @@ export class UserController {
     */
 
     @Get('me')
-    public async findMe(@Req() req: IRequestUser) {
-        const username = req.user.data.username;
-
-        if (username === undefined) {
-            this.userLogger.error('Cannot find username for client in request body');
-            throw new HttpException('user has no valid credentials', HttpStatus.BAD_REQUEST);
-        }
+    public async findMe(@UserCreds() username: string) {
         return await this.userService.findAllUsers({ "filter": { "username": [username] } });
     }
 
@@ -138,17 +136,10 @@ export class UserController {
 
     @Patch('me')
     public async updateMeUser(
-        @Req() req: IRequestUser,
-        @Body() dto: UpdateUserDto
+        @Body() dto: UpdateUserDto,
+        @UserCreds() username: string
     ): Promise<UserEntity> {
-
-        console.log('UPDATE USER', dto);
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
@@ -160,15 +151,9 @@ export class UserController {
     @Patch('me/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
-        @Req() req: IRequestUser,
-
+        @UserCreds() username: string
     ): Promise<UpdateResult> {
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
@@ -177,39 +162,56 @@ export class UserController {
             this.userLogger.error(`User with id ${user.id} not found in database`);
             throw new HttpException('no user in database', HttpStatus.BAD_REQUEST);
         }
-        return this.userService.updateSettings(user.id, settingsDto);
+        return this.userService.updateUser(user.id, settingsDto);
     }
 
+    /*
+    ** Allows avatar uploading to user with credentials present in request.
+    ** File being uploaded will be parsed and validated for security reasons.
+    */
 
-    @Post('me/avatar/upload')
-    @UseInterceptors(
-        FileInterceptor(
-            'avatar',
-            { dest: './uploads/' },
-            //    fileFilter()
-        )
-    ) // <-- aqui los parseos de tamaño y seguridad
-    public async uploadAvatar(
-        @UploadedFile(
-            new ParseFilePipeBuilder()
-                .addFileTypeValidator({ fileType: 'jpeg' })
-                .addFileTypeValidator({ fileType: 'jpg' })
-                .addFileTypeValidator({ fileType: 'png' })
-                .addMaxSizeValidator({ maxSize: 6000 })
-                .build({
-                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                })
-        ) avatar: Express.Multer.File
+    @Post('me/avatar')
+    @UseInterceptors(FileInterceptor(
+        'avatar', uploadUserAvatarSettings
+    ))
+    public async uploadMyAvatar(
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File,
+        @UserCreds() username: string,
+        @Req() req: Request
     ) {
+        const user: UserEntity = await this.userService.findOneByUsername(username);
 
-        /* check if there was a previous avatar
-        ** if true: remove
-        ** upload new avatar
-        **      upload: edit user entity with new path to image
-        **      -> path to image created by nest
-        */
-        console.log('test');
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
+
+    /*
+    ** Same as above, gives access to avatar posting to site admin.
+    */
+
+    /* @UseGuards(IdentityGuard) */
+    @Post(':id/avatar')
+    @UseInterceptors(FileInterceptor(
+        'avatar', uploadUserAvatarSettings
+    ))
+    public async uploadUserAvatar(
+        @Param('id', ParseIntPipe) userId: number,
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
+    ):Promise<UpdateResult> {
+        const user: UserEntity = await this.userService.findOne(userId);
+
+        if (user === null) {
+            this.userLogger.error(`User with id ${userId} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
+    }
+
 
     /*
     **  Remove an avatar previously uploaded by user.
@@ -218,24 +220,52 @@ export class UserController {
     **/
 
     @Delete('me/avatar')
+    @HttpCode(204)
+    public async deleteMyAvatar(@UserCreds() username: string): Promise<void> {
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const { id, photoUrl } = user;
+        return await this.userService.deleteAvatar(id, photoUrl);
+    }
+
+    @Delete(':id/avatar')
+    @HttpCode(204)
+    //@UseGuards(IdentityGuard)
+    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
+        const user: UserEntity = await this.userService.findOne(userId);
+
+        if (user === null) {
+            this.userLogger.error(`User with id ${userId} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const { id, photoUrl } = user;
+        return await this.userService.deleteAvatar(id, photoUrl);
+    }
+   
 
     /* it is me! (or admin) */
     @Delete(':id')
+    @HttpCode(204)
+    //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.userService.deleteUser(id);
+        const user = await this.userService.findOne(id);
+        if (user === null) {
+            this.userLogger.error(`User with id ${id} not found in database`);
+            throw new NotFoundException('resource not found');
+        }
+        return this.userService.deleteUser(user);
     }
 
 
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *\
     **                                               **
-    **           ( chat endpoints )            **
+    **               ( chat endpoints )              **
     **                                               **
-    ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-    /*
-    ** 
-    ** 
-    */
+    \* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     @Get('me/chats')
     async findChats(@Req() req: IRequestUser) {
@@ -411,7 +441,7 @@ export class UserController {
 
     //UseGuards(ItIsMe)
     @Patch(':user_id/friends/:friend_id/accept')
-    async acceptFriend(
+    public async acceptFriend(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -430,7 +460,7 @@ export class UserController {
 
     //UseGuards(ItIsMe)
     @Patch(':user_id/friends/:friend_id/refuse')
-    async refuseFriend(
+    public async refuseFriend(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
@@ -449,7 +479,7 @@ export class UserController {
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     @Get('me/blocked')
-    async getBlockedFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
+    public async getBlockedFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
         const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error(`User requesting service is not logged in`);

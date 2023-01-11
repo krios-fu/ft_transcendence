@@ -8,7 +8,7 @@ import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
 import { UserService } from 'src/user/services/user.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class TwoFactorStrategy extends PassportStrategy(Strategy, 'two-factor') {
 constructor (
     private readonly userService: UserService,
     ) {
@@ -20,7 +20,7 @@ constructor (
         //    issuer: 'http://localhost:4200',   /* dev */
         //    audience: 'http://localhost:3000', /* dev */
         });
-        this.jwtLogger = new Logger(JwtStrategy.name);
+        this.jwtLogger = new Logger(TwoFactorStrategy.name);
     }
     private jwtLogger: Logger;
 
@@ -36,8 +36,8 @@ constructor (
             this.jwtLogger.error(`User ${username} validated by jwt not found in database`);
             throw new UnauthorizedException();
         }
-        if (jwtPayload.data?.validated !== true) {
-            throw new UnauthorizedException('User needs validation for 2fa strategy');
+        if (jwtPayload.data.validated === true || user.doubleAuth === false || user.doubleAuthSecret === null) {
+            throw new UnauthorizedException('user is already validated with 2fa strategy or does not need it');
         }
         return jwtPayload;
     }

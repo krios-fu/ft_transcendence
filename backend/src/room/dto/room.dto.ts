@@ -13,7 +13,11 @@ export class CreateRoomDto {
     ownerId: number;
 }
 
-export class UpdateRoomDto extends PartialType(CreateRoomDto) { }
+export class UpdateRoomDto extends PartialType(CreateRoomDto) { 
+    @IsString()
+    @IsNotEmpty()
+    photoUrl?: string;
+}
 
 export class RoomMsgDto {
     @IsString() room: string;

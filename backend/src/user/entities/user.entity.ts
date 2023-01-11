@@ -1,11 +1,15 @@
+import { Exclude } from "class-transformer";
+import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
 import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
+import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 import {
 	Column,
 	Entity,
 	ManyToMany,
 	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
@@ -45,7 +49,6 @@ export class UserEntity extends BaseEntity {
 	@Column({ 
 		type: 'varchar',
 		nullable: false,
-
  	})
   	firstName : string;
 	
@@ -64,6 +67,7 @@ export class UserEntity extends BaseEntity {
 	@Column({ 
 		type: 'varchar',
 		nullable: false,
+		default: DEFAULT_AVATAR_PATH
  	})
   	photoUrl : string;
 	
@@ -82,12 +86,19 @@ export class UserEntity extends BaseEntity {
 	})
 	nickName : string;
 
-	// @Exclude()
 	@Column({
 		type: 'boolean',
 		default: false
 	})
 	doubleAuth : boolean;
+
+	@Exclude()
+	@Column({ 
+		type: 'varchar', 
+		nullable: true, 
+		default: null 
+	})
+	doubleAuthSecret: string;
 
 	@Column({
 		type: 'boolean',
@@ -117,6 +128,12 @@ export class UserEntity extends BaseEntity {
 
 	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
 	chats : ChatEntity[];
-	// @OneToMany(() => MembershipEntity, (membership) => membership.user, )
-	// membership : MembershipEntity[];
+
+	@OneToOne
+	(
+		() => RefreshTokenEntity,
+		(tokenEntity) => tokenEntity.authUser,
+		{ cascade: true }
+	)
+	token: RefreshTokenEntity
 }
