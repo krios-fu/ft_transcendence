@@ -22,7 +22,7 @@ export class ProfileUserComponent implements OnInit {
     'accept': false,
   };
 
-  icon_friend =  'person_add'
+  icon_friend = 'person_add'
 
   urlApi = 'http://localhost:3000/';
 
@@ -38,20 +38,24 @@ export class ProfileUserComponent implements OnInit {
     this.route.params.subscribe(({ id }) => {
       // this.formMessage.patchValue({ id });
 
+
+
       this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
           this.user = user[0];
           this.chatService.createChat(this.user.id);
-          
-          // this.http.get(`${this.urlApi}users/me/friends/${this.user?.id}`)
-          // .subscribe( (data : any )=> {
-          //   console.log('FRIEND', data);
-          //   // if( data.status === 404 )
-          //   //   this.
-            
-          // })
-          
-        })
+
+          // change de icone visible add o remove 
+          this.http.get<any>(this.urlApi + 'users/me/friends/' + this.user?.id)
+            .subscribe((friend: any) => {
+              const { receiver } = friend;
+              const { sender } = friend;
+              const user = (receiver) ? receiver : sender;
+              if (user.username == this.user?.username)
+                this.icon_friend = 'person_remove';
+
+            })
+        });
     })
   }
 
@@ -64,16 +68,19 @@ export class ProfileUserComponent implements OnInit {
     return this.user?.photoUrl;
   }
 
-  post_friendship(){
+  post_friendship() {
 
-    this.http.post(`${this.urlApi}users/me/friends`, {
-      receiverId: this.user?.id,
-
-    }).subscribe(
-      data => {
-        console.log(data);
-      }
-    )
+    if (this.icon_friend === 'person_add') {
+      this.http.post(`${this.urlApi}users/me/friends`, {
+        receiverId: this.user?.id,
+      }).subscribe(
+        data => {
+          console.log(data);
+        })
+    }
+    else if (this.icon_friend === 'person_remove') {
+      // endpoiint deleted friend
+    }
   }
 
 }
