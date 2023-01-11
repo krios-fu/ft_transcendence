@@ -14,7 +14,9 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    ParseFilePipeBuilder,
+    UseGuards,
+    NotFoundException,
+    HttpCode,
 
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
@@ -30,9 +32,9 @@ import { BlockService } from './services/block.service';
 import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { uploadAvatarSettings } from './config/upload-avatar.config';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
+import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
 
 @Controller('users')
 export class UserController {
@@ -134,9 +136,8 @@ export class UserController {
 
     @Patch('me')
     public async updateMeUser(
-        @Req() req: IRequestUser,
-        @UserCreds() username: string,
-        @Body() dto: UpdateUserDto
+        @Body() dto: UpdateUserDto,
+        @UserCreds() username: string
     ): Promise<UserEntity> {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
@@ -150,8 +151,7 @@ export class UserController {
     @Patch('me/settings')
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
-        @UserCreds() username: string,
-
+        @UserCreds() username: string
     ): Promise<UpdateResult> {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
@@ -165,24 +165,53 @@ export class UserController {
         return this.userService.updateUser(user.id, settingsDto);
     }
 
+    /*
+    ** Allows avatar uploading to user with credentials present in request.
+    ** File being uploaded will be parsed and validated for security reasons.
+    */
+
     @Post('me/avatar')
     @UseInterceptors(FileInterceptor(
-        'avatar', uploadAvatarSettings
+        'avatar', uploadUserAvatarSettings
     ))
-    public async uploadAvatar(
-        @Req() req: IRequestUser,
-        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
+    public async uploadMyAvatar(
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File,
+        @UserCreds() username: string,
+        @Req() req: Request
     ) {
-        const username: string = req.user.data.username;
         const user: UserEntity = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-
-        console.log(`Debugger: ${avatar.path}`);
-        return await this.userService.updateUser(user.id, { photoUrl: avatar.path });
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
+
+    /*
+    ** Same as above, gives access to avatar posting to site admin.
+    */
+
+    /* @UseGuards(IdentityGuard) */
+    @Post(':id/avatar')
+    @UseInterceptors(FileInterceptor(
+        'avatar', uploadUserAvatarSettings
+    ))
+    public async uploadUserAvatar(
+        @Param('id', ParseIntPipe) userId: number,
+        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
+    ):Promise<UpdateResult> {
+        const user: UserEntity = await this.userService.findOne(userId);
+
+        if (user === null) {
+            this.userLogger.error(`User with id ${userId} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
+    }
+
 
     /*
     **  Remove an avatar previously uploaded by user.
@@ -191,24 +220,52 @@ export class UserController {
     **/
 
     @Delete('me/avatar')
+    @HttpCode(204)
+    public async deleteMyAvatar(@UserCreds() username: string): Promise<void> {
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const { id, photoUrl } = user;
+        return await this.userService.deleteAvatar(id, photoUrl);
+    }
+
+    @Delete(':id/avatar')
+    @HttpCode(204)
+    //@UseGuards(IdentityGuard)
+    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
+        const user: UserEntity = await this.userService.findOne(userId);
+
+        if (user === null) {
+            this.userLogger.error(`User with id ${userId} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        const { id, photoUrl } = user;
+        return await this.userService.deleteAvatar(id, photoUrl);
+    }
+   
 
     /* it is me! (or admin) */
     @Delete(':id')
+    @HttpCode(204)
+    //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.userService.deleteUser(id);
+        const user = await this.userService.findOne(id);
+        if (user === null) {
+            this.userLogger.error(`User with id ${id} not found in database`);
+            throw new NotFoundException('resource not found');
+        }
+        return this.userService.deleteUser(user);
     }
 
 
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
+    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *\
     **                                               **
     **               ( chat endpoints )              **
     **                                               **
-    ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-    /*
-    ** 
-    ** 
-    */
+    \* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     @Get('me/chats')
     async findChats(@Req() req: IRequestUser) {

@@ -7,12 +7,15 @@ import {
 } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
+import * as fs from 'fs';
+import { DEFAULT_AVATAR_PATH } from 'src/common/config/upload-avatar.config';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UserService {
@@ -51,7 +54,6 @@ export class UserService {
     }
 
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
-        console.log(newUser);
         const newEntity = new UserEntity(newUser);
 
         await this.userRepository.insert(newEntity);
@@ -71,14 +73,30 @@ export class UserService {
     **  Determine which type of repository method is most appropriate,
     **  delete or remove.
     */
-    
 
-    //public async removeAvatar(): Promise<UpdateResult> {
-    //    /* remove file from filesystem */
-    //}
+    public async deleteAvatar(id: number, filePath: string): Promise<void> { /* needs cleanup */
+        if (filePath === DEFAULT_AVATAR_PATH) {
+            throw new NotFoundException('user has no avatar uploaded');
+        }
+        try {
+            const test = await fs.promises.access(filePath, fs.constants.W_OK);
+            console.log(`[deleteAvatar] testing access return: ${test}`);
+            fs.unlinkSync(filePath);
+        } catch (err) {
+            console.error(`[deleteAvatar] caught exception: ${err}`);
+        }
+        await this.userRepository.update(id, { photoUrl: DEFAULT_AVATAR_PATH });
+    }
 
-    public async deleteUser(id: number): Promise<void> {
-        await this.userRepository.softDelete(id);
+    public async deleteUser(user: UserEntity): Promise<void> {
+        const { photoUrl } = user;
+        if (photoUrl !== DEFAULT_AVATAR_PATH) {
+            try {
+                fs.accessSync(photoUrl, fs.constants.W_OK);
+                fs.unlinkSync(photoUrl);
+            } catch (err) { }
+        }
+        await this.userRepository.remove(user);
     }
 
     /*
