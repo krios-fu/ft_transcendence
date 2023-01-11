@@ -27,6 +27,8 @@ export class    Paddle {
     private _height: number;
     private _halfHeight: number;
     private _halfWidth: number;
+    private _leftBorder: number;
+    private _rightBorder: number;
     private _side: number; //side: 0 === left, 1 === right
     private _xPos: number;
     private _yPos: number;
@@ -38,6 +40,8 @@ export class    Paddle {
         this._halfHeight = this._height / 2;
         this._xPos = init.xPos;
         this._yPos = init.yPos;
+        this._leftBorder = this._xPos - this._halfWidth;
+        this._rightBorder = this._xPos + this._halfWidth;
         this._side = init.side;
     }
 
@@ -51,6 +55,14 @@ export class    Paddle {
 
     get halfHeight(): number {
         return (this._halfHeight);
+    }
+
+    get leftBorder(): number {
+        return (this._leftBorder);
+    }
+
+    get rightBorder(): number {
+        return (this._rightBorder);
     }
 
     get xPos(): number {

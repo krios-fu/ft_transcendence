@@ -11,23 +11,11 @@ export class   GameHero extends Game {
     }
 
     override ballUpdate(secondsElapsed: number): boolean {
-        const   ballXDisplacement: number =
-                    this._ball.displacement('x', secondsElapsed);
-        const   ballYDisplacement: number =
-                    this._ball.displacement('y', secondsElapsed);
-        
-        /*
-        **  Hero collisions do not work with ball next
-        **  position (ballDisplacement) at the moment.
-        */
-        if (this._ball.xVelocity < 0)
-        {
-            if (this._ball.checkHeroCollision(this._playerA.hero/*,
-                ballXDisplacement, ballYDisplacement*/))
+        if (this._ball.checkHeroCollision(this._playerA.hero,
+                                            secondsElapsed))
             return (false);
-        }
-        else if (this._ball.checkHeroCollision(this._playerB.hero/*,
-                    ballXDisplacement, ballYDisplacement*/))
+        if (this._ball.checkHeroCollision(this._playerB.hero,
+                                                secondsElapsed))
             return (false);
         return (super.ballUpdate(secondsElapsed));
     }
@@ -36,18 +24,20 @@ export class   GameHero extends Game {
         const   currentTime: number = Date.now();
         const   secondsElapsed: number = this.deltaTime(currentTime);
         let     pointTransition: boolean = false;     
-        
-        this._playerA.update(secondsElapsed, this._height);
-        this._playerB.update(secondsElapsed, this._height);
+    
+        this._playerA.updatePaddle(this._height);
+        this._playerB.updatePaddle(this._height);
+        //Just marks corresponding hero sprite as active
+        this._playerA.processHeroInvocation();
+        this._playerB.processHeroInvocation();
         if (this.ballUpdate(secondsElapsed))
         {
             pointTransition = true;
             if (this.getWinnerNick() != "")
                 this._state = GameState.Finished;
         }
-        // Sets hero's position to initial one if its action ended.
-        this._playerA.checkHeroEnd();
-        this._playerB.checkHeroEnd();
+        this._playerA.updateHero(secondsElapsed);
+        this._playerB.updateHero(secondsElapsed);
         this._lastUpdate = currentTime;
         return (pointTransition);
     }
