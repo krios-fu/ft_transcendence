@@ -14,17 +14,21 @@ import {
   HttpException,
   HttpStatus,
   Put,
-  Query
+  Query,
+  BadRequestException
 } from '@nestjs/common';
 import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
+import { UserCreds } from 'src/common/decorators/user-cred.decorator';
+import { UserRolesService } from 'src/user_roles/user_roles.service';
 
 @Controller('room_roles')
 export class RoomRolesController {
     constructor
     (
         private readonly roomRolesService: RoomRolesService,
+        private readonly userRolesService: UserRolesService,
         private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { 
@@ -58,15 +62,30 @@ export class RoomRolesController {
     }
 
     @Post()
-    public async create(@Body() dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
+    public async create
+    (
+        @UserCreds() username: string,
+        @Body() dto: CreateRoomRolesDto
+    ): Promise<RoomRolesEntity> {
         const { roomId, roleId } = dto;
+        const roleEntity = await this.rolesService.findOne(roleId);
+        if (roleEntity === null) {
+            this.roomRoleLogger.error(`'No role with id ${roomId} found in database`);
+            throw new BadRequestException('resource not found in database');
+        }
         if (await this.roomService.findOne(roomId) === null) {
-            this.roomRoleLogger.error('No room with id ' + roomId + ' found in database');
+            this.roomRoleLogger.error( `No room with id ${roomId} found in database`);
             throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
         }
-        if (await this.rolesService.findOne(roleId) === null) {
-            this.roomRoleLogger.error(`'No role with id ${roomId} found in database`);
+        const { role } = roleEntity;
+        if (role === 'official' && 
+            await this.userRolesService.validateGlobalRole(username, ['admin']) === false) {
+            return false;
         }
+        else if (role === 'private' &&
+            await this.userRolesService.validateGlobalRole(username, ['admin']) ||
+            await this.roomService.findRoomOwner(roomId).owner) /* ... */
+//        if (await this.userRolesService.validateGlobalRole(username, []))
         return this.roomRolesService.create(dto);
     }
 

@@ -29,15 +29,21 @@ export class RoomRolesService {
 
     public async findRolesRoom(roomId: number): Promise<RolesEntity[]> {
         let roles: RolesEntity[];
-        const roomRoles = await this.roomRolesRepository.find({
-            relations: { 
-                room: true,
-                role: true,
-            },
-            where: { 
-                room: { id: roomId }
-            }
-        });
+        const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
+            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.room', 'room')
+            .where('room_roles.room_id = :id')
+            .getMany();
+        
+        //const roomRoles = await this.roomRolesRepository.find({
+        //    relations: { 
+        //        room: true,
+        //        role: true,
+        //    },
+        //    where: { 
+        //        room: { id: roomId }
+        //    }
+        //});
         if (!roomRoles.length) {
             return null;
         }
@@ -66,5 +72,9 @@ export class RoomRolesService {
     public async isRole(roleToCheck: string, roomId: number): Promise<boolean> {
         return ((await this.findRolesRoom(roomId))
             .filter(role => role.role === roleToCheck)).length > 0;
+    }
+
+    public async validateRoomRole(role: string, username: string): Promise<boolean> {
+        
     }
 }
