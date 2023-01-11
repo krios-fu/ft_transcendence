@@ -28,10 +28,9 @@ export interface    IGameClientStart {
 }
 
 export interface    IInputData {
-    aMove?: number;
-    bMove?: number;
-    aHero?: number;
-    bHero?: number;
+    paddle: boolean; //paddle or hero
+    playerA: boolean; //playerA or playerB
+    up: boolean; //up or down
 }
 
 export interface    IGameData {
@@ -57,6 +56,7 @@ export class   Game {
     private     _stage?: StageId;  
     protected   _lastUpdate: number; //timestamp milliseconds
     protected   _state: GameState;
+    protected   _input: IInputData[];
 
     private static  winScore: number = 3;
 
@@ -107,6 +107,7 @@ export class   Game {
             this._stage = gameSelection.stage;
         this._lastUpdate = Date.now();
         this._state = GameState.Running;
+        this._input = [];
     }
 
     get state(): GameState {
@@ -213,14 +214,27 @@ export class   Game {
     }
 
     addInput(data: IInputData): void {
-        if (data.aMove)
-            this._playerA.addPaddleMove(data.aMove);
-        else if (data.bMove)
-            this._playerB.addPaddleMove(data.bMove);
-        else if (data.aHero)
-            this._playerA.addHeroInvocation(data.aHero);
-        else if (data.bHero)
-            this._playerB.addHeroInvocation(data.bHero);
+        this._input.push(data);
+    }
+
+    protected processInput(): void {
+        this._input.forEach(input => {
+            if (input.paddle)
+            {
+                if (input.playerA)
+                    this._playerA.updatePaddle(input.up, this._height);
+                else
+                    this._playerB.updatePaddle(input.up, this._height);
+            }
+            else
+            {//Just marks corresponding hero sprite as active
+                if (input.playerA)
+                    this._playerA.processHeroInvocation(input.up);
+                else
+                    this._playerB.processHeroInvocation(input.up);
+            }
+        });
+        this._input = [];
     }
 
     update(): boolean {
@@ -228,8 +242,7 @@ export class   Game {
         const   secondsElapsed: number = this.deltaTime(currentTime);
         let     pointTransition: boolean = false;     
         
-        this._playerA.updatePaddle(this._height);
-        this._playerB.updatePaddle(this._height);
+        this.processInput();
         if (this.ballUpdate(secondsElapsed))
         {
             pointTransition = true;

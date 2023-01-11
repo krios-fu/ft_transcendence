@@ -91,14 +91,11 @@ export class    Paddle {
             this._yPos += 8;
     }
 
-    //0: Down, 1: Up
-    update(moves: number[], gameHeight: number): void {
-        moves.forEach(element => {
-            if (element === 1)
+    update(up: boolean, gameHeight: number): void {
+            if (up)
                 this.up();
             else
                 this.down(gameHeight);
-        });
     }
 
     data(): IPaddleData {

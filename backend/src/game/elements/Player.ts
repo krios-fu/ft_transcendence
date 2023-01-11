@@ -38,19 +38,13 @@ export class    Player {
     private _hero?: Hero;
     private _score: number;
     private _nick: string;
-    private _paddleMoves: number[]; //0: down, 1: up
-    private _heroInvocation?: number;
 
     constructor(init: IPlayerInit) {
         this._paddle = new Paddle(init.paddle);
         if (init.hero)
-        {
             this._hero = init.hero;
-            this._heroInvocation = -1;
-        }
         this._score = init.score;
         this._nick = init.nick;
-        this._paddleMoves = [];
     }
 
     get score(): number {
@@ -73,35 +67,13 @@ export class    Player {
         this._score = input;
     }
 
-    //1: Down, 2: Up
-    addPaddleMove(move: number): void {
-        if (move != 1 && move != 2)
-            return ;
-        this._paddleMoves.push(move - 1); //Convert to 0: Down, 1: Up
+    updatePaddle(up: boolean, gameHeight: number): void {
+        this._paddle.update(up, gameHeight);
     }
 
-    //1: S, 2: W
-    addHeroInvocation(invocation: number): void {
-        if (!this._hero
-            || (invocation != 1 && invocation != 2))
-            return ;
-        this._heroInvocation = invocation - 1; //Convert to 0: S, 1: W
-    }
-
-    updatePaddle(gameHeight: number): void {
-        this._paddle.update(this._paddleMoves, gameHeight);
-        this._paddleMoves = [];
-    }
-
-    processHeroInvocation(): void {
+    processHeroInvocation(up: boolean): void {
         if (this._hero)
-        {
-            if (this._heroInvocation != -1)
-            {
-                this._hero.invocation(this._heroInvocation);
-                this._heroInvocation = -1;
-            }
-        }
+            this._hero.invocation(up);
     }
 
     updateHero(seconds: number): void {

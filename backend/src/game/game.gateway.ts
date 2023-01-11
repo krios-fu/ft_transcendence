@@ -171,7 +171,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
         
-        this.updateService.paddleInput(room, player, 2);
+        this.updateService.paddleInput(room, player, true);
     }
 
     @SubscribeMessage('paddleDown')
@@ -180,7 +180,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
         
-        this.updateService.paddleInput(room, player, 1);
+        this.updateService.paddleInput(room, player, false);
     }
 
     @SubscribeMessage('heroUp')
@@ -189,7 +189,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
-        this.updateService.heroInput(room, player, 2);
+        this.updateService.heroInput(room, player, true);
     }
 
     @SubscribeMessage('heroDown')
@@ -198,7 +198,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
-        this.updateService.heroInput(room, player, 1);
+        this.updateService.heroInput(room, player, false);
     }
 
   }
