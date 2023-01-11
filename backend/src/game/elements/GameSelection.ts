@@ -82,7 +82,14 @@ export class    GameSelection {
     }
 
     static stringifyCategory(cat: Category): string {
-        const   s: string[] = ["Iron", "Bronze", "Silver", "Gold", "Platinum"];
+        const   s: string[] = [
+            "Pending",
+            "Iron",
+            "Bronze",
+            "Silver",
+            "Gold",
+            "Platinum"
+        ];
 
         return (s[cat]);
     }
