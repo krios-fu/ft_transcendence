@@ -94,16 +94,16 @@ export class    Hero {
     }
 
     /*
-    **  button === 1 = W click
-    **  button === 0 = S click
+    **  up === true = W click
+    **  up === false = S click
     */
-    invocation(button: number): void {
-        if (this._pointInvocation != false)
+    invocation(up: boolean): void {
+        if (this._isActing
+            || this._pointInvocation)
             return ;
         this._isActing = true;
         this._pointInvocation = true;
-        this._activeSprite = button != 0
-                                ? 1 : 0;
+        this._activeSprite = up ? 1 : 0;
     }
 
     private getActiveSprite(): ISprite {

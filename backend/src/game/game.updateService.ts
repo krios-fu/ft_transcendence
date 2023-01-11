@@ -100,28 +100,28 @@ export class    GameUpdateService {
         }
     }
 
-    //move: 1 === Down, 2 === Up
-    paddleInput(roomId: string, player: string, move: number): void {
+    paddleInput(roomId: string, player: string, up: boolean): void {
         const   game: Game = this.getGame(roomId);
     
         if (!game)
             return ;
-        if (player === "PlayerA")
-            game.addInput({aMove: move}); 
-        else
-            game.addInput({bMove: move});
+        game.addInput({
+            paddle: true,
+            playerA: player === "PlayerA",
+            up: up
+        }); 
     }
 
-    //hero: //1 === S, 2 === W
-    heroInput(roomId: string, player: string, hero: number): void {
+    heroInput(roomId: string, player: string, up: boolean): void {
         const   game: Game = this.getGame(roomId);
     
         if (!game)
             return ;
-        if (player === "PlayerA")
-            game.addInput({aHero: hero});
-        else
-            game.addInput({bHero: hero});
+        game.addInput({
+            paddle: false,
+            playerA: player === "PlayerA",
+            up: up
+        });
     }
 
     private gameTransition(gameId: string): void {
