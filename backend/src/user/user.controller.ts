@@ -14,8 +14,6 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    ParseFilePipeBuilder,
-
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';

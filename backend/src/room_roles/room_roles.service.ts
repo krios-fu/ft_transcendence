@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
+import { RoomService } from 'src/room/room.service';
+import { UserRolesService } from 'src/user_roles/user_roles.service';
 import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
@@ -12,6 +14,8 @@ export class RoomRolesService {
     constructor(
         @InjectRepository(RoomRolesEntity)
         private readonly roomRolesRepository: RoomRolesRepository,
+        private readonly userRolesService: UserRolesService,
+        private readonly roomService: RoomService
     ) { }
 
     public async findAll(queryParams: RoomRolesQueryDto): Promise<RoomRolesEntity[]> {
@@ -74,7 +78,14 @@ export class RoomRolesService {
             .filter(role => role.role === roleToCheck)).length > 0;
     }
 
-    public async validateRoomRole(role: string, username: string): Promise<boolean> {
-        
+    public async validateRoomRole(role: string, username: string, roomId: number): Promise<boolean> {
+        if (role === 'official') {
+            return this.userRolesService.validateGlobalRole(username, ['admin']);
+        } else if (role === 'private') {
+            return this.userRolesService.validateGlobalRole(username, ['admin']) ||
+                (await this.roomService.findOne(roomId))
+                    .owner.username === 'username';
+        }
+        return true;
     }
 }

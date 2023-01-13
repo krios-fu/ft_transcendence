@@ -22,6 +22,7 @@ import { RolesService } from 'src/roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { UserRolesService } from 'src/user_roles/user_roles.service';
+import { RoomEntity } from 'src/room/entity/room.entity';
 
 @Controller('room_roles')
 export class RoomRolesController {
@@ -68,24 +69,20 @@ export class RoomRolesController {
         @Body() dto: CreateRoomRolesDto
     ): Promise<RoomRolesEntity> {
         const { roomId, roleId } = dto;
-        const roleEntity = await this.rolesService.findOne(roleId);
+        const roleEntity: RolesEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
             this.roomRoleLogger.error(`'No role with id ${roomId} found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        if (await this.roomService.findOne(roomId) === null) {
+        const roomEntity: RoomEntity = await this.roomService.findOne(roomId);
+        if (roomEntity === null) {
             this.roomRoleLogger.error( `No room with id ${roomId} found in database`);
             throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
         }
         const { role } = roleEntity;
-        if (role === 'official' && 
-            await this.userRolesService.validateGlobalRole(username, ['admin']) === false) {
-            return false;
+        if (this.roomRolesService.validateRoomRole(role, username, roomId) === null) {
+            this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
         }
-        else if (role === 'private' &&
-            await this.userRolesService.validateGlobalRole(username, ['admin']) ||
-            await this.roomService.findRoomOwner(roomId).owner) /* ... */
-//        if (await this.userRolesService.validateGlobalRole(username, []))
         return this.roomRolesService.create(dto);
     }
 
