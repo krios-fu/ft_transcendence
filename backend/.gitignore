@@ -33,3 +33,7 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# public resources
+/public/*
+!/public/default-avatar.jpeg

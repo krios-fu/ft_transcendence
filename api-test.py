@@ -48,6 +48,7 @@ if __name__ == '__main__':
     if args.PETITION == 'generate':
         r = requests.post(req_uri, headers=headers, timeout=2)
         print(f'returned: {r.content}')
+        print(f'headers: {r.headers}')
     elif args.PETITION == 'validate':
         token = input('Introduce token...')
         r = requests.post(
