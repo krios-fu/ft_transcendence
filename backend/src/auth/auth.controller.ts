@@ -23,6 +23,7 @@ import { UserService } from 'src/user/services/user.service';
 import { TokenCredentials } from './token-credentials.dto';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { TwoFactorAuthGuard } from './guard/twofactor-auth.guard';
+import * as QRCode from 'qrcode';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;
@@ -65,13 +66,13 @@ export class AuthController {
     }
 
     @Post('/2fa/generate')
-    public async generateNew2FASecret(@UserCreds() username: string): Promise<string> {
+    public async generateNew2FASecret(@UserCreds() username: string) {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
         }
-        return await this.authService.generateNew2FASecret(user.username, user.id);
+        return  { "qr": await this.authService.generateNew2FASecret(user.username, user.id) } ;
     }
 
     @Public()

@@ -4,6 +4,7 @@ import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Data } from 'phaser';
 
 @Component({
   selector: 'app-setting',
@@ -26,7 +27,9 @@ export class SettingComponent implements OnInit {
   });
 
   user = {} as UserDto;
+  file = undefined;
   icon = 'lock'
+  public qr_generate = ''
   constructor(private http: HttpClient,
     private usersService: UsersService,
     private authService: AuthService,
@@ -53,7 +56,7 @@ export class SettingComponent implements OnInit {
 
 
   onFile(event : any ){
-    const file = event.target.files[0];
+    this.file = event.target.files[0];
     this.namePhoto = event.target.files[0].name;
 
     const reader = new FileReader();
@@ -61,12 +64,35 @@ export class SettingComponent implements OnInit {
       this.urlPreview = reader.result as string;
     }
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(this.file as any);
     this.changeDetected();
 
-    console.log("file", file);
+    console.log("file", this.file);
   }
 
+  auth2fa(formGroup: FormGroup){
+    const form = formGroup.getRawValue();
+
+    console.log('Setting form---->', { ...form });
+
+    this.http.post('http://localhost:3000/auth/2fa/generate', this.user.username, )
+    .subscribe( (dta : any) => {
+
+      // const formData = new FormData();
+
+      // formData.append("avatar", dta as string);
+
+      this.qr_generate = dta.qr; 
+
+      console.log(dta);
+    })
+
+  }
+
+  confimateOtp(code: any){
+    this.qr_generate = ''
+    console.log("Code 2fa:", code);
+  }
 
   changeDetected() {
     this.icon = 'lock_open';
@@ -85,12 +111,29 @@ export class SettingComponent implements OnInit {
     console.log('Setting form---->', { ...form, nickName: nickname });
 
     if (this.icon === 'lock_open')
+
       this.http.patch('http://localhost:3000/users/me/settings', { ...form, nickName: nickname })
+      .subscribe(
+        data => {
+          console.log(data);
+          this.icon = 'lock';
+        });
+
+      if (this.file){
+        const formData = new FormData();
+
+        formData.append("avatar", this.file);
+
+        this.http.post('http://localhost:3000/users/me/avatar', formData)
         .subscribe(
           data => {
             console.log(data);
             this.icon = 'lock';
           });
+        }
+
+        // if()
+
   }
 
   getPhoto(): string {
