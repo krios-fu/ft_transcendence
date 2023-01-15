@@ -82,7 +82,7 @@ export class SettingComponent implements OnInit {
 
       // formData.append("avatar", dta as string);
 
-      this.qr_generate = dta.qr; 
+      this.qr_generate = dta.qr.qr; 
 
       console.log(dta);
     })
