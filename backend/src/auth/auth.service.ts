@@ -133,10 +133,10 @@ export class AuthService {
         res.clearCookie('refresh_token');
     }
 
-    public async generateNew2FASecret(username: string, id: number): Promise<string> {
+    public async generateNew2FASecret(username: string, id: number): Promise<Object> {
         const userSecret = authenticator.generateSecret();
         this.userService.updateUser(id, { 
-            doubleAuth: true,
+            /*doubleAuth: true,*/
             doubleAuthSecret: userSecret 
         });
         const keyuri = authenticator.keyuri(username, 'ft_transcendence', userSecret);
@@ -147,7 +147,16 @@ export class AuthService {
          const qr_img = await QRCode.toString(keyuri, { type: 'terminal' })
          console.log(`QR generated: \n${qr_img}`);
         /**/
-        return await QRCode.toDataURL(keyuri);
+        return { qr: await QRCode.toDataURL(keyuri) };
+    }
+
+    public async confirm2FAForUser(user: UserEntity, token: string) {
+        const { id, doubleAuthSecret: secret } = user;
+
+        if (authenticator.verify({token, secret}) === false) {
+            throw new UnauthorizedException('invalid token');
+        }
+        await this.userService.updateUser(id, { doubleAuth: true });
     }
 
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {

@@ -1,9 +1,10 @@
-import http, os, requests, argparse, sys
+import os, requests, argparse, sys
 from dotenv import load_dotenv
 
 token_uri = 'http://localhost:3000/auth/generate'
 req_uri = 'http://localhost:3000/auth/2fa/generate'
 val_uri = 'http://localhost:3000/auth/2fa/validate'
+cnf_uri = 'http://localhost:3000/auth/2fa/confirm'
 #val_uri = 'http://localhost:3000/user/1'
 #val_uri = 'http://localhost:3000/user/danrodri'
 
@@ -57,6 +58,15 @@ if __name__ == '__main__':
             headers=headers,
             data={'token': token},
             timeout=2)
+        print(f'returned with status code {r.status_code}')
+    elif args.PETITION == 'confirm':
+        token = input('Introduce token...')
+        r = requests.post(
+            cnf_uri,
+            headers=headers,
+            data={ 'token': token },
+            timeout=0.5
+        )
         print(f'returned with status code {r.status_code}')
         print(r.json())
     else:

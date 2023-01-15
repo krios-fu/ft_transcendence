@@ -96,7 +96,7 @@ export class SettingsPayloadDto {
 export class DoubleAuthPayload {
     @IsBoolean()
     @IsNotEmpty()
-    readonly doubleAuth: boolean;
+    readonly doubleAuth?: boolean;
 
     @IsString()
     @IsNotEmpty()
