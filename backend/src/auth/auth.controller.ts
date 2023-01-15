@@ -23,6 +23,7 @@ import { UserService } from 'src/user/services/user.service';
 import { TokenCredentials } from './token-credentials.dto';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { TwoFactorAuthGuard } from './guard/twofactor-auth.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;
@@ -65,13 +66,27 @@ export class AuthController {
     }
 
     @Post('/2fa/generate')
-    public async generateNew2FASecret(@UserCreds() username: string): Promise<string> {
+    public async generateNew2FASecret(@UserCreds() username: string): Promise<Object> {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
         }
         return await this.authService.generateNew2FASecret(user.username, user.id);
+    }
+
+    @Post('/2fa/confirm')
+    public async confirm2FAForUser
+    (
+        @UserCreds() username: string,
+        @Body() otpPayload: OtpPayload 
+    ): Promise<void> {
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.authLogger.error(`Request user ${username} not found in database`);
+            throw new UnauthorizedException();
+        }
+        return await this.authService.confirm2FAForUser(user, otpPayload.token);
     }
 
     @Public()
