@@ -5,15 +5,19 @@ import {
     IMatchData
 } from '../elements/Match';
 import { Txt } from '../elements/Txt';
+import { SnapshotBuffer } from '../elements/SnapshotBuffer';
+import { LagCompensationService } from '../services/lag-compensation.service';
 import { BaseScene } from './BaseScene';
 
 export class    MatchScene extends BaseScene {
 
     initData?: IMatchInitData;
     match?: Match;
+    buffer?: SnapshotBuffer;
 
     constructor(
-        role: string, socket: SocketIO.Socket, room: string
+        role: string, socket: SocketIO.Socket, room: string,
+        readonly lagCompensator: LagCompensationService
     ) {
         super(role, socket, room);
     }
@@ -26,11 +30,18 @@ export class    MatchScene extends BaseScene {
             this.initData = initData;
         this.socket.once("end", (data) => {
             this.match?.destroy();
+            this.buffer = undefined;
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
-        this.socket.on("matchUpdate", (data: IMatchData) => {
-            this.match?.update(data);
+        this.socket.on("matchUpdate", (snapshot: IMatchData) => {
+            if (this.match && this.buffer)
+            {
+                this.buffer.update(
+                    snapshot,
+                    this.match.snapshot
+                );
+            }
         });
         this.socket.on("served", () => {
             if (!this.initTxt)
@@ -65,9 +76,18 @@ export class    MatchScene extends BaseScene {
     //Called after preload()
     create() {
         if (this.initData != undefined)
-            this.match = new Match(this, this.initData);        
+        {
+            this.match = new Match(this, this.initData);
+            this.buffer = new SnapshotBuffer(this.lagCompensator);
+        }
         this.createInitText();
         this.initData = undefined;
+    }
+
+    override update() {
+        this.match?.update(
+            this.buffer?.getSnapshot()
+        );
     }
 
 }
