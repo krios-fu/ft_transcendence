@@ -48,6 +48,14 @@ export class    Player {
         this._nick = initData.nick;
     }
 
+    get data(): IPlayerData {
+        return ({
+            paddle: this._paddle.data,
+            hero: this._hero ? this._hero.data : undefined,
+            score: this._score
+        });
+    }
+
     get score(): number {
         return (this._score);
     }

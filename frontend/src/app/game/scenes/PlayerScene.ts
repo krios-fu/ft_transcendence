@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
+import { LagCompensationService } from '../services/lag-compensation.service';
 import { MatchScene } from './MatchScene';
 
 export class    PlayerScene extends MatchScene {
@@ -8,9 +9,10 @@ export class    PlayerScene extends MatchScene {
     powerKeys: any;
 
     constructor(
-        socket: SocketIO.Socket, room: string
+        socket: SocketIO.Socket, room: string,
+        override readonly lagCompensator: LagCompensationService
     ) {
-        super("Player", socket, room);
+        super("Player", socket, room, lagCompensator);
     }
 
     override create() {
@@ -32,6 +34,7 @@ export class    PlayerScene extends MatchScene {
             this.socket.emit('heroUp');
         else if (this.powerKeys.down.isDown)
             this.socket.emit('heroDown');
+        super.update();
     }
 
 }

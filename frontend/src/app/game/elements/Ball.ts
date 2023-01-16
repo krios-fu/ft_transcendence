@@ -22,6 +22,8 @@ export class    Ball {
 
     private _ball: Phaser.GameObjects.Ellipse;
     private _ballShadow: Phaser.GameObjects.Ellipse;
+    private _xVel: number;
+    private _yVel: number;
 
     constructor(scene: MatchScene, initData: IBallInitData) {
         this._ball = scene.add.ellipse(
@@ -40,6 +42,8 @@ export class    Ball {
         );
         this._ball.depth = 1;
         this._ballShadow.depth = 0;
+        this._xVel = initData.xVel;
+        this._yVel = initData.yVel;
     }
 
     get xPos(): number {
@@ -50,11 +54,22 @@ export class    Ball {
         return (this._ball.y);
     }
 
+    get data(): IBallData {
+        return ({
+            xPos: this.xPos,
+            yPos: this.yPos,
+            xVel: this._xVel,
+            yVel: this._yVel
+        });
+    }
+
     update(data: IBallData): void {
         this._ball.x = data.xPos;
         this._ball.y = data.yPos;
         this._ballShadow.x = data.xPos;
         this._ballShadow.y = data.yPos;
+        this._xVel = data.xVel;
+        this._yVel = data.yVel;
     }
 
     destroy(): void {

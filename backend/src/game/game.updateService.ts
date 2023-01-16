@@ -24,6 +24,8 @@ export class    GameUpdateService {
     gameSelections: Map<string, GameSelection>;
     updateInterval: NodeJS.Timer = undefined;
 
+    private readonly _UpdateIntervalTime: number = 1000 / 60;
+
     constructor(
         private readonly gameService: GameService,
         private readonly socketHelper: SocketHelper,
@@ -187,7 +189,7 @@ export class    GameUpdateService {
                         }
                     );
                 },
-                16
+                this._UpdateIntervalTime
             );
         }
         else if (this.updateInterval

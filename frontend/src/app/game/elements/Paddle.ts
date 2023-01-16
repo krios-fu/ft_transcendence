@@ -46,6 +46,13 @@ export class    Paddle {
         return (this._paddle.y);
     }
 
+    get data(): IPaddleData {
+        return ({
+            xPos: this.xPos,
+            yPos: this.yPos
+        });
+    }
+
     update(data: IPaddleData): void {
         this._paddle.x = data.xPos;
         this._paddle.y = data.yPos;
