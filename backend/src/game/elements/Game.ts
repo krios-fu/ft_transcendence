@@ -25,6 +25,7 @@ export interface    IGameClientStart {
     playerB: IPlayerClientStart;
     ball: IBallClientStart;
     stage?: string;
+    when: number;
 }
 
 export interface    IInputData {
@@ -37,6 +38,7 @@ export interface    IGameData {
     playerA: IPlayerData;
     playerB: IPlayerData;
     ball: IBallData;
+    when: number;
 }
 
 export interface    IGameResult {
@@ -257,7 +259,8 @@ export class   Game {
         return ({
             playerA: this._playerA.data(),
             playerB: this._playerB.data(),
-            ball: this._ball.data()
+            ball: this._ball.data(),
+            when: this._lastUpdate
         });
     }
 
@@ -276,7 +279,8 @@ export class   Game {
             playerA: this._playerA.clientStartData(),
             playerB: this._playerB.clientStartData(),
             ball: this._ball.clientStartData(),
-            stage: this.stringifyStage(this._stage)
+            stage: this.stringifyStage(this._stage),
+            when: this._lastUpdate
         });
     }
 

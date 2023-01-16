@@ -18,6 +18,8 @@ export interface    IHeroData {
     yPos: number;
     lowXPos: number;
     lowYPos: number;
+    activeSprite: number;
+    active: boolean; //Hero is active
 }
 
 export class    Hero {
@@ -37,6 +39,17 @@ export class    Hero {
         );
         this._upperSprite.setOrigin(initData.xOrigin, initData.yOrigin);
         this._lowerSprite.setOrigin(initData.lowXOrigin, initData.lowYOrigin);
+    }
+
+    get data(): IHeroData {
+        return ({
+            xPos: this._upperSprite.x,
+            yPos: this._upperSprite.y,
+            lowXPos: this._lowerSprite.x,
+            lowYPos: this._lowerSprite.y,
+            activeSprite: 0,
+            active: false
+        });
     }
 
     update(data: IHeroData): void {

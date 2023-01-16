@@ -8,6 +8,7 @@ import { MenuScene } from "./scenes/MenuScene";
 import { PlayerScene } from "./scenes/PlayerScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
 import { StartScene } from "./scenes/StartScene";
+import { LagCompensationService } from "./services/lag-compensation.service";
 
 @Component({
     selector: 'app-game',
@@ -22,7 +23,9 @@ export class    GameComponent implements OnInit {
     private queueButtonClick: boolean;
     private username?: string; //Provisional
 
-    constructor () {
+    constructor (
+        private readonly lagCompensator: LagCompensationService
+    ) {
         this.config = {
             type: Phaser.AUTO, //WEBGL if available. Canvas otherwise.
             parent: 'game_zone',
@@ -49,11 +52,14 @@ export class    GameComponent implements OnInit {
         const   menuHeroScene: MenuHeroScene =
                     new MenuHeroScene(this.socket, "Game1");
         const   playerScene: PlayerScene =
-                    new PlayerScene(this.socket, "Game1");
+                    new PlayerScene(this.socket, "Game1",
+                                        this.lagCompensator);
         const   classicPlayerScene: ClassicPlayerScene =
-                    new ClassicPlayerScene(this.socket, "Game1");
+                    new ClassicPlayerScene(this.socket, "Game1",
+                                        this.lagCompensator);
         const   spectatorScene: SpectatorScene =
-                    new SpectatorScene(this.socket, "Game1");
+                    new SpectatorScene(this.socket, "Game1",
+                                        this.lagCompensator);
         const   endScene: EndScene =
                     new EndScene(this.socket, "Game1");
             
