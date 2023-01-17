@@ -16,11 +16,6 @@ export interface    IPaddleClientStart {
     color: number;
 }
 
-export interface    IPaddleData {
-    xPos: number;
-    yPos: number;
-}
-
 export class    Paddle {
 
     private _width: number;
@@ -96,13 +91,6 @@ export class    Paddle {
                 this.up();
             else
                 this.down(gameHeight);
-    }
-
-    data(): IPaddleData {
-        return ({
-            xPos: this._xPos,
-            yPos: this._yPos
-        });
     }
     
     clientStartData(): IPaddleClientStart {
