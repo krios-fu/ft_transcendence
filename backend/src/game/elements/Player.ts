@@ -5,7 +5,6 @@ import {
 } from "./Hero";
 import {
     IPaddleClientStart,
-    IPaddleData,
     IPaddleInit,
     Paddle
 } from "./Paddle";
@@ -27,7 +26,7 @@ export interface    IPlayerClientStart {
 }
 
 export interface    IPlayerData {
-    paddle: IPaddleData;
+    paddleY: number;
     hero?: IHeroData;
     score: number;
 }
@@ -83,7 +82,7 @@ export class    Player {
 
     data(): IPlayerData {
         return ({
-            paddle: this._paddle.data(),
+            paddleY: this._paddle.yPos,
             hero: this.hero ? this._hero.data() : undefined,
             score: this._score
         });

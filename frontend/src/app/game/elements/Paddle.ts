@@ -9,11 +9,6 @@ export interface    IPaddleInitData {
     color: number;
 }
 
-export interface    IPaddleData {
-    xPos: number;
-    yPos: number;
-}
-
 export class    Paddle {
 
     private _paddle: Phaser.GameObjects.Rectangle;
@@ -46,18 +41,9 @@ export class    Paddle {
         return (this._paddle.y);
     }
 
-    get data(): IPaddleData {
-        return ({
-            xPos: this.xPos,
-            yPos: this.yPos
-        });
-    }
-
-    update(data: IPaddleData): void {
-        this._paddle.x = data.xPos;
-        this._paddle.y = data.yPos;
-        this._paddleShadow.x = data.xPos;
-        this._paddleShadow.y = data.yPos;
+    update(yPos: number): void {
+        this._paddle.y = yPos;
+        this._paddleShadow.y = yPos;
     }
 
     destroy(): void {

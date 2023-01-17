@@ -4,7 +4,6 @@ import {
     IMatchData,
     Match
 } from '../elements/Match';
-import { IPaddleData } from '../elements/Paddle';
 import { IPlayerData } from '../elements/Player';
 
 import { InterpolationService } from './interpolation.service';
@@ -16,13 +15,8 @@ const   sampleBall: IBallData = {
     yVel: 300
 };
 
-const   samplePaddle: IPaddleData = {
-    xPos: 300,
-    yPos: 300
-};
-
 const   samplePlayer: IPlayerData = {
-    paddle: samplePaddle,
+    paddleY: 300,
     hero: undefined,
     score: 0
 };
@@ -31,7 +25,7 @@ const   sampleMatch: IMatchData = {
     ball: sampleBall,
     playerA: samplePlayer,
     playerB: {
-        paddle: {...samplePlayer.paddle},
+        paddleY: samplePlayer.paddleY,
         hero: samplePlayer.hero ? {...samplePlayer.hero} : undefined,
         score: samplePlayer.score
     },

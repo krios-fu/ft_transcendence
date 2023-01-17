@@ -73,9 +73,9 @@ export class   InterpolationService {
     private _interpolatePlayer(refPlayer: IPlayerData,
                                 basePlayer: IPlayerData,
                                 timeData: IFixedTimeData): void {
-        refPlayer.paddle.yPos = this._interpolate(
-            refPlayer.paddle.yPos,
-            basePlayer.paddle.yPos,
+        refPlayer.paddleY = this._interpolate(
+            refPlayer.paddleY,
+            basePlayer.paddleY,
             timeData
         );
         if (refPlayer.hero

@@ -68,7 +68,7 @@ export class    Match {
     // Returns a Deep Copy of IPlayerData
     private static _copyPlayer(data: IPlayerData): IPlayerData {
         return ({
-            paddle: {...data.paddle},
+            paddleY: data.paddleY,
             hero: data.hero ? {...data.hero} : undefined,
             score: data.score
         });

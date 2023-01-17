@@ -10,8 +10,6 @@ export interface    IHeroData {
     yPos: number;
     lowXPos: number;
     lowYPos: number;
-    activeSprite: number;
-    active: boolean; //Hero is active
 }
 
 export interface    IHeroClientStart {
@@ -258,9 +256,7 @@ export class    Hero {
             xPos: this._upperSprite.xPos,
             yPos: this._upperSprite.yPos,
             lowXPos: this._lowerSprite.xPos,
-            lowYPos: this._lowerSprite.yPos,
-            activeSprite: this._activeSprite,
-            active: true
+            lowYPos: this._lowerSprite.yPos
         });
     }
 
