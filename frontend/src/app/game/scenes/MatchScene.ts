@@ -78,7 +78,12 @@ export class    MatchScene extends BaseScene {
         if (this.initData != undefined)
         {
             this.match = new Match(this, this.initData);
-            this.buffer = new SnapshotBuffer(this.lagCompensator);
+            this.buffer = new SnapshotBuffer(
+                Number(this.game.config.width),
+                Number(this.game.config.height),
+                this.initData,
+                this.lagCompensator
+            );
         }
         this.createInitText();
         this.initData = undefined;
@@ -88,6 +93,8 @@ export class    MatchScene extends BaseScene {
         this.match?.update(
             this.buffer?.getSnapshot()
         );
+        if (this.buffer?.size === 1)
+            this.buffer.autofill();
     }
 
 }
