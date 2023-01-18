@@ -23,7 +23,7 @@ export class   InterpolationService {
     */
     private _totalSnapshots: number;
 
-    private readonly _serverUpdateInterval: number = 1000 / 60;
+    private readonly _serverUpdateInterval: number = 1000 / 20;
 
     constructor() {
         this._totalSnapshots = 0;
@@ -143,6 +143,18 @@ export class   InterpolationService {
         return (snapshot);
     }
 
+    /*
+    **  Updates the data that cannot be predicted, like the players' data,
+    **  and the ball data after a ball serve.
+    */
+    private _updateSnapshot(baseSnapshot: IMatchData,
+                                genSnapshot: IMatchData): void {
+        if (baseSnapshot.ball.xVel != genSnapshot.ball.xVel)
+            baseSnapshot.ball = genSnapshot.ball;
+        baseSnapshot.playerA = genSnapshot.playerA;
+        baseSnapshot.playerB = genSnapshot.playerB;
+    }
+
     private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,
                         currentSnapshot: IMatchData): void {
         let currentStep: number;
@@ -157,9 +169,9 @@ export class   InterpolationService {
                 currentStep
             );
             if (i < buffer.length)
-                buffer[i] = Match.copyMatchData(generatedSnapshot);
+                this._updateSnapshot(buffer[i], generatedSnapshot);
             else
-                buffer.push(Match.copyMatchData(generatedSnapshot));
+                buffer.push(generatedSnapshot);
         }
     }
 
@@ -176,11 +188,7 @@ export class   InterpolationService {
         if (timeOffset < this._serverUpdateInterval)
             this._stopTime(buffer, serverSnapshot);
         else
-        {
-            this._fillLoop(buffer, serverSnapshot,
-                            buffer[0] ? Match.copyMatchData(buffer[0])
-                            : currentSnapshot); //Provisional
-        }
+            this._fillLoop(buffer, serverSnapshot, currentSnapshot);
         while (buffer.length > this._totalSnapshots)
             buffer.pop();
     }
