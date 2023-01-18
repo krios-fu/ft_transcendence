@@ -24,7 +24,7 @@ export class    GameUpdateService {
     gameSelections: Map<string, GameSelection>;
     updateInterval: NodeJS.Timer = undefined;
 
-    private readonly _UpdateIntervalTime: number = 1000 / 60;
+    private readonly _UpdateIntervalTime: number = 1000 / 20;
 
     constructor(
         private readonly gameService: GameService,
