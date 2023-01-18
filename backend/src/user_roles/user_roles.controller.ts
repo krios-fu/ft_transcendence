@@ -36,7 +36,7 @@ export class UserRolesController {
     public async getAllRolesFromUser(@Param('user_id', ParseIntPipe) userId: number): Promise<UserRolesEntity[]> {
         if (await this.userService.findOne(userId) === null) {
             this.userRolesLogger.error(`User with id ${userId} not found in database`);
-            throw new NotFoundException('resource not found in database'),
+            throw new NotFoundException('resource not found in database');
         }
         return this.userRolesService.getAllRolesFromUser(userId);
     }

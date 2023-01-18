@@ -15,7 +15,9 @@ import {
   HttpStatus,
   Put,
   Query,
-  BadRequestException
+  BadRequestException,
+  NotFoundException,
+  ForbiddenException
 } from '@nestjs/common';
 import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
@@ -29,7 +31,6 @@ export class RoomRolesController {
     constructor
     (
         private readonly roomRolesService: RoomRolesService,
-        private readonly userRolesService: UserRolesService,
         private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { 
@@ -53,6 +54,7 @@ export class RoomRolesController {
     }
 
     /* Get roles of an specific room */
+    /* what do we return if a room has no roles ?? */
     @Get('/rooms/:room_id')
     public async findRolesOfRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<RolesEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
@@ -80,13 +82,18 @@ export class RoomRolesController {
             throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
         }
         const { role } = roleEntity;
-        if (this.roomRolesService.validateRoomRole(role, username, roomId) === null) {
+        if (await this.roomRolesService.validateRoomRole(role, username, roomId) === null) {
             this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
+            throw new ForbiddenException('not authorized')
         }
         return this.roomRolesService.create(dto);
     }
 
-    @Put(':id')
+    /* this should become << update room password >>,
+        meaning it should be guarded with ! at_least_owner
+        and should only accept ! private_role
+    */
+    @Put(':id/update')
     // UseGuard(PrivateRoom)
     // UseGuard(AtLeastRoomOwner)
     public async updateRoomRole
@@ -94,10 +101,14 @@ export class RoomRolesController {
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateRoomRolesDto,
     ): Promise<RoomRolesEntity> {
-        if (await this.roomRolesService.findOne(id) === null) {
+        const roomRole: RoomRolesEntity = await this.roomRolesService.find(id);
+
+        if (roomRole === null) {
             this.roomRoleLogger.error('No role for room with id ' + id + ' found in database');
-            throw new HttpException('no role room in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('no role room in db');
         }
+        const { role } = roomRole.role;
+        if (role)
         return this.roomRolesService.updateRoomRole(id, dto);
     }
 
@@ -107,10 +118,25 @@ export class RoomRolesController {
         public async changePwd(@Body creds: RoomPasswordDto ~~ @IsString() oldPwd, @IsString() newPwd ~~) {
             return await this.roomService.changePwd(); ~~ first checks oldPwd, then changes entity ~~
         }
-        */
+    */
 
     @Delete(':id')
-    public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    public async remove
+    (
+        @Param('id', ParseIntPipe) id: number,
+        @UserCreds() username: string
+    ): Promise<void> {
+        const roomRole: RoomRolesEntity = await this.roomRolesService.findOne(id);
+
+        if (roomRole === null) {
+            this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
+            throw new NotFoundException('No role room in db');
+        }
+        const { roomId, role } = roomRole
+        if (await this.roomRolesService.validateRoomRole(role.role, username, roomId) === false) {
+            this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
+            throw new ForbiddenException('not authorized')
+        }
         await this.roomRolesService.remove(id);
     }
 }
