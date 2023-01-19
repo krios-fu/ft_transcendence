@@ -25,7 +25,7 @@ export class RoomRolesService {
         return await this.roomRolesRepository.find();
     }
 
-    public async findOne(id: number) {
+    public async findOne(id: number): Promise<RoomRolesEntity> {
         return await this.roomRolesRepository.findOne({
             where: { id: id }
         });
@@ -36,7 +36,7 @@ export class RoomRolesService {
         const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
             .leftJoinAndSelect('room_roles.roles', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
-            .where('room_roles.room_id = :id')
+            .where('room_roles.room_id = :id', { id: roomId })
             .getMany();
         
         //const roomRoles = await this.roomRolesRepository.find({
@@ -55,6 +55,21 @@ export class RoomRolesService {
             roles.push(roomRole.role);
         })
         return roles;
+    }
+
+    public async findPrivateRoleInRoom(roomId: number): Promise<RoomRolesEntity> {
+        const roomRole: RoomRolesEntity = await this.roomRolesRepository.createQueryBuilder('room_roles')
+            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.room', 'room')
+            .where('room_roles.room_id = :id')
+            .where('room_roles.room_id = :id', { id: roomId })
+            .andWhere('roles.role = "private"')
+            .getOne();
+
+        console.log(`Test: ${roomRole}`);
+        if (roomRole === null) {
+            return null;
+        }
     }
 
     public async create(dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {

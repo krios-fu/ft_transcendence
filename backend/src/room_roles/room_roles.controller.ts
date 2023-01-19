@@ -48,7 +48,7 @@ export class RoomRolesController {
         const roomRole = await this.roomRolesService.findOne(id);
         if (roomRole === null) {
             this.roomRoleLogger.error(`Room role with id ${id} not found in database`);
-            throw new HttpException('no room role in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('no room role in db');
         }
         return roomRole;
     }
@@ -93,7 +93,7 @@ export class RoomRolesController {
         meaning it should be guarded with ! at_least_owner
         and should only accept ! private_role
     */
-    @Put(':id/update')
+    @Put('room/:id/update')
     // UseGuard(PrivateRoom)
     // UseGuard(AtLeastRoomOwner)
     public async updateRoomRole
@@ -101,13 +101,13 @@ export class RoomRolesController {
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateRoomRolesDto,
     ): Promise<RoomRolesEntity> {
-        const roomRole: RoomRolesEntity = await this.roomRolesService.find(id);
+        const roles: RolesEntity[] = await this.roomRolesService.findRolesRoom(id);
 
-        if (roomRole === null) {
-            this.roomRoleLogger.error('No role for room with id ' + id + ' found in database');
-            throw new NotFoundException('no role room in db');
+        if (roles === null) {
+            this.roomRoleLogger.error(`'No roles for room with id ${id} found in database'`);
+            throw new NotFoundException('no roles room in db');
         }
-        const { role } = roomRole.role;
+        const { role } = role;
         if (role)
         return this.roomRolesService.updateRoomRole(id, dto);
     }
