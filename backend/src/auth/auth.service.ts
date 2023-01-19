@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -154,9 +154,9 @@ export class AuthService {
         const { id, doubleAuthSecret: secret } = user;
 
         if (authenticator.verify({token, secret}) === false) {
-            throw new UnauthorizedException('invalid token');
+            throw new BadRequestException('invalid token');
         }
-        await this.userService.updateUser(id, { doubleAuth: true });
+        return await this.userService.updateUser(id, { doubleAuth: true });
     }
 
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {

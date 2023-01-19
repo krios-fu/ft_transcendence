@@ -80,7 +80,7 @@ export class AuthController {
     (
         @UserCreds() username: string,
         @Body() otpPayload: OtpPayload 
-    ): Promise<void> {
+    ) {
         const user: UserEntity = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);

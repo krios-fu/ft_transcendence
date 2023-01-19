@@ -44,7 +44,7 @@
 		</div>
 
 		<div style="padding: 5px;">
-			<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.doubleAuth" (click)="auth2fa(form.form)" name="doubleAuth">2FA
+			<mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.doubleAuth" name="doubleAuth">2FA
 				Authentication</mat-slide-toggle>
 				<div *ngIf="qr_generate.length != 0" style=" display: flex; justify-content: space-around; align-content: center; background-color: white; position: relative;">
 					<img src={{qr_generate}} >
