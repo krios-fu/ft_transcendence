@@ -1,4 +1,3 @@
-import { BlackPanther } from "./BlackPanther";
 import { HeroId } from "./GameSelection";
 import {
     Hero,
@@ -16,7 +15,7 @@ export class    HeroCreator {
     }
 
     private aquamanSprite(playerSide: number, upperSprite: boolean): ISprite {
-        const   sprite: any = {};
+        const   sprite: ISprite = {} as ISprite;
 
         sprite.radius = 20;
         if (playerSide === 0) //0: left, else: right
@@ -43,6 +42,8 @@ export class    HeroCreator {
         }
         sprite.xPos = sprite.xPosInit;
         sprite.yPos = sprite.yPosInit;
+        sprite.ballVelocityX = sprite.xVelocity;
+        sprite.ballVelocityY = sprite.yVelocity;
         return (sprite);
     }
 
@@ -56,7 +57,7 @@ export class    HeroCreator {
     }
 
     private supermanSprite(playerSide: number, upperSprite: boolean): ISprite {
-        const   sprite: any = {};
+        const   sprite: ISprite = {} as ISprite;
 
         sprite.radius = 20;
         if (playerSide === 0) //0: left, else: right
@@ -85,6 +86,8 @@ export class    HeroCreator {
         }
         sprite.xPos = sprite.xPosInit;
         sprite.yPos = sprite.yPosInit;
+        sprite.ballVelocityX = sprite.xVelocity;
+        sprite.ballVelocityY = sprite.yVelocity;
         return (sprite);
     }
 
@@ -99,26 +102,30 @@ export class    HeroCreator {
 
     private blackPantherSprite(playerSide: number,
                                 upperSprite: boolean): ISprite {
-        const   sprite: any = {};
+        const   sprite: ISprite = {} as ISprite;
 
         sprite.radius = 20;
-        if (upperSprite) //0: left, else: right
-        {
+        if (upperSprite)
+        {//playerSide (0: left, else: right)
             sprite.xPosInit = playerSide === 0 ? 200 : this._gameWidth - 200;
             sprite.yPosInit = 0 - sprite.radius;
             sprite.xVelocity = 0;
             sprite.yVelocity = 800;
             sprite.xOrigin = 0.5;
             sprite.yOrigin = 1;
+            sprite.ballVelocityX = playerSide === 0 ? 300 : -300;
+            sprite.ballVelocityY = sprite.yVelocity;
         }
         else
-        {
+        {//playerSide (0: left, else: right)
             sprite.xPosInit = playerSide === 0 ? 200 : this._gameWidth - 200;
             sprite.yPosInit = this._gameHeight + sprite.radius;
             sprite.xVelocity = 0;
             sprite.yVelocity = -800;
             sprite.xOrigin = 0.5;
             sprite.yOrigin = 0;
+            sprite.ballVelocityX = playerSide === 0 ? 300 : -300;
+            sprite.ballVelocityY = sprite.yVelocity;
         }
         sprite.xPosEnd = sprite.xPosInit;
         sprite.yPosEnd = this._gameHeight * 0.5;
@@ -128,7 +135,7 @@ export class    HeroCreator {
     }
 
     private blackPanther(playerSide: number): Hero {
-        return (new BlackPanther({
+        return (new Hero({
             name: 'blackPanther',
             upperSprite: this.blackPantherSprite(playerSide, true),
             lowerSprite: this.blackPantherSprite(playerSide, false),

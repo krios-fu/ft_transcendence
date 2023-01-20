@@ -185,10 +185,7 @@ export class   InterpolationService {
         const   timeOffset: number = serverSnapshot.when - currentSnapshot.when;
     
         this._totalSnapshots = totalSnapshots;
-        if (timeOffset < this._serverUpdateInterval)
-            this._stopTime(buffer, serverSnapshot);
-        else
-            this._fillLoop(buffer, serverSnapshot, currentSnapshot);
+        this._fillLoop(buffer, serverSnapshot, currentSnapshot);
         while (buffer.length > this._totalSnapshots)
             buffer.pop();
     }

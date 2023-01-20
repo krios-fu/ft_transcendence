@@ -49,7 +49,9 @@ export class    ExtrapolationService {
             toTime: targetTime,
             aPaddleY: refSnapshot.playerA.paddleY,
             bPaddleY: refSnapshot.playerB.paddleY,
-            ball: refSnapshot.ball
+            ball: refSnapshot.ball,
+            aHero: genSnapshot.playerA.hero,
+            bHero: genSnapshot.playerB.hero
         });
 
         if (!prediction)

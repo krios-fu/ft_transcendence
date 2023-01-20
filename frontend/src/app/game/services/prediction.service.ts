@@ -1,5 +1,12 @@
 import { Injectable } from "@angular/core";
+import { Vector } from "../utils/Vector";
 import { IBallData } from "../elements/Ball";
+import { IHeroData } from "../elements/Hero";
+import {
+    HeroPredictionService,
+    IHeroPredictionInit
+} from "./hero-prediction.service";
+import { Circle } from "../utils/Circle";
 
 export interface    IPredictionInit {
     gameWidth: number;
@@ -9,7 +16,7 @@ export interface    IPredictionInit {
     aPaddleX: number;
     bPaddleX: number;
     ballRadius: number;
-    //heroInit?: IHeroPredictionInit;
+    heroInit?: IHeroPredictionInit;
 }
 
 export interface    IPredictionInput {
@@ -18,14 +25,14 @@ export interface    IPredictionInput {
     aPaddleY: number;
     bPaddleY: number;
     ball: IBallData;
-    /*aHero?: IHeroData;
-    bHero?: IHeroData;*/
+    aHero?: IHeroData;
+    bHero?: IHeroData;
 }
 
 export interface   IPredictionOutput {
     ball: IBallData;
-    /*aHero?: IHeroData;
-    bHero?: IHeroData;*/
+    aHero?: IHeroData;
+    bHero?: IHeroData;
 }
 
 @Injectable({
@@ -51,7 +58,7 @@ export class    PredictionService {
     private _ballVelocityY: number;
 
     constructor(
-        //private readonly heroPredictor: HeroPredictionService
+        private readonly heroPredictor: HeroPredictionService
     ) {
         this._init = false;
         this._gameWidth = 0;
@@ -75,7 +82,7 @@ export class    PredictionService {
         if (!data)
         {
             this._init = false;
-            //this.heroPredictor.init(data);
+            this.heroPredictor.init(data);
             return ;
         }
         this._init = true;
@@ -90,7 +97,7 @@ export class    PredictionService {
         this._aPaddleRightBorder = this._aPaddleX + this._paddleHalfWidth;
         this._bPaddleLeftBorder = this._bPaddleX - this._paddleHalfWidth;
         this._ballRadius = data.ballRadius;
-        //this.heroPredictor.init(data.heroInit);
+        this.heroPredictor.init(data.heroInit);
     }
 
     private move(xDisplacement: number, yDisplacement: number): void {
@@ -272,8 +279,52 @@ export class    PredictionService {
         return (false);
     }
 
+    /*
+    **  The ball cannot collide with aHero and bHero during the same update.
+    */
+    private _checkHeroCollision(data: IPredictionInput,
+                                    secondsElapsed: number): boolean {
+        const   circle: Circle = {
+            pos: new Vector(this._ballX, this._ballY),
+            vel: new Vector(this._ballVelocityX, this._ballVelocityY),
+            radius: this._ballRadius
+        }
+        let ballUpdate: IBallData | undefined = undefined;
+    
+        if (data.aHero?.active)
+        {
+            ballUpdate = this.heroPredictor.checkBallHit(
+                circle,
+                data.aHero,
+                true,
+                secondsElapsed
+            );
+        }
+        if (!ballUpdate && data.bHero?.active)
+        {
+            ballUpdate = this.heroPredictor.checkBallHit(
+                circle,
+                data.bHero,
+                false,
+                secondsElapsed
+            );
+        }
+        if (ballUpdate)
+        {
+            this._ballX = ballUpdate.xPos;
+            this._ballY = ballUpdate.yPos;
+            this._ballVelocityX = ballUpdate.xVel;
+            this._ballVelocityY = ballUpdate.yVel;
+            return (true);
+        }
+        return (false);
+    }
+
     private checkCollision(data: IPredictionInput, xDisplacement: number,
-                            yDisplacement: number): boolean {
+                            yDisplacement: number,
+                            secondsElapsed: number): boolean {
+        if (this._checkHeroCollision(data, secondsElapsed))
+            return (true);
         if (this._ballVelocityX < 0)
         {
             if (this.checkPaddleCollisionLeft(data.aPaddleY, xDisplacement,
@@ -321,8 +372,13 @@ export class    PredictionService {
         if (!data || !this._init)
             return (undefined);        
         this._processInput(data);
-        if (!this.checkCollision(data, xDisplacement, yDisplacement))
+        if (!this.checkCollision(data, xDisplacement, yDisplacement,
+                secondsElapsed))
             this.move(xDisplacement, yDisplacement);
+        if (data.aHero)
+            this.heroPredictor.move(data.aHero, true, secondsElapsed);
+        if (data.bHero)
+            this.heroPredictor.move(data.bHero, false, secondsElapsed);
         return ({
             ball: {
                 xPos: this._ballX,
@@ -330,6 +386,8 @@ export class    PredictionService {
                 xVel: this._ballVelocityX,
                 yVel: this._ballVelocityY
             },
+            aHero: data.aHero,
+            bHero: data.bHero
         });
     }
 }
