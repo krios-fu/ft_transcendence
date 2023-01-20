@@ -23,6 +23,13 @@ export class   SnapshotBuffer {
             aPaddleX: initData.playerA.paddle.xPos,
             bPaddleX: initData.playerB.paddle.xPos,
             ballRadius: initData.ball.width / 2,
+            heroInit: initData.playerA.hero && initData.playerB.hero
+                        ? {
+                            aHeroSprite: initData.playerA.hero.sprite,
+                            aHeroSpriteLow: initData.playerA.hero.spriteLow,
+                            bHeroSprite: initData.playerB.hero.sprite,
+                            bHeroSpriteLow: initData.playerB.hero.spriteLow
+                        } : undefined
         });
     }
 

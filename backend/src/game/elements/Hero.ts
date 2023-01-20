@@ -10,19 +10,15 @@ export interface    IHeroData {
     yPos: number;
     lowXPos: number;
     lowYPos: number;
+    active: number; //0: inactive, 1: lower, 2: upper
 }
 
 export interface    IHeroClientStart {
     playerSide: number;
     name: string;
-    xPos: number;
-    yPos: number;
-    xOrigin: number;
-    yOrigin: number;
-    lowXPos: number;
-    lowYPos: number;
-    lowXOrigin: number;
-    lowYOrigin: number;
+    sprite: ISprite;
+    spriteLow: ISprite;
+    active: number; //0: inactive, 1: lower, 2: upper
 }
 
 export interface    IHeroInit {
@@ -48,29 +44,27 @@ export interface   ISprite {
     radius: number;
     xVelocity: number;
     yVelocity: number;
-    xOrigin: number;
-    yOrigin: number;
+    xOrigin: number; //For client sprite origin
+    yOrigin: number; //For client sprite origin
+    ballVelocityX: number; //Velocity of the ball after hero hit
+    ballVelocityY: number; //Velocity of the ball after hero hit
 }
 
 export class    Hero {
 
     private _name: string;
-    private _isActing: boolean;
     private _pointInvocation: boolean;
-    private _activeSprite: number; //-1: none, 0: lower, 1: upper
-    private _hitBall: boolean;
-    protected _upperSprite: ISprite;
-    protected _lowerSprite: ISprite;
-    protected _playerSide: number; //0: left, 1: right
+    private _activeSprite: number; //0: inactive, 1: lower, 2: upper
+    private _upperSprite: ISprite;
+    private _lowerSprite: ISprite;
+    private _playerSide: number; //0: left, 1: right
     private _horizontalEndUpdate: (xDisplacement: number, xPos: number,
                             xPosEnd: number) => boolean;
 
     constructor(initData: IHeroInit) {
         this._name = initData.name;
-        this._isActing = false;
         this._pointInvocation = false;
-        this._activeSprite = -1;
-        this._hitBall = false;
+        this._activeSprite = 0;
         this._upperSprite = initData.upperSprite;
         this._lowerSprite = initData.lowerSprite;
         this._playerSide = initData.playerSide;
@@ -84,7 +78,7 @@ export class    Hero {
     }
 
     get isActing(): boolean {
-        return (this._isActing);
+        return (this._activeSprite != 0);
     }
 
     get pointInvocation(): boolean {
@@ -96,18 +90,17 @@ export class    Hero {
     **  up === false = S click
     */
     invocation(up: boolean): void {
-        if (this._isActing
+        if (this.isActing
             || this._pointInvocation)
             return ;
-        this._isActing = true;
         this._pointInvocation = true;
-        this._activeSprite = up ? 1 : 0;
+        this._activeSprite = up ? 2 : 1;
     }
 
     private getActiveSprite(): ISprite {
-        if (this._activeSprite === -1)
+        if (!this._activeSprite)
             return (undefined);
-        return (this._activeSprite != 0
+        return (this._activeSprite === 2
                     ? this._upperSprite : this._lowerSprite);
     }
 
@@ -134,7 +127,7 @@ export class    Hero {
     private verticalEndUpdate(yDisplacement: number, yPos: number,
         yPosEnd: number)
     {
-        if (this._activeSprite === 0)
+        if (this._activeSprite === 1)
             return (this.downEndUpdate(yDisplacement, yPos, yPosEnd));
         return (this.upEndUpdate(yDisplacement, yPos, yPosEnd));
     }
@@ -159,17 +152,17 @@ export class    Hero {
     }
 
     private ballHitBounce(posNoCollision: number, posCollision: number,
-                            pastVelocity: number, newVelocity): number {
+                            pastVelocity: number, newVelocity: number): number {
         const   posDiff = posNoCollision - posCollision;
     
         //Rule of three
         return ((newVelocity * posDiff) / pastVelocity);
     }
 
-    protected ballVelocityAfterHit(): [number, number] {
+    private ballVelocityAfterHit(): [number, number] {
         const   sprite: ISprite = this.getActiveSprite();
 
-        return ([sprite.xVelocity, sprite.yVelocity])
+        return ([sprite.ballVelocityX, sprite.ballVelocityY]);
     }
 
     private ballStateAfterHit(collisionTime: number, totalTime: number,
@@ -197,8 +190,17 @@ export class    Hero {
     **  Otherwise, the collision happens in the future.
     */
     private checkValidCollisionTime(collisionTime: number,
-                                        maxTime): boolean {
+                                        maxTime: number): boolean {
         if (collisionTime <= maxTime)
+            return (true);
+        return (false);
+    }
+
+    private hitBall(ball: Circle, sprite: ISprite): boolean {
+        if (ball.vel.x
+            && (ball.vel.x === sprite.ballVelocityX
+                && ball.vel.y === sprite.ballVelocityY)
+        )
             return (true);
         return (false);
     }
@@ -207,7 +209,7 @@ export class    Hero {
         const   sprite: ISprite = this.getActiveSprite();
         let     collision: [boolean, number];
     
-        if (!sprite || this._hitBall)
+        if (!sprite || this.hitBall(ball, sprite))
             return (undefined);
         collision = timeCirclesCollision({
             pos: new Vector(sprite.xPos, sprite.yPos),
@@ -215,20 +217,15 @@ export class    Hero {
             radius: sprite.radius
         }, ball);
         if (collision[0]
-            && this.checkValidCollisionTime(collision[1], secondsElapsed))
-        {
-            this._hitBall = true;
+                && this.checkValidCollisionTime(collision[1], secondsElapsed))
             return (this.ballStateAfterHit(collision[1], secondsElapsed, ball));
-        }
         return (undefined);
     }
 
     private endAction(sprite: ISprite): void {
-        this._isActing = false;
         sprite.xPos = sprite.xPosInit;
         sprite.yPos = sprite.yPosInit;
-        this._activeSprite = -1;
-        this._hitBall = false;
+        this._activeSprite = 0;
         this._pointInvocation = false; // For testing
     }
 
@@ -243,9 +240,9 @@ export class    Hero {
     update(seconds: number): void {
         let sprite: ISprite;
     
-        if (this._activeSprite === -1)
+        if (!this._activeSprite)
             return ;
-        sprite = this._activeSprite != 0
+        sprite = this._activeSprite === 2
                     ? this._upperSprite : this._lowerSprite;
         this.updateSprite(seconds, sprite);
         this.checkEnd(sprite);
@@ -256,7 +253,8 @@ export class    Hero {
             xPos: this._upperSprite.xPos,
             yPos: this._upperSprite.yPos,
             lowXPos: this._lowerSprite.xPos,
-            lowYPos: this._lowerSprite.yPos
+            lowYPos: this._lowerSprite.yPos,
+            active: this._activeSprite
         });
     }
 
@@ -264,14 +262,9 @@ export class    Hero {
         return ({
             playerSide: this._playerSide,
             name: this._name,
-            xPos: this._upperSprite.xPos,
-            yPos: this._upperSprite.yPos,
-            lowXPos: this._lowerSprite.xPos,
-            lowYPos: this._lowerSprite.yPos,
-            xOrigin: this._upperSprite.xOrigin,
-            yOrigin: this._upperSprite.yOrigin,
-            lowXOrigin: this._lowerSprite.xOrigin,
-            lowYOrigin: this._lowerSprite.yOrigin
+            sprite: this._upperSprite,
+            spriteLow: this._lowerSprite,
+            active: this._activeSprite
         });
     }
 
