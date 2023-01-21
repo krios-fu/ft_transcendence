@@ -83,39 +83,22 @@ export class RoomRolesController {
         const { role } = roleEntity;
         if (await this.roomRolesService.validateRoomRole(role, username, roomId) === null) {
             this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
-<<<<<<< HEAD
             throw new ForbiddenException('user not authorized for this action');
-=======
-            throw new ForbiddenException('not authorized')
->>>>>>> 55959b5d531b838bc685b458dd03af5d20f627bd
         }
         return this.roomRolesService.create(dto);
     }
 
-<<<<<<< HEAD
-    @Put(':id/password')
-    // UseGuard(PrivateRoom)
-    // UseGuard(AtLeastRoomOwner)
-    public async updateRoomRole
-=======
     @Put('room/:id/update')
     public async updatePassword
->>>>>>> 55959b5d531b838bc685b458dd03af5d20f627bd
     (
         @Param('id', ParseIntPipe) id: number,
         @UserCreds() username: string,
         @Body() dto: UpdatePasswordDto,
     ): Promise<RoomRolesEntity> {
-<<<<<<< HEAD
-        if (await this.roomRolesService.findOne(id) === null) {
-            this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
-            throw new HttpException('no role room in db', HttpStatus.NOT_FOUND);
-=======
         const roomRole = await this.roomRolesService.findPrivateRoleInRoom(id);
         if (roomRole === null) {
             this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
             throw new NotFoundException('no role room in db');
->>>>>>> 55959b5d531b838bc685b458dd03af5d20f627bd
         }
         const { roomId, password } = roomRole;
         if (await this.roomRolesService.validateRoomRole('private', username, roomId) === false) {
@@ -131,11 +114,6 @@ export class RoomRolesController {
     }
 
     @Delete(':id')
-<<<<<<< HEAD
-    public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        const roomRoles: RoomRoles[] = await this.roomRolesService.findRolesRoom();
-        await this.roomRolesService.remove(id);
-=======
     public async remove
     (
         @Param('id', ParseIntPipe) id: number,
@@ -153,7 +131,6 @@ export class RoomRolesController {
             throw new ForbiddenException('not authorized')
         }
         await this.roomRolesService.delete(id);
->>>>>>> 55959b5d531b838bc685b458dd03af5d20f627bd
     }
 }
 
