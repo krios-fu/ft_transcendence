@@ -4,10 +4,11 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserRolesService } from 'src/user_roles/user_roles.service';
-import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
+import { CreateRoomRolesDto, UpdatePasswordDto } from './dto/room_roles.dto';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesRepository } from './repository/room_roles.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RoomRolesService {
@@ -25,7 +26,7 @@ export class RoomRolesService {
         return await this.roomRolesRepository.find();
     }
 
-    public async findOne(id: number) {
+    public async findOne(id: number): Promise<RoomRolesEntity> {
         return await this.roomRolesRepository.findOne({
             where: { id: id }
         });
@@ -36,7 +37,7 @@ export class RoomRolesService {
         const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
             .leftJoinAndSelect('room_roles.roles', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
-            .where('room_roles.room_id = :id')
+            .where('room_roles.room_id = :id', { id: roomId })
             .getMany();
         
         //const roomRoles = await this.roomRolesRepository.find({
@@ -57,18 +58,31 @@ export class RoomRolesService {
         return roles;
     }
 
+    public async findPrivateRoleInRoom(roomId: number): Promise<RoomRolesEntity> {
+        return await this.roomRolesRepository.createQueryBuilder('room_roles')
+            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.room', 'room')
+            .where('room_roles.room_id = :id', { id: roomId })
+            .andWhere('roles.role = "private"')
+            .getOne();
+    }
+
     public async create(dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
         const newRoomRole = new RoomRolesEntity(dto);
         return await this.roomRolesRepository.save(newRoomRole);
     }
 
-    public async updateRoomRole(id: number, dto: UpdateRoomRolesDto): Promise<RoomRolesEntity> {
-        await this.roomRolesRepository.update(id, dto);
+    public async updatePassword(id: number, savedPwd: string, dto: UpdatePasswordDto): Promise<RoomRolesEntity> {
+        const { oldPassword: oldPwd, newPassword: newPwd } = dto;
+        if (await bcrypt.compare(savedPwd, oldPwd) === false) {
+            return null;
+        }
+        await this.roomRolesRepository.update(id, { password: newPwd });
         return await this.findOne(id);
     }
 
-    public async remove(id: number): Promise<void> {
-        await this.roomRolesRepository.softDelete(id);
+    public async delete(id: number): Promise<void> {
+        await this.roomRolesRepository.delete(id);
     }
 
     /* ~~ role identifying service ~~ */
