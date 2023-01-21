@@ -19,6 +19,8 @@ import { GameModule } from './game/game.module';
 import { WinnerModule } from './match/winner/winner.module';
 import { LoserModule } from './match/loser/loser.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 
 @Module({
@@ -27,7 +29,7 @@ import { MulterModule } from '@nestjs/platform-express';
         AuthModule,
         ChatModule,
         MulterModule.register({
-            dest: './uploads',
+            dest: './public',
         }),
         TypeOrmModule.forRoot({
             type: 'postgres',
@@ -39,6 +41,9 @@ import { MulterModule } from '@nestjs/platform-express';
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
             // logging: true
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'public'),
         }),
         RolesModule,
         RoomModule,

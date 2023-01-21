@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext, HttpException, HttpStatus } from "@nestjs/common";
+import { createParamDecorator, ExecutionContext, HttpException, HttpStatus, UnauthorizedException } from "@nestjs/common";
 import { IRequestUser } from "../interfaces/request-payload.interface";
 
 
@@ -8,7 +8,7 @@ export const UserCreds = createParamDecorator(
         const username: string | undefined = req.user?.data?.username;
 
         if (username === undefined) {
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('Request user has not logged in');
         }
         return username;
     }

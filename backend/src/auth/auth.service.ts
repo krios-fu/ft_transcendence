@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -67,14 +67,14 @@ export class AuthService {
         if (tokenEntity === null) {
             const newToken = new RefreshTokenEntity({
                 authUser: user,
-                expiresIn: new Date(Date.now() + (3600 * 24 * 7))
+                expiresIn: new Date(Date.now() + (1000 * 3600 * 24 * 7))
             });
 
             tokenEntity = await this.refreshTokenRepository.save(newToken);
         }
         res.cookie('refresh_token', tokenEntity.token, {
             httpOnly: true,
-            maxAge: 3600 * 24 * 7,
+            maxAge: 1000 * 3600 * 24 * 7,
             sameSite: 'none',
             secure: true,
         });
@@ -82,40 +82,6 @@ export class AuthService {
             'accessToken': this.signJwt(user.username),
             'username': user.username,
         };
-    }
-
-    public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
-        let tokenEntity: RefreshTokenEntity;
-
-        try {  
-            tokenEntity = await this.getTokenByUsername(username);
-        } catch (err) {
-            console.error(`Caught exception in refreshToken: ${err}`);
-            throw err;
-        }
-        if (tokenEntity.token != refreshToken) {
-            throw TokenError.TOKEN_INVALID;
-        } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
-            await this.refreshTokenRepository.delete(tokenEntity);
-            throw TokenError.TOKEN_EXPIRED;
-        }
-        return {
-            'accessToken': this.signJwt(username),
-            'username': username,
-        }
-    }
-
-    public async logout(username: string, res: Response): Promise<void> {
-        let tokenEntity: RefreshTokenEntity;
-
-        try {
-            tokenEntity = await this.getTokenByUsername(username);
-        } catch(err) {
-            console.error(`Caught exception in logout: ${err} \
-                (user logged out without a valid session)`);
-        }
-        await this.refreshTokenRepository.delete(tokenEntity);
-        res.clearCookie('refresh_token');
     }
 
     public async getTokenByUsername(username: string): Promise<RefreshTokenEntity> {
@@ -138,10 +104,39 @@ export class AuthService {
         return tokenEntity;
     }
 
-    public async generateNew2FASecret(username: string, id: number): Promise<string> {
+    public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
+        let tokenEntity: RefreshTokenEntity;
+  
+        tokenEntity = await this.getTokenByUsername(username);
+        if (tokenEntity.token != refreshToken) {
+            throw TokenError.TOKEN_INVALID;
+        } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
+            await this.refreshTokenRepository.delete(tokenEntity.token);
+            throw TokenError.TOKEN_EXPIRED;
+        }
+        return {
+            'accessToken': this.signJwt(username),
+            'username': username,
+        }
+    }
+
+    public async logout(username: string, res: Response): Promise<void> {
+        let tokenEntity: RefreshTokenEntity;
+
+        try {
+            tokenEntity = await this.getTokenByUsername(username);
+        } catch(err) {
+            console.error(`Caught exception in logout: ${err} \
+                (user logged out without a valid session)`);
+        }
+        await this.refreshTokenRepository.delete(tokenEntity.token);
+        res.clearCookie('refresh_token');
+    }
+
+    public async generateNew2FASecret(username: string, id: number): Promise<Object> {
         const userSecret = authenticator.generateSecret();
         this.userService.updateUser(id, { 
-            doubleAuth: true,
+            /*doubleAuth: true,*/
             doubleAuthSecret: userSecret 
         });
         const keyuri = authenticator.keyuri(username, 'ft_transcendence', userSecret);
@@ -152,14 +147,23 @@ export class AuthService {
          const qr_img = await QRCode.toString(keyuri, { type: 'terminal' })
          console.log(`QR generated: \n${qr_img}`);
         /**/
-        return await QRCode.toDataURL(keyuri);
+        return { qr: await QRCode.toDataURL(keyuri) };
+    }
+
+    public async confirm2FAForUser(user: UserEntity, token: string) {
+        const { id, doubleAuthSecret: secret } = user;
+
+        if (authenticator.verify({token, secret}) === false) {
+            throw new BadRequestException('invalid token');
+        }
+        await this.userService.updateUser(id, { doubleAuth: true });
     }
 
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {
         const { doubleAuthSecret: secret } = user;
         
         if (authenticator.verify({ token, secret }) === false) {
-            throw new UnauthorizedException();
+            throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);
     }

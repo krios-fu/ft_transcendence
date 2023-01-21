@@ -194,7 +194,7 @@ export class   Game {
         let     border: number;
     
         if (this._ball.checkPaddleCollision(this._playerA.paddle,
-                    this._playerB.paddle, ballXDisplacement))
+                this._playerB.paddle, ballXDisplacement, ballYDisplacement))
             return (false);
         else
         {
@@ -228,8 +228,8 @@ export class   Game {
         const   secondsElapsed: number = this.deltaTime(currentTime);
         let     pointTransition: boolean = false;     
         
-        this._playerA.update(secondsElapsed, this._height);
-        this._playerB.update(secondsElapsed, this._height);
+        this._playerA.updatePaddle(this._height);
+        this._playerB.updatePaddle(this._height);
         if (this.ballUpdate(secondsElapsed))
         {
             pointTransition = true;

@@ -1,3 +1,10 @@
+import {
+    Circle,
+    timeCirclesCollision
+} from "../utils/Circle";
+import { Vector } from "../utils/Vector";
+import { IBallData } from "./Ball";
+
 export interface    IHeroData {
     xPos: number;
     yPos: number;
@@ -153,28 +160,67 @@ export class    Hero {
         }
     }
 
+    private ballHitBounce(posNoCollision: number, posCollision: number,
+                            pastVelocity: number, newVelocity): number {
+        const   posDiff = posNoCollision - posCollision;
+    
+        //Rule of three
+        return ((newVelocity * posDiff) / pastVelocity);
+    }
+
     protected ballVelocityAfterHit(): [number, number] {
         const   sprite: ISprite = this.getActiveSprite();
 
         return ([sprite.xVelocity, sprite.yVelocity])
     }
 
-    checkBallHit(ballXPosition: number, ballYPosition: number,
-                    ballRadius: number): [number, number] {
-        const   sprite: ISprite = this.getActiveSprite();
-        let     ballSpriteXDist: number;
-        let     ballSpriteYDist: number;
+    private ballStateAfterHit(collisionTime: number, totalTime: number,
+                                ball: Circle): IBallData {
+        const   xPosCollision = ball.pos.x + (collisionTime * ball.vel.x);
+        const   yPosCollision = ball.pos.y + (collisionTime * ball.vel.y);
+        const   xPosNoCollision = ball.pos.x + (totalTime * ball.vel.x);
+        const   yPosNoCollision = ball.pos.y + (totalTime * ball.vel.y);
+        const   ballVelocity = this.ballVelocityAfterHit();
 
-        if (!sprite)
+        return ({
+            xPos: xPosCollision
+                    + this.ballHitBounce(xPosNoCollision, xPosCollision,
+                                            ball.vel.x, ballVelocity[0]),
+            yPos: yPosCollision
+                    + this.ballHitBounce(yPosNoCollision, yPosCollision,
+                                            ball.vel.y, ballVelocity[1]),
+            xVel: ballVelocity[0],
+            yVel: ballVelocity[1]
+        });
+    }
+
+    /*
+    **  If true, the collision happened during the time of this update.
+    **  Otherwise, the collision happens in the future.
+    */
+    private checkValidCollisionTime(collisionTime: number,
+                                        maxTime): boolean {
+        if (collisionTime <= maxTime)
+            return (true);
+        return (false);
+    }
+
+    checkBallHit(ball: Circle, secondsElapsed: number): IBallData {
+        const   sprite: ISprite = this.getActiveSprite();
+        let     collision: [boolean, number];
+    
+        if (!sprite || this._hitBall)
             return (undefined);
-        ballSpriteXDist = Math.abs(ballXPosition - sprite.xPos);
-        ballSpriteYDist = Math.abs(ballYPosition - sprite.yPos);
-        if (this._hitBall === false
-            && ballSpriteXDist - ballRadius <= sprite.radius
-            && ballSpriteYDist - ballRadius <= sprite.radius)
+        collision = timeCirclesCollision({
+            pos: new Vector(sprite.xPos, sprite.yPos),
+            vel: new Vector(sprite.xVelocity, sprite.yVelocity),
+            radius: sprite.radius
+        }, ball);
+        if (collision[0]
+            && this.checkValidCollisionTime(collision[1], secondsElapsed))
         {
             this._hitBall = true;
-            return (this.ballVelocityAfterHit());
+            return (this.ballStateAfterHit(collision[1], secondsElapsed, ball));
         }
         return (undefined);
     }
@@ -188,13 +234,9 @@ export class    Hero {
         this._pointInvocation = false; // For testing
     }
 
-    checkEnd(): void {
-        let sprite: ISprite;
-    
-        if (this._activeSprite === -1)
+    private checkEnd(sprite: ISprite): void {    
+        if (!sprite)
             return ;
-        sprite = this._activeSprite != 0
-                    ? this._upperSprite : this._lowerSprite;
         if (sprite.xPos === sprite.xPosEnd
             && sprite.yPos === sprite.yPosEnd)
             this.endAction(sprite);
@@ -208,6 +250,7 @@ export class    Hero {
         sprite = this._activeSprite != 0
                     ? this._upperSprite : this._lowerSprite;
         this.updateSprite(seconds, sprite);
+        this.checkEnd(sprite);
     }
 
     data(): IHeroData {

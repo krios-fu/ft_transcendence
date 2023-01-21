@@ -36,8 +36,6 @@ export class SettingComponent implements OnInit {
         next: (user) => {
           this.user = user[0];
 
-          console.log('---> settind', this.user);
-
           this.formGroup.get("doubleAuth")?.setValue(this.user.doubleAuth, { emitEvent: true });
           this.formGroup.get("acceptedTerms")?.setValue(this.user.acceptedTerms, { emitEvent: true });
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });

@@ -1,11 +1,10 @@
-
 <div class="badge">
 
   <figure class="avatar">
-    <img src={{getPhotoUrl()}}  />
+    <img src={{getPhotoUrl()}} />
   </figure>
-  <mat-icon  [ngStyle]="{'color': color_icon}" class="icon-display" 
-  style="position: absolute; bottom: -5px;">{{online_icon}}</mat-icon>
+  <mat-icon [ngStyle]="{'color': color_icon}" class="icon-display"
+    style="position: absolute; bottom: -5px;">{{online_icon}}</mat-icon>
 </div>
 <!-- </div> -->
 <div style="display: flex; 
@@ -13,7 +12,7 @@ position: relative;
 align-items: center;  
 justify-content: space-around;
 " *ngIf="user">
-  <h1   style="font-size: 14px;">{{getNickname()}}</h1>
+  <h1 style="font-size: 14px;">{{getNickname()}}</h1>
 </div>
 
 <div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
@@ -33,28 +32,21 @@ justify-content: space-around;
 
 <a mat-icon-button (click)="plus()" class="tree" style="margin: 5px; box-shadow: inset 4px white;">
   <mat-icon>{{plus_minus}}</mat-icon>
-  ROOM AND DM
+  CHATS & ROOM
 </a>
 
-<cdk-virtual-scroll-viewport *ngIf="status_room" class="efecct"
-  style="height: 45vh; position: relative; color: white;
-  /* box-shadow: 0 0 4px 0 goldenrod; */
-	border-radius: 20px;
-  flex-direction:column-reverse;" itemSize="5">
-  <app-room></app-room>
+<app-room *ngIf="status_room"></app-room>
 
-</cdk-virtual-scroll-viewport>
-
-
-<div style="margin-top: 40px;" class="effect" *ngIf="!status_room">
+<!-- <div style="margin-top: 40px;" class="effect" *ngIf="!status_room">
   <div style="display: flex; justify-content: center; padding: 10px;">
     <h1 style="font-size: 10px;">Friends online</h1>
   </div>
+
   <cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"
     style=" height: 10vh; position: relative; color: white;" itemSize="5">
-    <section>
-      <app-friend-online></app-friend-online>
-    </section>
+    <section> -->
+<app-friend-online *ngIf="!status_room"> </app-friend-online>
+<!-- </section>
   </cdk-virtual-scroll-viewport>
   
-</div>
+</div> -->

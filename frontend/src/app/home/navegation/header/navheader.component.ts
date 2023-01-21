@@ -40,6 +40,8 @@ export class NavHeaderComponent implements OnInit {
         this.online_icon = (this.user.defaultOffline) ? 'sentiment_very_satisfied' : 'sentiment_very_dissatisfied';
       })
 
+ 
+
   }
 
 

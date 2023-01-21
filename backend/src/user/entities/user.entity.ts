@@ -1,12 +1,15 @@
 import { Exclude } from "class-transformer";
+import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
 import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
+import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 import {
 	Column,
 	Entity,
 	ManyToMany,
 	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
@@ -64,6 +67,7 @@ export class UserEntity extends BaseEntity {
 	@Column({ 
 		type: 'varchar',
 		nullable: false,
+		default: DEFAULT_AVATAR_PATH
  	})
   	photoUrl : string;
 	
@@ -124,4 +128,12 @@ export class UserEntity extends BaseEntity {
 
 	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
 	chats : ChatEntity[];
+
+	@OneToOne
+	(
+		() => RefreshTokenEntity,
+		(tokenEntity) => tokenEntity.authUser,
+		{ cascade: true }
+	)
+	token: RefreshTokenEntity
 }

@@ -88,7 +88,12 @@ export class    Player {
         this._heroInvocation = invocation - 1; //Convert to 0: S, 1: W
     }
 
-    update(seconds: number, gameHeight: number): void {
+    updatePaddle(gameHeight: number): void {
+        this._paddle.update(this._paddleMoves, gameHeight);
+        this._paddleMoves = [];
+    }
+
+    processHeroInvocation(): void {
         if (this._hero)
         {
             if (this._heroInvocation != -1)
@@ -96,14 +101,12 @@ export class    Player {
                 this._hero.invocation(this._heroInvocation);
                 this._heroInvocation = -1;
             }
-            this._hero.update(seconds);
         }
-        this._paddle.update(this._paddleMoves, gameHeight);
-        this._paddleMoves = [];
     }
 
-    checkHeroEnd(): void {
-        this._hero.checkEnd();
+    updateHero(seconds: number): void {
+        if (this._hero)
+            this._hero.update(seconds);
     }
 
     data(): IPlayerData {
