@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Data } from 'phaser';
-import { Observable, catchError, map, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-setting',
@@ -85,8 +85,11 @@ export class SettingComponent implements OnInit {
 
   confir(code: any): Observable<HttpResponse<any>> {
     return this.http.post<any>('http://localhost:3000/auth/2fa/confirm', { token: code }).pipe(
-      // map( (res : any) => {} ),
-
+      tap( (res: any) => {
+        
+        this.user.doubleAuth = true;
+        this.qr_generate = '';
+      }),
       catchError((err: HttpErrorResponse) => {
 
         alert("Code otp Error");

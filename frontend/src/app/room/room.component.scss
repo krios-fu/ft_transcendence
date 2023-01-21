@@ -54,6 +54,33 @@ a {
   }
 }
 
+.avatar_online {
+  position: relative;
+  // background: lawngreen;
+  //z-index: 1;
+  // left: 5px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 3px solid rgba(255, 255, 255, 0.24);
+	content: "";
+	background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
+	// top: -1%;
+	// left: -2%;
+	animation: spin 2.5s linear infinite;
+	//   }
+
+	img {
+		width: 100%;
+		height: auto;
+
+	}
+
+}
+
 .scroll {
   height: 30vh;
   position: relative;

@@ -20,6 +20,8 @@ import { SearchComponent } from './search/search.component';
 import { MatChipList, MatChipsModule, MAT_CHIPS_DEFAULT_OPTIONS} from '@angular/material/chips'
 import { MDCChipSet } from '@material/chips';
 import { GameModule } from "./game/game.module";
+import { OtpSessionComponent } from './login/otp-session/otp-session.component';
+
 
 const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {} }
 
@@ -28,6 +30,7 @@ const config: SocketIoConfig = { url:'http://localhost:3001/private', options: {
         AppComponent,
         HeaderComponent,
         SearchComponent,
+        OtpSessionComponent
         // MatChip,
         // MatChipList,
         // LoginComponent

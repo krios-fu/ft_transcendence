@@ -26,6 +26,9 @@ export class ProfileUserComponent implements OnInit {
 
   urlApi = 'http://localhost:3000/';
 
+ public FRIENDS_USERS = [] as UserDto[];
+
+
   constructor(private http: HttpClient,
     private authService: AuthService,
     private route: ActivatedRoute,
@@ -54,9 +57,24 @@ export class ProfileUserComponent implements OnInit {
               if (user.username == this.user?.username)
                 this.icon_friend = 'person_remove';
 
+                this.http.get<any[]>(`http://localhost:3000/users/${this.user?.id}/friends`)
+                .subscribe((friends: any[]) => {
+                  for (let friend in friends) {
+                    const { receiver } = friends[friend];
+                    const { sender } = friends[friend];
+                    const user = (receiver) ? receiver : sender;
+                    this.FRIENDS_USERS.push(user);
+                  }
+                  console.log("USER FRIENS", this.FRIENDS_USERS)
+                })
+
             })
         });
-    })
+    });
+
+
+
+  
   }
 
   getNickName() {

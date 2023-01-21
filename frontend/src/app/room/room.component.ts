@@ -17,6 +17,8 @@ import { UserDto } from '../dtos/user.dto';
 export class RoomComponent implements AfterViewInit {
 
  public CHATS_USERS = [] as UserDto[];
+ public FRIENDS_USERS = [] as UserDto[];
+
 
   statusTree = false;
 
@@ -48,5 +50,18 @@ export class RoomComponent implements AfterViewInit {
         }
       });
     console.log('NEW VERSION', this.CHATS_USERS);
+
+    this.http.get<any[]>(`http://localhost:3000/users/me/friends`)
+    .subscribe((friends: any[]) => {
+      for (let friend in friends) {
+        const { receiver } = friends[friend];
+        const { sender } = friends[friend];
+        const user = (receiver) ? receiver : sender;
+        this.FRIENDS_USERS.push(user);
+      }
+      console.log("USER FRIENS", this.FRIENDS_USERS)
+    })
   }
+
+  
 }

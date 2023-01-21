@@ -49,6 +49,10 @@ export class AuthService {
         this.router.navigate(['/home/profile']);
     }
 
+    redirecOtpSesion(): void {
+        this.router.navigate(['/otp_session']);
+    }
+
     redirectLogin(): void {
         this.router.navigateByUrl('/login');
 

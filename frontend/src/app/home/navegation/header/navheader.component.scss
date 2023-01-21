@@ -1,3 +1,22 @@
+@property --rotate {
+	syntax: "<angle>";
+	initial-value: 132deg;
+	inherits: false;
+}
+
+@keyframes spin {
+	0% {
+		--rotate: 0deg;
+	}
+
+	100% {
+		--rotate: 360deg;
+	}
+
+
+}
+
+
 .icon-display {
   transform: scale(0.6) translateX(42px);
   color: greenyellow;
