@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -23,10 +23,11 @@ export class ProfileUserComponent implements OnInit {
   };
 
   icon_friend = 'person_add'
+  icon_friend_activate = true;
 
   urlApi = 'http://localhost:3000/';
 
- public FRIENDS_USERS = [] as UserDto[];
+  public FRIENDS_USERS = [] as UserDto[];
 
 
   constructor(private http: HttpClient,
@@ -35,35 +36,44 @@ export class ProfileUserComponent implements OnInit {
     private chatService: ChatService,
   ) {
     this.user = undefined;
+
   }
+
+
+
 
   ngOnInit() {
     this.route.params.subscribe(({ id }) => {
       // this.formMessage.patchValue({ id });
-
-
-
       this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
           this.user = user[0];
           this.chatService.createChat(this.user.id);
 
+          this.FRIENDS_USERS = [];
+          this.icon_friend_activate = true;
+
           // change de icone visible add o remove 
           this.http.get<any>(this.urlApi + 'users/me/friends/' + this.user?.id)
             .subscribe((friend: any) => {
-              const { receiver } = friend;
-              const { sender } = friend;
-              const user = (receiver) ? receiver : sender;
-              if (user.username == this.user?.username)
-                this.icon_friend = 'person_remove';
+              if (friend) {
+                const { receiver } = friend;
+                const { sender } = friend;
+                const user = (receiver) ? receiver : sender;
+                if (user.username == this.user?.username)
+                  this.icon_friend = 'person_remove';
+              }
+              else
+                this.icon_friend_activate = false;
 
-                this.http.get<any[]>(`http://localhost:3000/users/${this.user?.id}/friends`)
+              this.http.get<any[]>(`http://localhost:3000/users/${this.user?.id}/friends`)
                 .subscribe((friends: any[]) => {
                   for (let friend in friends) {
                     const { receiver } = friends[friend];
                     const { sender } = friends[friend];
                     const user = (receiver) ? receiver : sender;
-                    this.FRIENDS_USERS.push(user);
+                    if (user)
+                      this.FRIENDS_USERS.push(user);
                   }
                   console.log("USER FRIENS", this.FRIENDS_USERS)
                 })
@@ -71,11 +81,9 @@ export class ProfileUserComponent implements OnInit {
             })
         });
     });
-
-
-
-  
   }
+
+
 
   getNickName() {
     return this.user?.nickName;

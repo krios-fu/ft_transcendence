@@ -34,7 +34,7 @@ justify-content: space-around;
 
 <section style="margin-top: 15px">
 	<span>
-		<a mat-icon-button class="send_friendship" (click)="post_friendship()">
+		<a *ngIf="icon_friend_activate" mat-icon-button class="send_friendship" (click)="post_friendship()">
 			<mat-icon >{{this.icon_friend}}</mat-icon>
 		</a>
 	</span>
@@ -53,10 +53,10 @@ justify-content: space-around;
         class="scroll_friend" itemSize="5">
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
           <mat-chip class="tag_friend"
-          [routerLink]="[ '/', { outlets: {  chat: ['chat', user.nickName ] } }]">
+          [routerLink]="['/home/profile/', user.nickName]">
           <img class="avatar_friend_online" *ngIf="user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
 		  <img class="avatar_friend" *ngIf="!user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
-          <span> {{user.nickName}} {{user.defaultOffline}} </span>
+          <span> {{user.nickName}}</span>
         </mat-chip>
       </mat-chip-list>
     </cdk-virtual-scroll-viewport>

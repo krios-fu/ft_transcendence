@@ -27,7 +27,7 @@
       class="scroll" itemSize="5">
       <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
         <mat-chip class="tag"
-        [routerLink]="[ '/', { outlets: {  chat: ['chat', user.nickName ] } }]">
+        [routerLink]="['/home/profile/', user.nickName]">
         <img class="avatar_online" *ngIf="user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
     <img class="avatar" *ngIf="!user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
         <span> {{user.nickName}} </span>
