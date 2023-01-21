@@ -17,6 +17,7 @@ import {
     UseGuards,
     NotFoundException,
     HttpCode,
+    BadRequestException,
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -363,7 +364,7 @@ export class UserController {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in database');
         }
         return await this.friendshipService.getFriends(user.id);
     }
