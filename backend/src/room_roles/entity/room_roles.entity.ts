@@ -1,7 +1,7 @@
 import { Exclude } from "class-transformer";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
-import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 import * as bcrypt from "bcrypt";
 import { BaseEntity } from "src/common/classes/base.entity";
@@ -63,6 +63,7 @@ export class RoomRolesEntity extends BaseEntity {
     password?: string;
     
     @BeforeInsert()
+    @BeforeUpdate()
     async encryptPassword(): Promise<void> {
         if (this.password != undefined) {
             const salt = await bcrypt.genSalt();

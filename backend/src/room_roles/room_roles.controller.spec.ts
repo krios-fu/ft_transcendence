@@ -18,6 +18,10 @@ describe('RoomRolesController', () => {
     expect(controller).toBeDefined();
   });
 
+  describe('Testing route GET  /room_roles', () => {
+    
+  });
+
   /* it should test GET /room_roles
     404 if no room roles
     return a list of size == 1

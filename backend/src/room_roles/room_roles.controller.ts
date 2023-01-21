@@ -107,7 +107,8 @@ export class RoomRolesController {
         }
         const newRoomRole = await this.roomRolesService.updatePassword(id, password, dto);
         if (newRoomRole === null) {
-            throw new ForbiddenException('no');
+            this.roomRoleLogger.error(`Invalid password`);
+            throw new ForbiddenException('Invalid password');
         }
         return newRoomRole;
     }
@@ -129,7 +130,7 @@ export class RoomRolesController {
             this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
             throw new ForbiddenException('not authorized')
         }
-        await this.roomRolesService.remove(id);
+        await this.roomRolesService.delete(id);
     }
 }
 

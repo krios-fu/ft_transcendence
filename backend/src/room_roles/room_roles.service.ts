@@ -81,8 +81,8 @@ export class RoomRolesService {
         return await this.findOne(id);
     }
 
-    public async remove(id: number): Promise<void> {
-        await this.roomRolesRepository.softDelete(id);
+    public async delete(id: number): Promise<void> {
+        await this.roomRolesRepository.delete(id);
     }
 
     /* ~~ role identifying service ~~ */
