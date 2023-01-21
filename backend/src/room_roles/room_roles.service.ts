@@ -4,10 +4,11 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RolesEntity } from 'src/roles/entity/roles.entity';
 import { RoomService } from 'src/room/room.service';
 import { UserRolesService } from 'src/user_roles/user_roles.service';
-import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
+import { CreateRoomRolesDto, UpdatePasswordDto } from './dto/room_roles.dto';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesRepository } from './repository/room_roles.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RoomRolesService {
@@ -58,18 +59,12 @@ export class RoomRolesService {
     }
 
     public async findPrivateRoleInRoom(roomId: number): Promise<RoomRolesEntity> {
-        const roomRole: RoomRolesEntity = await this.roomRolesRepository.createQueryBuilder('room_roles')
+        return await this.roomRolesRepository.createQueryBuilder('room_roles')
             .leftJoinAndSelect('room_roles.roles', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
-            .where('room_roles.room_id = :id')
             .where('room_roles.room_id = :id', { id: roomId })
             .andWhere('roles.role = "private"')
             .getOne();
-
-        console.log(`Test: ${roomRole}`);
-        if (roomRole === null) {
-            return null;
-        }
     }
 
     public async create(dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
@@ -77,8 +72,12 @@ export class RoomRolesService {
         return await this.roomRolesRepository.save(newRoomRole);
     }
 
-    public async updateRoomRole(id: number, dto: UpdateRoomRolesDto): Promise<RoomRolesEntity> {
-        await this.roomRolesRepository.update(id, dto);
+    public async updatePassword(id: number, savedPwd: string, dto: UpdatePasswordDto): Promise<RoomRolesEntity> {
+        const { oldPassword: oldPwd, newPassword: newPwd } = dto;
+        if (await bcrypt.compare(savedPwd, oldPwd) === false) {
+            return null;
+        }
+        await this.roomRolesRepository.update(id, { password: newPwd });
         return await this.findOne(id);
     }
 

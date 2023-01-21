@@ -1,5 +1,5 @@
 import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { CreateRoomRolesDto, UpdateRoomRolesDto } from './dto/room_roles.dto';
+import { CreateRoomRolesDto, UpdatePasswordDto } from './dto/room_roles.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesService } from './room_roles.service';
 import { 
@@ -23,7 +23,6 @@ import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { UserRolesService } from 'src/user_roles/user_roles.service';
 import { RoomEntity } from 'src/room/entity/room.entity';
 
 @Controller('room_roles')
@@ -79,7 +78,7 @@ export class RoomRolesController {
         const roomEntity: RoomEntity = await this.roomService.findOne(roomId);
         if (roomEntity === null) {
             this.roomRoleLogger.error( `No room with id ${roomId} found in database`);
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('no room in db');
         }
         const { role } = roleEntity;
         if (await this.roomRolesService.validateRoomRole(role, username, roomId) === null) {
@@ -89,36 +88,29 @@ export class RoomRolesController {
         return this.roomRolesService.create(dto);
     }
 
-    /* this should become << update room password >>,
-        meaning it should be guarded with ! at_least_owner
-        and should only accept ! private_role
-    */
     @Put('room/:id/update')
-    // UseGuard(PrivateRoom)
-    // UseGuard(AtLeastRoomOwner)
-    public async updateRoomRole
+    public async updatePassword
     (
         @Param('id', ParseIntPipe) id: number,
-        @Body() dto: UpdateRoomRolesDto,
+        @UserCreds() username: string,
+        @Body() dto: UpdatePasswordDto,
     ): Promise<RoomRolesEntity> {
-        const roles: RolesEntity[] = await this.roomRolesService.findRolesRoom(id);
-
-        if (roles === null) {
-            this.roomRoleLogger.error(`'No roles for room with id ${id} found in database'`);
-            throw new NotFoundException('no roles room in db');
+        const roomRole = await this.roomRolesService.findPrivateRoleInRoom(id);
+        if (roomRole === null) {
+            this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
+            throw new NotFoundException('no role room in db');
         }
-        const { role } = role;
-        if (role)
-        return this.roomRolesService.updateRoomRole(id, dto);
+        const { roomId, password } = roomRole;
+        if (await this.roomRolesService.validateRoomRole('private', username, roomId) === false) {
+            this.roomRoleLogger.error(`User ${username} is not allowed to do this action`);
+            throw new ForbiddenException('User not allowed to do this action');
+        }
+        const newRoomRole = await this.roomRolesService.updatePassword(id, password, dto);
+        if (newRoomRole === null) {
+            throw new ForbiddenException('no');
+        }
+        return newRoomRole;
     }
-
-    /* Update a room password ?? */
-        /* UseGuards(RoomOwner) ~~ check if user owns the room ~~
-        @Put(':room_id')
-        public async changePwd(@Body creds: RoomPasswordDto ~~ @IsString() oldPwd, @IsString() newPwd ~~) {
-            return await this.roomService.changePwd(); ~~ first checks oldPwd, then changes entity ~~
-        }
-    */
 
     @Delete(':id')
     public async remove

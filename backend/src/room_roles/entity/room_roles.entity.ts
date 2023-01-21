@@ -5,6 +5,7 @@ import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGene
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 import * as bcrypt from "bcrypt";
 import { BaseEntity } from "src/common/classes/base.entity";
+import { InternalServerErrorException } from "@nestjs/common";
 
 @Entity({ name: 'room_role' })
 @Index(['roomId', 'roleId'], { unique: true })
@@ -65,7 +66,11 @@ export class RoomRolesEntity extends BaseEntity {
     async encryptPassword(): Promise<void> {
         if (this.password != undefined) {
             const salt = await bcrypt.genSalt();
-            this.password = await bcrypt.hash(this.password, salt);
+            try {
+                this.password = await bcrypt.hash(this.password, salt);
+            } catch (e) {
+                throw new InternalServerErrorException('kernel panic');
+            }
         }
     }
 }

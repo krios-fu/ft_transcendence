@@ -51,6 +51,11 @@ describe('RoomRolesController', () => {
     delete a private role of a room being an owner or an admin -> 204
     */
    /* it should test PUT /room_roles/:id
-   update a nonexistent entity -> 404
+      * change pwd with wrong creds being owner -> 403
+      * change pwd with right creds being owner -> 201
+      * change pwd with wrong creds not being owner  -> 403
+      * change pwd with right creds not being owner -> 403
+      * change pwd to room being not private -> 400
+      * change pwd to non existent room -> 400
    */
 });

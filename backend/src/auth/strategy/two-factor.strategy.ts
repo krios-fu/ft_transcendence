@@ -38,7 +38,7 @@ constructor (
             this.jwtLogger.error(`User ${username} validated by jwt not found in database`);
             throw new UnauthorizedException();
         }
-        if (await this.userRolesService.validateGlobalRole(user.username, 'banned') === true) {
+        if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.jwtLogger.error(`User ${username} is banned from the server`);
             throw new UnauthorizedException();
         }
