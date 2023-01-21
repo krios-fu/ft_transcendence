@@ -353,13 +353,13 @@ export class UserController {
     ** Get my friends (I must be me)
     */
 
-    @Get('me/friends')
-    public async getMyFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
-        const username = req.user.data.username;
-        console.log('GET FRIENDS', username);
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+   
+   @Get('me/friends')
+   public async getMyFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
+       const username = req.user.data.username;
+       if (username === undefined) {
+           this.userLogger.error('request user has not logged in');
+           throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
         }
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
@@ -367,6 +367,21 @@ export class UserController {
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
         return await this.friendshipService.getFriends(user.id);
+    }
+    
+    @Get(':id/friends')
+    public async getUserFriends(@Param('id', ParseIntPipe) userId: number,): Promise<FriendshipEntity[]> {
+        // const username = req.user.data.username;
+        // if (username === undefined) {
+        //     this.userLogger.error('request user has not logged in');
+        //     throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        // }
+        // const user = await this.userService.findOneByUsername(username);
+        // if (user === null) {
+        //     this.userLogger.error(`User with login ${username} not present in database`);
+        //     throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        // }
+        return await this.friendshipService.getFriends(userId);
     }
 
 

@@ -6,6 +6,7 @@ import { HomeModule } from "./home/home.module";
 import { AuthGuard } from './guards/auth.guard';
 import { ChatModule } from './room/chat/chat.module';
 import { HomeComponent } from './home/home.component';
+import { OtpSessionComponent } from './login/otp-session/otp-session.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home/profile', pathMatch: 'full', },
@@ -15,6 +16,7 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   { path: 'login', component: LoginComponent, },
+  { path: 'otp_session', component: OtpSessionComponent }
 ];
 
 

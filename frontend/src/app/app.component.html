@@ -1,5 +1,5 @@
 <app-header (searchUser)="getSearch($event)"></app-header>
-<section class="row">
+<section class="row" *ngIf="hiden">
 
 	<div class="column1 " style="
   border: outset 4px silver;">
@@ -20,3 +20,5 @@
 		<!-- <div class="chat_ball"></div> -->
 	</div>
 </section>
+
+<router-outlet *ngIf="hiden === false"></router-outlet>
