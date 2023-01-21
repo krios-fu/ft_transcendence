@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -111,7 +111,7 @@ export class AuthService {
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
-            await this.refreshTokenRepository.delete(tokenEntity);
+            await this.refreshTokenRepository.delete(tokenEntity.token);
             throw TokenError.TOKEN_EXPIRED;
         }
         return {
@@ -129,7 +129,7 @@ export class AuthService {
             console.error(`Caught exception in logout: ${err} \
                 (user logged out without a valid session)`);
         }
-        await this.refreshTokenRepository.delete(tokenEntity);
+        await this.refreshTokenRepository.delete(tokenEntity.token);
         res.clearCookie('refresh_token');
     }
 
@@ -154,7 +154,7 @@ export class AuthService {
         const { id, doubleAuthSecret: secret } = user;
 
         if (authenticator.verify({token, secret}) === false) {
-            throw new UnauthorizedException('invalid token');
+            throw new BadRequestException('invalid token');
         }
         await this.userService.updateUser(id, { doubleAuth: true });
     }
@@ -163,7 +163,7 @@ export class AuthService {
         const { doubleAuthSecret: secret } = user;
         
         if (authenticator.verify({ token, secret }) === false) {
-            throw new UnauthorizedException();
+            throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);
     }
