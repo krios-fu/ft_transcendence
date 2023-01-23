@@ -14,12 +14,14 @@ export class    MatchScene extends BaseScene {
     initData?: IMatchInitData;
     match?: Match;
     buffer?: SnapshotBuffer;
+    queue: IMatchData[];
 
     constructor(
         role: string, socket: SocketIO.Socket, room: string,
         readonly lagCompensator: LagCompensationService
     ) {
         super(role, socket, room);
+        this.queue = [];
     }
 
     /*  Called when a scene starts
@@ -35,13 +37,7 @@ export class    MatchScene extends BaseScene {
             this.scene.start("End", data);
         });
         this.socket.on("matchUpdate", (snapshot: IMatchData) => {
-            if (this.match && this.buffer)
-            {
-                this.buffer.update(
-                    snapshot,
-                    this.match.snapshot
-                );
-            }
+            this.queue.push(snapshot);
         });
         this.socket.on("served", () => {
             if (!this.initTxt)
@@ -84,17 +80,20 @@ export class    MatchScene extends BaseScene {
                 this.initData,
                 this.lagCompensator
             );
+            this.queue = [];
         }
         this.createInitText();
         this.initData = undefined;
     }
 
     override update() {
-        this.match?.update(
-            this.buffer?.getSnapshot()
+        if (!this.match || !this.buffer)
+            return ;
+        this.match.update(
+            this.buffer.getSnapshot()
         );
-        if (this.buffer?.size === 1)
-            this.buffer.autofill();
+        if (this.buffer.size <= 1)
+            this.buffer.fill(this.queue, this.match.snapshot);
     }
 
 }

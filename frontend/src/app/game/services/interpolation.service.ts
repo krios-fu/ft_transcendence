@@ -33,6 +33,8 @@ export class   InterpolationService {
                             timeData: IFixedTimeData): number {
         const   diffPos = refPos - basePos;
     
+        if (!timeData.diff)
+            return (refPos);
         // Linear Interpolation formula
         return (
             basePos
@@ -108,7 +110,7 @@ export class   InterpolationService {
 
     private _getFixedTimeData(refTime: number, baseTime: number,
                                 currentStep: number): IFixedTimeData {
-        const   targetTime = baseTime + ((1000 / 60) * currentStep);
+        const   targetTime = Math.round(baseTime + ((1000 / 60) * currentStep));
         
         return ({
             base: baseTime,
@@ -153,6 +155,7 @@ export class   InterpolationService {
             baseSnapshot.ball = genSnapshot.ball;
         baseSnapshot.playerA = genSnapshot.playerA;
         baseSnapshot.playerB = genSnapshot.playerB;
+        baseSnapshot.when = genSnapshot.when;
     }
 
     private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,

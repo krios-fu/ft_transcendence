@@ -41,20 +41,24 @@ export class   SnapshotBuffer {
         return (this._buffer.shift());
     }
 
-    autofill(): void {
-        this.lagCompensator.autoFill(this._buffer);
-    }
-
     /*
-    **  Generates new snapshots based on the snapshot received
-    **  from the server.
+    **  If there is a serverSnapshot, generates new snapshots based on it.
+    **  Otherwise, generates new snapshots based on the buffer's snapshot,
+    **  if any.
     */
-    update(serverSnapshot: IMatchData, currentSnapshot: IMatchData): void {
-        this.lagCompensator.serverUpdate(
-            this._buffer,
-            serverSnapshot,
-            currentSnapshot
-        );
+    fill(updateQueue: IMatchData[], currentSnapshot: IMatchData): void {
+        const   serverSnapshot: IMatchData | undefined = updateQueue.shift();
+
+        if (serverSnapshot)
+        {
+            this.lagCompensator.serverUpdate(
+                this._buffer,
+                serverSnapshot,
+                currentSnapshot
+            );
+        }
+        else
+            this.lagCompensator.autoFill(this._buffer);
     }
 
 }
