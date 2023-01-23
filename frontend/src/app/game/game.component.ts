@@ -27,7 +27,7 @@ export class    GameComponent implements OnInit {
         private readonly lagCompensator: LagCompensationService
     ) {
         this.config = {
-            type: Phaser.AUTO, //WEBGL if available. Canvas otherwise.
+            type: Phaser.CANVAS,
             parent: 'game_zone',
             width: 800,
             height: 600,
