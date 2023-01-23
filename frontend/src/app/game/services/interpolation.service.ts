@@ -155,6 +155,7 @@ export class   InterpolationService {
             baseSnapshot.ball = genSnapshot.ball;
         baseSnapshot.playerA = genSnapshot.playerA;
         baseSnapshot.playerB = genSnapshot.playerB;
+        baseSnapshot.when = genSnapshot.when;
     }
 
     private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,
