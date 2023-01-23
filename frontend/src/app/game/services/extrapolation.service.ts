@@ -78,7 +78,7 @@ export class    ExtrapolationService {
             refSnapshot = buffer[i - 1];
             generatedSnapshot = this._getSnapshot(
                 refSnapshot,
-                refSnapshot.when + this._snapshotInterval
+                Math.round(refSnapshot.when + this._snapshotInterval)
             );
             buffer.push(generatedSnapshot);
         }
