@@ -28,9 +28,19 @@ export class    MenuHeroScene extends MenuScene {
                 this._menuHeroRenderer.destroy();
             this.removeAllSocketListeners();
             if (this.role != "Spectator")
-                this.scene.start("Player", gameData);
+            {
+                this.scene.start("Player", {
+                    role: this.role,
+                    matchData: gameData
+                });
+            }
             else
-                this.scene.start(this.role, gameData);
+            {
+                this.scene.start(this.role, {
+                    role: this.role,
+                    matchData: gameData
+                });
+            }
         });
         this.socket.once("end", (data) => {
             if (this._menuHeroRenderer)

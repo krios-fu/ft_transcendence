@@ -9,12 +9,20 @@ import { SnapshotBuffer } from '../elements/SnapshotBuffer';
 import { LagCompensationService } from '../services/lag-compensation.service';
 import { BaseScene } from './BaseScene';
 
+export interface    IMatchSceneInit {
+    role: string;
+    matchData: IMatchInitData;
+}
+
 export class    MatchScene extends BaseScene {
 
-    initData?: IMatchInitData;
+    initData?: IMatchSceneInit;
     match?: Match;
     buffer?: SnapshotBuffer;
     queue: IMatchData[];
+    lastServerUpdate: number;
+
+    static readonly serverUpdateInterval = 50;
 
     constructor(
         role: string, socket: SocketIO.Socket, room: string,
@@ -22,12 +30,13 @@ export class    MatchScene extends BaseScene {
     ) {
         super(role, socket, room);
         this.queue = [];
+        this.lastServerUpdate = Date.now();
     }
 
     /*  Called when a scene starts
     **  https://rexrainbow.github.io/phaser3-rex-notes/docs/site/scene/#flow-chart
     */
-    init(initData: IMatchInitData) {
+    init(initData: IMatchSceneInit) {
         if (Object.keys(initData).length != 0)
             this.initData = initData;
         this.socket.once("end", (data) => {
@@ -73,11 +82,14 @@ export class    MatchScene extends BaseScene {
     create() {
         if (this.initData != undefined)
         {
-            this.match = new Match(this, this.initData);
+            this.match = new Match(this, this.initData.matchData);
             this.buffer = new SnapshotBuffer(
-                Number(this.game.config.width),
-                Number(this.game.config.height),
-                this.initData,
+                {
+                    gameWidth: Number(this.game.config.width),
+                    gameHeight: Number(this.game.config.height),
+                    matchData: this.initData.matchData,
+                    role: this.initData.role
+                },
                 this.lagCompensator
             );
             this.queue = [];
@@ -86,14 +98,19 @@ export class    MatchScene extends BaseScene {
         this.initData = undefined;
     }
 
-    override update() {
+    override update(time: number) {    
         if (!this.match || !this.buffer)
             return ;
         this.match.update(
             this.buffer.getSnapshot()
         );
-        if (this.buffer.size <= 1)
+        if (time - this.lastServerUpdate
+                >= MatchScene.serverUpdateInterval
+            || this.buffer.size <= 1)
+        {
             this.buffer.fill(this.queue, this.match.snapshot);
+            this.lastServerUpdate = time;
+        }
     }
 
 }

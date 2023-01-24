@@ -25,16 +25,32 @@ export class    PlayerScene extends MatchScene {
         super.create();
     }
 
-    override update() {
+    override update(time: number) {
+        let input: [paddleUp: number, heroUp: number] = [0, 0];
+    
         if (this.cursors?.up.isDown)
+        {
             this.socket.emit('paddleUp');
+            input[0] = 2;
+        }
         else if (this.cursors?.down.isDown)
+        {
             this.socket.emit('paddleDown');
+            input[0] = 1;
+        }
         if (this.powerKeys.up.isDown)
+        {
             this.socket.emit('heroUp');
+            input[1] = 2;
+        }
         else if (this.powerKeys.down.isDown)
+        {
             this.socket.emit('heroDown');
-        super.update();
+            input[1] = 1;
+        }
+        if (input[0] || input[1])
+            this.buffer?.input(input[0], input[1], this.match?.snapshot);
+        super.update(time);
     }
 
 }

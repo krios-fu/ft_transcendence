@@ -6,6 +6,13 @@ import {
 } from "../elements/Match";
 import { IPlayerData } from "../elements/Player";
 
+export interface    IInterpolationData {
+    serverSnapshot: IMatchData;
+    currentSnapshot: IMatchData;
+    totalSnapshots: number;
+    role: string; //PlayerA, PlayerB, Spectator
+}
+
 interface   IFixedTimeData {
     base: number;
     diff: number; // refSnapshot.when - base
@@ -75,11 +82,14 @@ export class   InterpolationService {
     private _interpolatePlayer(refPlayer: IPlayerData,
                                 basePlayer: IPlayerData,
                                 timeData: IFixedTimeData): void {
-        refPlayer.paddleY = this._interpolate(
-            refPlayer.paddleY,
-            basePlayer.paddleY,
-            timeData
-        );
+        if (timeData.diff >= timeData.target - timeData.base)
+        {//Only interpolate for past paddle position not a future one
+            refPlayer.paddleY = this._interpolate(
+                refPlayer.paddleY,
+                basePlayer.paddleY,
+                timeData
+            );
+        }
         if (refPlayer.hero
             && basePlayer.hero)
         {
@@ -88,6 +98,31 @@ export class   InterpolationService {
                 basePlayer.hero,
                 timeData
             );
+        }
+    }
+
+    private _updatePlayer(genPlayerData: IPlayerData,
+                            basePlayerData: IPlayerData,
+                            timeData: IFixedTimeData,
+                            player: string,
+                            role: string): void {
+        if (player != role)
+        {
+            this._interpolatePlayer(
+                genPlayerData,
+                basePlayerData,
+                timeData
+            );
+        }
+        else
+        {
+            /*
+            **  Preserve self player's paddle & hero data because
+            **  the information is more up to date than the server's.
+            */
+            genPlayerData.paddleY = basePlayerData.paddleY;
+            if (basePlayerData.hero)
+                genPlayerData.hero = {...basePlayerData.hero};
         }
     }
 
@@ -121,7 +156,8 @@ export class   InterpolationService {
 
     private _generateSnapshot(refSnapshot: IMatchData,
                                 baseSnapshot: IMatchData,
-                                currentStep: number): IMatchData {
+                                currentStep: number,
+                                role: string): IMatchData {
         const   timeData: IFixedTimeData = this._getFixedTimeData(
             refSnapshot.when,
             baseSnapshot.when,
@@ -130,16 +166,10 @@ export class   InterpolationService {
         const   snapshot: IMatchData = Match.copyMatchData(refSnapshot);
 
         this._interpolateBall(snapshot, baseSnapshot, timeData);
-        this._interpolatePlayer(
-            snapshot.playerA,
-            baseSnapshot.playerA,
-            timeData
-        );
-        this._interpolatePlayer(
-            snapshot.playerB,
-            baseSnapshot.playerB,
-            timeData
-        );
+        this._updatePlayer(snapshot.playerA, baseSnapshot.playerA,
+                            timeData, "PlayerA", role);
+        this._updatePlayer(snapshot.playerB, baseSnapshot.playerB,
+                            timeData, "PlayerB", role);
         if (snapshot.ball.xVel != 0)
             snapshot.when = timeData.target;
         return (snapshot);
@@ -159,7 +189,7 @@ export class   InterpolationService {
     }
 
     private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,
-                        currentSnapshot: IMatchData): void {
+                        currentSnapshot: IMatchData, role: string): void {
         let currentStep: number;
         let generatedSnapshot: IMatchData;
 
@@ -169,7 +199,8 @@ export class   InterpolationService {
             generatedSnapshot = this._generateSnapshot(
                 serverSnapshot,
                 currentSnapshot,
-                currentStep
+                currentStep,
+                role
             );
             if (i < buffer.length)
                 this._updateSnapshot(buffer[i], generatedSnapshot);
@@ -183,12 +214,13 @@ export class   InterpolationService {
         buffer.push(Match.copyMatchData(serverSnapshot));
     }
 
-    fillBuffer(buffer: IMatchData[], serverSnapshot: IMatchData,
-                currentSnapshot: IMatchData, totalSnapshots: number): void {
-        const   timeOffset: number = serverSnapshot.when - currentSnapshot.when;
+    fillBuffer(buffer: IMatchData[], data: IInterpolationData): void {
+        const   timeOffset: number = data.serverSnapshot.when
+                                        - data.currentSnapshot.when;
     
-        this._totalSnapshots = totalSnapshots;
-        this._fillLoop(buffer, serverSnapshot, currentSnapshot);
+        this._totalSnapshots = data.totalSnapshots;
+        this._fillLoop(buffer, data.serverSnapshot, data.currentSnapshot,
+                        data.role);
         while (buffer.length > this._totalSnapshots)
             buffer.pop();
     }

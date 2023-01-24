@@ -11,6 +11,7 @@ export interface    IHeroData {
     lowXPos: number;
     lowYPos: number;
     active: number; //0: inactive, 1: lower, 2: upper
+    pointInvocation: boolean;
 }
 
 export interface    IHeroClientStart {
@@ -19,6 +20,7 @@ export interface    IHeroClientStart {
     sprite: ISprite;
     spriteLow: ISprite;
     active: number; //0: inactive, 1: lower, 2: upper
+    pointInvocation: boolean;
 }
 
 export interface    IHeroInit {
@@ -254,7 +256,8 @@ export class    Hero {
             yPos: this._upperSprite.yPos,
             lowXPos: this._lowerSprite.xPos,
             lowYPos: this._lowerSprite.yPos,
-            active: this._activeSprite
+            active: this._activeSprite,
+            pointInvocation: this._pointInvocation
         });
     }
 
@@ -264,7 +267,8 @@ export class    Hero {
             name: this._name,
             sprite: this._upperSprite,
             spriteLow: this._lowerSprite,
-            active: this._activeSprite
+            active: this._activeSprite,
+            pointInvocation: this._pointInvocation
         });
     }
 

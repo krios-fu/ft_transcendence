@@ -67,8 +67,8 @@ export class    ExtrapolationService {
     **  snapshots with.
     */
     fillBuffer(buffer: IMatchData[], totalSnapshots: number): void {
-        let     generatedSnapshot: IMatchData;
-        let     refSnapshot: IMatchData;
+        let generatedSnapshot: IMatchData;
+        let refSnapshot: IMatchData;
 
         if (!buffer.length)
             return ;
@@ -81,6 +81,46 @@ export class    ExtrapolationService {
                 Math.round(refSnapshot.when + this._snapshotInterval)
             );
             buffer.push(generatedSnapshot);
+        }
+    }
+
+    private _preserveUnpredictable(current: IMatchData,
+                                    prediction: IMatchData,
+                                    role: string): void {        
+        current.ball = {...prediction.ball};
+        current.when = prediction.when;
+        if (role === "PlayerA")
+        {
+            current.playerA.paddleY = prediction.playerA.paddleY;
+            if (prediction.playerA.hero)
+                current.playerA.hero = {...prediction.playerA.hero};
+        }
+        else
+        {
+            current.playerB.paddleY = prediction.playerB.paddleY;
+            if (prediction.playerB.hero)
+                current.playerB.hero = {...prediction.playerB.hero};
+        }
+    }
+
+    updateInput(buffer: IMatchData[], baseSnapshot: IMatchData,
+                    totalSnapshots: number, role: string): void {
+        let generatedSnapshot: IMatchData;
+        let refSnapshot: IMatchData;
+
+        this._totalSnapshots = totalSnapshots;
+        refSnapshot = baseSnapshot;
+        for (let i = 0; i < this._totalSnapshots; ++i)
+        {
+            generatedSnapshot = this._getSnapshot(
+                refSnapshot,
+                Math.round(refSnapshot.when + this._snapshotInterval)
+            );
+            if (i < buffer.length)
+                this._preserveUnpredictable(buffer[i], generatedSnapshot, role);
+            else
+                buffer.push(Match.copyMatchData(generatedSnapshot));
+            refSnapshot = Match.copyMatchData(generatedSnapshot);
         }
     }
 
