@@ -20,12 +20,22 @@ export class    ClassicPlayerScene extends MatchScene {
         super.create();
     }
 
-    override update() {    
+    override update(time: number) {
+        let input: number = 0;
+    
         if (this.cursors?.up.isDown)
+        {
             this.socket.emit('paddleUp');
+            input = 2;
+        }
         else if (this.cursors?.down.isDown)
+        {
             this.socket.emit('paddleDown');
-        super.update();
+            input = 1;
+        }
+        if (input)
+            this.buffer?.input(input, 0, this.match?.snapshot);
+        super.update(time);
     }
 
 }

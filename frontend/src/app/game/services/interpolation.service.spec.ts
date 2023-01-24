@@ -49,13 +49,18 @@ describe('InterpolationService', () => {
         const   serverSnapshot: IMatchData = Match.copyMatchData(sampleMatch);
         const   currentSnapshot: IMatchData = Match.copyMatchData(sampleMatch);
         const   totalSnapshots: number = 3;
+        const   role: string = "Spectator";
     
         buffer = [];
         serverSnapshot.ball.xPos = 415;
         serverSnapshot.ball.yPos = 315;
         serverSnapshot.when = 1000 / 20;
-        service.fillBuffer(buffer, serverSnapshot, currentSnapshot,
-                            totalSnapshots);
+        service.fillBuffer(buffer, {
+            serverSnapshot: serverSnapshot,
+            currentSnapshot: currentSnapshot,
+            totalSnapshots: totalSnapshots,
+            role: role
+        });
         expect(buffer.length).toBe(3);
         expect(buffer[0].ball.xPos).toBe(405);
         expect(buffer[1].ball.xPos).toBe(410);
@@ -67,6 +72,7 @@ describe('InterpolationService', () => {
         const   serverSnapshot: IMatchData = Match.copyMatchData(sampleMatch);
         const   currentSnapshot: IMatchData = Match.copyMatchData(sampleMatch);
         const   totalSnapshots: number = 3;
+        const   role: string = "Spectator";
         const   interval: number = 1000 / 60;
     
         buffer = [];
@@ -78,8 +84,12 @@ describe('InterpolationService', () => {
         serverSnapshot.ball.yPos = 315;
         serverSnapshot.playerA.paddleY = 500;
         serverSnapshot.when = interval * 3;
-        service.fillBuffer(buffer, serverSnapshot, currentSnapshot,
-                            totalSnapshots);
+        service.fillBuffer(buffer, {
+            serverSnapshot: serverSnapshot,
+            currentSnapshot: currentSnapshot,
+            totalSnapshots: totalSnapshots,
+            role: role
+        });
         expect(buffer.length).toBe(3);
         expect(buffer[0].ball.xPos).toBe(405);
         expect(buffer[0].playerA.paddleY).toBeGreaterThan(
@@ -100,6 +110,7 @@ describe('InterpolationService', () => {
         const   serverSnapshot: IMatchData = Match.copyMatchData(sampleMatch);
         const   currentSnapshot: IMatchData = Match.copyMatchData(sampleMatch);
         const   totalSnapshots: number = 3;
+        const   role: string = "Spectator";
         const   interval: number = 1000 / 60;
         let     bufferSnapshot: IMatchData;
     
@@ -112,8 +123,12 @@ describe('InterpolationService', () => {
         serverSnapshot.ball.xPos = 415;
         serverSnapshot.ball.yPos = 315;
         serverSnapshot.when = interval * 3;
-        service.fillBuffer(buffer, serverSnapshot, currentSnapshot,
-                            totalSnapshots);
+        service.fillBuffer(buffer, {
+            serverSnapshot: serverSnapshot,
+            currentSnapshot: currentSnapshot,
+            totalSnapshots: totalSnapshots,
+            role: role
+        });
         expect(buffer.length).toBe(3);
         expect(buffer[0].ball.xPos).toBe(405);
         expect(buffer[0].when).toBe(currentSnapshot.when + interval);

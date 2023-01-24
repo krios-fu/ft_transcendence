@@ -48,9 +48,19 @@ export class    MenuScene extends BaseScene {
                 this._menuRenderer.destroy();
             this.removeAllSocketListeners();
             if (this.role != "Spectator")
-                this.scene.start("ClassicPlayer", gameData);
+            {
+                this.scene.start("ClassicPlayer", {
+                    role: this.role,
+                    matchData: gameData
+                });
+            }
             else
-                this.scene.start(this.role, gameData);
+            {
+                this.scene.start(this.role, {
+                    role: this.role,
+                    matchData: gameData
+                });
+            }
         });
         this.socket.once("end", (data) => {
             if (this._menuRenderer)

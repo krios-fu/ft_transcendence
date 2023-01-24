@@ -4,33 +4,40 @@ import {
 } from "./Match";
 import { LagCompensationService } from "../services/lag-compensation.service";
 
+export interface    IBufferInit {
+    gameWidth: number;
+    gameHeight: number;
+    matchData: IMatchInitData;
+    role: string;
+}
+
 export class   SnapshotBuffer {
 
     private _buffer: IMatchData[];
 
     constructor(
-        gameWidth: number,
-        gameHeight: number,
-        initData: IMatchInitData,
+        initData: IBufferInit,
         private readonly lagCompensator: LagCompensationService
     ) {
+        const   matchData: IMatchInitData = initData.matchData;
+    
         this._buffer = [];
         this.lagCompensator.init({
-            gameWidth: gameWidth,
-            gameHeight: gameHeight,
-            paddleWidth: initData.playerA.paddle.width,
-            paddleHeight: initData.playerA.paddle.height,
-            aPaddleX: initData.playerA.paddle.xPos,
-            bPaddleX: initData.playerB.paddle.xPos,
-            ballRadius: initData.ball.width / 2,
-            heroInit: initData.playerA.hero && initData.playerB.hero
+            gameWidth: initData.gameWidth,
+            gameHeight: initData.gameHeight,
+            paddleWidth: matchData.playerA.paddle.width,
+            paddleHeight: matchData.playerA.paddle.height,
+            aPaddleX: matchData.playerA.paddle.xPos,
+            bPaddleX: matchData.playerB.paddle.xPos,
+            ballRadius: matchData.ball.width / 2,
+            heroInit: matchData.playerA.hero && matchData.playerB.hero
                         ? {
-                            aHeroSprite: initData.playerA.hero.sprite,
-                            aHeroSpriteLow: initData.playerA.hero.spriteLow,
-                            bHeroSprite: initData.playerB.hero.sprite,
-                            bHeroSpriteLow: initData.playerB.hero.spriteLow
+                            aHeroSprite: matchData.playerA.hero.sprite,
+                            aHeroSpriteLow: matchData.playerA.hero.spriteLow,
+                            bHeroSprite: matchData.playerB.hero.sprite,
+                            bHeroSpriteLow: matchData.playerB.hero.spriteLow
                         } : undefined
-        });
+        }, initData.role);
     }
 
     get size(): number {
@@ -59,6 +66,14 @@ export class   SnapshotBuffer {
         }
         else
             this.lagCompensator.autoFill(this._buffer);
+    }
+
+    input(paddleMove: number, heroMove: number,
+            currentSnapshot: IMatchData | undefined): void {
+        if (!currentSnapshot)
+            return ;
+        this.lagCompensator.input(this._buffer, paddleMove,
+                                    heroMove, currentSnapshot);
     }
 
 }

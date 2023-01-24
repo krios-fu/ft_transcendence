@@ -149,11 +149,34 @@ export class    HeroPredictionService {
         return (undefined);
     }
 
+    private _checkEndPos(velocity: number,
+                            currentPosition: number,
+                            endPosition: number): boolean {
+        if (velocity < 0)
+        {
+            if (currentPosition <= endPosition)
+                return (true);
+        }
+        else if (velocity > 0)
+        {
+            if (currentPosition >= endPosition)
+                return (true);
+        }
+        else
+        {
+            if (currentPosition === endPosition)
+                return (true);
+        }
+        return (false);
+    }
+
     private _updatePosition(hero: IHeroSprite,
                                 secondsElapsed: number): boolean {
         this._xPos += secondsElapsed * hero.xVelocity;
         this._yPos += secondsElapsed * hero.yVelocity;
-        if (this._xPos === hero.xPosEnd && this._yPos === hero.yPosEnd)
+
+        if (this._checkEndPos(hero.xVelocity, this._xPos, hero.xPosEnd)
+                && this._checkEndPos(hero.yVelocity, this._yPos, hero.yPosEnd))
         {
             this._xPos = hero.xPosInit;
             this._yPos = hero.yPosInit;

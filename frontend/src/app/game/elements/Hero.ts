@@ -28,6 +28,7 @@ export interface    IHeroInitData {
     sprite: IHeroSprite;
     spriteLow: IHeroSprite;
     active: number; //0: inactive, 1: lower, 2: upper
+    pointInvocation: boolean;
 }
 
 export interface    IHeroData {
@@ -36,12 +37,14 @@ export interface    IHeroData {
     lowXPos: number;
     lowYPos: number;
     active: number; //0: inactive, 1: lower, 2: upper
+    pointInvocation: boolean;
 }
 
 export class    Hero {
     protected _upperSprite: Phaser.GameObjects.Sprite;
     protected _lowerSprite: Phaser.GameObjects.Sprite;
     protected _active: number;
+    protected _pointInvocation: boolean;
 
     constructor(scene: MatchScene, initData: IHeroInitData) {
         this._upperSprite = scene.add.sprite(
@@ -63,6 +66,7 @@ export class    Hero {
             initData.spriteLow.yOrigin
         );
         this._active = initData.active;
+        this._pointInvocation = initData.pointInvocation;
     }
 
     get data(): IHeroData {
@@ -71,7 +75,8 @@ export class    Hero {
             yPos: this._upperSprite.y,
             lowXPos: this._lowerSprite.x,
             lowYPos: this._lowerSprite.y,
-            active: this._active
+            active: this._active,
+            pointInvocation: this._pointInvocation
         });
     }
 
