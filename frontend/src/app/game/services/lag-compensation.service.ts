@@ -3,8 +3,12 @@ import { IMatchData } from "../elements/Match";
 import { Paddle } from "../elements/Paddle";
 import { IPlayerData } from "../elements/Player";
 import { ExtrapolationService } from "./extrapolation.service";
+import { HeroPredictionService } from "./hero-prediction.service";
 import { InterpolationService } from "./interpolation.service";
-import { IPredictionInit } from "./prediction.service";
+import {
+    IPredictionInit,
+    PredictionService
+} from "./prediction.service";
 
 @Injectable({
     providedIn: 'root'
@@ -34,13 +38,78 @@ export class    LagCompensationService {
         this.extrapolService.fillBuffer(buffer, this._bufferSnapshots);
     }
 
+    //false: normal, true: slow down
+    private _interpolType(serverSnapshot: IMatchData,
+                            currentSnapshot: IMatchData): boolean {
+        if (currentSnapshot.when >= serverSnapshot.when)
+        {
+            if (this._role === "PlayerA")
+            {
+                if (serverSnapshot.ball.xVel > 0
+                    && ((serverSnapshot.playerA.hero
+                            && serverSnapshot.ball.xPos
+                                > HeroPredictionService.aHeroEndX)
+                        || serverSnapshot.ball.xPos
+                            > PredictionService.aPaddleRightBorder))
+                    return (true);
+            }
+            else if (this._role === "PlayerB")
+            {
+                if (serverSnapshot.ball.xVel < 0
+                    && ((serverSnapshot.playerB.hero
+                            && serverSnapshot.ball.xPos
+                                < HeroPredictionService.bHeroEndX)
+                        || serverSnapshot.ball.xPos
+                            < PredictionService.bPaddleLeftBorder))
+                    return (true);
+            }
+        }
+        return (false);
+    }
+
+    //false: normal, true: aggressive
+    private _extrapolType(serverSnapshot: IMatchData,
+                            currentSnapshot: IMatchData): boolean {
+        if (currentSnapshot.when < serverSnapshot.when)
+        {
+            if (this._role === "PlayerA")
+            {
+                if (serverSnapshot.ball.xVel < 0
+                    && ((serverSnapshot.playerA.hero
+                            && serverSnapshot.ball.xPos
+                                < HeroPredictionService.bHeroEndX)
+                        || serverSnapshot.ball.xPos
+                            < PredictionService.bPaddleLeftBorder))
+                    return (true);
+            }
+            else if (this._role === "PlayerB")
+            {
+                if (serverSnapshot.ball.xVel > 0
+                    && ((serverSnapshot.playerB.hero
+                            && serverSnapshot.ball.xPos
+                                > HeroPredictionService.aHeroEndX)
+                        || serverSnapshot.ball.xPos
+                            > PredictionService.aPaddleRightBorder))
+                    return (true);
+            }
+        }
+        return (false);
+    }
+
     serverUpdate(buffer: IMatchData[], serverSnapshot: IMatchData,
                     currentSnapshot: IMatchData): void {
         this.interpolService.fillBuffer(buffer, {
             serverSnapshot: serverSnapshot,
             currentSnapshot: currentSnapshot,
             totalSnapshots: this._bufferSnapshots,
-            role: this._role
+            role: this._role,
+            slowDown: this._interpolType(serverSnapshot, currentSnapshot)
+        });
+        this.extrapolService.improveInterpol(buffer, {
+            serverSnapshot: serverSnapshot,
+            currentSnapshot: currentSnapshot,
+            role: this._role,
+            aggressive: this._extrapolType(serverSnapshot, currentSnapshot)
         });
     }
 

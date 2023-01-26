@@ -57,6 +57,9 @@ export class    PredictionService {
     private _ballVelocityX: number;
     private _ballVelocityY: number;
 
+    private static _aPaddleRightBorder: number = 0;
+    private static _bPaddleLeftBorder: number = 0;
+
     constructor(
         private readonly heroPredictor: HeroPredictionService
     ) {
@@ -76,6 +79,14 @@ export class    PredictionService {
         this._ballY = 0;
         this._ballVelocityX = 0;
         this._ballVelocityY = 0;
+    }
+
+    static get aPaddleRightBorder(): number {
+        return (this._aPaddleRightBorder);
+    }
+
+    static get bPaddleLeftBorder(): number {
+        return (this._bPaddleLeftBorder);
     }
 
     init(data: IPredictionInit): void {
@@ -98,6 +109,8 @@ export class    PredictionService {
         this._bPaddleLeftBorder = this._bPaddleX - this._paddleHalfWidth;
         this._ballRadius = data.ballRadius;
         this.heroPredictor.init(data.heroInit);
+        PredictionService._aPaddleRightBorder = this._aPaddleRightBorder;
+        PredictionService._bPaddleLeftBorder = this._bPaddleLeftBorder;
     }
 
     private move(xDisplacement: number, yDisplacement: number): void {
@@ -375,10 +388,6 @@ export class    PredictionService {
         if (!this.checkCollision(data, xDisplacement, yDisplacement,
                 secondsElapsed))
             this.move(xDisplacement, yDisplacement);
-        if (data.aHero)
-            this.heroPredictor.move(data.aHero, true, secondsElapsed);
-        if (data.bHero)
-            this.heroPredictor.move(data.bHero, false, secondsElapsed);
         return ({
             ball: {
                 xPos: this._ballX,
@@ -386,8 +395,12 @@ export class    PredictionService {
                 xVel: this._ballVelocityX,
                 yVel: this._ballVelocityY
             },
-            aHero: data.aHero,
+            aHero: data.aHero
+                    ? this.heroPredictor.move(data.aHero, true, secondsElapsed)
+                    : undefined,
             bHero: data.bHero
+                    ? this.heroPredictor.move(data.bHero, false, secondsElapsed)
+                    : undefined
         });
     }
 }

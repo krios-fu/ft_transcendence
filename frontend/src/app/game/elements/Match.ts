@@ -66,7 +66,7 @@ export class    Match {
     }
 
     // Returns a Deep Copy of IPlayerData
-    private static _copyPlayer(data: IPlayerData): IPlayerData {
+    private static _clonePlayer(data: IPlayerData): IPlayerData {
         return ({
             paddleY: data.paddleY,
             hero: data.hero ? {...data.hero} : undefined,
@@ -75,13 +75,20 @@ export class    Match {
     }
 
     // Returns a Deep Copy of IMatchData
-    static copyMatchData(data: IMatchData): IMatchData {
+    static cloneMatchData(data: IMatchData): IMatchData {
         return ({
             ball: {...data.ball},
-            playerA: this._copyPlayer(data.playerA),
-            playerB: this._copyPlayer(data.playerB),
+            playerA: this._clonePlayer(data.playerA),
+            playerB: this._clonePlayer(data.playerB),
             when: data.when
         });
+    }
+
+    static copyMatchData(dst: IMatchData, src: IMatchData): void {
+        dst.ball = {...src.ball};
+        dst.playerA = this._clonePlayer(src.playerA);
+        dst.playerB = this._clonePlayer(src.playerB);
+        dst.when = src.when;
     }
 
     get snapshot(): IMatchData {    
