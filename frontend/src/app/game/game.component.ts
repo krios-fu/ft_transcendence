@@ -35,6 +35,12 @@ export class    GameComponent implements OnInit {
                 mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT ,
                 autoCenter: Phaser.Scale.CENTER_BOTH
             },
+            fps: {
+                min: 60
+            },
+            render: {
+                powerPreference: "high-performance"
+            },
             scene: undefined // Will be assigned afterwards
         };
         this.socket = SockIO.io("ws://localhost:3001");
