@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { TwoFactorStrategy } from './strategy/two-factor.strategy';
-import { UserRolesModule } from 'src/user_roles/user_roles.module';
+import { UserRolesModule } from '../user_roles/user_roles.module';
 
 @Module({
     imports: [

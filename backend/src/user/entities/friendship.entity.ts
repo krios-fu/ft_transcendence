@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
 } from "typeorm";
-import { UserEntity } from "src/user/entities/user.entity";
-import { CreateFriendDto } from "src/user/dto/friendship.dto";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { UserEntity } from "../../user/entities/user.entity";
+import { CreateFriendDto } from "../../user/dto/friendship.dto";
+import { BaseEntity } from "../../common/classes/base.entity";
 import { BlockEntity } from "./block.entity";
 
 export enum FriendshipStatus {

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBlockDto } from 'src/user/dto/friendship.dto';
-import { FriendshipEntity } from 'src/user/entities/friendship.entity';
+import { CreateBlockDto } from '../../user/dto/friendship.dto';
+import { FriendshipEntity } from '../../user/entities/friendship.entity';
 import { UpdateResult } from 'typeorm';
 import { BlockRepository } from "../repositories/block.repository";
 import { BlockEntity } from "../entities/block.entity";

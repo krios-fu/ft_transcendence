@@ -13,17 +13,17 @@ import {
     UseGuards,
 } from '@nestjs/common';
 
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
-import { CreateUserDto } from 'src/user/dto/user.dto';
-import { IAuthPayload, IRequestUser } from 'src/common/interfaces/request-payload.interface';
-import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { UserService } from 'src/user/services/user.service';
+import { CreateUserDto } from '../user/dto/user.dto';
+import { IAuthPayload, IRequestUser } from '../common/interfaces/request-payload.interface';
+import { UserCreds } from '../common/decorators/user-cred.decorator';
+import { UserService } from '../user/services/user.service';
 import { TokenCredentials } from './token-credentials.dto';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { TwoFactorAuthGuard } from './guard/twofactor-auth.guard';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;

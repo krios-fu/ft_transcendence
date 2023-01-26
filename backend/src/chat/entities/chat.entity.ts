@@ -7,8 +7,7 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import {MessageEntity} from "./message.entity";
-import { UserEntity } from "src/user/entities/user.entity";
-import { UserService } from "src/user/services/user.service";
+import { UserEntity } from "../../user/entities/user.entity";
 
 @Entity({
     name : 'chats'

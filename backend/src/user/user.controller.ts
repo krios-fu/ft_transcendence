@@ -22,19 +22,19 @@ import {
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from './dto/user.query.dto';
-import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
+import { IRequestUser } from '../common/interfaces/request-payload.interface';
 import { BlockPayloadDto, CreateFriendDto, FriendshipPayload } from './dto/friendship.dto';
 import { FriendshipEntity } from './entities/friendship.entity';
 import { UserService } from './services/user.service';
 import { FriendshipService } from './services/friendship.service';
 import { UserEntity } from './entities/user.entity';
 import { BlockService } from './services/block.service';
-import { ChatService } from 'src/chat/chat.service';
-import { chatPayload } from 'src/chat/dtos/chat.dto';
+import { ChatService } from '../chat/chat.service';
+import { chatPayload } from '../chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
-import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
+import { FileTypeValidatorPipe } from '../common/validators/filetype-validator.class';
+import { UserCreds } from '../common/decorators/user-cred.decorator';
+import { uploadUserAvatarSettings } from '../common/config/upload-avatar.config';
 
 @Controller('users')
 export class UserController {

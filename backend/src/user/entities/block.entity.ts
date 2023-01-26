@@ -6,9 +6,9 @@ import {
     PrimaryGeneratedColumn,
     Column
 } from "typeorm";
-import { FriendshipEntity } from "src/user/entities/friendship.entity";
+import { FriendshipEntity } from "../../user/entities/friendship.entity";
 import { UserEntity } from "../entities/user.entity";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
 import { CreateBlockDto } from "../dto/friendship.dto";
 
 @Entity({ name: "block" })

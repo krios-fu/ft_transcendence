@@ -1,8 +1,8 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { AuthModule } from "src/auth/auth.module";
-import { UserModule } from "src/user/user.module";
+import { AuthModule } from "../../src/auth/auth.module";
+import { UserModule } from "../../src/user/user.module";
 import * as request from 'supertest';
 
 describe('/room_roles (e2e)', () => {
@@ -17,7 +17,7 @@ describe('/room_roles (e2e)', () => {
         'photoUrl': '(nil)'
     }
 
-    beforeEach(async () => {
+    beforeAll(async () => {
 
         const testModule: TestingModule = await Test.createTestingModule({
             imports: [
@@ -31,8 +31,8 @@ describe('/room_roles (e2e)', () => {
                     entities: ["dist/**/*.entity{.ts,.js}"],
                     synchronize: true,
                 }),
-                UserModule,
-                AuthModule
+                UserModule, // mock userModules
+                AuthModule,
             ],
         }).compile()
 
@@ -52,5 +52,9 @@ describe('/room_roles (e2e)', () => {
         return request(app.getHttpServer())
             .get('/users')
             .expect(200)
-    })
+    });
+
+    afterAll(async () => {
+        await app.close();
+    });
 });

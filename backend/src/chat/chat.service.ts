@@ -1,10 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChatEntity } from "./entities/chat.entity";
 import { ChatRepository } from "./repository/chat.repository";
 import { ChatMapper } from "./mapper/chat.mapper";
-import { UserService } from 'src/user/services/user.service';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class ChatService {

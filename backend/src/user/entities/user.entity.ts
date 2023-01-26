@@ -1,9 +1,9 @@
 import { Exclude } from "class-transformer";
-import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
-import { ChatEntity } from "src/chat/entities/chat.entity";
-import { MessageEntity } from "src/chat/entities/message.entity";
-import { BaseEntity } from "src/common/classes/base.entity";
-import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+import { RefreshTokenEntity } from "../../auth/entity/refresh-token.entity";
+import { ChatEntity } from "../../chat/entities/chat.entity";
+import { MessageEntity } from "../../chat/entities/message.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { DEFAULT_AVATAR_PATH } from "../../common/config/upload-avatar.config";
 import {
 	Column,
 	Entity,

@@ -1,8 +1,7 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Post} from '@nestjs/common';
+import {Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe} from '@nestjs/common';
 import {ChatService} from "./chat.service";
 import {Public} from "src/common/decorators/public.decorator";
 import {ChatEntity} from "./entities/chat.entity";
-import {ChatDto} from "./dtos/chat.dto";
 
 @Controller('chat')
 export class ChatController {
