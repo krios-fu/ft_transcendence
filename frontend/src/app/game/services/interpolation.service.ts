@@ -11,6 +11,7 @@ export interface    IInterpolationData {
     currentSnapshot: IMatchData;
     totalSnapshots: number;
     role: string; //PlayerA, PlayerB, Spectator
+    slowDown: boolean;
 }
 
 interface   IFixedTimeData {
@@ -31,6 +32,7 @@ export class   InterpolationService {
     private _totalSnapshots: number;
 
     private readonly _serverUpdateInterval: number = 1000 / 20;
+    private readonly _snapshotInterval: number = 1000 / 60;
 
     constructor() {
         this._totalSnapshots = 0;
@@ -145,7 +147,8 @@ export class   InterpolationService {
 
     private _getFixedTimeData(refTime: number, baseTime: number,
                                 currentStep: number): IFixedTimeData {
-        const   targetTime = Math.round(baseTime + ((1000 / 60) * currentStep));
+        const   targetTime = Math.round(baseTime + (this._snapshotInterval
+                                                        * currentStep));
         
         return ({
             base: baseTime,
@@ -163,29 +166,31 @@ export class   InterpolationService {
             baseSnapshot.when,
             currentStep
         );
-        const   snapshot: IMatchData = Match.copyMatchData(refSnapshot);
+        const   snapshot: IMatchData = Match.cloneMatchData(refSnapshot);
 
         this._interpolateBall(snapshot, baseSnapshot, timeData);
         this._updatePlayer(snapshot.playerA, baseSnapshot.playerA,
                             timeData, "PlayerA", role);
         this._updatePlayer(snapshot.playerB, baseSnapshot.playerB,
                             timeData, "PlayerB", role);
-        if (snapshot.ball.xVel != 0)
-            snapshot.when = timeData.target;
+        snapshot.when = timeData.target;
         return (snapshot);
     }
 
-    /*
-    **  Updates the data that cannot be predicted, like the players' data,
-    **  and the ball data after a ball serve.
-    */
     private _updateSnapshot(baseSnapshot: IMatchData,
-                                genSnapshot: IMatchData): void {
-        if (baseSnapshot.ball.xVel != genSnapshot.ball.xVel)
-            baseSnapshot.ball = genSnapshot.ball;
-        baseSnapshot.playerA = genSnapshot.playerA;
-        baseSnapshot.playerB = genSnapshot.playerB;
-        baseSnapshot.when = genSnapshot.when;
+                                genSnapshot: IMatchData): void {    
+        Match.copyMatchData(baseSnapshot, genSnapshot);
+    }
+
+    private _adjustTime(genSnapshot: IMatchData,
+                            serverSnapshot: IMatchData,
+                            currentStep: number): void {
+        let baseTime: number;
+    
+        if (serverSnapshot.ball.xVel != 0)
+            return ;
+        baseTime = serverSnapshot.when - this._serverUpdateInterval;
+        genSnapshot.when = Math.round(baseTime + (this._snapshotInterval * currentStep));
     }
 
     private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,
@@ -202,25 +207,54 @@ export class   InterpolationService {
                 currentStep,
                 role
             );
+            this._adjustTime(generatedSnapshot, serverSnapshot,
+                                currentStep);
             if (i < buffer.length)
                 this._updateSnapshot(buffer[i], generatedSnapshot);
             else
-                buffer.push(generatedSnapshot);
+                buffer.push(Match.cloneMatchData(generatedSnapshot));
         }
     }
 
-    private _stopTime(buffer: IMatchData[], serverSnapshot: IMatchData): void {
-        buffer.length = 0;
-        buffer.push(Match.copyMatchData(serverSnapshot));
+    /*
+    **  When called, the ball, and the rival player's paddle
+    **  and hero might move backwards.
+    **  The backwards movement will be proportional to the amount of lag.
+    **
+    **  TODO: Smooth ball slow down.
+    */
+    private _stopTime(buffer: IMatchData[], serverSnapshot: IMatchData,
+                        currentSnapshot: IMatchData, role: string): void {
+        buffer.length = this._totalSnapshots;
+        buffer.fill(Match.cloneMatchData(serverSnapshot));
+        buffer.forEach((snapshot) => {
+            if (role === "PlayerA")
+            {
+                snapshot.playerA.paddleY = currentSnapshot.playerA.paddleY;
+                if (currentSnapshot.playerA.hero)
+                    snapshot.playerA.hero = {...currentSnapshot.playerA.hero};
+            }
+            else //For Spectators this method is not called
+            {
+                snapshot.playerB.paddleY = currentSnapshot.playerB.paddleY;
+                if (currentSnapshot.playerB.hero)
+                    snapshot.playerB.hero = {...currentSnapshot.playerB.hero};
+            }
+        });
     }
 
-    fillBuffer(buffer: IMatchData[], data: IInterpolationData): void {
-        const   timeOffset: number = data.serverSnapshot.when
-                                        - data.currentSnapshot.when;
-    
+    fillBuffer(buffer: IMatchData[], data: IInterpolationData): void {    
         this._totalSnapshots = data.totalSnapshots;
-        this._fillLoop(buffer, data.serverSnapshot, data.currentSnapshot,
-                        data.role);
+        if (data.slowDown)
+        {
+            this._stopTime(buffer, data.serverSnapshot,
+                            data.currentSnapshot, data.role);
+        }
+        else
+        {
+            this._fillLoop(buffer, data.serverSnapshot, data.currentSnapshot,
+                            data.role);
+        }
         while (buffer.length > this._totalSnapshots)
             buffer.pop();
     }

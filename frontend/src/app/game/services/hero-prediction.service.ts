@@ -35,6 +35,9 @@ export class    HeroPredictionService {
     private _xPos: number;
     private _yPos: number;
 
+    private static _aHeroEndX: number = 0;
+    private static _bHeroEndX: number = 0;
+
     constructor() {
         this._init = false;
         this._aHero = {} as IHeroSprite;
@@ -43,6 +46,14 @@ export class    HeroPredictionService {
         this._bHeroLow = {} as IHeroSprite;
         this._xPos = 0;
         this._yPos = 0;
+    }
+
+    static get aHeroEndX(): number {
+        return (this._aHeroEndX);
+    }
+
+    static get bHeroEndX(): number {
+        return (this._bHeroEndX);
     }
 
     init(data: IHeroPredictionInit | undefined): void {
@@ -56,6 +67,10 @@ export class    HeroPredictionService {
         this._aHeroLow = {...data.aHeroSpriteLow};
         this._bHero = {...data.bHeroSprite};
         this._bHeroLow = {...data.bHeroSpriteLow};
+        HeroPredictionService._aHeroEndX = this._aHero.xPosEnd
+                                            + this._aHero.radius;
+        HeroPredictionService._bHeroEndX = this._bHero.xPosEnd
+                                            - this._bHero.radius;
     }
 
     private _ballHitBounce(posNoCollision: number, posCollision: number,
@@ -185,26 +200,28 @@ export class    HeroPredictionService {
         return (true);
     }
 
-    move(heroData: IHeroData, aHero: boolean, secondsElapsed: number): void {
+    move(heroData: IHeroData, aHero: boolean,
+            secondsElapsed: number): IHeroData {
         const   hero: IHeroSprite | undefined = this._getHero(heroData, aHero);
+        const   result: IHeroData = {...heroData};
         let     active: boolean;
 
         if (!this._init || !hero)
-            return ;
+            return (result);
         active = this._updatePosition(hero, secondsElapsed);
         if (heroData.active === 1)
         {
-            heroData.lowXPos = this._xPos;
-            heroData.lowYPos = this._yPos;
+            result.lowXPos = this._xPos;
+            result.lowYPos = this._yPos;
         }
         else
         {
-            heroData.xPos = this._xPos;
-            heroData.yPos = this._yPos;
+            result.xPos = this._xPos;
+            result.yPos = this._yPos;
         }
         if (!active)
-            heroData.active = 0;
-        return ;
+            result.active = 0;
+        return (result);
     }
 
 }
