@@ -104,29 +104,38 @@ export class    ExtrapolationService {
         else
         {
             base.ball = {...generated.ball};
-            if (role === "PlayerA")
-            {
-                base.playerA.paddleY = generated.playerA.paddleY;
-                if (generated.playerA.hero)
-                    base.playerA.hero = {...generated.playerA.hero};
-            }
-            else if (role === "PlayerB")
-            {
-                base.playerB.paddleY = generated.playerB.paddleY;
-                if (generated.playerB.hero)
-                    base.playerB.hero = {...generated.playerB.hero};
-            }
+            base.playerA.paddleY = generated.playerA.paddleY;
+            if (generated.playerA.hero)
+                base.playerA.hero = {...generated.playerA.hero};
+            base.playerB.paddleY = generated.playerB.paddleY;
+            if (generated.playerB.hero)
+                base.playerB.hero = {...generated.playerB.hero};
         }
     }
 
+    /*
+    **  Simulate ball and rival hero from Server state to current state
+    **  based on both snapshot timestamps.
+    */
     private _bringBallToCurrentTime(refSnapshot: IMatchData,
-                                        currentSnapshot: IMatchData): void {
+                                        currentSnapshot: IMatchData,
+                                        role: string): void {
         const genSnapshot = this._getSnapshot(
             refSnapshot,
             currentSnapshot.when
         );
         refSnapshot.ball = {...genSnapshot.ball};
         refSnapshot.when = currentSnapshot.when;
+        if (role === "PlayerA")
+        {
+            if (genSnapshot.playerB.hero)
+                refSnapshot.playerB.hero = {...genSnapshot.playerB.hero};
+        }
+        else
+        {
+            if (genSnapshot.playerA.hero)
+                refSnapshot.playerA.hero = {...genSnapshot.playerA.hero};
+        }
     }
 
     private _setupPlayerData(refSnapshot: IMatchData,
@@ -134,7 +143,7 @@ export class    ExtrapolationService {
                                 role: string): void {
         if (role === "Spectator")
             return ;
-        this._bringBallToCurrentTime(refSnapshot, currentSnapshot);
+        this._bringBallToCurrentTime(refSnapshot, currentSnapshot, role);
         if (role === "PlayerA")
         {
             refSnapshot.playerA.paddleY = currentSnapshot.playerA.paddleY;

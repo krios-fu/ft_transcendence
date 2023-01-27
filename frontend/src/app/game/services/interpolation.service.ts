@@ -53,7 +53,8 @@ export class   InterpolationService {
 
     private _interpolateHero(refHero: IHeroData, baseHero: IHeroData,
                                 timeData: IFixedTimeData): void {
-        if (refHero.xPos != baseHero.xPos)
+        if (refHero.xPos != baseHero.xPos
+            && refHero.active)
         {
             refHero.xPos = this._interpolate(
                 refHero.xPos,
@@ -66,7 +67,8 @@ export class   InterpolationService {
                 timeData
             );
         }
-        if (refHero.lowXPos != baseHero.lowXPos)
+        if (refHero.lowXPos != baseHero.lowXPos
+            && refHero.active)
         {
             refHero.lowXPos = this._interpolate(
                 refHero.lowXPos,
