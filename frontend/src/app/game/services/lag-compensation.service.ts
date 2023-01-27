@@ -43,25 +43,37 @@ export class    LagCompensationService {
                             currentSnapshot: IMatchData): boolean {
         if (currentSnapshot.when >= serverSnapshot.when)
         {
-            if (this._role === "PlayerA")
+            if (this._role === "PlayerA"
+                    && serverSnapshot.ball.xVel > 0)
             {
-                if (serverSnapshot.ball.xVel > 0
-                    && ((serverSnapshot.playerA.hero
-                            && serverSnapshot.ball.xPos
-                                > HeroPredictionService.aHeroEndX)
-                        || serverSnapshot.ball.xPos
-                            > PredictionService.aPaddleRightBorder))
-                    return (true);
+                if (serverSnapshot.playerA.hero)
+                {
+                    if (serverSnapshot.ball.xPos
+                            > HeroPredictionService.aHeroEndX)
+                        return (true);
+                }
+                else
+                {
+                    if (serverSnapshot.ball.xPos
+                            > PredictionService.aPaddleRightBorder)
+                        return (true);
+                }
             }
-            else if (this._role === "PlayerB")
+            else if (this._role === "PlayerB"
+                        && serverSnapshot.ball.xVel < 0)
             {
-                if (serverSnapshot.ball.xVel < 0
-                    && ((serverSnapshot.playerB.hero
-                            && serverSnapshot.ball.xPos
-                                < HeroPredictionService.bHeroEndX)
-                        || serverSnapshot.ball.xPos
-                            < PredictionService.bPaddleLeftBorder))
-                    return (true);
+                if (serverSnapshot.playerB.hero)
+                {
+                    if (serverSnapshot.ball.xPos
+                            < HeroPredictionService.bHeroEndX)
+                        return (true);
+                }
+                else
+                {
+                    if (serverSnapshot.ball.xPos
+                            < PredictionService.bPaddleLeftBorder)
+                        return (true);
+                }
             }
         }
         return (false);
@@ -72,25 +84,37 @@ export class    LagCompensationService {
                             currentSnapshot: IMatchData): boolean {
         if (currentSnapshot.when < serverSnapshot.when)
         {
-            if (this._role === "PlayerA")
+            if (this._role === "PlayerA"
+                    && serverSnapshot.ball.xVel < 0)
             {
-                if (serverSnapshot.ball.xVel < 0
-                    && ((serverSnapshot.playerA.hero
-                            && serverSnapshot.ball.xPos
-                                < HeroPredictionService.bHeroEndX)
-                        || serverSnapshot.ball.xPos
-                            < PredictionService.bPaddleLeftBorder))
-                    return (true);
+                if (serverSnapshot.playerA.hero)
+                {
+                    if (serverSnapshot.ball.xPos
+                            < HeroPredictionService.bHeroEndX)
+                        return (true);
+                }
+                else
+                {
+                    if (serverSnapshot.ball.xPos
+                            < PredictionService.bPaddleLeftBorder)
+                        return (true);
+                }
             }
-            else if (this._role === "PlayerB")
+            else if (this._role === "PlayerB"
+                        && serverSnapshot.ball.xVel > 0)
             {
-                if (serverSnapshot.ball.xVel > 0
-                    && ((serverSnapshot.playerB.hero
-                            && serverSnapshot.ball.xPos
-                                > HeroPredictionService.aHeroEndX)
-                        || serverSnapshot.ball.xPos
-                            > PredictionService.aPaddleRightBorder))
-                    return (true);
+                if (serverSnapshot.playerB.hero)
+                {
+                    if (serverSnapshot.ball.xPos
+                            > HeroPredictionService.aHeroEndX)
+                        return (true);
+                }
+                else
+                {
+                    if (serverSnapshot.ball.xPos
+                            > PredictionService.aPaddleRightBorder)
+                        return (true);
+                }
             }
         }
         return (false);
