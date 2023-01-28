@@ -20,7 +20,6 @@ import { BlockRepository } from './repositories/block.repository';
             FriendshipEntity, 
             BlockEntity, 
             ChatEntity,
-            // MembershipEntity
         ])
     ],
     exports: [UserService], //Usado por el módulo externo AuthModule

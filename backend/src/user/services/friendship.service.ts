@@ -6,10 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { FriendshipRepository } from '../../user/repositories/friendship.repository';
-import { FriendshipEntity, FriendshipStatus } from '../../user/entities/friendship.entity';
+import { FriendshipEntity/*, FriendshipStatus*/ } from '../../user/entities/friendship.entity';
 import { CreateFriendDto } from '../../user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 import { BlockEntity } from "../entities/block.entity";
+import { FriendshipStatus } from "../enums/user.enum";
 
 @Injectable()
 export class    FriendshipService {

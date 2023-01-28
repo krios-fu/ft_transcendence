@@ -4,15 +4,13 @@ import { MatchDto } from "../match/match.dto";
 import { MatchEntity } from "../match/match.entity";
 import { MatchService } from "../match/match.service";
 import { WinnerEntity } from "../match/winner/winner.entity";
-import {
-    Category,
-    UserEntity
-} from "../user/entities/user.entity";
+import { UserEntity } from "../user/entities/user.entity";
 import { UserService } from "../user/services/user.service";
 import { UpdateResult } from "typeorm";
 import { IGameResult } from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
+import { Category } from "src/user/enums/user.enum";
 
 @Injectable()
 export class    GameService {

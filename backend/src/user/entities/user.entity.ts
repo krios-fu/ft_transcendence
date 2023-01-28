@@ -13,15 +13,16 @@ import {
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
+import { Category } from "../enums/user.enum";
 
-export enum Category {
-	Pending,
-	Iron,
-	Bronze,
-	Silver,
-	Gold,
-	Platinum
-}
+//export enum Category {
+//	Pending,
+//	Iron,
+//	Bronze,
+//	Silver,
+//	Gold,
+//	Platinum
+//}
 
 @Entity({
 	name: 'user'

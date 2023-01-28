@@ -22,7 +22,7 @@ class UserQueryFilterDto extends BaseQueryFilterDto {
 
     @IsOptional()
     @IsArray()
-    @IsEmail({ each: true }) /* needs testing */
+    @IsEmail({}, { each: true }) /* needs testing */
     @Transform(({ value }) => intoArrayOfParams(value))
     email?: string[];
 

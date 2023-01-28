@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Category } from "../user/entities/user.entity";
+import { Category } from "src/user/enums/user.enum";
 
 /*
 **  Using Elo Rating system.

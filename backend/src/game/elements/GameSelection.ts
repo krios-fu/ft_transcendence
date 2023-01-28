@@ -1,4 +1,4 @@
-import { Category } from "src/user/entities/user.entity";
+import { Category } from "src/user/enums/user.enum";
 
 export enum HeroId {
     Aquaman,

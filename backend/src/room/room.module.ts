@@ -4,7 +4,7 @@ import { RoomController } from './room.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoomEntity } from './entity/room.entity';
 import { RoomRepository } from './repository/room.repository';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 import { RoomGateway } from './room.gateway';
 
 @Module({

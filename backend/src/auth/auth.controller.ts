@@ -30,7 +30,7 @@ interface IRequestProfile extends Request {
 };
 
 class OtpPayload {
-    @IsNumberString({ length: 6 })
+    @IsNumberString()
     @IsNotEmpty()
     token: string;
 }
