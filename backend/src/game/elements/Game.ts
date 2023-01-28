@@ -32,6 +32,7 @@ export interface    IInputData {
     paddle: boolean; //paddle or hero
     playerA: boolean; //playerA or playerB
     up: boolean; //up or down
+    when: number;
 }
 
 export interface    IGameData {

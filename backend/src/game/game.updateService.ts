@@ -102,7 +102,8 @@ export class    GameUpdateService {
         }
     }
 
-    paddleInput(roomId: string, player: string, up: boolean): void {
+    paddleInput(roomId: string, player: string,
+                    up: boolean, when: number): void {
         const   game: Game = this.getGame(roomId);
     
         if (!game)
@@ -110,11 +111,13 @@ export class    GameUpdateService {
         game.addInput({
             paddle: true,
             playerA: player === "PlayerA",
-            up: up
+            up: up,
+            when: when
         }); 
     }
 
-    heroInput(roomId: string, player: string, up: boolean): void {
+    heroInput(roomId: string, player: string,
+                up: boolean, when: number): void {
         const   game: Game = this.getGame(roomId);
     
         if (!game)
@@ -122,7 +125,8 @@ export class    GameUpdateService {
         game.addInput({
             paddle: false,
             playerA: player === "PlayerA",
-            up: up
+            up: up,
+            when: when
         });
     }
 

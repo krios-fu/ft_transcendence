@@ -167,38 +167,42 @@ export class    GameGateway implements OnGatewayInit,
     
     @SubscribeMessage('paddleUp')
     paddleUp(
-        @ConnectedSocket() client: Socket
+        @ConnectedSocket() client: Socket,
+        @MessageBody() when: number
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
         
-        this.updateService.paddleInput(room, player, true);
+        this.updateService.paddleInput(room, player, true, when);
     }
 
     @SubscribeMessage('paddleDown')
     paddleDown(
-        @ConnectedSocket() client: Socket
+        @ConnectedSocket() client: Socket,
+        @MessageBody() when: number
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
         
-        this.updateService.paddleInput(room, player, false);
+        this.updateService.paddleInput(room, player, false, when);
     }
 
     @SubscribeMessage('heroUp')
     heroUp(
-        @ConnectedSocket() client: Socket
+        @ConnectedSocket() client: Socket,
+        @MessageBody() when: number
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
-        this.updateService.heroInput(room, player, true);
+        this.updateService.heroInput(room, player, true, when);
     }
 
     @SubscribeMessage('heroDown')
     heroDown(
-        @ConnectedSocket() client: Socket
+        @ConnectedSocket() client: Socket,
+        @MessageBody() when: number
     ) {
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
-        this.updateService.heroInput(room, player, false);
+        this.updateService.heroInput(room, player, false, when);
     }
 
   }
