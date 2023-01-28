@@ -28,7 +28,8 @@ describe('/room_roles (e2e)', () => {
                     username: process.env.DB_USERNAME,
                     password: process.env.DB_PASSWD,
                     database: process.env.DB_NAME,
-                    entities: ["dist/**/*.entity{.ts,.js}"],
+//                    entities: ["../../dist/**/*.entity{.ts,.js}"],
+                    autoLoadEntities: true,
                     synchronize: true,
                 }),
                 AuthModule,
@@ -38,6 +39,7 @@ describe('/room_roles (e2e)', () => {
 
         app = testModule.createNestApplication();
         await app.init()
+
         const res = await request(app.getHttpServer())
             .post('/auth/generate')
             .send({ 
@@ -46,11 +48,12 @@ describe('/room_roles (e2e)', () => {
                 'api_secret': process.env.FORTYTWO_APP_SECRET
             })
         authToken = res.body.authToken;
+        console.log('victoria total y absoluta');
     });
 
     it ('[ simply an auth. token test ]', () => {
         return request(app.getHttpServer())
-            .get('/users')
+            .get('/room_roles')
             .expect(200)
     });
 

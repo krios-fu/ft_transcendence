@@ -13,8 +13,8 @@ import { MessageService } from './message/message.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-            ChatEntity,
             MessageEntity,
+            ChatEntity,
         ]),
         UserModule,
     ],
