@@ -12,8 +12,8 @@ import {
     Injectable 
 } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserRolesService } from "src/user_roles/user_roles.service";
-import { IRequestUser } from "src/common/interfaces/request-payload.interface";
+import { UserRolesService } from "../../user_roles/user_roles.service";
+import { IRequestUser } from "../../common/interfaces/request-payload.interface";
 
 @Injectable()
 export class SiteAdminGuard implements CanActivate {

@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { LoserEntity } from "src/match/loser/loser.entity";
-import { MatchDto } from "src/match/match.dto";
-import { MatchEntity } from "src/match/match.entity";
-import { MatchService } from "src/match/match.service";
-import { WinnerEntity } from "src/match/winner/winner.entity";
+import { LoserEntity } from "../match/loser/loser.entity";
+import { MatchDto } from "../match/match.dto";
+import { MatchEntity } from "../match/match.entity";
+import { MatchService } from "../match/match.service";
+import { WinnerEntity } from "../match/winner/winner.entity";
 import {
     Category,
     UserEntity
-} from "src/user/entities/user.entity";
-import { UserService } from "src/user/services/user.service";
+} from "../user/entities/user.entity";
+import { UserService } from "../user/services/user.service";
 import { UpdateResult } from "typeorm";
 import { IGameResult } from "./elements/Game";
 import { GameQueueService } from "./game.queueService";

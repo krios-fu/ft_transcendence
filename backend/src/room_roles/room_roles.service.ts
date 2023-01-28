@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { RoomService } from 'src/room/room.service';
-import { UserRolesService } from 'src/user_roles/user_roles.service';
+import { QueryMapper } from '../common/mappers/query.mapper';
+import { RolesEntity } from '../roles/entity/roles.entity';
+import { RoomService } from '../room/room.service';
+import { UserRolesService } from '../user_roles/user_roles.service';
 import { CreateRoomRolesDto, UpdatePasswordDto } from './dto/room_roles.dto';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';

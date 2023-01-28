@@ -1,8 +1,8 @@
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
-import { UserEntity } from "src/user/entities/user.entity";
+import { UserEntity } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dto/room.dto";
-import { UserService } from "src/user/services/user.service";
+import { UserService } from "../user/services/user.service";
 import { UpdateResult } from "typeorm";
 import { BadRequestException, Body, 
     Controller, 
@@ -22,9 +22,9 @@ import { BadRequestException, Body,
     UseInterceptors
 } from "@nestjs/common";
 import { RoomQueryDto } from "./dto/room.query.dto";
-import { uploadRoomAvatarSettings } from "src/common/config/upload-avatar.config";
+import { uploadRoomAvatarSettings } from "../common/config/upload-avatar.config";
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
+import { FileTypeValidatorPipe } from "../common/validators/filetype-validator.class";
 import * as fs from 'fs';
 
 @Controller('room')

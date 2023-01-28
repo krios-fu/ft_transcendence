@@ -1,7 +1,15 @@
-
-import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { BaseEntity, Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { RolesEntity } from '../../roles/entity/roles.entity';
+import { UserEntity } from '../../user/entities/user.entity';
+import { 
+    BaseEntity, 
+    Column, 
+    Entity, 
+    Generated, 
+    Index, 
+    JoinColumn, 
+    ManyToOne, 
+    PrimaryGeneratedColumn 
+} from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 
 @Entity({ name: 'roles_user' })

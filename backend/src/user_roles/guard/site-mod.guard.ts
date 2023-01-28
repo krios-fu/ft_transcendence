@@ -7,7 +7,7 @@
 
 import { CanActivate, ExecutionContext } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { IRequestUser } from "src/common/interfaces/request-payload.interface";
+import { IRequestUser } from "../../common/interfaces/request-payload.interface";
 import { UserRolesService } from "../user_roles.service";
 
 export class AtLeastSiteModGuard implements CanActivate {

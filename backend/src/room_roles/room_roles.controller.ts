@@ -1,4 +1,4 @@
-import { RolesEntity } from 'src/roles/entity/roles.entity';
+import { RolesEntity } from '../roles/entity/roles.entity';
 import { CreateRoomRolesDto, UpdatePasswordDto } from './dto/room_roles.dto';
 import { RoomRolesEntity } from './entity/room_roles.entity';
 import { RoomRolesService } from './room_roles.service';
@@ -19,11 +19,11 @@ import {
   NotFoundException,
   ForbiddenException
 } from '@nestjs/common';
-import { RoomService } from 'src/room/room.service';
-import { RolesService } from 'src/roles/roles.service';
+import { RoomService } from '../room/room.service';
+import { RolesService } from '../roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
-import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { RoomEntity } from 'src/room/entity/room.entity';
+import { UserCreds } from '../common/decorators/user-cred.decorator';
+import { RoomEntity } from '../room/entity/room.entity';
 
 @Controller('room_roles')
 export class RoomRolesController {

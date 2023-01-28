@@ -4,9 +4,9 @@ import {
     ExtractJwt,
 } from 'passport-jwt';
 import { ForbiddenException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
-import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
-import { UserService } from 'src/user/services/user.service';
-import { UserRolesService } from 'src/user_roles/user_roles.service';
+import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
+import { UserService } from '../../user/services/user.service';
+import { UserRolesService } from '../../user_roles/user_roles.service';
 
 @Injectable()
 export class TwoFactorStrategy extends PassportStrategy(Strategy, 'two-factor') {

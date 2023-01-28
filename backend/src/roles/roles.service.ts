@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
+import { QueryMapper } from '../common/mappers/query.mapper';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { RoleQueryDto } from './dto/role.query.dto';
 import { RolesEntity } from './entity/roles.entity';

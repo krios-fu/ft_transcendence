@@ -1,6 +1,6 @@
 import { Body, Delete, Get, HttpException, HttpStatus, Logger, NotFoundException, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '../user/services/user.service';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';

@@ -1,10 +1,10 @@
 import { Exclude } from "class-transformer";
-import { RolesEntity } from "src/roles/entity/roles.entity";
-import { RoomEntity } from "src/room/entity/room.entity";
+import { RolesEntity } from "../../roles/entity/roles.entity";
+import { RoomEntity } from "../../room/entity/room.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 import * as bcrypt from "bcrypt";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
 import { InternalServerErrorException } from "@nestjs/common";
 
 @Entity({ name: 'room_role' })

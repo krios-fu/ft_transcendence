@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { filter } from 'rxjs';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/services/user.service';
+import { QueryMapper } from '../common/mappers/query.mapper';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/services/user.service';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';

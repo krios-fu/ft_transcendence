@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto, UpdateRoomDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { UpdateResult } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
-import { QueryMapper } from "src/common/mappers/query.mapper";
-import { UserEntity } from "src/user/entities/user.entity";
+import { QueryMapper } from "../common/mappers/query.mapper";
+import { UserEntity } from "../user/entities/user.entity";
 import * as fs from 'fs';
 
 @Injectable()

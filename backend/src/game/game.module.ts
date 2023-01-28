@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { LoserModule } from 'src/match/loser/loser.module';
-import { MatchModule } from 'src/match/match.module';
-import { WinnerModule } from 'src/match/winner/winner.module';
-import { UserModule } from 'src/user/user.module';
+import { LoserModule } from '../match/loser/loser.module';
+import { MatchModule } from '../match/match.module';
+import { WinnerModule } from '../match/winner/winner.module';
+import { UserModule } from '../user/user.module';
 import { GameGateway } from './game.gateway';
 import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';

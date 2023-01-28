@@ -2,8 +2,8 @@ import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from "../../src/auth/auth.module";
-import { UserModule } from "../../src/user/user.module";
 import * as request from 'supertest';
+import { RoomRolesModule } from "../../src/room_roles/room_roles.module";
 
 describe('/room_roles (e2e)', () => {
     let app: INestApplication;
@@ -31,8 +31,8 @@ describe('/room_roles (e2e)', () => {
                     entities: ["dist/**/*.entity{.ts,.js}"],
                     synchronize: true,
                 }),
-                UserModule, // mock userModules
                 AuthModule,
+                RoomRolesModule,
             ],
         }).compile()
 

@@ -6,7 +6,6 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    WsResponse,
     ConnectedSocket,
 } from '@nestjs/websockets';
 import {
