@@ -80,7 +80,8 @@ describe('/room_roles (e2e)', () => {
             await roomRep.query( `INSERT INTO room (roomName,ownerId,photoUrl) \
                 VALUES (${rooms[i]},${i},${rooms[i]}Pu);` );
         }
-
+        rolesRep.query('INSERT INTO roles (role) \
+            VALUES (')
     });
 
     afterAll(async () => {
