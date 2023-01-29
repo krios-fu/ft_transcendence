@@ -72,7 +72,7 @@ export class RoomRolesController {
         const { roomId, roleId } = dto;
         const roleEntity: RolesEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
-            this.roomRoleLogger.error(`'No role with id ${roomId} found in database`);
+            this.roomRoleLogger.error(`No role with id ${roomId} found in database`);
             throw new BadRequestException('resource not found in database');
         }
         const roomEntity: RoomEntity = await this.roomService.findOne(roomId);

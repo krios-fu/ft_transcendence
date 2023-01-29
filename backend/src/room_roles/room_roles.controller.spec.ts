@@ -6,7 +6,7 @@ import { RoomRolesService } from './room_roles.service';
 
 describe('RoomRolesController', () => {
   let controller: RoomRolesController;
-//  let service: RoomRolesService;
+//  let service: RoomRolesService; <- mock this!!
 
   const mockUser: CreateUserDto = {
     username: 'test-user',
@@ -25,7 +25,7 @@ describe('RoomRolesController', () => {
     .compile();
 
     controller = module.get<RoomRolesController>(RoomRolesController);
-    service = module.get<RoomRolesService>(RoomRolesService);
+    //service = module.get<RoomRolesService>(RoomRolesService);
     /* login logic */
   });
 
