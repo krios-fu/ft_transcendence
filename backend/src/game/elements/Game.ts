@@ -15,6 +15,7 @@ import {
 import { HeroCreator } from './HeroCreator';
 import { GameReconciliationService } from '../game.reconciliation.service';
 import { GameBuffer } from './GameBuffer';
+import { GameUpdateService } from '../game.updateService';
 
 export enum GameState {
     Running,
@@ -143,11 +144,10 @@ export class   Game {
         return (this._state === GameState.Finished);
     }
 
-    serveBall(): void {
-        const   currentTime: number = Date.now();
-    
+    serveBall(): void {    
         this._ball.serve();
-        this._lastUpdate = currentTime;
+        this._lastUpdate = this._lastUpdate
+                            + GameUpdateService.updateTimeInterval / 2;
         this._buffer.addSnapshot(this.data());
     }
 
@@ -411,8 +411,24 @@ export class   Game {
         return (false);
     }
 
+    private getUpdateTime(): number {
+        const   lastBufferSnapshot: IGameData =
+                    this._buffer.snapshots[this._buffer.snapshots.length];
+        if (lastBufferSnapshot
+            && lastBufferSnapshot.when + GameUpdateService.updateTimeInterval
+                != this._lastUpdate)
+        {
+            if (lastBufferSnapshot.ball.xVel === 0)
+            {// The current snapshot is a ball serve one
+                return (lastBufferSnapshot.when
+                            + GameUpdateService.updateTimeInterval);
+            }
+        }
+        return (this._lastUpdate + GameUpdateService.updateTimeInterval);
+    }
+
     update(): GameUpdateResult {
-        const   currentTime: number = Date.now(); 
+        const   currentTime: number = this.getUpdateTime();
     
         this._pointTransition = false;
         if (this.processInput())
