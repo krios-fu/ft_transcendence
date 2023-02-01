@@ -79,6 +79,13 @@ export class    Ball {
         this._yVelocity = input;
     }
 
+    mimic(data: IBallData): void {
+        this._xPosition = data.xPos;
+        this._yPosition = data.yPos;
+        this._xVelocity = data.xVel;
+        this._yVelocity = data.yVel;
+    }
+
     displacement(axis: string, seconds: number): number {
         if (axis === 'x')
             return (this._xVelocity * seconds);

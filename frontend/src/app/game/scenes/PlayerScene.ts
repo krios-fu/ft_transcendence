@@ -26,26 +26,27 @@ export class    PlayerScene extends MatchScene {
     }
 
     override update(time: number) {
-        let input: [paddleUp: number, heroUp: number] = [0, 0];
+        const   currentTime: number = Date.now();
+        let     input: [paddleUp: number, heroUp: number] = [0, 0];
     
         if (this.cursors?.up.isDown)
         {
-            this.socket.emit('paddleUp');
+            this.socket.emit('paddleUp', currentTime);
             input[0] = 2;
         }
         else if (this.cursors?.down.isDown)
         {
-            this.socket.emit('paddleDown');
+            this.socket.emit('paddleDown', currentTime);
             input[0] = 1;
         }
         if (this.powerKeys.up.isDown)
         {
-            this.socket.emit('heroUp');
+            this.socket.emit('heroUp', currentTime);
             input[1] = 2;
         }
         else if (this.powerKeys.down.isDown)
         {
-            this.socket.emit('heroDown');
+            this.socket.emit('heroDown', currentTime);
             input[1] = 1;
         }
         if (input[0] || input[1])
