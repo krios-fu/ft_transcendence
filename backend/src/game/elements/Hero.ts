@@ -87,6 +87,15 @@ export class    Hero {
         return (this._pointInvocation);
     }
 
+    mimic(data: IHeroData): void {
+        this._upperSprite.xPos = data.xPos;
+        this._upperSprite.yPos = data.yPos;
+        this._lowerSprite.xPos = data.lowXPos;
+        this._lowerSprite.yPos = data.lowYPos;
+        this._activeSprite = data.active;
+        this._pointInvocation = data.pointInvocation;
+    }
+
     /*
     **  up === true = W click
     **  up === false = S click

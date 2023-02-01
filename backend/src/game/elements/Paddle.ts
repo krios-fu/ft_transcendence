@@ -73,6 +73,10 @@ export class    Paddle {
         return (this._side);
     }
 
+    set yPos(yPos: number) {
+        this._yPos = yPos;
+    }
+
     up(): void {
         if (this._yPos - this._displacement < this._halfHeight)
             this._yPos = this._halfHeight;

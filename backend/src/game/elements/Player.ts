@@ -66,6 +66,13 @@ export class    Player {
         this._score = input;
     }
 
+    mimic(data: IPlayerData): void {
+        this._paddle.yPos = data.paddleY;
+        this._score = data.score;
+        if (this._hero && data.hero)
+            this._hero.mimic(data.hero);
+    }
+
     updatePaddle(up: boolean, gameHeight: number): void {
         this._paddle.update(up, gameHeight);
     }
