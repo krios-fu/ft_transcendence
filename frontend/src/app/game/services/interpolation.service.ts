@@ -149,8 +149,7 @@ export class   InterpolationService {
 
     private _getFixedTimeData(refTime: number, baseTime: number,
                                 currentStep: number): IFixedTimeData {
-        const   targetTime = Math.round(baseTime + (this._snapshotInterval
-                                                        * currentStep));
+        const   targetTime = baseTime + (this._snapshotInterval * currentStep);
         
         return ({
             base: baseTime,
@@ -192,7 +191,7 @@ export class   InterpolationService {
         if (serverSnapshot.ball.xVel != 0)
             return ;
         baseTime = serverSnapshot.when - this._serverUpdateInterval;
-        genSnapshot.when = Math.round(baseTime + (this._snapshotInterval * currentStep));
+        genSnapshot.when = baseTime + (this._snapshotInterval * currentStep);
     }
 
     private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,

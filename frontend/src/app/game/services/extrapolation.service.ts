@@ -89,7 +89,7 @@ export class    ExtrapolationService {
             refSnapshot = buffer[i - 1];
             generatedSnapshot = this._getSnapshot(
                 refSnapshot,
-                Math.round(refSnapshot.when + this._snapshotInterval)
+                refSnapshot.when + this._snapshotInterval
             );
             buffer.push(Match.cloneMatchData(generatedSnapshot));
         }
@@ -158,8 +158,18 @@ export class    ExtrapolationService {
         }
     }
 
+    private getTargetTime(aggressive: boolean,
+                            firstBufferTime: number,
+                            serverTime: number): number {
+        if (!aggressive)
+            return (firstBufferTime);
+        return (serverTime + this._snapshotInterval);
+    }
+
     improveInterpol(buffer: IMatchData[], data: IExtrapolImproveData): void {
-        let targetTime: number = data.aggressive ? Date.now() : buffer[0].when;
+        let targetTime: number = this.getTargetTime(data.aggressive,
+                                                    buffer[0].when,
+                                                    data.serverSnapshot.when);
         let refSnapshot: IMatchData = Match.cloneMatchData(data.serverSnapshot);
         let genSnapshot: IMatchData;
 
@@ -210,7 +220,7 @@ export class    ExtrapolationService {
         {
             generatedSnapshot = this._getSnapshot(
                 refSnapshot,
-                Math.round(refSnapshot.when + this._snapshotInterval)
+                refSnapshot.when + this._snapshotInterval
             );
             if (i < buffer.length)
                 this._preserveUnpredictable(buffer[i], generatedSnapshot, role);

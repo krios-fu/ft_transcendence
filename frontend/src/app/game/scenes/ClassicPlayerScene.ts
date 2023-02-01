@@ -21,17 +21,18 @@ export class    ClassicPlayerScene extends MatchScene {
     }
 
     override update(time: number) {
-        const   currentTime: number = Date.now();
         let     input: number = 0;
     
         if (this.cursors?.up.isDown)
         {
-            this.socket.emit('paddleUp', currentTime);
+            if (this.match)
+                this.socket.emit('paddleUp', this.match.snapshot.when);
             input = 2;
         }
         else if (this.cursors?.down.isDown)
         {
-            this.socket.emit('paddleDown', currentTime);
+            if (this.match)
+                this.socket.emit('paddleDown', this.match.snapshot.when);
             input = 1;
         }
         if (input)
