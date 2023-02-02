@@ -10,12 +10,19 @@ import {
     IPlayerData
 } from "./Player";
 import { Txt } from "./Txt";
+import {
+    AStage,
+    StageName
+} from "./AStage";
+import { Atlantis } from "./Atlantis";
+import { Metropolis } from "./Metropolis";
+import { Wakanda } from "./Wakanda";
 
 export interface    IMatchInitData {
     playerA: IPlayerInitData;
     playerB: IPlayerInitData;
     ball: IBallInitData;
-    stage?: string;
+    stage?: StageName;
     when: number;
 }
 
@@ -31,7 +38,7 @@ export class    Match {
     private _playerA: Player;
     private _playerB: Player;
     private _ball: Ball;
-    private _stage?: Phaser.GameObjects.Image;
+    private _stage?: AStage;
     private _scoreTxt: Txt;
     private _scoreNicks: string;
     private _when: number;
@@ -40,15 +47,14 @@ export class    Match {
         this._playerA = new Player(scene, initData.playerA);
         this._playerB = new Player(scene, initData.playerB);
         this._ball = new Ball(scene, initData.ball);
-        if (initData.playerA.hero && initData.stage)
+        if (initData.playerA.hero)
         {
-            this._stage = scene.add.image(
-                Number(scene.game.config.width) / 2,
-                Number(scene.game.config.height),
-                initData.stage
-            );
-            this._stage.setOrigin(0.5, 1);
-            this._stage.depth = -1;
+            if (initData.stage === StageName.Atlantis)
+                this._stage = new Atlantis(scene);
+            else if (initData.stage === StageName.Metropolis)
+                this._stage = new Metropolis(scene);
+            else
+                this._stage = new Wakanda(scene);
         }
         this._scoreNicks =
             ` ${initData.playerA.nick} - ${initData.playerB.nick} `;
@@ -112,6 +118,7 @@ export class    Match {
         this._playerA.update(data.playerA);
         this._playerB.update(data.playerB);
         this._ball.update(data.ball);
+        this._stage?.update();
         this._when = data.when;
     }
 

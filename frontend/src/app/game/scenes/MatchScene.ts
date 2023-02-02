@@ -1,5 +1,9 @@
 import * as SocketIO from 'socket.io-client'
 import {
+    AStage,
+    StageKeys
+} from '../elements/AStage';
+import {
     Match,
     IMatchInitData,
     IMatchData
@@ -57,12 +61,20 @@ export class    MatchScene extends BaseScene {
 
     //Called after init()
     preload() {
+        const   stageKeys: StageKeys = AStage.stageKeys;
+    
         this.load.image('aquaman', '/assets/aquaman.png');
         this.load.image('superman', '/assets/superman.png');
         this.load.image('blackPanther', '/assets/blackPanther.png');
-        this.load.image('atlantis', '/assets/atlantis.png');
-        this.load.image('metropolis', '/assets/metropolis.png');
-        this.load.image('wakanda', '/assets/wakanda.png');
+        this.load.image(stageKeys.atlantis, '/assets/atlantis.png');
+        this.load.image(stageKeys.atlantisBubbles,
+                            '/assets/atlantis_bubbles.png');
+        this.load.image(stageKeys.metropolis, '/assets/metropolis.png');
+        this.load.image(stageKeys.metropolisClouds,
+                            '/assets/metropolis_clouds.png');
+        this.load.image(stageKeys.wakanda, '/assets/wakanda.png');
+        this.load.image(stageKeys.wakandaCity, '/assets/wakanda_city.png');
+        this.load.image(stageKeys.wakandaJungle, '/assets/wakanda_jungle.png');
     }
 
     createInitText() {
