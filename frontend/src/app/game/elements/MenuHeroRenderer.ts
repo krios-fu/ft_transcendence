@@ -120,7 +120,10 @@ export class    MenuHeroRenderer extends MenuRenderer {
         else if (selectionStatus === SelectionStatus.Stage)
         {
             if (player === "PlayerA")
+            {
                 this.changeImage(this._stageImage, this._stageImages, element);
+                this.soundService.play(this._sounds.change, false);
+            }
         }
     }
 
