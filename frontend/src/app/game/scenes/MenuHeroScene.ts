@@ -3,6 +3,10 @@ import { IMatchInitData } from "../elements/Match";
 import { MenuHeroRenderer } from "../elements/MenuHeroRenderer";
 import { MenuSelector } from "../elements/MenuSelector";
 import {
+    SelectionSoundKeys,
+    SoundService
+} from "../services/sound.service";
+import {
     IMenuInit,
     ISelectionData,
     MenuScene
@@ -16,7 +20,8 @@ export class    MenuHeroScene extends MenuScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     enter?: any; //Enter key
 
-    constructor(sock: Socket, room: string) {
+    constructor(sock: Socket, room: string,
+                    private readonly soundService: SoundService) {
         super(sock, room, "MenuHero");
     }
 
@@ -26,6 +31,7 @@ export class    MenuHeroScene extends MenuScene {
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
             if (this._menuHeroRenderer)
                 this._menuHeroRenderer.destroy();
+            this.soundService.destroy();
             this.removeAllSocketListeners();
             if (this.role != "Spectator")
             {
@@ -45,12 +51,16 @@ export class    MenuHeroScene extends MenuScene {
         this.socket.once("end", (data) => {
             if (this._menuHeroRenderer)
                 this._menuHeroRenderer.destroy();
+            this.soundService.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
     }
 
     override preload() {
+        const   selectSounds: SelectionSoundKeys =
+                                SoundService.selectionSoundKeys;
+        
         super.preload();
         this.load.image('aquamanMenu', '/assets/aquaman_menu.jpg');
         this.load.image('supermanMenu', '/assets/superman_menu.jpg');
@@ -61,14 +71,20 @@ export class    MenuHeroScene extends MenuScene {
         this.load.image('atlantisMenu', '/assets/atlantis_menu.jpeg');
         this.load.image('metropolisMenu', '/assets/metropolis_menu.jpeg');
         this.load.image('wakandaMenu', '/assets/wakanda_menu.png');
+        this.load.audio(selectSounds.theme, '/assets/selection_theme.mp3');
+        this.load.audio(selectSounds.change, '/assets/selection_change.mp3');
+        this.load.audio(selectSounds.confirm, '/assets/selection_confirm.mp3');
+        this.load.audio(selectSounds.finish, '/assets/selection_finish.mp3');
     }
 
     override create() {
         if (!this.initData)
             return ;
+        this.soundService.load(this, SoundService.selectionSoundKeys);
         this._menuHeroRenderer = new MenuHeroRenderer(
             this,
-            this.initData
+            this.initData,
+            this.soundService
         );
         this.selector = new MenuSelector(this.initData, this._menuHeroRenderer);
         this.socket.on("leftSelection", (data: ISelectionData) => {

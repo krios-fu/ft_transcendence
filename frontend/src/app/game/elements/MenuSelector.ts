@@ -139,7 +139,10 @@ export class    MenuSelector {
         else if (this._status === SelectionStatus.Stage)
         {
             if (player === "PlayerA")
+            {
                 this._status = SelectionStatus.Finished;
+                this._renderer.finish();
+            }
         }
     }
 

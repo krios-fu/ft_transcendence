@@ -2,6 +2,10 @@ import {
     ISelectionData,
     MenuScene
 } from "../scenes/MenuScene";
+import {
+    SelectionSoundKeys,
+    SoundService
+} from "../services/sound.service";
 import { MenuArrows } from "./MenuArrows";
 import { MenuRenderer } from "./MenuRenderer";
 import { SelectionStatus } from "./MenuSelector";
@@ -14,10 +18,12 @@ export class    MenuHeroRenderer extends MenuRenderer {
     private _heroAImage: Phaser.GameObjects.Image;
     private _heroBImage: Phaser.GameObjects.Image;
     private _stageImage: Phaser.GameObjects.Image;
+    private _sounds: SelectionSoundKeys;
     private _aArrows: MenuArrows;
     private _bArrows: MenuArrows;
 
-    constructor(scene: MenuScene, initData: ISelectionData) {
+    constructor(scene: MenuScene, initData: ISelectionData,
+                    private readonly soundService: SoundService) {
         super(scene, initData, true);
         this._heroImages = [
             'aquamanMenu',
@@ -34,6 +40,7 @@ export class    MenuHeroRenderer extends MenuRenderer {
             'metropolisMenu',
             'wakandaMenu'
         ];
+        this._sounds = SoundService.selectionSoundKeys;
         (this._aArrows = new MenuArrows(scene,
             { x: 50, y: 220 },
             { x: 350, y: 220 }
@@ -65,6 +72,7 @@ export class    MenuHeroRenderer extends MenuRenderer {
             this._stageImage.visible = true;
             this.showStageArrows();
         }
+        this.soundService.play(this._sounds.theme, true);
     }
 
     private changeImage(image: Phaser.GameObjects.Image,
@@ -97,9 +105,13 @@ export class    MenuHeroRenderer extends MenuRenderer {
                 else
                     this._bArrows.visible = false;
                 heroImages = this._heroConfirmImages;
+                this.soundService.play(this._sounds.confirm, false);
             }
             else
+            {
                 heroImages = this._heroImages;
+                this.soundService.play(this._sounds.change, false);
+            }
             if (player === "PlayerA")
                 this.changeImage(this._heroAImage, heroImages, element);
             else
@@ -128,6 +140,11 @@ export class    MenuHeroRenderer extends MenuRenderer {
             }
             this.showStageArrows();
         }
+    }
+
+    finish(): void {
+        this.soundService.play(this._sounds.finish, false);
+        this.soundService.stop(this._sounds.theme);
     }
 
     override destroy(): void {

@@ -9,6 +9,7 @@ import { PlayerScene } from "./scenes/PlayerScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
 import { StartScene } from "./scenes/StartScene";
 import { LagCompensationService } from "./services/lag-compensation.service";
+import { SoundService } from "./services/sound.service";
 
 @Component({
     selector: 'app-game',
@@ -24,7 +25,8 @@ export class    GameComponent implements OnInit {
     private username?: string; //Provisional
 
     constructor (
-        private readonly lagCompensator: LagCompensationService
+        private readonly lagCompensator: LagCompensationService,
+        private readonly soundService: SoundService
     ) {
         this.config = {
             type: Phaser.CANVAS,
@@ -56,7 +58,7 @@ export class    GameComponent implements OnInit {
         const   menuScene: MenuScene =
                     new MenuScene(this.socket, "Game1");
         const   menuHeroScene: MenuHeroScene =
-                    new MenuHeroScene(this.socket, "Game1");
+                    new MenuHeroScene(this.socket, "Game1", this.soundService);
         const   playerScene: PlayerScene =
                     new PlayerScene(this.socket, "Game1",
                                         this.lagCompensator);
