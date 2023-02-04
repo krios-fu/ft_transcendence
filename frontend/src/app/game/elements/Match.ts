@@ -18,6 +18,7 @@ import { Atlantis } from "./Atlantis";
 import { Metropolis } from "./Metropolis";
 import { Wakanda } from "./Wakanda";
 import { SoundService } from "../services/sound.service";
+import { PointTitle } from "./PointTitle";
 
 export interface    IMatchInitData {
     playerA: IPlayerInitData;
@@ -41,6 +42,7 @@ export class    Match {
     private _ball: Ball;
     private _stage?: AStage;
     private _scoreTxt: Txt;
+    private _pointTitle: PointTitle;
     private _scoreNicks: string;
     private _when: number;
 
@@ -71,6 +73,8 @@ export class    Match {
             depth: 0
         });
         this._when = initData.when;
+        this._pointTitle = new PointTitle(scene);
+        this._pointTitle.display();
     }
 
     // Returns a Deep Copy of IPlayerData
@@ -130,6 +134,7 @@ export class    Match {
         this._playerA.destroy();
         this._playerB.destroy();
         this._stage?.destroy();
+        this._pointTitle.destroy();
     }
 
 }
