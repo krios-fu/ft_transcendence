@@ -29,6 +29,27 @@ export abstract class   AStage {
         wakandaCity: 'wakandaCity',
         wakandaJungle: 'wakandaJungle'
     };
+    static readonly stageKeyGroups: Map<StageName, string[]> = new Map ([
+        [
+            StageName.Atlantis, [
+                AStage.stageKeys.atlantis,
+                AStage.stageKeys.atlantisBubbles
+            ]
+        ],
+        [
+            StageName.Metropolis, [
+                AStage.stageKeys.metropolis,
+                AStage.stageKeys.metropolisClouds
+            ]
+        ],
+        [
+            StageName.Wakanda, [
+                AStage.stageKeys.wakanda,
+                AStage.stageKeys.wakandaCity,
+                AStage.stageKeys.wakandaJungle
+            ]
+        ], 
+    ]);
 
     constructor(scene: MatchScene, stageKey: string) {
         this._stage = scene.add.image(

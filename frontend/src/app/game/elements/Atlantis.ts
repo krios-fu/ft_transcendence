@@ -1,4 +1,5 @@
 import { MatchScene } from "../scenes/MatchScene";
+import { SoundService } from "../services/sound.service";
 import {
     AStage,
     StageKeys
@@ -8,7 +9,8 @@ export class    Atlantis extends AStage {
 
     private _bubbles: Phaser.GameObjects.TileSprite;
 
-    constructor(scene: MatchScene) {
+    constructor(scene: MatchScene,
+                    private readonly soundService: SoundService) {
         const   keys: StageKeys = AStage.stageKeys;
     
         super(scene, keys.atlantis);
@@ -19,6 +21,7 @@ export class    Atlantis extends AStage {
         );
         this._bubbles.setOrigin(0, 0);
         this._bubbles.depth = -0.5;
+        this.soundService.play(SoundService.stageSoundKeys.atlantis, true);
     }
 
     update(): void {

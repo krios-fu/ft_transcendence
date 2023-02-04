@@ -17,12 +17,13 @@ import {
 import { Atlantis } from "./Atlantis";
 import { Metropolis } from "./Metropolis";
 import { Wakanda } from "./Wakanda";
+import { SoundService } from "../services/sound.service";
 
 export interface    IMatchInitData {
     playerA: IPlayerInitData;
     playerB: IPlayerInitData;
     ball: IBallInitData;
-    stage?: StageName;
+    stage: StageName;
     when: number;
 }
 
@@ -43,18 +44,19 @@ export class    Match {
     private _scoreNicks: string;
     private _when: number;
 
-    constructor(scene: MatchScene, initData: IMatchInitData) {
+    constructor(scene: MatchScene, initData: IMatchInitData,
+                    private readonly soundService: SoundService) {
         this._playerA = new Player(scene, initData.playerA);
         this._playerB = new Player(scene, initData.playerB);
         this._ball = new Ball(scene, initData.ball);
         if (initData.playerA.hero)
         {
             if (initData.stage === StageName.Atlantis)
-                this._stage = new Atlantis(scene);
+                this._stage = new Atlantis(scene, this.soundService);
             else if (initData.stage === StageName.Metropolis)
-                this._stage = new Metropolis(scene);
+                this._stage = new Metropolis(scene, this.soundService);
             else
-                this._stage = new Wakanda(scene);
+                this._stage = new Wakanda(scene, this.soundService);
         }
         this._scoreNicks =
             ` ${initData.playerA.nick} - ${initData.playerB.nick} `;

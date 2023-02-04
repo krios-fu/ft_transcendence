@@ -1,9 +1,5 @@
 import * as SocketIO from 'socket.io-client'
 import {
-    AStage,
-    StageKeys
-} from '../elements/AStage';
-import {
     Match,
     IMatchInitData,
     IMatchData
@@ -11,6 +7,11 @@ import {
 import { Txt } from '../elements/Txt';
 import { SnapshotBuffer } from '../elements/SnapshotBuffer';
 import { LagCompensationService } from '../services/lag-compensation.service';
+import { LoadService } from '../services/load.service';
+import {
+    MatchSoundKeys,
+    SoundService
+} from '../services/sound.service';
 import { BaseScene } from './BaseScene';
 
 export interface    IMatchSceneInit {
@@ -30,7 +31,9 @@ export class    MatchScene extends BaseScene {
 
     constructor(
         role: string, socket: SocketIO.Socket, room: string,
-        readonly lagCompensator: LagCompensationService
+        readonly lagCompensator: LagCompensationService,
+        readonly loadService: LoadService,
+        readonly soundService: SoundService
     ) {
         super(role, socket, room);
         this.queue = [];
@@ -46,6 +49,7 @@ export class    MatchScene extends BaseScene {
         this.socket.once("end", (data) => {
             this.match?.destroy();
             this.buffer = undefined;
+            this.soundService.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
@@ -61,20 +65,9 @@ export class    MatchScene extends BaseScene {
 
     //Called after init()
     preload() {
-        const   stageKeys: StageKeys = AStage.stageKeys;
-    
-        this.load.image('aquaman', '/assets/aquaman.png');
-        this.load.image('superman', '/assets/superman.png');
-        this.load.image('blackPanther', '/assets/blackPanther.png');
-        this.load.image(stageKeys.atlantis, '/assets/atlantis.png');
-        this.load.image(stageKeys.atlantisBubbles,
-                            '/assets/atlantis_bubbles.png');
-        this.load.image(stageKeys.metropolis, '/assets/metropolis.png');
-        this.load.image(stageKeys.metropolisClouds,
-                            '/assets/metropolis_clouds.png');
-        this.load.image(stageKeys.wakanda, '/assets/wakanda.png');
-        this.load.image(stageKeys.wakandaCity, '/assets/wakanda_city.png');
-        this.load.image(stageKeys.wakandaJungle, '/assets/wakanda_jungle.png');
+        if (!this.initData)
+            return ;
+        this.loadService.match(this, this.initData.matchData);
     }
 
     createInitText() {
@@ -92,20 +85,26 @@ export class    MatchScene extends BaseScene {
 
     //Called after preload()
     create() {
-        if (this.initData != undefined)
-        {
-            this.match = new Match(this, this.initData.matchData);
-            this.buffer = new SnapshotBuffer(
-                {
-                    gameWidth: Number(this.game.config.width),
-                    gameHeight: Number(this.game.config.height),
-                    matchData: this.initData.matchData,
-                    role: this.initData.role
-                },
-                this.lagCompensator
-            );
-            this.queue = [];
-        }
+        if (!this.initData)
+            return ;
+        this.soundService.load(this, {
+            stage: SoundService.stageSoundKeysMap.get(
+                this.initData.matchData.stage
+            ),
+            collision: SoundService.matchOtherSoundKeys.collision,
+            point: SoundService.matchOtherSoundKeys.point
+        } as MatchSoundKeys);
+        this.match = new Match(this, this.initData.matchData, this.soundService);
+        this.buffer = new SnapshotBuffer(
+            {
+                gameWidth: Number(this.game.config.width),
+                gameHeight: Number(this.game.config.height),
+                matchData: this.initData.matchData,
+                role: this.initData.role
+            },
+            this.lagCompensator
+        );
+        this.queue = [];
         this.createInitText();
         this.initData = undefined;
     }

@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
 import { LagCompensationService } from '../services/lag-compensation.service';
+import { LoadService } from '../services/load.service';
+import { SoundService } from '../services/sound.service';
 import { MatchScene } from './MatchScene';
 
 export class    PlayerScene extends MatchScene {
@@ -10,9 +12,12 @@ export class    PlayerScene extends MatchScene {
 
     constructor(
         socket: SocketIO.Socket, room: string,
-        override readonly lagCompensator: LagCompensationService
+        override readonly lagCompensator: LagCompensationService,
+        override readonly loadService: LoadService,
+        override readonly soundService: SoundService
     ) {
-        super("Player", socket, room, lagCompensator);
+        super("Player", socket, room, lagCompensator,
+                loadService, soundService);
     }
 
     override create() {

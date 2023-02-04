@@ -1,10 +1,28 @@
 import { Injectable } from "@angular/core";
+import { StageName } from "../elements/AStage";
 
-export interface   SelectionSoundKeys {
+export interface    SelectionSoundKeys {
     readonly change: string;
     readonly confirm: string;
     readonly finish: string;
     readonly theme: string;
+}
+
+export interface    StageSoundKeys {
+    atlantis: string;
+    metropolis: string;
+    wakanda: string;
+}
+
+export interface    MatchOtherSoundKeys {
+    readonly collision: string;
+    readonly point: string;
+}
+
+export interface    MatchSoundKeys {
+    readonly stage: string;
+    readonly collision: string;
+    readonly point: string;
 }
 
 @Injectable({
@@ -21,6 +39,20 @@ export class    SoundService {
         finish: 'finishSelection',
         theme: 'themeSelection'
     };
+    static readonly stageSoundKeys: StageSoundKeys = {
+        atlantis: 'atlantisSound',
+        metropolis: 'metropolisSound',
+        wakanda: 'wakandaSound'
+    }
+    static readonly stageSoundKeysMap: Map<StageName, string> = new Map([
+        [StageName.Atlantis, SoundService.stageSoundKeys.atlantis],
+        [StageName.Metropolis, SoundService.stageSoundKeys.metropolis],
+        [StageName.Wakanda, SoundService.stageSoundKeys.wakanda]
+    ]);
+    static readonly matchOtherSoundKeys: MatchOtherSoundKeys = {
+        collision: 'collision',
+        point: 'point'
+    }
 
     constructor() {
         this._sounds = new Map();

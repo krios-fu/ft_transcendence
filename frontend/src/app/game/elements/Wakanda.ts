@@ -1,4 +1,5 @@
 import { MatchScene } from "../scenes/MatchScene";
+import { SoundService } from "../services/sound.service";
 import {
     AStage,
     StageKeys
@@ -11,7 +12,8 @@ export class    Wakanda extends AStage {
     private _activeBackground: Phaser.GameObjects.Image;
     private _alphaUp: boolean;
 
-    constructor(scene: MatchScene) {
+    constructor(scene: MatchScene,
+                    private readonly soundService: SoundService) {
         const   keys: StageKeys = AStage.stageKeys;
     
         super(scene, keys.wakanda);
@@ -33,6 +35,7 @@ export class    Wakanda extends AStage {
         this._jungle.depth = -2;
         this._activeBackground = this._city;
         this._alphaUp = false;
+        this.soundService.play(SoundService.stageSoundKeys.wakanda, true);
     }
 
     private _switchBackground(): void {
