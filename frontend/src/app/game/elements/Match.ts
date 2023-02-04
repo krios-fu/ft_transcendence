@@ -65,7 +65,7 @@ export class    Match {
             yPos: 20,
             content: initData.playerA.score + this._scoreNicks
                         + this._playerB.score,
-            style: { fontSize: '20px', color: '#fff' },
+            style: { fontSize: '20px', color: '#fff', backgroundColor: '#000' },
             xOrigin: 0.5,
             yOrigin: 0.5,
             depth: 0
