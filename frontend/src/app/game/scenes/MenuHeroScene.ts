@@ -65,9 +65,10 @@ export class    MenuHeroScene extends MenuScene {
         this.load.image('aquamanMenu', '/assets/aquaman_menu.jpg');
         this.load.image('supermanMenu', '/assets/superman_menu.jpg');
         this.load.image('blackPantherMenu', '/assets/blackPanther_menu.jpeg');
-        this.load.image('aquamanConfirm', '/assets/aquaman_menu.jpg');
-        this.load.image('supermanConfirm', '/assets/superman_menu.jpg');
-        this.load.image('blackPantherConfirm', '/assets/blackPanther_menu.jpeg');
+        this.load.image('aquamanConfirm', '/assets/aquaman_menu_confirm.png');
+        this.load.image('supermanConfirm', '/assets/superman_menu_confirm.jpg');
+        this.load.image('blackPantherConfirm',
+                            '/assets/blackPanther_menu_confirm.jpeg');
         this.load.image('atlantisMenu', '/assets/atlantis_menu.jpeg');
         this.load.image('metropolisMenu', '/assets/metropolis_menu.jpeg');
         this.load.image('wakandaMenu', '/assets/wakanda_menu.png');
