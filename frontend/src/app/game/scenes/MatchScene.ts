@@ -56,11 +56,6 @@ export class    MatchScene extends BaseScene {
         this.socket.on("matchUpdate", (snapshot: IMatchData) => {
             this.queue.push(snapshot);
         });
-        this.socket.on("served", () => {
-            if (!this.initTxt)
-                return ;
-            this.initTxt.visible = false;
-        });
     }
 
     //Called after init()
@@ -68,19 +63,6 @@ export class    MatchScene extends BaseScene {
         if (!this.initData)
             return ;
         this.loadService.match(this, this.initData.matchData);
-    }
-
-    createInitText() {
-        //Init screen setup
-        this.initTxt = new Txt(this, {
-            xPos: 400,
-            yPos: 250,
-            content: "Prepare to serve ...",
-            style: { fontSize: '20px', color: '#fff' },
-            xOrigin: 0.5,
-            yOrigin: 0.5,
-            depth: 1
-        });
     }
 
     //Called after preload()
@@ -105,7 +87,6 @@ export class    MatchScene extends BaseScene {
             this.lagCompensator
         );
         this.queue = [];
-        this.createInitText();
         this.initData = undefined;
     }
 

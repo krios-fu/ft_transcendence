@@ -169,7 +169,7 @@ export class    MenuSelector {
         }
     }
 
-    serverUpdate(data: ISelectionData): void {
+    serverUpdate(data: ISelectionData, role?: string): void {
         if (this._status === SelectionStatus.Hero
             && data.status != this._status)
         {
@@ -186,6 +186,8 @@ export class    MenuSelector {
                 this._stage = data.stage;
                 this._renderer.render(this._status, "PlayerA", this._stage, false);
             }
+            else if (role === "PlayerB")
+                this._renderer.finish();
         }
     }
 

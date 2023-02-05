@@ -44,9 +44,7 @@ export class    GameUpdateService {
     }
 
     private getGameSelection(roomId: string): GameSelection {
-        const   gameSelection: GameSelection = this.gameSelections.get(roomId);
-
-        return (gameSelection);
+        return (this.gameSelections.get(roomId));
     }
 
     private getGame(roomId: string): Game {
@@ -102,8 +100,14 @@ export class    GameUpdateService {
         if (gameSelection
             && gameSelection.finished)
         {
-            this.startMatch(roomId, gameSelection.data);
-            this.gameSelections.delete(roomId);
+            setTimeout(() => {
+                //Checks for canceled gameSelection
+                if (!gameSelection
+                        || !gameSelection.finished)
+                    return ;
+                this.startMatch(roomId, gameSelection.data);
+                this.gameSelections.delete(roomId);
+            }, 3000);
         }
     }
 
@@ -184,12 +188,9 @@ export class    GameUpdateService {
                 return ;
             }
             else
-            {
                 game.serveBall();
-                this.socketHelper.emitToRoom(this.server, gameId, "served");
-            }
             this.pointTimeout = undefined;
-        }, 3000);
+        }, 5000);
     }
 
     private gameUpdate(game: Game, room: string): void {
@@ -246,10 +247,12 @@ export class    GameUpdateService {
     }
 
     private scheduleClassicMatchStart(gameId: string): void {
+        const   gameSelection: GameSelection =
+                                    this.getGameSelection(gameId);
+        
         setTimeout(() => {
-            const   gameSelection: GameSelection =
-                                    this.gameSelections.get(gameId);
-            if (!gameSelection)
+            if (!gameSelection
+                    || gameSelection.status === SelectionStatus.Canceled)
                 return ;
             gameSelection.status = SelectionStatus.Finished;
             this.attemptSelectionFinish(gameId);

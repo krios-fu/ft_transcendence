@@ -77,6 +77,10 @@ export class    GameSelection {
         this._status = input;
     }
 
+    get status(): SelectionStatus {
+        return (this._status);
+    }
+
     get finished(): boolean {
         return (this._status === SelectionStatus.Finished);
     }
