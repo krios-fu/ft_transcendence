@@ -71,7 +71,10 @@ export class    MenuHeroScene extends MenuScene {
                             '/assets/blackPanther_menu_confirm.jpeg');
         this.load.image('atlantisMenu', '/assets/atlantis_menu.jpeg');
         this.load.image('metropolisMenu', '/assets/metropolis_menu.jpeg');
-        this.load.image('wakandaMenu', '/assets/wakanda_menu.png');
+        this.load.image('wakandaMenu', '/assets/wakanda_menu.jpg');
+        this.load.image('atlantisConfirm', '/assets/atlantis_menu_confirm.jpeg');
+        this.load.image('metropolisConfirm', '/assets/metropolis_menu_confirm.jpeg');
+        this.load.image('wakandaConfirm', '/assets/wakanda_menu_confirm.jpg');
         this.load.audio(selectSounds.theme, '/assets/selection_theme.mp3');
         this.load.audio(selectSounds.change, '/assets/selection_change.mp3');
         this.load.audio(selectSounds.confirm, '/assets/selection_confirm.mp3');
@@ -95,7 +98,7 @@ export class    MenuHeroScene extends MenuScene {
             this.selector?.serverUpdate(data);
         });
         this.socket.on("confirmSelection", (data: ISelectionData) => {
-            this.selector?.serverUpdate(data);
+            this.selector?.serverUpdate(data, this.role);
         });
         this.cursors = this.input.keyboard.createCursorKeys(); //up, left, down, right
         this.enter = this.input.keyboard.addKey("ENTER");

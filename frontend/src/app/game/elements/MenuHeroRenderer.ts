@@ -15,6 +15,7 @@ export class    MenuHeroRenderer extends MenuRenderer {
     private _heroImages: string[];
     private _heroConfirmImages: string[];
     private _stageImages: string[];
+    private _stageConfirmImages: string[];
     private _heroAImage: Phaser.GameObjects.Image;
     private _heroBImage: Phaser.GameObjects.Image;
     private _stageImage: Phaser.GameObjects.Image;
@@ -39,6 +40,11 @@ export class    MenuHeroRenderer extends MenuRenderer {
             'atlantisMenu',
             'metropolisMenu',
             'wakandaMenu'
+        ];
+        this._stageConfirmImages = [
+            'atlantisConfirm',
+            'metropolisConfirm',
+            'wakandaConfirm'
         ];
         this._sounds = SoundService.selectionSoundKeys;
         (this._aArrows = new MenuArrows(scene,
@@ -145,9 +151,17 @@ export class    MenuHeroRenderer extends MenuRenderer {
         }
     }
 
-    finish(): void {
+    /*
+    **  Sounds take longer to finish than image display,
+    **  and scene transition time must be taken into account.
+    **  That's why finish sound is played before.
+    */
+    finish(element: number): void {
         this.soundService.play(this._sounds.finish, false);
         this.soundService.stop(this._sounds.theme);
+        this._aArrows.visible = false;
+        this._stageImages = this._stageConfirmImages;
+        this.changeImage(this._stageImage, this._stageImages, element);
     }
 
     override destroy(): void {

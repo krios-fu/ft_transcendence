@@ -141,7 +141,7 @@ export class    MenuSelector {
             if (player === "PlayerA")
             {
                 this._status = SelectionStatus.Finished;
-                this._renderer.finish();
+                this._renderer.finish(this._stage);
             }
         }
     }
@@ -187,7 +187,7 @@ export class    MenuSelector {
                 this._renderer.render(this._status, "PlayerA", this._stage, false);
             }
             else if (role === "PlayerB")
-                this._renderer.finish();
+                this._renderer.finish(this._stage);
         }
     }
 
