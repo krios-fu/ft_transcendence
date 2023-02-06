@@ -14,6 +14,12 @@ export interface    StageSoundKeys {
     wakanda: string;
 }
 
+export interface    HeroSoundKeys {
+    aquaman: string;
+    blackPanther: string;
+    superman: string;
+}
+
 export interface    MatchOtherSoundKeys {
     readonly collision: string;
     readonly point: string;
@@ -21,6 +27,8 @@ export interface    MatchOtherSoundKeys {
 
 export interface    MatchSoundKeys {
     readonly stage: string;
+    readonly heroA: string;
+    readonly heroB: string;
     readonly collision: string;
     readonly point: string;
 }
@@ -44,10 +52,20 @@ export class    SoundService {
         metropolis: 'metropolisSound',
         wakanda: 'wakandaSound'
     }
+    static readonly heroSoundKeys: HeroSoundKeys = {
+        aquaman: 'aquamanSound',
+        blackPanther: 'blackPantherSound',
+        superman: 'supermanSound'
+    }
     static readonly stageSoundKeysMap: Map<StageName, string> = new Map([
         [StageName.Atlantis, SoundService.stageSoundKeys.atlantis],
         [StageName.Metropolis, SoundService.stageSoundKeys.metropolis],
         [StageName.Wakanda, SoundService.stageSoundKeys.wakanda]
+    ]);
+    static readonly heroSoundKeysMap: Map<string, string> = new Map([
+        ['aquaman', SoundService.heroSoundKeys.aquaman],
+        ['blackPanther', SoundService.heroSoundKeys.blackPanther],
+        ['superman', SoundService.heroSoundKeys.superman]
     ]);
     static readonly matchOtherSoundKeys: MatchOtherSoundKeys = {
         collision: 'collision',

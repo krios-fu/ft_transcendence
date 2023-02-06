@@ -69,11 +69,19 @@ export class    MatchScene extends BaseScene {
     create() {
         if (!this.initData)
             return ;
-        if (this.initData.matchData.stage != undefined)
+        if (this.initData.matchData.stage != undefined
+             && this.initData.matchData.playerA.hero
+             && this.initData.matchData.playerB.hero)
         {
             this.soundService.load(this, {
                 stage: SoundService.stageSoundKeysMap.get(
                     this.initData.matchData.stage
+                ),
+                heroA: SoundService.heroSoundKeysMap.get(
+                    this.initData.matchData.playerA.hero.name
+                ),
+                heroB: SoundService.heroSoundKeysMap.get(
+                    this.initData.matchData.playerB.hero.name
                 ),
                 collision: SoundService.matchOtherSoundKeys.collision,
                 point: SoundService.matchOtherSoundKeys.point

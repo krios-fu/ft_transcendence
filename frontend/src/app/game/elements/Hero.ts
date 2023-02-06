@@ -40,7 +40,7 @@ export interface    IHeroData {
     pointInvocation: boolean;
 }
 
-export class    Hero {
+export abstract class    Hero {
     protected _upperSprite: Phaser.GameObjects.Sprite;
     protected _lowerSprite: Phaser.GameObjects.Sprite;
     protected _active: number;
@@ -80,7 +80,12 @@ export class    Hero {
         });
     }
 
+    protected abstract _shout(): void;
+
     update(data: IHeroData): void {
+        if (data.active
+                && !this._active)
+            this._shout();
         this._upperSprite.x = data.xPos;
         this._upperSprite.y = data.yPos;
         this._lowerSprite.x = data.lowXPos;

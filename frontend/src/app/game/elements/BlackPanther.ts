@@ -1,4 +1,5 @@
 import { MatchScene } from "../scenes/MatchScene";
+import { SoundService } from "../services/sound.service";
 import {
     Hero,
     IHeroInitData
@@ -6,7 +7,10 @@ import {
 
 export class    BlackPanther extends Hero {
 
-    constructor(scene: MatchScene, initData: IHeroInitData) {
+    private _soundKey: string;
+
+    constructor(scene: MatchScene, initData: IHeroInitData,
+                    private readonly soundService: SoundService) {
         super(scene, initData);
         this._upperSprite.flipY = true;
         if (initData.playerSide === 0)
@@ -16,6 +20,11 @@ export class    BlackPanther extends Hero {
         }
         this._upperSprite.scale = 0.5; //Provisional. It should not be necessary to scale
         this._lowerSprite.scale = 0.5; //Provisional. It should not be necessary to scale
+        this._soundKey = SoundService.heroSoundKeys.aquaman;
+    }
+
+    protected _shout(): void {
+        this.soundService.play(this._soundKey, false);
     }
 
 }

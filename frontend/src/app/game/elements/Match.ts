@@ -48,8 +48,8 @@ export class    Match {
 
     constructor(scene: MatchScene, initData: IMatchInitData,
                     private readonly soundService?: SoundService) {
-        this._playerA = new Player(scene, initData.playerA);
-        this._playerB = new Player(scene, initData.playerB);
+        this._playerA = new Player(scene, initData.playerA, soundService);
+        this._playerB = new Player(scene, initData.playerB, soundService);
         this._ball = new Ball(scene, initData.ball, this.soundService);
         if (initData.playerA.hero && this.soundService)
         {

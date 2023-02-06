@@ -18,6 +18,11 @@ export class    LoadService {
         [SoundService.stageSoundKeys.metropolis, '/assets/metropolis.mp3'],
         [SoundService.stageSoundKeys.wakanda, '/assets/wakanda.mp3']
     ]);
+    private static readonly _heroSoundPaths: Map<string, string> = new Map([
+        [SoundService.heroSoundKeys.aquaman, '/assets/aquaman_sound.mp3'],
+        [SoundService.heroSoundKeys.blackPanther, '/assets/blackPanther_sound.mp3'],
+        [SoundService.heroSoundKeys.superman, '/assets/superman_sound.mp3']
+    ]);
     private static readonly _stageImagePaths: Map<string, string> = new Map([
         [AStage.stageKeys.atlantis, '/assets/atlantis.png'],
         [AStage.stageKeys.atlantisBubbles, '/assets/atlantis_bubbles.png'],
@@ -57,6 +62,18 @@ export class    LoadService {
         );
     }
 
+    private _matchHeroSounds(scene: MatchScene, hero: string): void {
+        const   key: string | undefined =
+                        SoundService.heroSoundKeysMap.get(hero);
+        let     path: string | undefined;
+
+        if (!key)
+            return ;
+        path = LoadService._heroSoundPaths.get(key);
+        if (path)
+            scene.load.audio(key, path);
+    }
+
     private _matchStageSounds(scene: MatchScene, stage: StageName): void {
         const   key: string | undefined =
                         SoundService.stageSoundKeysMap.get(stage);
@@ -89,14 +106,17 @@ export class    LoadService {
         this._matchStage(scene, data.stage);
         if (data.playerA.hero && data.playerB.hero)
         {
-            this._matchHero(scene, data.playerA.hero?.name);
-            if (data.playerB.hero?.name != data.playerA.hero?.name)
-                this._matchHero(scene, data.playerB.hero?.name);
+            this._matchHero(scene, data.playerA.hero.name);
+            if (data.playerB.hero?.name != data.playerA.hero.name)
+                this._matchHero(scene, data.playerB.hero.name);
         }
-        if (data.stage === undefined)
+        if (data.stage === undefined
+                || !data.playerA.hero || !data.playerB.hero)
             return ;
         this._matchStageSounds(scene, data.stage);
         this._matchOtherSounds(scene);
+        this._matchHeroSounds(scene, data.playerA.hero.name);
+        this._matchHeroSounds(scene, data.playerB.hero.name);
     }
     
 }
