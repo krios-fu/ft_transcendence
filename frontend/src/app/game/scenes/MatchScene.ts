@@ -69,14 +69,20 @@ export class    MatchScene extends BaseScene {
     create() {
         if (!this.initData)
             return ;
-        this.soundService.load(this, {
-            stage: SoundService.stageSoundKeysMap.get(
-                this.initData.matchData.stage
-            ),
-            collision: SoundService.matchOtherSoundKeys.collision,
-            point: SoundService.matchOtherSoundKeys.point
-        } as MatchSoundKeys);
-        this.match = new Match(this, this.initData.matchData, this.soundService);
+        if (this.initData.matchData.stage != undefined)
+        {
+            this.soundService.load(this, {
+                stage: SoundService.stageSoundKeysMap.get(
+                    this.initData.matchData.stage
+                ),
+                collision: SoundService.matchOtherSoundKeys.collision,
+                point: SoundService.matchOtherSoundKeys.point
+            } as MatchSoundKeys);
+            this.match = new Match(this, this.initData.matchData,
+                                    this.soundService);
+        }
+        else
+            this.match = new Match(this, this.initData.matchData);
         this.buffer = new SnapshotBuffer(
             {
                 gameWidth: Number(this.game.config.width),

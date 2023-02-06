@@ -47,11 +47,11 @@ export class    Match {
     private _when: number;
 
     constructor(scene: MatchScene, initData: IMatchInitData,
-                    private readonly soundService: SoundService) {
+                    private readonly soundService?: SoundService) {
         this._playerA = new Player(scene, initData.playerA);
         this._playerB = new Player(scene, initData.playerB);
-        this._ball = new Ball(scene, initData.ball);
-        if (initData.playerA.hero)
+        this._ball = new Ball(scene, initData.ball, this.soundService);
+        if (initData.playerA.hero && this.soundService)
         {
             if (initData.stage === StageName.Atlantis)
                 this._stage = new Atlantis(scene, this.soundService);

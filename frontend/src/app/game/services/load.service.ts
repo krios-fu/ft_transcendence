@@ -83,7 +83,6 @@ export class    LoadService {
                 return ;
             scene.load.image(key, path);
         });
-        this._matchStageSounds(scene, stage);
     }
 
     match(scene: MatchScene, data: IMatchInitData): void {
@@ -94,6 +93,9 @@ export class    LoadService {
             if (data.playerB.hero?.name != data.playerA.hero?.name)
                 this._matchHero(scene, data.playerB.hero?.name);
         }
+        if (data.stage === undefined)
+            return ;
+        this._matchStageSounds(scene, data.stage);
         this._matchOtherSounds(scene);
     }
     
