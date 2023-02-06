@@ -166,14 +166,17 @@ export class    GameService {
         let     isOfficial: boolean;
         let     winner: number;
 
-        isOfficial = this.isOfficial(gameId);
-        winner = this.getWinner(players[0], gameResult);
-        if (!(await this.saveMatch(players, gameResult, isOfficial)))
-            console.error(`Failed database insertion for match: ${gameId}`);
-        if (isOfficial)
-        {
-            if (!(await this.updatePlayerRankings(players, winner)))
-                return ;
+        if (gameResult.winnerScore != gameResult.loserScore)
+        { // Matches cancelled because of lag don't satisfy this condition
+            isOfficial = this.isOfficial(gameId);
+            winner = this.getWinner(players[0], gameResult);
+            if (!(await this.saveMatch(players, gameResult, isOfficial)))
+                console.error(`Failed database insertion for match: ${gameId}`);
+            if (isOfficial)
+            {
+                if (!(await this.updatePlayerRankings(players, winner)))
+                    return ;
+            }
         }
         players[0] = undefined;
         players[1] = undefined;

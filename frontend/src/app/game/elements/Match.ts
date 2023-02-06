@@ -15,13 +15,15 @@ export interface    IMatchInitData {
     playerA: IPlayerInitData;
     playerB: IPlayerInitData;
     ball: IBallInitData;
-    stage: string;
+    stage?: string;
+    when: number;
 }
 
 export interface    IMatchData {
     playerA: IPlayerData;
     playerB: IPlayerData;
     ball: IBallData;
+    when: number;
 }
 
 export class    Match {
@@ -32,12 +34,13 @@ export class    Match {
     private _stage?: Phaser.GameObjects.Image;
     private _scoreTxt: Txt;
     private _scoreNicks: string;
+    private _when: number;
 
     constructor(scene: MatchScene, initData: IMatchInitData) {
         this._playerA = new Player(scene, initData.playerA);
         this._playerB = new Player(scene, initData.playerB);
         this._ball = new Ball(scene, initData.ball);
-        if (initData.playerA.hero)
+        if (initData.playerA.hero && initData.stage)
         {
             this._stage = scene.add.image(
                 Number(scene.game.config.width) / 2,
@@ -59,9 +62,47 @@ export class    Match {
             yOrigin: 0.5,
             depth: 0
         });
+        this._when = initData.when;
     }
 
-    update(data: IMatchData): void {
+    // Returns a Deep Copy of IPlayerData
+    private static _clonePlayer(data: IPlayerData): IPlayerData {
+        return ({
+            paddleY: data.paddleY,
+            hero: data.hero ? {...data.hero} : undefined,
+            score: data.score
+        });
+    }
+
+    // Returns a Deep Copy of IMatchData
+    static cloneMatchData(data: IMatchData): IMatchData {
+        return ({
+            ball: {...data.ball},
+            playerA: this._clonePlayer(data.playerA),
+            playerB: this._clonePlayer(data.playerB),
+            when: data.when
+        });
+    }
+
+    static copyMatchData(dst: IMatchData, src: IMatchData): void {
+        dst.ball = {...src.ball};
+        dst.playerA = this._clonePlayer(src.playerA);
+        dst.playerB = this._clonePlayer(src.playerB);
+        dst.when = src.when;
+    }
+
+    get snapshot(): IMatchData {    
+        return ({
+            playerA: this._playerA.data,
+            playerB: this._playerB.data,
+            ball: this._ball.data,
+            when: this._when
+        });
+    }
+
+    update(data: IMatchData | undefined): void {
+        if (!data)
+            return ;
         if (data.playerA.score != this._playerA.score
                 || data.playerB.score != this._playerB.score)
         {
@@ -71,6 +112,7 @@ export class    Match {
         this._playerA.update(data.playerA);
         this._playerB.update(data.playerB);
         this._ball.update(data.ball);
+        this._when = data.when;
     }
 
     destroy(): void {

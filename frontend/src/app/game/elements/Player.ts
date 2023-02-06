@@ -9,8 +9,7 @@ import {
 } from './Hero';
 import {
     Paddle,
-    IPaddleInitData,
-    IPaddleData
+    IPaddleInitData
 } from './Paddle';
 
 export interface    IPlayerInitData {
@@ -21,7 +20,7 @@ export interface    IPlayerInitData {
 }
 
 export interface    IPlayerData {
-    paddle: IPaddleData,
+    paddleY: number,
     hero?: IHeroData,
     score: number
 }
@@ -48,6 +47,14 @@ export class    Player {
         this._nick = initData.nick;
     }
 
+    get data(): IPlayerData {
+        return ({
+            paddleY: this._paddle.yPos,
+            hero: this._hero ? this._hero.data : undefined,
+            score: this._score
+        });
+    }
+
     get score(): number {
         return (this._score);
     }
@@ -61,7 +68,7 @@ export class    Player {
     }
 
     update(data: IPlayerData): void {
-        this._paddle.update(data.paddle);
+        this._paddle.update(data.paddleY);
         if (data.hero && this._hero)
             this._hero.update(data.hero);
         this._score = data.score;

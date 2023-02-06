@@ -1,7 +1,6 @@
 import * as SocketIO from 'socket.io-client'
 import { IMatchInitData } from '../elements/Match';
 import { StartTitles } from '../elements/StartTitles';
-import { Txt } from '../elements/Txt';
 import { BaseScene } from './BaseScene'
 import { IMenuInit } from './MenuScene';
 
@@ -27,7 +26,10 @@ export class    StartScene extends BaseScene {
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
             this.startTitles?.destroy();
             this.removeAllSocketListeners();
-            this.scene.start("Spectator", gameData);
+            this.scene.start("Spectator", {
+                role: "Spectator",
+                matchData: gameData
+            });
         });
         this.socket.once("end", (data: any) => {
             this.startTitles?.destroy();

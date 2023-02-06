@@ -7,17 +7,16 @@ export interface    IPaddleInitData {
     width: number;
     height: number;
     color: number;
-}
-
-export interface    IPaddleData {
-    xPos: number;
-    yPos: number;
+    displacement: number;
 }
 
 export class    Paddle {
 
     private _paddle: Phaser.GameObjects.Rectangle;
     private _paddleShadow: Phaser.GameObjects.Rectangle;
+
+    private static _displacement: number;
+    private static _halfHeight: number;
 
     constructor(scene: MatchScene, initData: IPaddleInitData) {
         this._paddle = scene.add.rectangle(
@@ -36,6 +35,8 @@ export class    Paddle {
         );
         this._paddle.depth = 1;
         this._paddleShadow.depth = 0;
+        Paddle._displacement = initData.displacement;
+        Paddle._halfHeight = initData.height / 2;
     }
 
     get xPos(): number {
@@ -46,11 +47,29 @@ export class    Paddle {
         return (this._paddle.y);
     }
 
-    update(data: IPaddleData): void {
-        this._paddle.x = data.xPos;
-        this._paddle.y = data.yPos;
-        this._paddleShadow.x = data.xPos;
-        this._paddleShadow.y = data.yPos;
+    static  moveUp(paddleY: number): number {
+        let result: number;
+    
+        if (paddleY - this._displacement < this._halfHeight)
+            result = this._halfHeight;
+        else
+            result = paddleY - this._displacement;
+        return (result);
+    }
+
+    static  moveDown(paddleY: number, gameHeight: number): number {
+        let result: number;
+    
+        if (paddleY + this._displacement > gameHeight - this._halfHeight)
+            result = gameHeight - this._halfHeight;
+        else
+            result = paddleY + this._displacement;
+        return (result);
+    }
+
+    update(yPos: number): void {
+        this._paddle.y = yPos;
+        this._paddleShadow.y = yPos;
     }
 
     destroy(): void {

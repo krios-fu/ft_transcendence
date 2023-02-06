@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
+import { LagCompensationService } from '../services/lag-compensation.service';
 import { MatchScene } from './MatchScene';
 
 export class    PlayerScene extends MatchScene {
@@ -8,9 +9,10 @@ export class    PlayerScene extends MatchScene {
     powerKeys: any;
 
     constructor(
-        socket: SocketIO.Socket, room: string
+        socket: SocketIO.Socket, room: string,
+        override readonly lagCompensator: LagCompensationService
     ) {
-        super("Player", socket, room);
+        super("Player", socket, room, lagCompensator);
     }
 
     override create() {
@@ -23,15 +25,36 @@ export class    PlayerScene extends MatchScene {
         super.create();
     }
 
-    override update() {
+    override update(time: number) {
+        let     input: [paddleUp: number, heroUp: number] = [0, 0];
+    
         if (this.cursors?.up.isDown)
-            this.socket.emit('paddleUp');
+        {
+            if (this.match)
+                this.socket.emit('paddleUp', this.match.snapshot.when);
+            input[0] = 2;
+        }
         else if (this.cursors?.down.isDown)
-            this.socket.emit('paddleDown');
+        {
+            if (this.match)
+                this.socket.emit('paddleDown', this.match.snapshot.when);
+            input[0] = 1;
+        }
         if (this.powerKeys.up.isDown)
-            this.socket.emit('heroUp');
+        {
+            if (this.match)
+                this.socket.emit('heroUp', this.match.snapshot.when);
+            input[1] = 2;
+        }
         else if (this.powerKeys.down.isDown)
-            this.socket.emit('heroDown');
+        {
+            if (this.match)
+                this.socket.emit('heroDown', this.match.snapshot.when);
+            input[1] = 1;
+        }
+        if (input[0] || input[1])
+            this.buffer?.input(input[0], input[1], this.match?.snapshot);
+        super.update(time);
     }
 
 }

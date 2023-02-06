@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
+import { LagCompensationService } from '../services/lag-compensation.service';
 import { MatchScene } from './MatchScene';
 
 export class    ClassicPlayerScene extends MatchScene {
@@ -7,9 +8,10 @@ export class    ClassicPlayerScene extends MatchScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor(
-        socket: SocketIO.Socket, room: string
+        socket: SocketIO.Socket, room: string,
+        override readonly lagCompensator: LagCompensationService
     ) {
-        super("ClassicPlayer", socket, room);
+        super("ClassicPlayer", socket, room, lagCompensator);
     }
 
     override create() {
@@ -18,11 +20,24 @@ export class    ClassicPlayerScene extends MatchScene {
         super.create();
     }
 
-    override update() {
+    override update(time: number) {
+        let     input: number = 0;
+    
         if (this.cursors?.up.isDown)
-            this.socket.emit('paddleUp');
+        {
+            if (this.match)
+                this.socket.emit('paddleUp', this.match.snapshot.when);
+            input = 2;
+        }
         else if (this.cursors?.down.isDown)
-            this.socket.emit('paddleDown');
+        {
+            if (this.match)
+                this.socket.emit('paddleDown', this.match.snapshot.when);
+            input = 1;
+        }
+        if (input)
+            this.buffer?.input(input, 0, this.match?.snapshot);
+        super.update(time);
     }
 
 }

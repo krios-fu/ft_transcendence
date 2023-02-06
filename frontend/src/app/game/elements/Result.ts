@@ -23,6 +23,16 @@ export class    Result {
     private _bTitle: Txt;
 
     constructor(scene: EndScene, initData: IResultData) {
+        let aTitleContent: string = `${initData.aScore > initData.bScore
+                                        ? 'WINNER' : 'LOSER'}`;
+        let bTitleContent: string = `${initData.bScore > initData.aScore
+                                        ? 'WINNER' : 'LOSER'}`;
+        
+        if (initData.aScore === initData.bScore)
+        {
+            aTitleContent = "LAG";
+            bTitleContent = "LAG";
+        }
         this._aPlayerInfo = new PlayerInfo(scene, {
             nickname: initData.aNick,
             category: initData.aCategory,
@@ -58,8 +68,7 @@ export class    Result {
         this._aTitle = new Txt(scene, {
             xPos: 200,
             yPos: 500,
-            content: `${initData.aScore > initData.bScore
-                            ? 'WINNER' : 'LOSER'}`,
+            content: aTitleContent,
             style: {fontSize: '40px', color: '#fff'},
             xOrigin: 0.5,
             yOrigin: 0.5,
@@ -68,8 +77,7 @@ export class    Result {
         this._bTitle = new Txt(scene, {
             xPos: 600,
             yPos: 500,
-            content: `${initData.bScore > initData.aScore
-                            ? 'WINNER' : 'LOSER'}`,
+            content: bTitleContent,
             style: {fontSize: '40px', color: '#fff'},
             xOrigin: 0.5,
             yOrigin: 0.5,
