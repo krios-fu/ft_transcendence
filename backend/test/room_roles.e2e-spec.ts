@@ -29,8 +29,12 @@ const BAD_ROOM_ID = 27;
 const BAD_ROLE_ID = 27;
 const BAD_ROOM_ROLE_ID = 27;
 
-export const createRoomRoleQuery = queryParams => queryParams.map(qp => `INSERT INTO room_roles (roomId,roleId,password) VALUES (${qp.roomId},${qp.roleId},null);`)
-    .reduce(qTotal, q => qTotal + q, '');
+const MY_USER_ID = 1;
+const MY_ROOM_ID = 1;
+
+export const createRoomRoleQuery = queryParams => queryParams.map(
+        qp => `INSERT INTO room_roles (roomId,roleId,password) VALUES  (${qp.roomId},${qp.roleId},null);`
+    ).reduce(qTotal, q => qTotal + q, '');
 
 describe('/room_roles (e2e)', () => {
     let app: INestApplication;
@@ -124,7 +128,7 @@ describe('/room_roles (e2e)', () => {
         
         it ('[ Should return a list of one element (db seeded with one room_role) ]', async () => {
             const room_roles = { roomId: rooms_id[0], roleId: roles_id[0], password: null };
-            await roomRolesRep.query(queryBuilder(room_roles));
+            await roomRolesRep.query(genRoomRolesQuery(room_roles));
 
             return request(app.getHttpServer())
                 .get('/room_roles')
@@ -149,7 +153,7 @@ describe('/room_roles (e2e)', () => {
 
             //console.log(`[DEBUG] query result: ${query}`);
 
-            await roomRolesRep.query(queryBuilder(room_roles));
+            await roomRolesRep.query(genRoomRolesQuery(room_roles));
             return request(app.getHttpServer())
                 .get('/room_roles')
                 .expect(200)
@@ -200,7 +204,7 @@ describe('/room_roles (e2e)', () => {
 
         it ('[ Should return a list of one role ]', async () => {
             const room_roles = { roomId:1,roleId:1,password:null};
-            await roomRolesRep.query(queryBuilder(room_roles));
+            await roomRolesRep.query(genRoomRolesQuery(room_roles));
 
             return request(app.getHttpServer())
                 .get('/room_roles/rooms/1')
@@ -216,7 +220,7 @@ describe('/room_roles (e2e)', () => {
                 {roomId:1,roleId:RI_OFFICIAL,password:null}
             ];
 
-            await roomRolesRep.query(queryBuilder(room_roles));
+            await roomRolesRep.query(genRoomRolesQuery(room_roles));
             return request(app.getHttpServer())
             .get('/room_roles/rooms/1')
             .expect((res) => {
@@ -275,25 +279,79 @@ describe('/room_roles (e2e)', () => {
         });
 
         it ('[ Delete an official role while not being an admin ]', () => {
-            userRolesRep.query(`INSERT INTO room_roles `);
+            await roomRolesRep.query(genRoomRolesQuery({
+                roomId: rooms_id[0],
+                roleId: RI_OFFICIAL,
+                password: null
+            }));
             return (app.getHttpServer())
-                .delete('/room_roles/')
+                .delete(`/room_roles/${rooms_id[0]}`)
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Delete an official role while being an admin ]', () => { });
-        it ('[ Delete a private role while not being an owner ]', () => { });
-        it ('[ Delete a private role while being an owner ]', () => { });
+        it ('[ Delete an official role while being an admin ]', () => { 
+            const user_role = { userId: MY_USER_ID, roleId: RI_OFFICIAL };
+
+            await roomRolesRep.query(genRoomRolesQuery({
+                roomId: rooms_id[0],
+                roleId: RI_OFFICIAL,
+                password: null
+            }));
+            await userRolesRep.query(genUserRolesQuery(user_roles));
+            return (app.getHttpServer())
+                .delete(`/room_roles/${BAD_ROOM_ROLE_ID}`)
+                .expect(res => res.statusCode = 204);
+        });
+
+        it ('[ Delete a private role while not being an owner ]', () => { 
+            const NOT_MY_ROOM_ID = rooms_id[1];
+
+            return (app.getHttpServer())
+                .delete(`/room_roles/${NOT_MY_ROOM_ID}`)
+                .expect(res => res.statusCode = 403);
+        });
+
+        it ('[ Delete a private role while being an owner ]', () => { 
+            return (app.getHttpServer())    
+                .delete(`/room_roles/${MY_ROOM_ID}`)
+                .expect(res => res.statusCode = 204);
+        });
 
     });
 
+    // update payload { oldPassword: string, newPassword: string }
     describe('[ PUT /room_roles/rooms/:id/update ]', () => {
-        it ('[ Change password with wrong creds. being owner ]', ( ) => { });
-        it ('[ Change password with right creds. being owner ]', ( ) => { });
-        it ('[ Change password with wrong creds. not being owner ]', ( ) => { });
-        it ('[ Change password with right creds. bot being owner ]', ( ) => { });
-        it ('[ Change password of a public room ]', ( ) => { });
-        it ('[ Change password of a non-existent room ]', ( ) => { });
+        it ('[ Change password with wrong creds. being owner ]', () => { 
+            const pwdCreds = { oldPassword: '1234', newPassword: 'badbadbad!'};
+
+            await roomRolesRep.query({
+                roomId: rooms_id[0],
+                roleId: RI_PRIVATE,
+                password: pwdCreds.oldPassword,
+            });
+            return (app.getHttpServer())
+                .put(`/room_roles/`) // ...
+        });
+
+        it ('[ Change password with right creds. being owner ]', () => { 
+
+        });
+
+        it ('[ Change password with wrong creds. not being owner ]', ( ) => { 
+
+        });
+
+        it ('[ Change password with right creds. bot being owner ]', ( ) => { 
+
+        });
+
+        it ('[ Change password of a public room ]', ( ) => { 
+
+        });
+
+        it ('[ Change password of a non-existent room ]', ( ) => { 
+
+        });
     });
 
     describe('[ PUT /room_roles/:id ]', () => { 
