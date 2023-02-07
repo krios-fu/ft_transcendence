@@ -20,7 +20,7 @@ export class    BlackPanther extends Hero {
         }
         this._upperSprite.scale = 0.5; //Provisional. It should not be necessary to scale
         this._lowerSprite.scale = 0.5; //Provisional. It should not be necessary to scale
-        this._soundKey = SoundService.heroSoundKeys.aquaman;
+        this._soundKey = SoundService.heroSoundKeys.blackPanther;
     }
 
     protected _shout(): void {
