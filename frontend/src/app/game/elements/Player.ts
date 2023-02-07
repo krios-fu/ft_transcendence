@@ -9,9 +9,9 @@ import {
 } from './Hero';
 import {
     Paddle,
-    IPaddleInitData,
-    IPaddleData
+    IPaddleInitData
 } from './Paddle';
+import { SoundService } from '../services/sound.service';
 
 export interface    IPlayerInitData {
     paddle: IPaddleInitData;
@@ -21,7 +21,7 @@ export interface    IPlayerInitData {
 }
 
 export interface    IPlayerData {
-    paddle: IPaddleData,
+    paddleY: number,
     hero?: IHeroData,
     score: number
 }
@@ -33,19 +33,31 @@ export class    Player {
     private _score: number;
     private _nick: string;
 
-    constructor(scene: MatchScene, initData: IPlayerInitData) {
+    constructor(scene: MatchScene, initData: IPlayerInitData,
+                    private readonly soundService?: SoundService) {
         this._paddle = new Paddle(scene, initData.paddle);
-        if (initData.hero)
+        if (initData.hero && this.soundService)
         {
             if (initData.hero.name === "aquaman")
-                this._hero = new Aquaman(scene, initData.hero);
+                this._hero = new Aquaman(scene, initData.hero,
+                                            this.soundService);
             else if (initData.hero.name === "superman")
-                this._hero = new Superman(scene, initData.hero);
+                this._hero = new Superman(scene, initData.hero,
+                                            this.soundService);
             else
-                this._hero = new BlackPanther(scene, initData.hero);
+                this._hero = new BlackPanther(scene, initData.hero,
+                                                this.soundService);
         }
         this._score = initData.score;
         this._nick = initData.nick;
+    }
+
+    get data(): IPlayerData {
+        return ({
+            paddleY: this._paddle.yPos,
+            hero: this._hero ? this._hero.data : undefined,
+            score: this._score
+        });
     }
 
     get score(): number {
@@ -61,7 +73,7 @@ export class    Player {
     }
 
     update(data: IPlayerData): void {
-        this._paddle.update(data.paddle);
+        this._paddle.update(data.paddleY);
         if (data.hero && this._hero)
             this._hero.update(data.hero);
         this._score = data.score;

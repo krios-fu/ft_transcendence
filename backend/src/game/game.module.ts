@@ -6,6 +6,7 @@ import { UserModule } from 'src/user/user.module';
 import { GameGateway } from './game.gateway';
 import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';
+import { GameReconciliationService } from './game.reconciliation.service';
 import { GameService } from './game.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameUpdateService } from './game.updateService';
@@ -23,6 +24,7 @@ import { GameUpdateService } from './game.updateService';
     GameQueueService,
     GameUpdateService,
     GameRankingService,
+    GameReconciliationService,
     SocketHelper
   ],
 })

@@ -25,7 +25,6 @@ export class    BaseScene extends Phaser.Scene {
         this.socket.off("startMatch");
         this.socket.off("end");
         this.socket.off("matchUpdate");
-        this.socket.off("served");
     }
 
 }

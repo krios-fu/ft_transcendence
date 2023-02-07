@@ -4,10 +4,11 @@ import { UserEntity } from "src/user/entities/user.entity";
 import {
     Game,
     GameState,
+    GameUpdateResult,
     IGameClientStart,
+    IGameData,
     IGameResult
 } from "./elements/Game";
-import { GameHero } from "./elements/GameHero";
 import {
     GameSelection,
     IGameSelectionData,
@@ -15,6 +16,7 @@ import {
 } from "./elements/GameSelection";
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
+import { GameReconciliationService } from "./game.reconciliation.service";
 
 @Injectable()
 export class    GameUpdateService {
@@ -23,10 +25,15 @@ export class    GameUpdateService {
     games: Map<string, Game>;
     gameSelections: Map<string, GameSelection>;
     updateInterval: NodeJS.Timer = undefined;
+    pointTimeout: NodeJS.Timeout = undefined;
+
+    static readonly updateTimeInterval: number = 1000 / 20;
+    static readonly clientUpdateTimeInterval: number = 1000 / 60;
 
     constructor(
         private readonly gameService: GameService,
         private readonly socketHelper: SocketHelper,
+        private readonly reconciliationService: GameReconciliationService
     ) {
         this.games = new Map<string, Game>();
         this.gameSelections = new Map<string, GameSelection>;
@@ -37,9 +44,7 @@ export class    GameUpdateService {
     }
 
     private getGameSelection(roomId: string): GameSelection {
-        const   gameSelection: GameSelection = this.gameSelections.get(roomId);
-
-        return (gameSelection);
+        return (this.gameSelections.get(roomId));
     }
 
     private getGame(roomId: string): Game {
@@ -95,33 +100,48 @@ export class    GameUpdateService {
         if (gameSelection
             && gameSelection.finished)
         {
-            this.startMatch(roomId, gameSelection.data);
-            this.gameSelections.delete(roomId);
+            setTimeout(() => {
+                //Checks for canceled gameSelection
+                if (!gameSelection
+                        || !gameSelection.finished)
+                    return ;
+                this.startMatch(roomId, gameSelection.data);
+                this.gameSelections.delete(roomId);
+            }, 3000);
         }
     }
 
-    //move: 1 === Down, 2 === Up
-    paddleInput(roomId: string, player: string, move: number): void {
+    paddleInput(roomId: string, player: string,
+                    up: boolean, when: number): void {
         const   game: Game = this.getGame(roomId);
     
         if (!game)
             return ;
-        if (player === "PlayerA")
-            game.addInput({aMove: move}); 
-        else
-            game.addInput({bMove: move});
+        game.addInput({
+            paddle: true,
+            playerA: player === "PlayerA",
+            up: up,
+            when: when
+        }); 
     }
 
-    //hero: //1 === S, 2 === W
-    heroInput(roomId: string, player: string, hero: number): void {
+    heroInput(roomId: string, player: string,
+                up: boolean, when: number): void {
         const   game: Game = this.getGame(roomId);
     
         if (!game)
             return ;
-        if (player === "PlayerA")
-            game.addInput({aHero: hero});
-        else
-            game.addInput({bHero: hero});
+        game.addInput({
+            paddle: false,
+            playerA: player === "PlayerA",
+            up: up,
+            when: when
+        });
+    }
+
+    private checkPointCancel(data: IGameData): boolean {
+        return (data.ball.xVel != 0
+                    && this.pointTimeout != undefined);
     }
 
     private gameTransition(gameId: string): void {
@@ -136,7 +156,12 @@ export class    GameUpdateService {
     private gameEnd(gameId: string, gameResult: IGameResult): void {
         const   players : [UserEntity, UserEntity] =
                             this.gameService.getPlayers(gameId);
-          
+        
+        if (gameResult.winnerNick === "")
+        { // For cancelled games because of lag
+            gameResult.winnerNick = players[0].nickName;
+            gameResult.loserNick = players[1].nickName;
+        }
         this.socketHelper.emitToRoom(this.server, gameId, "end", {
             aNick: players[0].nickName,
             bNick: players[1].nickName,
@@ -156,22 +181,45 @@ export class    GameUpdateService {
     }
 
     private pointTransition(game: Game, gameId: string): void {
-        setTimeout(() => {
-            game.serveBall();
-            this.socketHelper.emitToRoom(this.server, gameId, "served");
-        }, 3000);
-    }
-
-    private gameUpdate(game: Game, room: string): void {
-        if (game.update())
-        { // A player scored
+        this.pointTimeout = setTimeout(() => {
             if (game.isFinished())
             {
-                this.gameEnd(room, game.getResult());
+                this.gameEnd(gameId, game.getResult());
                 return ;
             }
             else
+                game.serveBall();
+            this.pointTimeout = undefined;
+        }, 5000);
+    }
+
+    private gameUpdate(game: Game, room: string): void {
+        const   updateResult: GameUpdateResult = game.update();
+        let     gameData: IGameData;
+    
+        if (updateResult === GameUpdateResult.Lag)
+        {
+            if (game.state === GameState.Finished)
+                return ;
+            game.state = GameState.Finished;
+            this.gameEnd(room, {
+                winnerNick: "",
+                loserNick: "",
+                winnerScore: 0,
+                loserScore: 0,
+            });
+            return ;
+        }
+        if (updateResult === GameUpdateResult.Point)
+        { // A player scored
+            if (!this.pointTimeout)
                 this.pointTransition(game, room);
+        }
+        gameData = game.data();
+        if (this.checkPointCancel(gameData))
+        {
+            clearTimeout(this.pointTimeout);
+            this.pointTimeout = undefined;
         }
         this.server.to(room).emit('matchUpdate', game.data());
     }
@@ -187,7 +235,7 @@ export class    GameUpdateService {
                         }
                     );
                 },
-                16
+                GameUpdateService.updateTimeInterval
             );
         }
         else if (this.updateInterval
@@ -199,10 +247,12 @@ export class    GameUpdateService {
     }
 
     private scheduleClassicMatchStart(gameId: string): void {
+        const   gameSelection: GameSelection =
+                                    this.getGameSelection(gameId);
+        
         setTimeout(() => {
-            const   gameSelection: GameSelection =
-                                    this.gameSelections.get(gameId);
-            if (!gameSelection)
+            if (!gameSelection
+                    || gameSelection.status === SelectionStatus.Canceled)
                 return ;
             gameSelection.status = SelectionStatus.Finished;
             this.attemptSelectionFinish(gameId);
@@ -265,10 +315,7 @@ export class    GameUpdateService {
                         gameSelectionData: IGameSelectionData): Game {
         let game : Game;
 
-        if (gameSelectionData.heroAConfirmed)
-            game = new GameHero(gameSelectionData);
-        else
-            game = new Game(gameSelectionData);
+        game = new Game(gameSelectionData, this.reconciliationService);
         this.games.set(gameId, game);
         return (game);
     }

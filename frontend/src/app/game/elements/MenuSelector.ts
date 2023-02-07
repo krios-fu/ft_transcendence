@@ -139,33 +139,41 @@ export class    MenuSelector {
         else if (this._status === SelectionStatus.Stage)
         {
             if (player === "PlayerA")
+            {
                 this._status = SelectionStatus.Finished;
+                this._renderer.finish(this._stage);
+            }
         }
     }
 
     private updateHeroes(data: ISelectionData): void {
-        this._heroA = data.heroA;
-        if (data.heroAConfirmed)
+        if (data.heroAConfirmed && !this._heroAConfirmed)
         {
             this._heroAConfirmed = true;
             this._renderer.render(this._status, "PlayerA", this._heroA, true);
         }
-        else
+        else if (data.heroA != this._heroA)
+        {
+            this._heroA = data.heroA;
             this._renderer.render(this._status, "PlayerA", this._heroA, false);
-        this._heroB = data.heroB;
-        if (data.heroBConfirmed)
+        }
+        if (data.heroBConfirmed && !this._heroBConfirmed)
         {
             this._heroBConfirmed = true;
             this._renderer.render(this._status, "PlayerB", this._heroB, true);
         }
-        else
+        else if (data.heroB != this._heroB)
+        {
+            this._heroB = data.heroB;
             this._renderer.render(this._status, "PlayerB", this._heroB, false);
+        }
     }
 
-    serverUpdate(data: ISelectionData): void {
+    serverUpdate(data: ISelectionData, role?: string): void {
         if (this._status === SelectionStatus.Hero
             && data.status != this._status)
         {
+            this.updateHeroes(data);
             this._status = data.status;
             this._renderer.changeStatus(this._status);
         }
@@ -173,8 +181,13 @@ export class    MenuSelector {
             this.updateHeroes(data);
         else
         {
-            this._stage = data.stage;
-            this._renderer.render(this._status, "PlayerA", this._stage, false);
+            if (this._stage != data.stage)
+            {
+                this._stage = data.stage;
+                this._renderer.render(this._status, "PlayerA", this._stage, false);
+            }
+            else if (role === "PlayerB")
+                this._renderer.finish(this._stage);
         }
     }
 
