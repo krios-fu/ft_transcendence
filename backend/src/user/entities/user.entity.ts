@@ -113,7 +113,6 @@ export class UserEntity extends BaseEntity {
 	acceptedTerms: boolean;
 
 	@Column({
-		type: 'bigint',
 		default: 1500
 	})
 	ranking: number;
