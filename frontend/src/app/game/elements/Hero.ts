@@ -43,8 +43,7 @@ export interface    IHeroData {
 export abstract class    Hero {
     protected _upperSprite: Phaser.GameObjects.Sprite;
     protected _lowerSprite: Phaser.GameObjects.Sprite;
-    protected _active: number;
-    protected _pointInvocation: boolean;
+    private   _data: IHeroData;
 
     constructor(scene: MatchScene, initData: IHeroInitData) {
         this._upperSprite = scene.add.sprite(
@@ -65,32 +64,69 @@ export abstract class    Hero {
             initData.spriteLow.xOrigin,
             initData.spriteLow.yOrigin
         );
-        this._active = initData.active;
-        this._pointInvocation = initData.pointInvocation;
+        this._upperSprite.alpha = 0;
+        this._lowerSprite.alpha = 0;
+        this._data = {
+            xPos: initData.sprite.xPos,
+            yPos: initData.sprite.yPos,
+            lowXPos: initData.spriteLow.xPos,
+            lowYPos: initData.spriteLow.yPos,
+            active: initData.active,
+            pointInvocation: initData.pointInvocation
+        };
     }
 
     get data(): IHeroData {
-        return ({
-            xPos: this._upperSprite.x,
-            yPos: this._upperSprite.y,
-            lowXPos: this._lowerSprite.x,
-            lowYPos: this._lowerSprite.y,
-            active: this._active,
-            pointInvocation: this._pointInvocation
-        });
+        return ({...this._data});
+    }
+
+    private _updateRenderPosition(heroSprite: Phaser.GameObjects.Sprite,
+                                    upper: boolean): void {
+        heroSprite.x = upper ? this._data.xPos : this._data.lowXPos;
+        heroSprite.y = upper ? this._data.yPos : this._data.lowYPos;
+    }
+
+    private _getActiveRenderHero()
+                : [Phaser.GameObjects.Sprite | undefined, boolean] {
+        if (this._upperSprite.x != this._data.xPos
+                    || this._upperSprite.y != this._data.yPos)
+            return ([this._upperSprite, true]);
+        if (this._lowerSprite.x != this._data.lowXPos
+                    || this._lowerSprite.y != this._data.lowYPos)
+            return ([this._lowerSprite, false]);
+        return ([undefined, false]);
+    }
+
+    private _render(): void {
+        const   [targetHero, upper]
+                    : [Phaser.GameObjects.Sprite | undefined, boolean] =
+                        this._getActiveRenderHero();
+    
+        if (!targetHero)
+            return ;
+        if (this._data.active)
+        {
+            if (targetHero.alpha === 0)
+            {
+                this._shout();
+                targetHero.alpha = 1;
+            }
+            this._updateRenderPosition(targetHero, upper);
+        }
+        else
+        {
+            if (targetHero.alpha > 0)
+                targetHero.alpha -= 0.01;
+            else
+                this._updateRenderPosition(targetHero, upper);
+        }
     }
 
     protected abstract _shout(): void;
 
     update(data: IHeroData): void {
-        if (data.active
-                && !this._active)
-            this._shout();
-        this._upperSprite.x = data.xPos;
-        this._upperSprite.y = data.yPos;
-        this._lowerSprite.x = data.lowXPos;
-        this._lowerSprite.y = data.lowYPos;
-        this._active = data.active;
+        this._data = {...data};
+        this._render();
     }
 
     destroy(): void {
