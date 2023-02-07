@@ -55,7 +55,7 @@ describe('RoomRolesController', () => {
 
     });
     it ('placeholder', () => {
-
+      
     });
     it ('placeholder', () => {
 

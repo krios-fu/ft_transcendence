@@ -58,7 +58,7 @@ export class RoomRolesController {
     public async findRolesOfRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<RolesEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
             this.roomRoleLogger.error('Room with id ' + roomId + ' not found in database');
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('no room in db');
         }
         return this.roomRolesService.findRolesRoom(roomId);
     }

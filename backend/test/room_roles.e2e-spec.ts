@@ -19,6 +19,18 @@ import { RolesEntity } from "src/roles/entity/roles.entity";
 const rooms = ['testingRoom_1', 'testingRoom_2', 'testingRoom_3'];
 const users = ['testingUser_1', 'testingUser_2', 'testingUser_3'];
 const roles = ['private', 'official'];
+enum roles_idx { RI_PRIVATE, RI_OFFICIAL };
+
+const rooms_id = [1,2,3];
+const users_id = [1,2,3,4];
+const roles_id = [1,2];
+
+const BAD_ROOM_ID = 27;
+const BAD_ROLE_ID = 27;
+const BAD_ROOM_ROLE_ID = 27;
+
+export const createRoomRoleQuery = queryParams => queryParams.map(qp => `INSERT INTO room_roles (roomId,roleId,password) VALUES (${qp.roomId},${qp.roleId},null);`)
+    .reduce(qTotal, q => qTotal + q, '');
 
 describe('/room_roles (e2e)', () => {
     let app: INestApplication;
@@ -74,7 +86,7 @@ describe('/room_roles (e2e)', () => {
         userRolesRep = testModule.get<Repository<UserRolesEntity>>('UserRolesRepository');
 
         /* USERS & ROOM db seeding */
-        for (var i = 0; i < users.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             await userRep.query(`INSERT INTO user (username,firstName,lastName,profileUrl,email,photoUrl) \
                 VALUES (${users[i]},${users[i]}Fn,${users[i]}Ln,${users[i]}Pu,${users[i]}e,${users[i]}Pu);`);
             await roomRep.query( `INSERT INTO room (roomName,ownerId,photoUrl) \
@@ -105,75 +117,186 @@ describe('/room_roles (e2e)', () => {
                 .get('/room_roles')
                 .expect(200)
                 .expect((res) => {
-                    res.body.length === 0;
+                    res.body.length = 0;
                     console.log(res.body);
                 });
         });
         
         it ('[ Should return a list of one element (db seeded with one room_role) ]', async () => {
-            await roomRolesRep.query('INSERT INTO room_roles (room_id,role_id) \
-                VALUES ()');
+            const room_roles = { roomId: rooms_id[0], roleId: roles_id[0], password: null };
+            await roomRolesRep.query(queryBuilder(room_roles));
 
             return request(app.getHttpServer())
                 .get('/room_roles')
                 .expect(200)
                 .expect((res) => {
-                    res.body.length === 1;
-                    res.body[0].roomName === 'testRoom';
+                    res.body.length = 1;
+                    res.body[0].roomName = 'testRoom';
                 });
         });
 
         it('[ Should return a list of three elements (db seeded with three room_roles) ]', async () => {
-            await queryRunner.query(
-                'INSERT INTO room (roomName,ownerId,photoUrl) \
-                VALUES ("testRoom", 1, "null"); \
-                INSERT INTO room (roomName,ownerId,photoUrl) \
-                VALUES ("testRoom_2", 1, "null"); \
-                INSERT INTO room (roomName,ownerId,photoUrl) \
-                VALUES ("testRoom_3", 1, "null");'
-            );
+            const room_roles = [
+                {roomId:1, roleId:1, password:null},
+                {roomId:2, roleId:1, password:null},
+                {roomId:3, roleId:1, password:null}
+            ];
 
+            //const query = room_roles.map(
+            //    rr => `INSERT INTO room_roles (roomId,ownerId,password) \
+            //        VALUES (${rr.roomId},${rr.roleId},${rr.password});`
+            //).reduce((q_sum,q) => q += q_sum, "");
+
+            //console.log(`[DEBUG] query result: ${query}`);
+
+            await roomRolesRep.query(queryBuilder(room_roles));
             return request(app.getHttpServer())
                 .get('/room_roles')
                 .expect(200)
                 .expect((res) => {
-                    res.body.length === 3;
-                    res.body[2].roomName === 'testRoom_3';
+                    res.body.length = 3;
+                    res.body.should.containEql(room_roles);
                 });
         });
     });
 
     describe('[ GET /room_roles/:id ]', () => { 
-        it ('[ Should return a 404 (searching a non existent room_role ]', async () => {
+        it ('[ Should return a 404 (searching a non existent room_role) ]', async () => {
             return request(app.getHttpServer())
                 .get('/room_roles/1')
                 .expect(404);
         });
 
         it ('[ Should return a room_role (searching an existing room_role ]', async () => {
-            await queryRunner.query(
-                'INSERT INTO room (roomName,ownerId,photoUrl) \
-                VALUES ("testRoom", 1, "null");'
+            await roomRolesRep.query(queryBuilder({
+                roomId: rooms_id[0],
+                roleId: roles_id[0],
+                password: null
+                })
             );
 
             return request(app.getHttpServer())
                 .get('/room_roles')
                 .expect(200)
-                .expect((res) => {
-                    res.body.roomName === 'testRoom';
-                });
+                .expect(res => res.body.roomName = 'testRoom');
         });
     });
 
     describe('[ GET /room_roles/rooms/:id', () => { 
         it ('[ Should return a 404 (searching for a non existing room) ]', async () => {
-
+            return request(app.getHttpServer())
+                .get(`/room_roles/rooms/${BAD_ROOM_ID}`)
+                .expect(404);
         });
 
+        it ('[ Should return a 200 and an empty list (room with no roles) ]', async () => {
+            return request(app.getHttpServer)
+                .get('/room_roles/rooms/1')
+                .expect((res) => {
+                    res.statusCode = 200;
+                    res.body.length = 0;
+                });
+        });
+
+        it ('[ Should return a list of one role ]', async () => {
+            const room_roles = { roomId:1,roleId:1,password:null};
+            await roomRolesRep.query(queryBuilder(room_roles));
+
+            return request(app.getHttpServer())
+                .get('/room_roles/rooms/1')
+                .expect((res) => {
+                    res.statusCode = 200;
+                    res.body.should.containEql([ room_roles ]);
+                });
+        });
+
+        it ('[ Should return a list of two roles ]', async () => {
+            const room_roles = [ 
+                {roomId:1,roleId:RI_PRIVATE,password:null},
+                {roomId:1,roleId:RI_OFFICIAL,password:null}
+            ];
+
+            await roomRolesRep.query(queryBuilder(room_roles));
+            return request(app.getHttpServer())
+            .get('/room_roles/rooms/1')
+            .expect((res) => {
+                res.statusCode = 200;
+                res.body.should.containEql(room_roles);
+            });
+        });
+    });
+
+    describe('[ POST /room_roles ]', () => {
+        it ('[ Post with a non existing room ]', () => {
+            return(app.getHttpServer())
+                .post('/room_roles')
+                .send({roomId: BAD_ROOM_ID, roleId: roles_id[0]})
+                .expect(res => res.statusCode = 400);
+        })
+
+        it ('[ Post with a non existing role ]', () => {
+            return (app.getHttpServer())
+                .post('/room_roles')
+                .send({roomId: rooms_id[0], roleId: BAD_ROLE_ID})
+                .expect(res => res.statusCode = 400);
+        });
+
+        it ('[ Post an "official" role while not being an admin ]', () => {
+           return (app.getHttpServer())
+               .post('/room_roles')
+               .send({roomId: rooms_id[0], roleId: roles_id[RI_OFFICIAL]})
+               .expect(res => res.statusCode = 403);
+        });
+
+        it ('[ Post a "private" role while not being an owner ]', () => {
+            return (app.getHttpServer())
+                .post('/room_roles')
+                .send({roomId: rooms_id[0], roleId: roles_id[RI_PRIVATE]})
+                .expect(res => res.statusCode = 403);
+        });
+
+        it ('[ Post an "official" role while admin ]', () => {
+            const user_roles
+            userRolesRep.query(`INSERT INTO user_roles (userId,roleId) \
+            VALUES (${MY_USER_ID},${roles_id[RI_OFFICIAL]})`);
+            return (app.getHttpServer())
+                .post('/room_roles')
+                .send({roomId: rooms_id[0], roleId: })
+        });
+
+        it ('[ Post a "private" role while being owner ]', () => {});
+    });
+
+    describe('[ DEL /room_roles/:id ]', () => { 
+        it ('[ Delete a non-existing role in room ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room_roles/${BAD_ROOM_ROLE_ID}`)
+                .expect(res => res.statusCode = 404);
+        });
+
+        it ('[ Delete an official role while not being an admin ]', () => {
+            userRolesRep.query(`INSERT INTO room_roles `);
+            return (app.getHttpServer())
+                .delete('/room_roles/')
+                .expect(res => res.statusCode = 403);
+        });
+
+        it ('[ Delete an official role while being an admin ]', () => { });
+        it ('[ Delete a private role while not being an owner ]', () => { });
+        it ('[ Delete a private role while being an owner ]', () => { });
 
     });
 
-    //describe('[ POST /room_roles ]', () => { });
-    //describe('[ DEL /room_roles/:id ]', () => { });
-    //describe('[ PUT /room_roles/:id ]', () => { });
+    describe('[ PUT /room_roles/rooms/:id/update ]', () => {
+        it ('[ Change password with wrong creds. being owner ]', ( ) => { });
+        it ('[ Change password with right creds. being owner ]', ( ) => { });
+        it ('[ Change password with wrong creds. not being owner ]', ( ) => { });
+        it ('[ Change password with right creds. bot being owner ]', ( ) => { });
+        it ('[ Change password of a public room ]', ( ) => { });
+        it ('[ Change password of a non-existent room ]', ( ) => { });
+    });
+
+    describe('[ PUT /room_roles/:id ]', () => { 
+        it ('[  ]')
+    });
 });
