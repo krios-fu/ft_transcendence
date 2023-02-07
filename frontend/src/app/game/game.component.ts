@@ -9,6 +9,8 @@ import { PlayerScene } from "./scenes/PlayerScene";
 import { SpectatorScene } from "./scenes/SpectatorScene";
 import { StartScene } from "./scenes/StartScene";
 import { LagCompensationService } from "./services/lag-compensation.service";
+import { LoadService } from "./services/load.service";
+import { SoundService } from "./services/sound.service";
 
 @Component({
     selector: 'app-game',
@@ -24,7 +26,9 @@ export class    GameComponent implements OnInit {
     private username?: string; //Provisional
 
     constructor (
-        private readonly lagCompensator: LagCompensationService
+        private readonly lagCompensator: LagCompensationService,
+        private readonly loadService: LoadService,
+        private readonly soundService: SoundService
     ) {
         this.config = {
             type: Phaser.CANVAS,
@@ -56,16 +60,17 @@ export class    GameComponent implements OnInit {
         const   menuScene: MenuScene =
                     new MenuScene(this.socket, "Game1");
         const   menuHeroScene: MenuHeroScene =
-                    new MenuHeroScene(this.socket, "Game1");
+                    new MenuHeroScene(this.socket, "Game1", this.soundService);
         const   playerScene: PlayerScene =
-                    new PlayerScene(this.socket, "Game1",
-                                        this.lagCompensator);
+                    new PlayerScene(this.socket, "Game1", this.lagCompensator,
+                                        this.loadService, this.soundService);
         const   classicPlayerScene: ClassicPlayerScene =
                     new ClassicPlayerScene(this.socket, "Game1",
-                                        this.lagCompensator);
+                                        this.lagCompensator, this.loadService,
+                                        this.soundService);
         const   spectatorScene: SpectatorScene =
-                    new SpectatorScene(this.socket, "Game1",
-                                        this.lagCompensator);
+                    new SpectatorScene(this.socket, "Game1", this.lagCompensator,
+                                        this.loadService, this.soundService);
         const   endScene: EndScene =
                     new EndScene(this.socket, "Game1");
             

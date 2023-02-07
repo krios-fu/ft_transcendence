@@ -7,6 +7,11 @@ import {
 import { Txt } from '../elements/Txt';
 import { SnapshotBuffer } from '../elements/SnapshotBuffer';
 import { LagCompensationService } from '../services/lag-compensation.service';
+import { LoadService } from '../services/load.service';
+import {
+    MatchSoundKeys,
+    SoundService
+} from '../services/sound.service';
 import { BaseScene } from './BaseScene';
 
 export interface    IMatchSceneInit {
@@ -26,7 +31,9 @@ export class    MatchScene extends BaseScene {
 
     constructor(
         role: string, socket: SocketIO.Socket, room: string,
-        readonly lagCompensator: LagCompensationService
+        readonly lagCompensator: LagCompensationService,
+        readonly loadService: LoadService,
+        readonly soundService: SoundService
     ) {
         super(role, socket, room);
         this.queue = [];
@@ -42,59 +49,58 @@ export class    MatchScene extends BaseScene {
         this.socket.once("end", (data) => {
             this.match?.destroy();
             this.buffer = undefined;
+            this.soundService.destroy();
             this.removeAllSocketListeners();
             this.scene.start("End", data);
         });
         this.socket.on("matchUpdate", (snapshot: IMatchData) => {
             this.queue.push(snapshot);
         });
-        this.socket.on("served", () => {
-            if (!this.initTxt)
-                return ;
-            this.initTxt.visible = false;
-        });
     }
 
     //Called after init()
     preload() {
-        this.load.image('aquaman', '/assets/aquaman.png');
-        this.load.image('superman', '/assets/superman.png');
-        this.load.image('blackPanther', '/assets/blackPanther.png');
-        this.load.image('atlantis', '/assets/atlantis.png');
-        this.load.image('metropolis', '/assets/metropolis.png');
-        this.load.image('wakanda', '/assets/wakanda.png');
-    }
-
-    createInitText() {
-        //Init screen setup
-        this.initTxt = new Txt(this, {
-            xPos: 400,
-            yPos: 250,
-            content: "Prepare to serve ...",
-            style: { fontSize: '20px', color: '#fff' },
-            xOrigin: 0.5,
-            yOrigin: 0.5,
-            depth: 1
-        });
+        if (!this.initData)
+            return ;
+        this.loadService.match(this, this.initData.matchData);
     }
 
     //Called after preload()
     create() {
-        if (this.initData != undefined)
+        if (!this.initData)
+            return ;
+        if (this.initData.matchData.stage != undefined
+             && this.initData.matchData.playerA.hero
+             && this.initData.matchData.playerB.hero)
         {
-            this.match = new Match(this, this.initData.matchData);
-            this.buffer = new SnapshotBuffer(
-                {
-                    gameWidth: Number(this.game.config.width),
-                    gameHeight: Number(this.game.config.height),
-                    matchData: this.initData.matchData,
-                    role: this.initData.role
-                },
-                this.lagCompensator
-            );
-            this.queue = [];
+            this.soundService.load(this, {
+                stage: SoundService.stageSoundKeysMap.get(
+                    this.initData.matchData.stage
+                ),
+                heroA: SoundService.heroSoundKeysMap.get(
+                    this.initData.matchData.playerA.hero.name
+                ),
+                heroB: SoundService.heroSoundKeysMap.get(
+                    this.initData.matchData.playerB.hero.name
+                ),
+                collision: SoundService.matchOtherSoundKeys.collision,
+                point: SoundService.matchOtherSoundKeys.point
+            } as MatchSoundKeys);
+            this.match = new Match(this, this.initData.matchData,
+                                    this.soundService);
         }
-        this.createInitText();
+        else
+            this.match = new Match(this, this.initData.matchData);
+        this.buffer = new SnapshotBuffer(
+            {
+                gameWidth: Number(this.game.config.width),
+                gameHeight: Number(this.game.config.height),
+                matchData: this.initData.matchData,
+                role: this.initData.role
+            },
+            this.lagCompensator
+        );
+        this.queue = [];
         this.initData = undefined;
     }
 

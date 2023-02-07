@@ -27,7 +27,7 @@ export interface    IGameClientStart {
     playerA: IPlayerClientStart;
     playerB: IPlayerClientStart;
     ball: IBallClientStart;
-    stage?: string;
+    stage?: StageId;
     when: number;
 }
 
@@ -459,22 +459,12 @@ export class   Game {
         });
     }
 
-    private stringifyStage(id: StageId): string {
-        if (!this._playerA.hero)
-            return (undefined);
-        if (id === StageId.Atlantis)
-            return ('atlantis');
-        if (id === StageId.Metropolis)
-            return ('metropolis');
-        return ('wakanda');
-    }
-
     clientStartData(): IGameClientStart {
         return ({
             playerA: this._playerA.clientStartData(),
             playerB: this._playerB.clientStartData(),
             ball: this._ball.clientStartData(),
-            stage: this.stringifyStage(this._stage),
+            stage: this._stage,
             when: this._lastUpdate
         });
     }

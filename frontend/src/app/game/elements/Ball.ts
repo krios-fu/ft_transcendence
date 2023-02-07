@@ -1,5 +1,9 @@
 import * as Phaser from 'phaser'
 import { MatchScene } from '../scenes/MatchScene';
+import {
+    MatchOtherSoundKeys,
+    SoundService
+} from '../services/sound.service';
 
 export interface    IBallInitData {
     xPos: number;
@@ -24,8 +28,10 @@ export class    Ball {
     private _ballShadow: Phaser.GameObjects.Ellipse;
     private _xVel: number;
     private _yVel: number;
+    private _soundKeys: MatchOtherSoundKeys;
 
-    constructor(scene: MatchScene, initData: IBallInitData) {
+    constructor(scene: MatchScene, initData: IBallInitData,
+                    private readonly soundService?: SoundService) {
         this._ball = scene.add.ellipse(
             initData.xPos,
             initData.yPos,
@@ -44,6 +50,7 @@ export class    Ball {
         this._ballShadow.depth = 0;
         this._xVel = initData.xVel;
         this._yVel = initData.yVel;
+        this._soundKeys = SoundService.matchOtherSoundKeys;
     }
 
     get xPos(): number {
@@ -63,7 +70,19 @@ export class    Ball {
         });
     }
 
+    private _playSound(data: IBallData): void {
+        if (!this.soundService
+                || data.xVel === this._xVel)
+            return ;
+    
+        if (data.xVel === 0)
+            this.soundService.play(this._soundKeys.point, false);
+        else if (this._xVel != 0)
+            this.soundService.play(this._soundKeys.collision, false);
+    }
+
     update(data: IBallData): void {
+        this._playSound(data);
         this._ball.x = data.xPos;
         this._ball.y = data.yPos;
         this._ballShadow.x = data.xPos;
