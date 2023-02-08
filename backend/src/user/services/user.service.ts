@@ -64,6 +64,7 @@ export class UserService {
         userInfo: UpdateUserDto | UserGameStats | SettingsPayloadDto | DoubleAuthPayload
     ): Promise<UpdateResult> {
         return await this.userRepository.update(id, userInfo);
+        // must return user entity
     }
 
     /*

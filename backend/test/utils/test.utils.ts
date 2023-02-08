@@ -1,4 +1,7 @@
-export const getCredentials = () => {
+import * as request from 'supertest';
+import {TypeOrmModuleOptions} from "@nestjs/typeorm";
+
+export const getCredentials = async () => {
     const res = await request(app.getHttpServer())
         .post('/auth/generate')
         .send({ 
@@ -8,3 +11,15 @@ export const getCredentials = () => {
         });
     return res.body.authToken;
 }
+
+export const moduleConfig: TypeOrmModuleOptions = {
+    type: 'postgres',
+    host: process.env.DB_HOST,
+    port: 5432,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWD,
+    database: process.env.DB_TEST_NAME,
+    autoLoadEntities: true,
+    synchronize: true,
+    dropSchema: true
+};

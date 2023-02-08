@@ -17,7 +17,7 @@ import {
     UseGuards,
     NotFoundException,
     HttpCode,
-    BadRequestException,
+    BadRequestException, UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -268,12 +268,16 @@ export class UserController {
     \* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
     @Get('me/chats')
-    async findChats(@Req() req: IRequestUser) {
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
+    async findChats
+    (
+        @Req() req: IRequestUser,
+        @UserCreds() username: string
+    ) {
+
+        //if (username === undefined) {
+        //    this.userLogger.error('request user has not logged in');
+        //    throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        //}
         const user = await this.userService.findOneByUsername(req.user.data.username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
@@ -286,35 +290,35 @@ export class UserController {
     }
 
     @Get('me/chat/:nick_friend')
-    async findChat(@Req() req: IRequestUser, @Param('nick_friend') nick_friend: string) {
+    async findChat
+    (
+        @UserCreds() username: string,
+        @Param('nick_friend') nick_friend: string
+    ) {
 
-        const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('request user has not logged in');
         }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
+        const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in database');
         }
-
         const friend = await this.userService.findOneByNickName(nick_friend);
-
         if (friend === null) {
             this.userLogger.error(`User with login ${nick_friend} not present in database`);
-            throw new HttpException('friend not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('friend not found in database');
         }
-
         return await this.chatService.findChatUser(user.id, friend.id);
-
     }
 
     @Post('me/chat')
-    async postChat(
-        @Req() req: IRequestUser,
-        @Body() payload: chatPayload) {
-        const username = req.user.data.username;
+    async postChat
+    (
+        @UserCreds() username: string,
+        @Body() payload: chatPayload
+    ) {
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
             throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);

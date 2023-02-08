@@ -1,5 +1,25 @@
 describe('/ban (e2e)', () => {
-    it ('[ placeholder ]', () => {
-        expect(1).toBe(1);
+    describe( '[ GET /ban ]', () => {
+
+    });
+
+    describe( '[ GET /ban/:ban_id ]', () => {
+
+    });
+
+    describe( '[ GET /ban/rooms/:room_id ]', () => {
+
+    });
+
+    describe( '[ GET /ban/users/:user_id ]', () => {
+
+    });
+
+    describe( '[ POST /ban ]', () => {
+
+    });
+
+    describe( '[ DEL /ban/:id ]', () => {
+
     });
 });

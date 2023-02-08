@@ -15,10 +15,10 @@ import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 import { RolesRepository } from "src/roles/repository/roles.repository";
 import { RolesEntity } from "src/roles/entity/roles.entity";
+import {moduleConfig} from "./utils/test.utils";
 
 const rooms = ['testingRoom_1', 'testingRoom_2', 'testingRoom_3'];
 const users = ['testingUser_1', 'testingUser_2', 'testingUser_3'];
-const roles = ['private', 'official'];
 enum roles_idx { RI_PRIVATE, RI_OFFICIAL };
 
 const rooms_id = [1,2,3];
@@ -57,17 +57,7 @@ describe('/room_roles (e2e)', () => {
     beforeAll(async () => {
         const testModule: TestingModule = await Test.createTestingModule({
             imports: [
-                TypeOrmModule.forRoot({
-                    type: 'postgres',
-                    host: process.env.DB_HOST,
-                    port: 5432,
-                    username: process.env.DB_USERNAME,
-                    password: process.env.DB_PASSWD,
-                    database: process.env.DB_TEST_NAME,
-                    autoLoadEntities: true,
-                    synchronize: true,
-                    dropSchema: true
-                }),
+                TypeOrmModule.forRoot(moduleConfig),
                 AuthModule,
                 RoomRolesModule,
             ],
@@ -135,7 +125,7 @@ describe('/room_roles (e2e)', () => {
                 .expect(200)
                 .expect((res) => {
                     res.body.length = 1;
-                    res.body[0].roomName = 'testRoom';
+                    res.body.should.containEql(room_roles);
                 });
         });
 
@@ -321,40 +311,80 @@ describe('/room_roles (e2e)', () => {
 
     // update payload { oldPassword: string, newPassword: string }
     describe('[ PUT /room_roles/rooms/:id/update ]', () => {
-        it ('[ Change password with wrong creds. being owner ]', () => { 
-            const pwdCreds = { oldPassword: '1234', newPassword: 'badbadbad!'};
+        const pwdCreds = { oldPassword: '1234', newPassword: 'badvadvad!'};
 
-            await roomRolesRep.query({
-                roomId: rooms_id[0],
-                roleId: RI_PRIVATE,
-                password: pwdCreds.oldPassword,
-            });
+        it ('[ Change password with wrong creds. being owner ]', () => {
+            const room_id = rooms_id[0]
+
+            await roomRolesRep.query(genRoomRolesQuery({
+                    roomId: room_id,
+                    roleId: RI_PRIVATE,
+                    password: '12345',
+                })
+            );
             return (app.getHttpServer())
-                .put(`/room_roles/`) // ...
+                .put(`/room_roles/room/${room_id}/update`)
+                .send(pwdCreds)
+                .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Change password with right creds. being owner ]', () => { 
+        it ('[ Change password with right creds. being owner ]', () => {
+            const roomId = rooms_id[0];
 
+            await roomRolesRep.query(genROomRolesQuery({
+                roomId: roomId,
+                roleId: RI_PRIVATE,
+                password: pwdCreds.oldPassword,
+                })
+            );
+            return (app.getHttpServer())
+                .put(`/room_roles/room/${roomId}/update`)
+                .send(pwdCreds)
+                .expect(res => res.statusCode = 201);
         });
 
         it ('[ Change password with wrong creds. not being owner ]', ( ) => { 
+            const roomId = rooms_id[1];
 
+            await roomRolesRep.query(genRoomRolesQuery({
+                roomId: room_id,
+                roleId: RI_PRIVATE,
+                password: 'bad_pwd'
+            }));
+            return (app.getHttpServer())
+                .put(`/room_roles/room/${roomId}/update`)
+                .send(pwdCreds)
+                .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Change password with right creds. bot being owner ]', ( ) => { 
+        it ('[ Change password with right creds. bot being owner ]', ( ) => {
+            const roomId = rooms_id[1];
 
+            await roomRolesRep.query(genRoomRolesQuery({
+                roomId: room_id,
+                roleId: RI_PRIVATE,
+                password:
+            }));
+            return (app.getHttpServer())
+                .put(`/room_roles/room/${roomId}/update`)
+                .send(pwdCreds)
+                .expect(res => res.statusCode = 403);
         });
 
         it ('[ Change password of a public room ]', ( ) => { 
+            const roomId = rooms_id[0];
 
+            return (app.getHttpServer())
+                .put(`/room_roles/room/${roomId}/update`)
+                .send(pwdCreds)
+                .expect(res => res.statusCode = 400);
         });
 
-        it ('[ Change password of a non-existent room ]', ( ) => { 
-
+        it ('[ Change password of a non-existent room ]', ( ) => {
+            return (app.getHttpServer())
+                .put(`/room_roles/room/${BAD_ROOM_ID}/update`)
+                .send(pwdCreds)
+                .expect(res => res.statusCode = 404);
         });
-    });
-
-    describe('[ PUT /room_roles/:id ]', () => { 
-        it ('[  ]')
     });
 });

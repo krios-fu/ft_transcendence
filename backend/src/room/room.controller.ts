@@ -74,8 +74,9 @@ export class RoomController {
     @Post()
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
+        /* owner of room must be provided by username in jwt payload */
         if (await this.userService.findOne(ownerId) === null) {
-            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no user in db');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
             this.roomLogger.error('room with name ' + roomName + ' already in database');
@@ -109,6 +110,7 @@ export class RoomController {
             fs.unlinkSync(avatar.path);
             throw new BadRequestException('no room in db');
         }
+        /* bad photo url */
         const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
         return this.roomService.updateRoom(id, { photoUrl: photoUrl })
     }
