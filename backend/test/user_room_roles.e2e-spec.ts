@@ -38,6 +38,12 @@ describe('/user_room_roles (e2e)', () => {
 
     });
 
-    // POST /user_room_roles
-    // DEL /user_room_roles/:id
+    describe('[ POST /user_room_roles ]', () => {
+
+    });
+
+    describe('[ DEL /user_room_roles/:id ]', () => {
+
+    });
+
 });

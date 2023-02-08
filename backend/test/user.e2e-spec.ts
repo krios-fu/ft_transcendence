@@ -92,43 +92,67 @@ describe('/user (e2e)', () => {
     });
 
     describe ('[ POST /user/me/chat ]', () => {
-
+        // post chat, no user
+        // post chat
     });
 
     describe ('[ GET /user/me/friends ]', () => {
-
+        // get friends, no friends
+        // get friends, many friends
     });
 
-    describe ('[ GET /user/me/friends/as_pendding ]', () => {
-
+    describe ('[ GET /user/me/friends/as_pending ]', () => {
+        // get pending friends, nothing pending
+        // get pending friends
     });
 
     describe ('[ GET  /user/me/friends/:friend_id ]', () => {
-
+        // get one friend, no user
+        // get one friend, no friend
+        // get one friend
     });
 
-    describe ('[ Post /user/me/friends ]', () => {
-
+    describe ('[ POST /user/me/friends ]', () => {
+        // add new friend, no user
+        // add new friend, you are blocked
+        // add new friend, you blocked them
+        // add new friend, banned user
+        // add new friend, already friends
+        // add new friend
     });
 
-    describe ('[ PATCH /user/:user_id/friends/:friend_id/accept ]', () => {
-
+    describe ('[ PATCH /user/me/friends/:friend_id/accept ]', () => {
+        // accept friend, no user
+        // accept friend, no friend
+        // accept friend, friendship not pending
+        // accept friend, friend blocked
+        // accept friend, user blocked
+        // accept friend, friend banned
+        // accept friend
     });
 
-    describe ('[ PATCH /user/:user_id/friends/:friend_id/refuse ]', () => {
-
+    describe ('[ PATCH /user/me/friends/:friend_id/refuse ]', () => {
+        // refuse friend, no user
+        // refuse friend, no friend
+        // refuse friend, not pending
+        // refuse friend, user blocked
+        // refuse friend, friend blocked
+        // refuse friend, friend banned
+        // refuse friend
     });
 
     describe ('[ GET /user/me/blocked ]', () => {
-
+        // get blocked, no blocked
+        // get blocked, many blocked
     });
 
     describe ('[ POST /user/me/blocked ]', () => {
-
+        // post blocked, no user
+        // post blocked
+        // post blocked, another state (friend, pending)
     });
 
     describe ('[ DEL /user/me/blocked/:id ]', () => {
 
     });
-
 });

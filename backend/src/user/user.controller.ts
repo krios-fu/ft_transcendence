@@ -321,20 +321,17 @@ export class UserController {
     ) {
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('request user has not logged in');
         }
         const user1 = await this.userService.findOneByUsername(username);
-
         console.log(user1);
         if (user1 === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in database');
         }
         const user2 = await this.userService.findOne(payload.friendId);
         console.log(user2)
-
         return this.chatService.post(user1, user2);
-
     }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
@@ -358,12 +355,10 @@ export class UserController {
     */
 
     @Get('me/friends')
-    public async getMyFriends(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
-        const username = req.user.data.username;
-        console.log('GET FRIENDS', username);
+    public async getMyFriends(@UserCreds() username: string): Promise<FriendshipEntity[]> {
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('request user has not logged in');
         }
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
@@ -373,19 +368,16 @@ export class UserController {
         return await this.friendshipService.getFriends(user.id);
     }
 
-
-    @Get('me/friends/as_pendding')
-    public async getFriendsAsPendding(@Req() req: IRequestUser): Promise<FriendshipEntity[]> {
-        const username = req.user.data.username;
-        console.log('GET FRIENDS', username);
+    @Get('me/friends/as_pending')
+    public async getFriendsAsPending(@UserCreds() username: string): Promise<FriendshipEntity[]> {
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('request user has not logged in');
         }
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in database');
         }
         return await this.friendshipService.getPossibleFriends(user.id);
     }
@@ -396,18 +388,17 @@ export class UserController {
 
     @Get('me/friends/:friend_id')
     public async getOneFriend(
-        @Req() req: IRequestUser,
+        @UserCreds() username: string,
         @Param('friend_id', ParseIntPipe) friendId: number
     ): Promise<FriendshipEntity> {
-        const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('request user has not logged in');
         }
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in database');
         }
         return this.friendshipService.getOneFriend(user.id, friendId);
     }
@@ -419,21 +410,17 @@ export class UserController {
 
     @Post('me/friends')
     async postFriend(
-        @Req() req: IRequestUser,
+        @UserCreds() username: string,
         @Body() dto: FriendshipPayload,
     ): Promise<FriendshipEntity> {
-        console.log('frienddd', dto);
-        const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('request user has not logged in');
         }
         const user = await this.userService.findOneByUsername(username);
-        console.log('frienddd', user);
-
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in database');
         }
         return this.friendshipService.addFriend(new CreateFriendDto(user.id, dto));
     }
@@ -444,11 +431,12 @@ export class UserController {
     */
 
     //UseGuards(ItIsMe)
-    @Patch(':user_id/friends/:friend_id/accept')
+    @Patch('me/friends/:friend_id/accept')
     public async acceptFriend(
-        @Param('user_id', ParseIntPipe) userId: number,
+        @UserCreds() username: string,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
+        const { id: userId } = await this.userService.findOneByUsername(username);
         if ((await this.userService.findAllUsers({ filter: { id: [userId, friendId] } }))
             .length != 2) {
             this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
@@ -462,19 +450,20 @@ export class UserController {
     **  if username of the request matches the receiverId in friendship.
     */
 
-    //UseGuards(ItIsMe)
-    @Patch(':user_id/friends/:friend_id/refuse')
+    @Patch('me/friends/:friend_id/refuse')
     public async refuseFriend(
-        @Param('user_id', ParseIntPipe) userId: number,
+        @UserCreds() username: string,
         @Param('friend_id', ParseIntPipe) friendId: number,
     ): Promise<UpdateResult> {
+        const { id: userId } = await this.userService.findOneByUsername(username);
+        /* protect this */
         if ((await this.userService.findAllUsers({ filter: { id: [userId, friendId] } }))
             .length != 2) {
             this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
             throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
         }
         return this.friendshipService.refuseFriend(userId, friendId);
-    }
+    } /* should not return updateResult */
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
@@ -487,12 +476,12 @@ export class UserController {
         const username = req.user.data.username;
         if (username === undefined) {
             this.userLogger.error(`User requesting service is not logged in`);
-            throw new HttpException('user not logged int', HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException('user not logged int');
         }
         const me = await this.userService.findOneByUsername(username);
         if (me === null) {
             this.userLogger.error(`User with login ${username} not found in database`);
-            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('user not found in db');
         }
         return this.blockService.getBlockedFriends(me.id);
     }
@@ -504,12 +493,10 @@ export class UserController {
 
     @Post('me/blocked')
     async blockFriend(
-        @Req() req: IRequestUser,
+        @UserCreds() username: string,
         @Body() dto: BlockPayloadDto,
     ): Promise<UpdateResult> {
-        const username = req.user.data.username;
         const me = await this.userService.findOneByUsername(username);
-
         if (me === null) {
             this.userLogger.error(`User with username ${username} not found in database`);
             throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
