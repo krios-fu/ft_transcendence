@@ -10,6 +10,7 @@ import { SpectatorScene } from "./scenes/SpectatorScene";
 import { StartScene } from "./scenes/StartScene";
 import { LagCompensationService } from "./services/lag-compensation.service";
 import { LoadService } from "./services/load.service";
+import { SocketService } from "./services/socket.service";
 import { SoundService } from "./services/sound.service";
 
 @Component({
@@ -22,10 +23,9 @@ export class    GameComponent implements OnInit {
     private config: Phaser.Types.Core.GameConfig;
     private socket: SockIO.Socket;
     private game?: Phaser.Game;
-    private queueButtonClick: boolean;
-    private username?: string; //Provisional
 
     constructor (
+        private readonly socketService: SocketService,
         private readonly lagCompensator: LagCompensationService,
         private readonly loadService: LoadService,
         private readonly soundService: SoundService
@@ -47,11 +47,7 @@ export class    GameComponent implements OnInit {
             },
             scene: undefined // Will be assigned afterwards
         };
-        this.socket = SockIO.io("ws://localhost:3001");
-        this.queueButtonClick = false;
-        this.socket.once("mockUser", (data: any) => {
-            this.username = data.mockUser;
-        }); //Provisional
+        this.socket = this.socketService.socket;
     }
 
     ngOnInit(): void {
@@ -79,26 +75,6 @@ export class    GameComponent implements OnInit {
             classicPlayerScene, spectatorScene, endScene
         ];
         this.game = new Phaser.Game(this.config);
-    }
-
-    addToQueue() {
-        /*if (this.queueButtonClick)
-            return ;*/
-        this.socket.emit("addToGameQueue", {
-            room: "Game1",
-            username: this.username
-        });
-        this.queueButtonClick = true;
-    }
-
-    addToHeroQueue() {
-        /*if (this.queueButtonClick)
-            return ;*/
-        this.socket.emit("addToGameHeroQueue", {
-            room: "Game1",
-            username: this.username
-        });
-        this.queueButtonClick = true;
     }
 
 }

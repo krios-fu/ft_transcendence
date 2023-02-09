@@ -10,7 +10,10 @@ import {
 } from "src/user/entities/user.entity";
 import { UserService } from "src/user/services/user.service";
 import { UpdateResult } from "typeorm";
-import { IGameResult } from "./elements/Game";
+import {
+    GameType,
+    IGameResult
+} from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
 
@@ -31,9 +34,9 @@ export class    GameService {
         return (this.gamePlayers.get(gameId));
     }
 
-    startGame(gameId: string): [[UserEntity, UserEntity], number] {
+    startGame(gameId: string): [[UserEntity, UserEntity], GameType] {
         let nextPlayers: [UserEntity, UserEntity] = [undefined, undefined];
-        let gameType: number;
+        let gameType: GameType;
         let currentPlayers: [UserEntity, UserEntity];
     
         [nextPlayers[0], nextPlayers[1], gameType] =

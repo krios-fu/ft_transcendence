@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Server } from "socket.io";
 import { UserEntity } from "src/user/entities/user.entity";
 import {
     Game,
     GameState,
+    GameType,
     GameUpdateResult,
     IGameClientStart,
     IGameData,
@@ -21,7 +21,6 @@ import { GameReconciliationService } from "./game.reconciliation.service";
 @Injectable()
 export class    GameUpdateService {
 
-    server: Server;
     games: Map<string, Game>;
     gameSelections: Map<string, GameSelection>;
     updateInterval: NodeJS.Timer = undefined;
@@ -37,10 +36,6 @@ export class    GameUpdateService {
     ) {
         this.games = new Map<string, Game>();
         this.gameSelections = new Map<string, GameSelection>;
-    }
-
-    initServer(socketServer: Server): void {
-        this.server = socketServer;
     }
 
     private getGameSelection(roomId: string): GameSelection {
@@ -162,7 +157,7 @@ export class    GameUpdateService {
             gameResult.winnerNick = players[0].nickName;
             gameResult.loserNick = players[1].nickName;
         }
-        this.socketHelper.emitToRoom(this.server, gameId, "end", {
+        this.socketHelper.emitToRoom(gameId, "end", {
             aNick: players[0].nickName,
             bNick: players[1].nickName,
             aCategory: GameSelection.stringifyCategory(players[0].category),
@@ -175,8 +170,8 @@ export class    GameUpdateService {
             bAvatar: players[1].photoUrl
         });
         this.gameService.endGame(gameId, gameResult);
-        this.socketHelper.clearRoom(this.server, `${gameId}-PlayerA`);
-        this.socketHelper.clearRoom(this.server, `${gameId}-PlayerB`);
+        this.socketHelper.clearRoom(`${gameId}-PlayerA`);
+        this.socketHelper.clearRoom(`${gameId}-PlayerB`);
         this.gameTransition(gameId);
     }
 
@@ -221,7 +216,7 @@ export class    GameUpdateService {
             clearTimeout(this.pointTimeout);
             this.pointTimeout = undefined;
         }
-        this.server.to(room).emit('matchUpdate', game.data());
+        this.socketHelper.emitToRoom(room, 'matchUpdate', game.data());
     }
 
     private manageUpdateInterval(): void {
@@ -262,35 +257,35 @@ export class    GameUpdateService {
     private sendSelectionData(hero: boolean, role: string,
                                 selectionData: IGameSelectionData,
                                 roomId: string): void {
-        this.socketHelper.emitToRoom(this.server, roomId, "newGame", {
+        this.socketHelper.emitToRoom(roomId, "newGame", {
             hero: hero,
             role: role,
             selection: selectionData
         });
     }
 
-    private async prepareClients(gameId: string, gameType: number,
+    private async prepareClients(gameId: string, gameType: GameType,
                                     players: [UserEntity, UserEntity],
                                     selectionData: IGameSelectionData)
                                     : Promise<void> {
         let     playerRoom: string;
-        const   gameHero = gameType != 0;
+        const   gameHero = gameType === "hero";
 
         playerRoom = `${gameId}-PlayerA`;
-        await this.socketHelper.addUserToRoom(this.server,
-                        players[0].username, playerRoom);
+        await this.socketHelper.addUserToRoom(players[0].username, playerRoom);
         this.sendSelectionData(gameHero, "PlayerA", selectionData, playerRoom);
+        this.socketHelper.emitToRoom(playerRoom, "unqueue");
         playerRoom = `${gameId}-PlayerB`;
-        await this.socketHelper.addUserToRoom(this.server,
-                        players[1].username, playerRoom);
+        await this.socketHelper.addUserToRoom(players[1].username, playerRoom);
         this.sendSelectionData(gameHero, "PlayerB", selectionData, playerRoom);
+        this.socketHelper.emitToRoom(playerRoom, "unqueue");
         this.sendSelectionData(gameHero, "Spectator", selectionData, gameId);
 }
 
     private async startGame(gameId: string): Promise<void> {
         let gameSelection: GameSelection;
         let selectionData: IGameSelectionData;
-        let [players, gameType]: [[UserEntity, UserEntity], number] =
+        let [players, gameType]: [[UserEntity, UserEntity], GameType] =
                                     this.gameService.startGame(gameId);
         
         if (!players[0] || !players[1])
@@ -307,7 +302,7 @@ export class    GameUpdateService {
         })).get(gameId);
         selectionData = gameSelection.data;
         await this.prepareClients(gameId, gameType, players, selectionData);
-        if (gameType === 0)
+        if (gameType === "classic")
             this.scheduleClassicMatchStart(gameId);
     }
 
@@ -327,8 +322,10 @@ export class    GameUpdateService {
         if (this.games.get(gameId) != undefined)
             this.games.delete(gameId);
         game = this.createGame(gameId, gameSelectionData);
-        this.socketHelper.emitToRoom(this.server, gameId,
-                                        "startMatch", game.clientStartData());
+        this.socketHelper.emitToRoom(
+            gameId, "startMatch",
+            game.clientStartData()
+        );
         this.pointTransition(game, gameId);
         this.manageUpdateInterval();
     }
