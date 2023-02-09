@@ -28,48 +28,81 @@ describe('/room (e2e)', () => {
     });
 
     describe('[ PUT /room/:room_id/owner/:owner_id ]', () => {
-        it('[ change owner of no room ]', () => {
-
+        it('[ Change owner of no room ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change no owner of room ]', () => {
-
+        it('[ Change no owner of room ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, no permissions ]', () => {
-
+        it('[ Change owner of room, no permissions ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner to same owner ]', () => {
-
+        it('[ Change owner to same owner ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, owner ]', () => {
-
+        it('[ Change owner of room, owner ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, admin ]', () => {
-
+        it('[ Change owner of room, admin ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, remove user ]', () => {
-
+        it('[ Change owner of room, remove user ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, owner exits ]', () => {
-
+        it('[ Change owner of room, owner exits ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, user not in room ]', () => {
-
+        it('[ Change owner of room, user not in room ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, user is banned in room ]', () => {
-
+        it('[ Change owner of room, user is banned in room ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
-        it('[ change owner of room, user is banned from app ]', () => {
-
+        it('[ Change owner of room, user is banned from app ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
         });
 
     });
