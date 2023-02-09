@@ -518,10 +518,9 @@ export class UserController {
 
     @Delete('me/blocked/:id')
     public async unblockFriend(
-        @Req() req: IRequestUser,
+        @UserCreds() username: string,
         @Param('id', ParseIntPipe) id: number
-    ): Promise<UpdateResult> {
-        const username = req.user.data.username;
+    ): Promise<UpdateResult>/* no */ {
         if (username == null) {
             this.userLogger.error(`Request user is not logged in`);
             throw new HttpException('user not logged in', HttpStatus.UNAUTHORIZED);

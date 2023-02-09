@@ -15,11 +15,11 @@ import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 import { RolesRepository } from "src/roles/repository/roles.repository";
 import { RolesEntity } from "src/roles/entity/roles.entity";
-import {moduleConfig} from "./utils/test.utils";
+import {genRoomRolesQuery, genUserRolesQuery, getCredentials, moduleConfig} from "./utils/test.utils";
 
 const rooms = ['testingRoom_1', 'testingRoom_2', 'testingRoom_3'];
 const users = ['testingUser_1', 'testingUser_2', 'testingUser_3'];
-enum roles_idx { RI_PRIVATE, RI_OFFICIAL };
+enum roles { PRIVATE, OFFICIAL };
 
 const rooms_id = [1,2,3];
 const users_id = [1,2,3,4];
@@ -32,21 +32,9 @@ const BAD_ROOM_ROLE_ID = 27;
 const MY_USER_ID = 1;
 const MY_ROOM_ID = 1;
 
-export const createRoomRoleQuery = queryParams => queryParams.map(
-        qp => `INSERT INTO room_roles (roomId,roleId,password) VALUES  (${qp.roomId},${qp.roleId},null);`
-    ).reduce(qTotal, q => qTotal + q, '');
-
 describe('/room_roles (e2e)', () => {
     let app: INestApplication;
     let authToken: string = "";
-    let userCreds = {
-        'username': 'testUser',
-        'firstName': 'firstName',
-        'lastName': 'lastName',
-        'profileUrl': '(nil)',
-        'email': '(nil)',
-        'photoUrl': '(nil)'
-    }
 
     let userRep: UserRepository;
     let roomRep: RoomRepository;
@@ -65,14 +53,15 @@ describe('/room_roles (e2e)', () => {
         app = testModule.createNestApplication();
         await app.init()
 
-        const res = await request(app.getHttpServer())
-            .post('/auth/generate')
-            .send({ 
-                'userProfile': userCreds, 
-                'app_id': process.env.FORTYTWO_APP_ID, 
-                'app_secret': process.env.FORTYTWO_APP_SECRET
-            });
-        authToken = res.body.authToken;
+        //const res = await request(app.getHttpServer())
+        //    .post('/auth/generate')
+        //    .send({
+        //        'userProfile': userCreds,
+        //        'app_id': process.env.FORTYTWO_APP_ID,
+        //        'app_secret': process.env.FORTYTWO_APP_SECRET
+        //    });
+        //authToken = res.body.authToken;
+        authToken = await getCredentials(app);
         userRep = testModule.get<Repository<UserEntity>>('UserRepository');
         roomRep = testModule.get<Repository<RoomEntity>>('RoomRepository');
         rolesRep = testModule.get<Repository<RolesEntity>>('RolesRepository');
@@ -92,8 +81,8 @@ describe('/room_roles (e2e)', () => {
 
     afterAll(async () => {
         console.log('you\'re my wonderwaaaaaall');
-        await userRep.query('DELETE FROM user;');
-        await roomRep.query('DELETE FROM room;');
+        await userRep.clear()
+        await roomRep.clear()
         await app.close();
     });
 
@@ -102,7 +91,7 @@ describe('/room_roles (e2e)', () => {
     })
 
     afterEach(async () => {
-        roomRolesRep.query('DELETE FROM room_roles;');
+        await roomRolesRep.clear()
     })
 
     describe('[ GET /room_roles ]', () => {
@@ -162,7 +151,7 @@ describe('/room_roles (e2e)', () => {
         });
 
         it ('[ Should return a room_role (searching an existing room_role ]', async () => {
-            await roomRolesRep.query(queryBuilder({
+            await roomRolesRep.query(genRoomRolesQuery({
                 roomId: rooms_id[0],
                 roleId: roles_id[0],
                 password: null
@@ -206,8 +195,8 @@ describe('/room_roles (e2e)', () => {
 
         it ('[ Should return a list of two roles ]', async () => {
             const room_roles = [ 
-                {roomId:1,roleId:RI_PRIVATE,password:null},
-                {roomId:1,roleId:RI_OFFICIAL,password:null}
+                {roomId:1,roleId:roles.PRIVATE,password:null},
+                {roomId:1,roleId:roles.OFFICIAL,password:null}
             ];
 
             await roomRolesRep.query(genRoomRolesQuery(room_roles));
@@ -238,21 +227,21 @@ describe('/room_roles (e2e)', () => {
         it ('[ Post an "official" role while not being an admin ]', () => {
            return (app.getHttpServer())
                .post('/room_roles')
-               .send({roomId: rooms_id[0], roleId: roles_id[RI_OFFICIAL]})
+               .send({roomId: rooms_id[0], roleId: roles_id[roles.OFFICIAL]})
                .expect(res => res.statusCode = 403);
         });
 
         it ('[ Post a "private" role while not being an owner ]', () => {
             return (app.getHttpServer())
                 .post('/room_roles')
-                .send({roomId: rooms_id[0], roleId: roles_id[RI_PRIVATE]})
+                .send({roomId: rooms_id[0], roleId: roles_id[roles.PRIVATE]})
                 .expect(res => res.statusCode = 403);
         });
 
         it ('[ Post an "official" role while admin ]', () => {
             const user_roles
             userRolesRep.query(`INSERT INTO user_roles (userId,roleId) \
-            VALUES (${MY_USER_ID},${roles_id[RI_OFFICIAL]})`);
+            VALUES (${MY_USER_ID},${roles_id[roles.OFFICIAL]})`);
             return (app.getHttpServer())
                 .post('/room_roles')
                 .send({roomId: rooms_id[0], roleId: })
@@ -269,9 +258,9 @@ describe('/room_roles (e2e)', () => {
         });
 
         it ('[ Delete an official role while not being an admin ]', () => {
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRep.query(await genRoomRolesQuery({
                 roomId: rooms_id[0],
-                roleId: RI_OFFICIAL,
+                roleId: roles.OFFICIAL,
                 password: null
             }));
             return (app.getHttpServer())
@@ -280,14 +269,14 @@ describe('/room_roles (e2e)', () => {
         });
 
         it ('[ Delete an official role while being an admin ]', () => { 
-            const user_role = { userId: MY_USER_ID, roleId: RI_OFFICIAL };
+            const user_role = { userId: MY_USER_ID, roleId: roles.OFFICIAL };
 
             await roomRolesRep.query(genRoomRolesQuery({
                 roomId: rooms_id[0],
-                roleId: RI_OFFICIAL,
+                roleId: roles.OFFICIAL,
                 password: null
             }));
-            await userRolesRep.query(genUserRolesQuery(user_roles));
+            await userRolesRep.query(genUserRolesQuery(user_role));
             return (app.getHttpServer())
                 .delete(`/room_roles/${BAD_ROOM_ROLE_ID}`)
                 .expect(res => res.statusCode = 204);
@@ -318,7 +307,7 @@ describe('/room_roles (e2e)', () => {
 
             await roomRolesRep.query(genRoomRolesQuery({
                     roomId: room_id,
-                    roleId: RI_PRIVATE,
+                    roleId: roles.PRIVATE,
                     password: '12345',
                 })
             );
@@ -331,9 +320,9 @@ describe('/room_roles (e2e)', () => {
         it ('[ Change password with right creds. being owner ]', () => {
             const roomId = rooms_id[0];
 
-            await roomRolesRep.query(genROomRolesQuery({
+            await roomRolesRep.query(genRoomRolesQuery({
                 roomId: roomId,
-                roleId: RI_PRIVATE,
+                roleId: roles.PRIVATE,
                 password: pwdCreds.oldPassword,
                 })
             );
@@ -347,8 +336,8 @@ describe('/room_roles (e2e)', () => {
             const roomId = rooms_id[1];
 
             await roomRolesRep.query(genRoomRolesQuery({
-                roomId: room_id,
-                roleId: RI_PRIVATE,
+                roomId: roomId,
+                roleId: roles.PRIVATE,
                 password: 'bad_pwd'
             }));
             return (app.getHttpServer())
@@ -361,10 +350,11 @@ describe('/room_roles (e2e)', () => {
             const roomId = rooms_id[1];
 
             await roomRolesRep.query(genRoomRolesQuery({
-                roomId: room_id,
-                roleId: RI_PRIVATE,
-                password:
+                roomId: roomId,
+                roleId: roles.PRIVATE,
+                password: pwdCreds.oldPassword,
             }));
+
             return (app.getHttpServer())
                 .put(`/room_roles/room/${roomId}/update`)
                 .send(pwdCreds)

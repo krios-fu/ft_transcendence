@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query, Req } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Logger,
+    NotFoundException,
+    Param,
+    ParseIntPipe,
+    Post,
+    Query,
+    Req
+} from '@nestjs/common';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -31,8 +45,8 @@ export class UserRoomRolesController {
     public async findRole(@Param('id', ParseIntPipe) id: number): Promise<UserRoomRolesEntity> { 
         const role = await this.userRoomRolesService.getRole(id);
         if (role === null) {
-            this.userRoomRolesLogger.error('No user role in room with id ' + id + ' present in database');
-            throw new HttpException('no role in db', HttpStatus.NOT_FOUND);
+            this.userRoomRolesLogger.error(`No user role in room with id ${id} present in database`);
+            throw new NotFoundException('no role in db');
         }
         return role;
     }
@@ -41,8 +55,8 @@ export class UserRoomRolesController {
     @Get('/rooms/:room_id')
     public async getRolesFromRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<UserRoomRolesEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
-            this.userRoomRolesLogger.error('No room with id ' + roomId + ' present in database');
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            this.userRoomRolesLogger.error(`No room with id ${roomId} present in database`);
+            throw new NotFoundException('no room in db');
         }
         return this.userRoomRolesService.getRolesFromRoom(roomId);
     }
@@ -54,12 +68,12 @@ export class UserRoomRolesController {
         @Param('role_id', ParseIntPipe) roleId: number,
     ): Promise<UserEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
-            this.userRoomRolesLogger.error('No room with id ' + roomId + ' present in database');
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            this.userRoomRolesLogger.error(`No room with id ${roomId} present in database`);
+            throw new NotFoundException('no room in db');
         }
         if (await this.rolesService.findOne(roleId) === null) {
-            this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
-            throw new HttpException('no role in db', HttpStatus.NOT_FOUND);
+            this.userRoomRolesLogger.error(`No role with id ${roleId} present in database`);
+            throw new NotFoundException('no role in db');
         }
         return await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
     }

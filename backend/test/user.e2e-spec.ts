@@ -1,51 +1,135 @@
+import {INestApplication} from "@nestjs/common";
+import {Test, TestingModule} from "@nestjs/testing";
+import {TypeOrmModule} from "@nestjs/typeorm";
+import {moduleConfig} from "./utils/test.utils";
+import {UserModule} from "../src/user/user.module";
+import {AuthModule} from "../src/auth/auth.module";
+import {UserRepository} from "../src/user/repositories/user.repository";
+
+let app: INestApplication;
+let authToken: string = '';
+let userRepository: UserRepository;
+beforeAll(async () => {
+    const tModule: TestingModule = await Test.createTestingModule({
+            imports: [
+                TypeOrmModule.forRoot(moduleConfig),
+                AuthModule,
+                UserModule,
+            ],
+        }).compile();
+    app = tModule.createNestApplication();
+    await app.init();
+});
 
 describe('/user (e2e)', () => {
     describe ('[ GET /user ]', () => {
-        // get no users
-        // get list of users
+        it('[ get no users]', () => {
+
+        });
+
+        it('[ get list of users]', () => {
+
+        });
+
     });
 
     describe ('[ GET /user/me ]', () => {
-        // get me
+        it('[ get me]', () => {
+
+        });
+
     });
 
     describe ('[ GET /user/:id ]', () => {
-        // get no user
-        // get user
-        // get user blocked
-        // get user blocking
+        it('[ get no user]', () => {
+
+        });
+
+        it('[ get user]', () => {
+
+        });
+
+        it('[ get user blocked]', () => {
+
+        });
+
+        it('[ get user blocking]', () => {
+
+        });
+
     });
 
     describe ('[ GET /user/:username ]', () => {
-        // get no user
-        // get user
-        // get user blocked
-        // get user blocking
+        it('[ Get no user ]', () => {
+
+        });
+
+        it('[ Get user ]', () => {
+
+        });
+
+        it('[ Get user blocked ]', () => {
+
+        });
+
+        it('[ Get user blocking ]', () => {
+
+        });
     });
 
     describe ('[ POST /user ]', () => {
-        // create user not being admin
-        // create user, malformed dtos
-        // create user
+        it('[ create user not being admin ]', () => {
+
+        });
+
+        it('[ create user, malformed dtos ]', () => {
+
+        });
+
+        it('[ create user ]', () => {
+
+        });
+
     });
 
     describe ('[ PATCH /user/:id ]', () => {
-        // edit user not being me or admin
-        // edit user being admin
-        // edit my user
+        it('[ edit user not being me or admin ]', () => {
+
+        });
+
+        it('[ edit user being admin ]', () => {
+
+        });
+
+        it('[ edit my user ]', () => {
+
+        });
+
     });
 
     describe ('[ PATCH /user/me ]', () => {
-        // edit my user, update dto
+        it('[ edit my user, update dto ]', () => {
+
+        });
+
     });
 
     describe ('[ PATCH /user/me/settings ]', () => {
-        // edit my user, settings dto
+        it('[ edit my user, settings dto ]', () => {
+
+        });
+
     });
 
     describe ('[ POST /user/me/avatar ]', () => {
-        // upload avatar, bad file
-        // upload avatar
+        it('[ upload avatar, bad file ]', () => {
+
+        });
+
+        it('[ upload avatar ]', () => {
+
+        });
+
     });
 
     describe ('[ POST /user/:id/avatar ]', () => {
@@ -69,90 +153,237 @@ describe('/user (e2e)', () => {
     });
 
     describe('[ DEL /user/:id ]', () => {
-        // delete user, not admin or me
-        // delete user, admin
-        // delete user, me
-        // delete user, no user
-        // delete banned user, check ban
-        // delete user with roles, check user_roles
-        // delete user with roles in room, check roles in room
-        // delete user in rooms, check user_rooms
-        // delete user with achievements, check user_achievements
+        it('[ delete user, not admin or me ]', () => {
+
+        });
+
+        it('[ Delete user, admin ]', () => {
+
+        });
+
+        it('[ Delete user, me ]', () => {
+
+        });
+
+        it('[ Delete user, no user ]', () => {
+
+        });
+
+        it('[ Delete banned user, check ban ]', () => {
+
+        });
+
+        it('[ Delete user with roles, check user_roles ]', () => {
+
+        });
+
+        it('[ Delete user with roles in room, check roles in room ]', () => {
+
+        });
+
+        it('[ Delete user in rooms, check user_rooms ]', () => {
+
+        });
+
+        it('[ Delete user with achievements, check user_achievements ]', () => {
+
+        });
+
+        it('[ Kill yourself ]', () => {
+
+        });
     });
 
     describe('[ GET /user/me/chats ]', () => {
-        // get user chats, no chats
-        // get user chats
+        it('[ Get user chats, no chats ]', () => {
+
+        });
+
+        it('[ Get user chats ]', () => {
+
+        });
+
     });
 
     describe('[ GET /user/me/chat/:nick_friend ]', () => {
-        // get user friend, no friend as user
-        // get user friend, user but no friend
-        // get user friend
+        it('[ Get user friend, no friend as user ]', () => {
+
+        });
+
+        it('[ Get user friend, user but no friend ]', () => {
+
+        });
+
+        it('[ Get user friend ]', () => {
+
+        });
+
     });
 
     describe ('[ POST /user/me/chat ]', () => {
-        // post chat, no user
-        // post chat
+        it('[ post chat, no user ]', () => {
+
+        });
+
+        it('[ post chat ]', () => {
+
+        });
+
     });
 
     describe ('[ GET /user/me/friends ]', () => {
-        // get friends, no friends
-        // get friends, many friends
+        it('[ get friends, no friends ]', () => {
+
+        });
+
+        it('[ get friends, many friends ]', () => {
+
+        });
     });
 
     describe ('[ GET /user/me/friends/as_pending ]', () => {
-        // get pending friends, nothing pending
-        // get pending friends
+        it('[ get pending friends, nothing pending ]', () => {
+
+        });
+
+        it('[ get pending friends ]', () => {
+
+        });
     });
 
     describe ('[ GET  /user/me/friends/:friend_id ]', () => {
-        // get one friend, no user
-        // get one friend, no friend
-        // get one friend
+        it('[ get one friend, no user ]', () => {
+
+        });
+
+        it('[ get one friend, no friend ]', () => {
+
+        });
+
+        it('[ get one friend ]', () => {
+
+        });
     });
 
     describe ('[ POST /user/me/friends ]', () => {
-        // add new friend, no user
-        // add new friend, you are blocked
-        // add new friend, you blocked them
-        // add new friend, banned user
-        // add new friend, already friends
-        // add new friend
+        it('[ add new friend, no user ]', () => {
+
+        });
+
+        it('[ add new friend, you are blocked ]', () => {
+
+        });
+
+        it('[ add new friend, you blocked them ]', () => {
+
+        });
+
+        it('[ add new friend, banned user ]', () => {
+
+        });
+
+        it('[ add new friend, already friends ]', () => {
+
+        });
+
+        it('[ add new friend ]', () => {
+
+        });
+
     });
 
     describe ('[ PATCH /user/me/friends/:friend_id/accept ]', () => {
-        // accept friend, no user
-        // accept friend, no friend
-        // accept friend, friendship not pending
-        // accept friend, friend blocked
-        // accept friend, user blocked
-        // accept friend, friend banned
-        // accept friend
+        it('[ accept friend, no user ]', () => {
+
+        });
+
+        it('[ accept friend, no friend ]', () => {
+
+        });
+
+        it('[ accept friend, friendship not pending ]', () => {
+
+        });
+
+        it('[ accept friend, friend blocked ]', () => {
+
+        });
+
+        it('[ accept friend, user blocked ]', () => {
+
+        });
+
+        it('[ accept friend, friend banned ]', () => {
+
+        });
+
+        it('[ accept friend ]', () => {
+
+        });
+
     });
 
     describe ('[ PATCH /user/me/friends/:friend_id/refuse ]', () => {
-        // refuse friend, no user
-        // refuse friend, no friend
-        // refuse friend, not pending
-        // refuse friend, user blocked
-        // refuse friend, friend blocked
-        // refuse friend, friend banned
-        // refuse friend
+        it('[ refuse friend, no user] ', () => {
+
+        });
+
+        it('[ refuse friend, no friend] ', () => {
+
+        });
+
+        it('[ refuse friend, not pending] ', () => {
+
+        });
+
+        it('[ refuse friend, user blocked] ', () => {
+
+        });
+
+        it('[ refuse friend, friend blocked] ', () => {
+
+        });
+
+        it('[ refuse friend, friend banned] ', () => {
+
+        });
+
+        it('[ refuse friend] ', () => {
+
+        });
     });
 
     describe ('[ GET /user/me/blocked ]', () => {
-        // get blocked, no blocked
-        // get blocked, many blocked
+        it('[ get blocked, no blocked] ', () => {
+
+        });
+
+        it('[ get blocked, many blocked] ', () => {
+
+        });
     });
 
     describe ('[ POST /user/me/blocked ]', () => {
-        // post blocked, no user
-        // post blocked
-        // post blocked, another state (friend, pending)
+        it('[ post blocked, no user] ', () => {
+
+        });
+
+        it('[ post blocked] ', () => {
+
+        });
+
+        it('[ post blocked, another state (friend, pending)] ', () => {
+
+        });
     });
 
     describe ('[ DEL /user/me/blocked/:id ]', () => {
+        it('[ delete blocked relation, no relation ]', () => {
 
+        });
+
+        it('[ delete blocked relation ]', () => {
+
+        });
     });
 });
