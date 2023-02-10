@@ -1,6 +1,17 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { AchievementsService } from 'src/achievements/achievements.service';
-import { UserService } from 'src/user/services/user.service';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpException,
+    HttpStatus,
+    Logger,
+    Param,
+    ParseIntPipe,
+    Post
+} from '@nestjs/common';
+import { AchievementsService } from '../achievements/achievements.service';
+import { UserService } from '../user/services/user.service';
 import { AchievementsUserService } from './achievements_user.service';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';

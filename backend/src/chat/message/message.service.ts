@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '../../user/services/user.service';
 import { ChatService } from '../chat.service';
 import { MessageEntity } from '../entities/message.entity';
 import { MessageRepository } from '../repository/message.repository';
@@ -13,9 +13,7 @@ export class MessageService {
 		private userService : UserService,
 		private chatService : ChatService
 	)
-	{
-		console.log('message repo start')
-	}
+	{ }
 
 	async findMessages(): Promise<MessageEntity[]>{
 		return await this.messageRepository.find()

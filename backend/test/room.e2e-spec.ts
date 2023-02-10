@@ -13,91 +13,234 @@ beforeAll(() => {
 
 describe('/room (e2e)', () => {
     describe('[ GET /room ]', () => {
-        // get no room
-        // get multiple rooms
+        it('[ Get no room ]', () => {
+            return (app.getHttpServer())
+                .get('/room')
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ Get multiple rooms ]', () => {
+            return (app.getHttpServer())
+                .get('/room')
+                .expect(res => res.statusCode = 8989);
+        });
     });
 
     describe('[ GET /room/:room_id ]', () => {
-        // get no room
-        // get a room
+        it('[ Get non-existent room ]', () => {
+            return (app.getHttpServer())
+                .get(`/room/${room_id}`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ Get a room ]', () => {
+            /* DB_FEED: one room */
+            return (app.getHttpServer())
+                .get(`/room/${room_id}`)
+                .expect(res => res.statusCode = 8989);
+        });
+
     });
 
     describe('[ GET /room/:room_id/owner ]', () => {
-        // get owner of no room
-        // get owner of room
+        it('[ Get owner of no room ]', () => {
+        return (app.getHttpServer())
+            .get()
+            .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ Get owner of room ]', () => {
+        return (app.getHttpServer())
+            .get()
+            .expect(res => res.statusCode = 8989);
+        });
+
     });
 
     describe('[ PUT /room/:room_id/owner/:owner_id ]', () => {
-        it('[ change owner of no room ]', () => {
-
+        it('[ Change owner of no room ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change no owner of room ]', () => {
-
+        it('[ Change no owner of room ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change owner of room, no permissions ]', () => {
-
+        it('[ Change owner of room, no permissions ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change owner to same owner ]', () => {
-
+        it('[ Change owner to same owner ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change owner of room, owner ]', () => {
-
+        it('[ Change owner of room, owner ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change owner of room, admin ]', () => {
-
+        it('[ Change owner of room, admin ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change owner of room, remove user ]', () => {
-
+        it('[ Change owner of room, remove user ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
-        it('[ change owner of room, owner exits ]', () => {
-
+        it('[ Change owner of room, owner exits ]', () => {
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
         it('[ change owner of room, user not in room ]', () => {
-
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
         it('[ change owner of room, user is banned in room ]', () => {
-
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
         it('[ change owner of room, user is banned from app ]', () => {
-
+            return (app.getHttpServer())
+                .put(`/room/${room_id}/owner/${owner_id}`)
+                .data(/* data goes here */)
+                .expect(res => res.statusCode = 8989);
         });
 
     });
 
     describe('[ POST /room ]', () => {
-        // create room while banned
-        // create room
+        it('[ create room while banned ]', () => {
+            return (app.getHttpServer())
+                .post('/room')
+                .data()
+                .expect();
+        });
+
+        it('[ Create a room ]', () => {
+            return (app.getHttpServer())
+                .post('/room')
+                .data()
+                .expect();
+        });
+
     });
 
     describe('[ DEL /room/:room_id ]', () => {
-        // remove no room
-        // remove room not being owner or admin
-        // remove room being admin
-        // remove room being owner, check user_room removal
+        it('[ remove no room ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ remove room not being owner or admin ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ remove room being admin ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ remove room being owner, check user_room removal ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}`)
+                .expect(res => res.statusCode = 8989);
+        });
+
     });
 
     describe('[ POST /room/:room_id/avatar ]', () => {
-        // post avatar to no room
-        // post avatar, not owner or admin
-        // post avatar, no file
-        // post avatar, bad file
-        // post avatar, owner
+        it('[ post avatar to no room ]', () => {
+            return (app.getHttpServer())
+                .post(`/room/${room_id}/avatar`)
+                .data()
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ post avatar, not owner or admin ]', () => {
+            return (app.getHttpServer())
+                .post(`/room/${room_id}/avatar`)
+                .data()
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ post avatar, no file ]', () => {
+            return (app.getHttpServer())
+                .post(`/room/${room_id}/avatar`)
+                .data()
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ post avatar, bad file ]', () => {
+            return (app.getHttpServer())
+                .post(`/room/${room_id}/avatar`)
+                .data()
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ post avatar, owner ]', () => {
+            return (app.getHttpServer())
+                .post(`/room/${room_id}/avatar`)
+                .data()
+                .expect(res => res.statusCode = 8989);
+        });
     });
 
     describe('[ DEL /room/:room_id/avatar ]', () => {
-        // delete avatar, no room
-        // delete avatar, no avatar
-        // delete avatar, not owner or admin
-        // delete avatar
+        it('[ delete avatar, no room ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}/avatar`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ delete avatar, no avatar ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}/avatar`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ delete avatar, not owner or admin ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}/avatar`)
+                .expect(res => res.statusCode = 8989);
+        });
+
+        it('[ delete avatar ]', () => {
+            return (app.getHttpServer())
+                .delete(`/room/${room_id}/avatar`)
+                .expect(res => res.statusCode = 8989);
+        });
     });
 });

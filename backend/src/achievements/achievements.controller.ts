@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
-import { SiteAdminGuard } from 'src/user_roles/guard/site-admin.guard';
+import { SiteAdminGuard } from '../user_roles/guard/site-admin.guard';
 import { AchievementsService } from './achievements.service';
 import { CreateAchievementDto } from './dto/achievement.dto';
 import { AchievementEntity } from './entity/achievement.entity';

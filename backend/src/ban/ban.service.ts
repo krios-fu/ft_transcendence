@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { RoomEntity } from 'src/room/entity/room.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { QueryMapper } from '../common/mappers/query.mapper';
+import { RoomEntity } from '../room/entity/room.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';

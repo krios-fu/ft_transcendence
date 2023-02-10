@@ -16,6 +16,24 @@ import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 import { RolesRepository } from "src/roles/repository/roles.repository";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import {genRoomRolesQuery, genUserRolesQuery, getCredentials, moduleConfig} from "./utils/test.utils";
+import {UserModule} from "../src/user/user.module";
+import {ChatModule} from "../src/chat/chat.module";
+import {MulterModule} from "@nestjs/platform-express";
+import {ServeStaticModule} from "@nestjs/serve-static";
+import {join} from "path";
+import {RolesModule} from "../src/roles/roles.module";
+import {RoomModule} from "../src/room/room.module";
+import {UserRoomModule} from "../src/user_room/user_room.module";
+import {UserRolesModule} from "../src/user_roles/user_roles.module";
+import {UserRoomRolesModule} from "../src/user_room_roles/user_room_roles.module";
+import {BanModule} from "../src/ban/ban.module";
+import {AchievementsModule} from "../src/achievements/achievements.module";
+import {AchievementsUserModule} from "../src/achievements_user/achievements_user.module";
+import {MatchModule} from "../src/match/match.module";
+import {WinnerModule} from "../src/match/winner/winner.module";
+import {LoserModule} from "../src/match/loser/loser.module";
+import {GameModule} from "../src/game/game.module";
+import {UserService} from "../src/user/services/user.service";
 
 const rooms = ['testingRoom_1', 'testingRoom_2', 'testingRoom_3'];
 const users = ['testingUser_1', 'testingUser_2', 'testingUser_3'];
@@ -34,23 +52,44 @@ const MY_ROOM_ID = 1;
 
 describe('/room_roles (e2e)', () => {
     let app: INestApplication;
+    let moduleRef: TestingModule;
     let authToken: string = "";
 
-    let userRep: UserRepository;
-    let roomRep: RoomRepository;
-    let rolesRep: RolesRepository;
-    let roomRolesRep: RoomRolesRepository;
-    let userRolesRep: UserRolesRepository;
+    let userRepository: UserRepository;
+    let roomRepository: RoomRepository;
+    let rolesRepository: RolesRepository;
+    let roomRolesRepository: RoomRolesRepository;
+    let userRolesRepository: UserRolesRepository;
 
     beforeAll(async () => {
-        const testModule: TestingModule = await Test.createTestingModule({
+        moduleRef = await Test.createTestingModule({
             imports: [
                 TypeOrmModule.forRoot(moduleConfig),
+                UserModule,
                 AuthModule,
+                ChatModule,
+                MulterModule.register({
+                    dest: './public',
+                }),
+                ServeStaticModule.forRoot({
+                    rootPath: join(__dirname, '..', 'public'),
+                }),
+                RolesModule,
+                RoomModule,
+                UserRoomModule,
+                UserRolesModule,
+                UserRoomRolesModule,
+                BanModule,
                 RoomRolesModule,
+                AchievementsModule,
+                AchievementsUserModule,
+                MatchModule,
+                WinnerModule,
+                LoserModule,
+                GameModule
             ],
         }).compile()
-        app = testModule.createNestApplication();
+        app = moduleRef.createNestApplication();
         await app.init()
 
         //const res = await request(app.getHttpServer())
@@ -61,28 +100,36 @@ describe('/room_roles (e2e)', () => {
         //        'app_secret': process.env.FORTYTWO_APP_SECRET
         //    });
         //authToken = res.body.authToken;
+        let userService: UserService = moduleRef.get('UserService');
+        userService.tmp();
+
         authToken = await getCredentials(app);
-        userRep = testModule.get<Repository<UserEntity>>('UserRepository');
-        roomRep = testModule.get<Repository<RoomEntity>>('RoomRepository');
-        rolesRep = testModule.get<Repository<RolesEntity>>('RolesRepository');
-        roomRolesRep = testModule.get<Repository<RoomRolesEntity>>('RoomRolesRepository');
-        userRolesRep = testModule.get<Repository<UserRolesEntity>>('UserRolesRepository');
+
+        console.log(`Token: ${authToken}`);
+        roomRolesRepository = moduleRef.get<RoomRolesRepository>('RoomRolesRepository', { strict: false });
+        userRepository = moduleRef.get<UserRepository>('UserRepository');
+        roomRepository = moduleRef.get<RoomRepository>('RoomRepository');
+        rolesRepository = moduleRef.get<RolesRepository>('RolesRepository');
+        userRolesRepository = moduleRef.get<UserRolesRepository>('UserRolesRepository');
+
+
 
         /* USERS & ROOM db seeding */
         for (let i = 0; i < users.length; i++) {
-            await userRep.query(`INSERT INTO user (username,firstName,lastName,profileUrl,email,photoUrl) \
+            await userRepository.query(`INSERT INTO user (username,firstName,lastName,profileUrl,email,photoUrl) \
                 VALUES (${users[i]},${users[i]}Fn,${users[i]}Ln,${users[i]}Pu,${users[i]}e,${users[i]}Pu);`);
-            await roomRep.query( `INSERT INTO room (roomName,ownerId,photoUrl) \
+            await roomRepository.query( `INSERT INTO room (roomName,ownerId,photoUrl) \
                 VALUES (${rooms[i]},${i},${rooms[i]}Pu);` );
         }
-        rolesRep.query('INSERT INTO roles (role) \
-            VALUES (')
+        //await rolesRepository.query('INSERT INTO roles (role) \
+        //    VALUES (')
     });
 
     afterAll(async () => {
         console.log('you\'re my wonderwaaaaaall');
-        await userRep.clear()
-        await roomRep.clear()
+        await userRepository.clear();
+        await roomRepository.clear();
+        await rolesRepository.clear();
         await app.close();
     });
 
@@ -91,7 +138,7 @@ describe('/room_roles (e2e)', () => {
     })
 
     afterEach(async () => {
-        await roomRolesRep.clear()
+        await roomRolesRepository.clear()
     })
 
     describe('[ GET /room_roles ]', () => {
@@ -107,7 +154,7 @@ describe('/room_roles (e2e)', () => {
         
         it ('[ Should return a list of one element (db seeded with one room_role) ]', async () => {
             const room_roles = { roomId: rooms_id[0], roleId: roles_id[0], password: null };
-            await roomRolesRep.query(genRoomRolesQuery(room_roles));
+            await roomRolesRepository.query(genRoomRolesQuery(room_roles));
 
             return request(app.getHttpServer())
                 .get('/room_roles')
@@ -132,7 +179,7 @@ describe('/room_roles (e2e)', () => {
 
             //console.log(`[DEBUG] query result: ${query}`);
 
-            await roomRolesRep.query(genRoomRolesQuery(room_roles));
+            await roomRolesRepository.query(genRoomRolesQuery(room_roles));
             return request(app.getHttpServer())
                 .get('/room_roles')
                 .expect(200)
@@ -151,7 +198,7 @@ describe('/room_roles (e2e)', () => {
         });
 
         it ('[ Should return a room_role (searching an existing room_role ]', async () => {
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRepository.query(genRoomRolesQuery({
                 roomId: rooms_id[0],
                 roleId: roles_id[0],
                 password: null
@@ -183,7 +230,7 @@ describe('/room_roles (e2e)', () => {
 
         it ('[ Should return a list of one role ]', async () => {
             const room_roles = { roomId:1,roleId:1,password:null};
-            await roomRolesRep.query(genRoomRolesQuery(room_roles));
+            await roomRolesRepository.query(genRoomRolesQuery(room_roles));
 
             return request(app.getHttpServer())
                 .get('/room_roles/rooms/1')
@@ -199,7 +246,7 @@ describe('/room_roles (e2e)', () => {
                 {roomId:1,roleId:roles.OFFICIAL,password:null}
             ];
 
-            await roomRolesRep.query(genRoomRolesQuery(room_roles));
+            await roomRolesRepository.query(genRoomRolesQuery(room_roles));
             return request(app.getHttpServer())
             .get('/room_roles/rooms/1')
             .expect((res) => {
@@ -210,55 +257,55 @@ describe('/room_roles (e2e)', () => {
     });
 
     describe('[ POST /room_roles ]', () => {
-        it ('[ Post with a non existing room ]', () => {
+        it ('[ Post with a non existing room ]', async () => {
             return(app.getHttpServer())
                 .post('/room_roles')
                 .send({roomId: BAD_ROOM_ID, roleId: roles_id[0]})
                 .expect(res => res.statusCode = 400);
         })
 
-        it ('[ Post with a non existing role ]', () => {
+        it ('[ Post with a non existing role ]', async () => {
             return (app.getHttpServer())
                 .post('/room_roles')
                 .send({roomId: rooms_id[0], roleId: BAD_ROLE_ID})
                 .expect(res => res.statusCode = 400);
         });
 
-        it ('[ Post an "official" role while not being an admin ]', () => {
+        it ('[ Post an "official" role while not being an admin ]', async () => {
            return (app.getHttpServer())
                .post('/room_roles')
                .send({roomId: rooms_id[0], roleId: roles_id[roles.OFFICIAL]})
                .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Post a "private" role while not being an owner ]', () => {
+        it ('[ Post a "private" role while not being an owner ]', async () => {
             return (app.getHttpServer())
                 .post('/room_roles')
                 .send({roomId: rooms_id[0], roleId: roles_id[roles.PRIVATE]})
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Post an "official" role while admin ]', () => {
-            const user_roles
-            userRolesRep.query(`INSERT INTO user_roles (userId,roleId) \
+        it ('[ Post an "official" role while admin ]', async () => {
+            const user_roles = {};
+            userRolesRepository.query(`INSERT INTO user_roles (userId,roleId) \
             VALUES (${MY_USER_ID},${roles_id[roles.OFFICIAL]})`);
             return (app.getHttpServer())
                 .post('/room_roles')
-                .send({roomId: rooms_id[0], roleId: })
+                .send({roomId: rooms_id[0], roleId: roles.OFFICIAL})
         });
 
-        it ('[ Post a "private" role while being owner ]', () => {});
+        it ('[ Post a "private" role while being owner ]', async () => {});
     });
 
     describe('[ DEL /room_roles/:id ]', () => { 
-        it ('[ Delete a non-existing role in room ]', () => {
+        it ('[ Delete a non-existing role in room ]', async () => {
             return (app.getHttpServer())
                 .delete(`/room_roles/${BAD_ROOM_ROLE_ID}`)
                 .expect(res => res.statusCode = 404);
         });
 
-        it ('[ Delete an official role while not being an admin ]', () => {
-            await roomRolesRep.query(await genRoomRolesQuery({
+        it ('[ Delete an official role while not being an admin ]', async () => {
+            await roomRolesRepository.query(await genRoomRolesQuery({
                 roomId: rooms_id[0],
                 roleId: roles.OFFICIAL,
                 password: null
@@ -268,21 +315,21 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Delete an official role while being an admin ]', () => { 
+        it ('[ Delete an official role while being an admin ]', async () => {
             const user_role = { userId: MY_USER_ID, roleId: roles.OFFICIAL };
 
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRepository.query(genRoomRolesQuery({
                 roomId: rooms_id[0],
                 roleId: roles.OFFICIAL,
                 password: null
             }));
-            await userRolesRep.query(genUserRolesQuery(user_role));
+            await userRolesRepository.query(genUserRolesQuery(user_role));
             return (app.getHttpServer())
                 .delete(`/room_roles/${BAD_ROOM_ROLE_ID}`)
                 .expect(res => res.statusCode = 204);
         });
 
-        it ('[ Delete a private role while not being an owner ]', () => { 
+        it ('[ Delete a private role while not being an owner ]', async () => {
             const NOT_MY_ROOM_ID = rooms_id[1];
 
             return (app.getHttpServer())
@@ -290,7 +337,7 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Delete a private role while being an owner ]', () => { 
+        it ('[ Delete a private role while being an owner ]', async () => {
             return (app.getHttpServer())    
                 .delete(`/room_roles/${MY_ROOM_ID}`)
                 .expect(res => res.statusCode = 204);
@@ -302,10 +349,10 @@ describe('/room_roles (e2e)', () => {
     describe('[ PUT /room_roles/rooms/:id/update ]', () => {
         const pwdCreds = { oldPassword: '1234', newPassword: 'badvadvad!'};
 
-        it ('[ Change password with wrong creds. being owner ]', () => {
+        it ('[ Change password with wrong creds. being owner ]', async () => {
             const room_id = rooms_id[0]
 
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRepository.query(genRoomRolesQuery({
                     roomId: room_id,
                     roleId: roles.PRIVATE,
                     password: '12345',
@@ -317,10 +364,10 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Change password with right creds. being owner ]', () => {
+        it ('[ Change password with right creds. being owner ]', async () => {
             const roomId = rooms_id[0];
 
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRepository.query(genRoomRolesQuery({
                 roomId: roomId,
                 roleId: roles.PRIVATE,
                 password: pwdCreds.oldPassword,
@@ -332,10 +379,10 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 201);
         });
 
-        it ('[ Change password with wrong creds. not being owner ]', ( ) => { 
+        it ('[ Change password with wrong creds. not being owner ]', async () => {
             const roomId = rooms_id[1];
 
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRepository.query(genRoomRolesQuery({
                 roomId: roomId,
                 roleId: roles.PRIVATE,
                 password: 'bad_pwd'
@@ -346,10 +393,10 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Change password with right creds. bot being owner ]', ( ) => {
+        it ('[ Change password with right creds. bot being owner ]', async () => {
             const roomId = rooms_id[1];
 
-            await roomRolesRep.query(genRoomRolesQuery({
+            await roomRolesRepository.query(genRoomRolesQuery({
                 roomId: roomId,
                 roleId: roles.PRIVATE,
                 password: pwdCreds.oldPassword,
@@ -361,7 +408,7 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 403);
         });
 
-        it ('[ Change password of a public room ]', ( ) => { 
+        it ('[ Change password of a public room ]', async () => {
             const roomId = rooms_id[0];
 
             return (app.getHttpServer())
@@ -370,7 +417,7 @@ describe('/room_roles (e2e)', () => {
                 .expect(res => res.statusCode = 400);
         });
 
-        it ('[ Change password of a non-existent room ]', ( ) => {
+        it ('[ Change password of a non-existent room ]', async () => {
             return (app.getHttpServer())
                 .put(`/room_roles/room/${BAD_ROOM_ID}/update`)
                 .send(pwdCreds)

@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { RolesEntity } from "src/roles/entity/roles.entity";
-import { RoomRolesService } from "src/room_roles/room_roles.service";
-import { UserService } from "src/user/services/user.service";
+import { RolesEntity } from "../../roles/entity/roles.entity";
+import { RoomRolesService } from "../../room_roles/room_roles.service";
+import { UserService } from "../../user/services/user.service";
 @Injectable()
 export class IsPrivate implements CanActivate {
     constructor(

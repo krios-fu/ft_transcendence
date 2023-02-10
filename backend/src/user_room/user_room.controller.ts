@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, Logger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
-import { RoomEntity } from 'src/room/entity/room.entity';
-import { UserService } from 'src/user/services/user.service';
-import { RoomService } from 'src/room/room.service';
+import { RoomEntity } from '../room/entity/room.entity';
+import { UserService } from '../user/services/user.service';
+import { RoomService } from '../room/room.service';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
-import { IsPrivate } from 'src/common/guards/is-private.guard';
+import { IsPrivate } from '../common/guards/is-private.guard';
 import { Banned } from './guards/banned.guard';
 
 @Controller('user_room')

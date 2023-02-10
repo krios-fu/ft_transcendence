@@ -13,10 +13,10 @@ import {
     Query,
     Req
 } from '@nestjs/common';
-import { RolesService } from 'src/roles/roles.service';
-import { RoomService } from 'src/room/room.service';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserRoomService } from 'src/user_room/user_room.service';
+import { RolesService } from '../roles/roles.service';
+import { RoomService } from '../room/room.service';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserRoomService } from '../user_room/user_room.service';
 import { CreateUserRoomRolesDto, UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';

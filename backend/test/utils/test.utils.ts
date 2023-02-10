@@ -27,7 +27,7 @@ export const genRoleQuery = roles => {
         .reduce((qTot, q) => qTot + q, '');
 }
 
-export const genUserRolesQuery = async (queryParams) => {
+export const genUserRolesQuery = (queryParams) => {
     return queryParams.map(
         qp => `INSERT INTO user_roles (userId, roomId) VALUES (${qp.userId},${qp.roleId});`
     ).reduce((qTot, q) => qTot + q, '');

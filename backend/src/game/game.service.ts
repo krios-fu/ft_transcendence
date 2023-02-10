@@ -10,7 +10,7 @@ import { UpdateResult } from "typeorm";
 import { IGameResult } from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
-import { Category } from "src/user/enums/user.enum";
+import { Category } from "../user/enums/user.enum";
 
 @Injectable()
 export class    GameService {

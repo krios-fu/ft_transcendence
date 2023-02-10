@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { MessageEntity } from '../entities/message.entity'
 import { MessageService } from './message.service';
 @Controller('message')

@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { RoomEntity } from 'src/room/entity/room.entity';
-import { RoomService } from 'src/room/room.service';
-import { RoomRolesService } from 'src/room_roles/room_roles.service';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/services/user.service';
+import { QueryMapper } from '../common/mappers/query.mapper';
+import { RoomEntity } from '../room/entity/room.entity';
+import { RoomService } from '../room/room.service';
+import { RoomRolesService } from '../room_roles/room_roles.service';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/services/user.service';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
 import { UserRoomEntity } from './entity/user_room.entity';

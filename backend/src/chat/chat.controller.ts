@@ -1,6 +1,6 @@
 import {Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe} from '@nestjs/common';
 import {ChatService} from "./chat.service";
-import {Public} from "src/common/decorators/public.decorator";
+import {Public} from "../common/decorators/public.decorator";
 import {ChatEntity} from "./entities/chat.entity";
 
 @Controller('chat')

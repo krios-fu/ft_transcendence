@@ -1,4 +1,4 @@
-import { UserEntity } from "src/user/entities/user.entity";
+import { UserEntity } from "../../user/entities/user.entity";
 
 export class   WinnerDto {
     user: UserEntity;

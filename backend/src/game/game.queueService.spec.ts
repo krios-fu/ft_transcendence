@@ -4,7 +4,7 @@ import { UserService } from '../user/services/user.service';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../user/entities/user.entity';
 import { GameQueueService } from './game.queueService';
-import { Category } from 'src/user/dto/user.dto';
+import { Category } from '../user/dto/user.dto';
 
 const   mockUsers: UserEntity[] = (() => {
     const   res: UserEntity[] = [
