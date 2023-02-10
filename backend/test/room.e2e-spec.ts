@@ -135,6 +135,27 @@ describe('/room (e2e)', () => {
                 .expect(res => res.statusCode = 8989);
         });
 
+        it('[ Change owner of room, user not in room ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
+        });
+
+        it('[ Change owner of room, user is banned in room ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
+        });
+
+        it('[ Change owner of room, user is banned from app ]', () => {
+            return (app.getHttpServer())
+                .put( `/room/${room_id}/owner/${owner_id}`)
+                .data()
+                .expect()
+        });
+
     });
 
     describe('[ POST /room ]', () => {
