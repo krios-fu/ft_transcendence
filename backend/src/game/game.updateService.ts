@@ -259,32 +259,30 @@ export class    GameUpdateService {
         }, 8000);
     }
 
-    private sendSelectionData(hero: boolean, role: string,
+    private sendSelectionData(role: string,
                                 selectionData: IGameSelectionData,
                                 roomId: string): void {
         this.socketHelper.emitToRoom(this.server, roomId, "newGame", {
-            hero: hero,
             role: role,
             selection: selectionData
         });
     }
 
-    private async prepareClients(gameId: string, gameType: number,
+    private async prepareClients(gameId: string,
                                     players: [UserEntity, UserEntity],
                                     selectionData: IGameSelectionData)
                                     : Promise<void> {
-        let     playerRoom: string;
-        const   gameHero = gameType != 0;
+        let playerRoom: string;
 
         playerRoom = `${gameId}-PlayerA`;
         await this.socketHelper.addUserToRoom(this.server,
                         players[0].username, playerRoom);
-        this.sendSelectionData(gameHero, "PlayerA", selectionData, playerRoom);
+        this.sendSelectionData("PlayerA", selectionData, playerRoom);
         playerRoom = `${gameId}-PlayerB`;
         await this.socketHelper.addUserToRoom(this.server,
                         players[1].username, playerRoom);
-        this.sendSelectionData(gameHero, "PlayerB", selectionData, playerRoom);
-        this.sendSelectionData(gameHero, "Spectator", selectionData, gameId);
+        this.sendSelectionData("PlayerB", selectionData, playerRoom);
+        this.sendSelectionData("Spectator", selectionData, gameId);
 }
 
     private async startGame(gameId: string): Promise<void> {
@@ -304,9 +302,9 @@ export class    GameUpdateService {
             categoryB: players[1].category,
             avatarA: players[0].photoUrl,
             avatarB: players[1].photoUrl
-        })).get(gameId);
+        }, gameType === 1)).get(gameId);
         selectionData = gameSelection.data;
-        await this.prepareClients(gameId, gameType, players, selectionData);
+        await this.prepareClients(gameId, players, selectionData);
         if (gameType === 0)
             this.scheduleClassicMatchStart(gameId);
     }

@@ -26,7 +26,7 @@ export class    EndScene extends BaseScene {
             this.startTimeout = undefined;
             this.result?.destroy();
             this.removeAllSocketListeners();
-            if (data.hero)
+            if (data.selection.heroA != undefined)
                 this.scene.start("MenuHero", data);
             else
                 this.scene.start("Menu", data);
