@@ -55,12 +55,22 @@ export class    MenuHeroRenderer extends MenuRenderer {
             { x: 450, y: 220 },
             { x: 750, y: 220 }
         )).visible = false;
-        (this._heroAImage = scene.add.image(200, 220,
-                                this._heroImages[initData.heroA])).visible = false;
-        (this._heroBImage = scene.add.image(600, 220,
-                                this._heroImages[initData.heroB])).visible = false;
-        (this._stageImage = scene.add.image(400, 300,
-                                this._stageImages[initData.stage])).visible = false;
+        (this._heroAImage = scene.add.image(
+            200, 220,
+            this.initImage(initData.heroA, this._heroImages,
+                this._heroConfirmImages, initData.heroAConfirmed)
+        )).visible = false;
+        (this._heroBImage = scene.add.image(
+            600, 220,
+            this.initImage(initData.heroB, this._heroImages,
+                this._heroConfirmImages, initData.heroBConfirmed)
+        )).visible = false;
+        (this._stageImage = scene.add.image(
+            400, 300,
+            this.initImage(initData.stage, this._stageImages,
+                this._stageConfirmImages,
+                initData.status === SelectionStatus.Finished)
+        )).visible = false;
         if (initData.status === SelectionStatus.Hero)
         {
             this._heroAImage.visible = true;
@@ -73,12 +83,21 @@ export class    MenuHeroRenderer extends MenuRenderer {
             this._playerInfoA.visible = true;
             this._playerInfoB.visible = true;
         }
-        else
+        else if (initData.status === SelectionStatus.Stage)
         {
             this._stageImage.visible = true;
             this.showStageArrows();
         }
+        else if (initData.status === SelectionStatus.Finished)
+            this._stageImage.visible = true;
         this.soundService.play(this._sounds.theme, true);
+    }
+
+    private initImage(index: number, imgs: string[], confirmImgs: string[],
+                        confirmed: boolean): string {
+        return (
+            confirmed ? confirmImgs[index] : imgs[index]
+        );
     }
 
     private changeImage(image: Phaser.GameObjects.Image,
