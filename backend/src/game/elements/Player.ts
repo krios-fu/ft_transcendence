@@ -1,7 +1,8 @@
 import {
     Hero,
     IHeroClientStart,
-    IHeroData
+    IHeroData,
+    IHeroPhysicsData
 } from "./Hero";
 import {
     IPaddleClientStart,
@@ -14,8 +15,6 @@ export interface    IPlayerInit {
     score: number;
     nick: string;
     hero?: Hero; //0: Aquaman, 1: BlackPanther, 2: Superman
-    gameWidth: number;
-    gameHeight: number;
 }
 
 export interface    IPlayerClientStart {
@@ -28,6 +27,12 @@ export interface    IPlayerClientStart {
 export interface    IPlayerData {
     paddleY: number;
     hero?: IHeroData;
+    score: number;
+}
+
+export interface    IPlayerPhysicsData {
+    paddleY: number;
+    hero?: IHeroPhysicsData;
     score: number;
 }
 
@@ -71,20 +76,6 @@ export class    Player {
         this._score = data.score;
         if (this._hero && data.hero)
             this._hero.mimic(data.hero);
-    }
-
-    updatePaddle(up: boolean, gameHeight: number): void {
-        this._paddle.update(up, gameHeight);
-    }
-
-    processHeroInvocation(up: boolean): void {
-        if (this._hero)
-            this._hero.invocation(up);
-    }
-
-    updateHero(seconds: number): void {
-        if (this._hero)
-            this._hero.update(seconds);
     }
 
     data(): IPlayerData {

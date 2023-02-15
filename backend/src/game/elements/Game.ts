@@ -1,6 +1,7 @@
 import {
     IPlayerClientStart,
     IPlayerData,
+    IPlayerPhysicsData,
     Player
 } from './Player'
 import {
@@ -16,6 +17,13 @@ import { HeroCreator } from './HeroCreator';
 import { GameReconciliationService } from '../game.reconciliation.service';
 import { GameBuffer } from './GameBuffer';
 import { GameUpdateService } from '../game.updateService';
+import { GameSnapshotService } from '../game.snapshot.service';
+import {
+    IHeroData,
+    IHeroPhysicsData
+} from './Hero';
+import { sortedIndexBy } from "lodash";
+import { gameMeasures } from '../utils/gameMeasures';
 
 export enum GameState {
     Running,
@@ -41,6 +49,13 @@ export interface    IInputData {
 export interface    IGameData {
     playerA: IPlayerData;
     playerB: IPlayerData;
+    ball: IBallData;
+    when: number;
+}
+
+export interface    IGamePhysicsData {
+    playerA: IPlayerPhysicsData;
+    playerB: IPlayerPhysicsData;
     ball: IBallData;
     when: number;
 }
@@ -76,47 +91,44 @@ export class   Game {
 
     constructor (
         gameSelection: IGameSelectionData,
-        private readonly reconciliator: GameReconciliationService
+        private readonly reconciliator: GameReconciliationService,
+        private readonly snapshotService: GameSnapshotService
     ) {
         let heroCreator: HeroCreator;
 
-        this._width = 800;
-        this._height = 600;
+        this._width = gameMeasures.gameWidth;
+        this._height = gameMeasures.gameHeight;
         heroCreator = new HeroCreator(this._width, this._height);
         this._playerA = new Player({
             paddle: {
-                width: 10,
-                height: 50,
-                xPos: 50,
-                yPos: 300,
+                width: gameMeasures.paddleWidth,
+                height: gameMeasures.paddleHeight,
+                xPos: gameMeasures.aPaddleX,
+                yPos: gameMeasures.gameHeight / 2,
                 side: 0
             },
             hero: gameSelection.heroAConfirmed
                     ? heroCreator.create(gameSelection.heroA, 0) : undefined,
             score: 0,
-            nick: gameSelection.nickPlayerA,
-            gameWidth: this._width,
-            gameHeight: this._height
+            nick: gameSelection.nickPlayerA
         });
         this._playerB = new Player({
             paddle: {
-                width: 10,
-                height: 50,
-                xPos: 750,
-                yPos: 300,
+                width: gameMeasures.paddleWidth,
+                height: gameMeasures.paddleHeight,
+                xPos: gameMeasures.bPaddleX,
+                yPos: gameMeasures.gameHeight / 2,
                 side: 1
             },
             hero: gameSelection.heroBConfirmed
                     ? heroCreator.create(gameSelection.heroB, 1) : undefined,
             score: 0,
-            nick: gameSelection.nickPlayerB,
-            gameWidth: this._width,
-            gameHeight: this._height
+            nick: gameSelection.nickPlayerB
         });
         this._ball = new Ball({
-            radius: 5,
-            xPos: 395,
-            yPos: 295,
+            radius: gameMeasures.ballRadius,
+            xPos: (this._width / 2) - gameMeasures.ballRadius,
+            yPos: (this._height / 2) - gameMeasures.ballRadius,
             xVel: 0,
             yVel: 0
         });
@@ -191,59 +203,6 @@ export class   Game {
         });
     }
 
-    private deltaTime(currentTime: number): number {
-        return ((currentTime - this._lastUpdate) / 1000);
-    }
-
-    private checkBorderCollision(ballXDisplacement: number,
-                                    ballYDisplacement: number): number {
-        let border: number;
-
-        border = this._ball.checkBorderCollision(ballXDisplacement,
-                    ballYDisplacement, this._width, this._height);
-        if (border === 0)
-            this._playerB.score += 1;
-        else if (border === 2)
-            this._playerA.score += 1;
-        return (border);
-    }
-
-    private ballUpdate(secondsElapsed: number): boolean {
-        const   ballXDisplacement: number =
-                    this._ball.displacement('x', secondsElapsed);
-        const   ballYDisplacement: number =
-                    this._ball.displacement('y', secondsElapsed);
-        let     border: number;
-    
-        if (this._playerA.hero)
-        {
-            if (this._ball.checkHeroCollision(this._playerA.hero,
-                                                secondsElapsed))
-                return (false);
-            if (this._ball.checkHeroCollision(this._playerB.hero,
-                                                secondsElapsed))
-                return (false);
-        }
-        if (this._ball.checkPaddleCollision(
-                this._playerA.paddle, this._playerB.paddle,
-                ballXDisplacement, ballYDisplacement))
-            return (false);
-        else
-        {
-            border = this.checkBorderCollision(ballXDisplacement,
-                                                ballYDisplacement);
-            if (border >= 0 && border < 4)
-            {
-                if (border === 0 || border === 2)
-                    return (true);
-                return (false);
-            }
-            else
-                this._ball.move(ballXDisplacement, ballYDisplacement);
-        }
-        return (false);
-    }
-
     addInput(data: IInputData): void {
         this._input.push(data);
     }
@@ -255,93 +214,114 @@ export class   Game {
         this._lastUpdate = data.when;
     }
 
-    private applyInput(input: IInputData[]): void {
-        input.forEach(elem => {
-            if (elem.paddle)
-            {
-                if (elem.playerA)
-                    this._playerA.updatePaddle(elem.up, this._height);
-                else
-                    this._playerB.updatePaddle(elem.up, this._height);
-            }
-            else
-            {//Just marks corresponding hero sprite as active
-                if (elem.playerA)
-                    this._playerA.processHeroInvocation(elem.up);
-                else
-                    this._playerB.processHeroInvocation(elem.up);
-            }
-        });
-    }
-
-    private updateWorld(targetTime: number): void {
-        const   secondsElapsed: number = this.deltaTime(targetTime);
-    
-        if (this.ballUpdate(secondsElapsed))
-            this._pointTransition = true;
-        if (this._playerA.hero)
+    /*
+    **  This is a way to obtain the hero sprite info that is necessary
+    **  to update their position.
+    **
+    **  This function transforms an IGameData interface into an IGamePhysicsData
+    **  interface each time an update must be done to a snapshot through
+    **  the snapshot service. This is not ideal in terms of performance and
+    **  code clarity.
+    **
+    **  Other options I could think of were:
+    **  1) Storing in the snapshot buffer IGamePhysicsData instead of IGameData,
+    **      but I did not like the idea of storing the same immutable data
+    **      in every snapshot.
+    **  2) Having the info to calculate physics for each hero type
+    **      in the heroPhysicsService, and add a hero identifier property
+    **      to each IPlayerData of GameData. But I think this model could reduce
+    **      flexibility for future hero changes at an instance level,
+    **      it also requires some conversion, and it is a deeper change.
+    */
+    private getPhysicsSnapshot(snapshot: IGameData): IGamePhysicsData {
+        const   result: any = this.snapshotService.clone(snapshot);
+        const   heroAPhysics: IHeroPhysicsData = this._playerA.hero ?
+                    this._playerA.hero.physicsData() : undefined;
+        const   heroBPhysics: IHeroPhysicsData = this._playerB.hero ?
+                    this._playerB.hero.physicsData() : undefined;
+        const   copyHeroPos = (heroPhysics: IHeroPhysicsData,
+                                hero: IHeroData) => {
+            heroPhysics.hero.xPos = hero.xPos;
+            heroPhysics.hero.yPos = hero.yPos;
+            heroPhysics.heroLow.xPos = hero.lowXPos;
+            heroPhysics.heroLow.yPos = hero.lowYPos;
+        };
+        
+        if (heroAPhysics)
         {
-            this._playerA.updateHero(secondsElapsed);
-            this._playerB.updateHero(secondsElapsed);
+            copyHeroPos(heroAPhysics, result.playerA.hero);
+            copyHeroPos(heroBPhysics, result.playerB.hero);
         }
+        return (result as IGamePhysicsData);
     }
 
-    private updateSnapshot(snapshot: IGameData,
-                            input: IInputData[]): void {
-        let playerData: IPlayerData;
+    private updateSnapshot(snapshot: Readonly<IGameData>,
+                            targetTime: number,
+                            input: IInputData[]): IGameData {
+        let auxSnapshot: IGameData;
+        let pointTransition: boolean;
     
-        this.applyInput(input);
-        if (this._ball.xVelocity === 0)
-        { // To preserve ball serve information
-            this._ball.xVelocity = snapshot.ball.xVel;
-            this._ball.yVelocity = snapshot.ball.yVel;
+        auxSnapshot = this.snapshotService.applyInput(snapshot, input);
+        [auxSnapshot, pointTransition] = this.snapshotService.update(
+            this.getPhysicsSnapshot(auxSnapshot),
+            targetTime
+        );
+        if (pointTransition)
+            this._pointTransition = true;
+        return (auxSnapshot);
+    }
+
+    private correctSnapshot(srcSnapshot: IGameData,
+                                dstSnapshot: IGameData,
+                                input: IInputData[]): void {
+        let correctSnapshot: IGameData;
+    
+        correctSnapshot = this.updateSnapshot(
+            srcSnapshot,
+            dstSnapshot.when,
+            input
+        );
+        if (correctSnapshot.ball.xVel === 0)
+        { //Preserve ball serve velocity data
+            correctSnapshot.ball.xVel = dstSnapshot.ball.xVel;
+            correctSnapshot.ball.yVel = dstSnapshot.ball.yVel;
         }
-        this.updateWorld(snapshot.when);
-        snapshot.ball = {...this._ball.data()};
-        playerData = this._playerA.data();
-        snapshot.playerA.paddleY = playerData.paddleY;
-        snapshot.playerA.score = playerData.score;
-        if (snapshot.playerA.hero)
-            snapshot.playerA.hero = {...playerData.hero};
-        playerData = this._playerB.data();
-        snapshot.playerB.paddleY = playerData.paddleY;
-        snapshot.playerB.score = playerData.score;
-        if (snapshot.playerB.hero)
-            snapshot.playerB.hero = {...playerData.hero};
-        this._lastUpdate = snapshot.when;
+        this.snapshotService.copy(
+            correctSnapshot,
+            dstSnapshot
+        );
     }
 
     private reconstruct(snapshots: IGameData[],
                             inputs: IInputData[]): void {
-        let     snapIter: number = 0;
-        let     inputIter: number = 0;
-        let     inputBatch: IInputData[] = [];
-        const   processBatch = () => {
-            this.updateSnapshot(snapshots[snapIter], inputBatch);
-            inputBatch = [];
-        };
-    
-        this.mimic(snapshots[snapIter]);
-        ++snapIter; // The initial snapshot just sets up the initial values
-        // There will always be a snapshot after the last input
-        for (; inputIter < inputs.length; ++inputIter)
-        {
-            if (inputs[inputIter].when >= snapshots[snapIter].when)
-            {
-                processBatch();
-                ++snapIter;
-            }
-            inputBatch.push(inputs[inputIter]); //Storing just references
-            if (inputIter + 1 === inputs.length) // Last input
-            {
-                processBatch();
-                ++snapIter;
-            }
-        }
+        let snapIter: number = 1;
+        let inputNeedle: number;
+        let pendingInput: IInputData[] = inputs.slice();
+        let inputBatch: IInputData[] = [];
+        
         for (; snapIter < snapshots.length; ++snapIter)
         {
-            processBatch();
+            if (pendingInput.length)
+            { // Fill inputBatch with inputs older than snapshots[snapIter]
+                inputNeedle = sortedIndexBy(pendingInput, {
+                    when: snapshots[snapIter].when
+                } as IInputData, (input) => {
+                    return (input.when);
+                });
+                if (inputNeedle != 0)
+                {
+                    inputBatch = pendingInput.slice(0, inputNeedle);
+                    pendingInput = pendingInput.slice(inputNeedle);
+                }
+            }
+            this.correctSnapshot(
+                snapshots[snapIter - 1],
+                snapshots[snapIter],
+                inputBatch
+            );
+            inputBatch = [];
         }
+        this.mimic(snapshots[snapIter - 1]);
         if (snapshots[snapIter - 1].ball.xVel != 0)
         {
             /*
@@ -401,13 +381,19 @@ export class   Game {
     }
 
     /*
-    **  Returns if it could process all input.
+    **  Sorts this._input, checks for inputs to reconcile,
+    **  In case it finds any, it extracts them from this._input,
+    **  reconstructs the corresponding snapshots updating
+    **  the input and snapshot buffer accordingly.
+    **
+    **  Returns false if it could process all input.
+    **  True otherwise, which means this._input contained input older than
+    **  the reconciliation service's time limit.
     */
     private processInput(): boolean {    
         this.sortInput();
         if (this.reconcileInput())
             return (true);
-        this.applyInput(this._input);
         return (false);
     }
 
@@ -435,13 +421,16 @@ export class   Game {
         {// Not all inputs could be processed
             return (GameUpdateResult.Lag);
         }
-        this.updateWorld(currentTime);
+        this.mimic(this.updateSnapshot(
+            this.data(),
+            currentTime,
+            this._input
+        ));
         if (this._pointTransition)
         {
             if (this.getWinnerNick() != "")
                 this._state = GameState.Finished;
         }
-        this._lastUpdate = currentTime;
         this._buffer.addSnapshot(this.data());
         this._buffer.addInput(this._input, this._buffer.snapshots[0]);
         this._input = [];

@@ -17,6 +17,7 @@ import {
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameReconciliationService } from "./game.reconciliation.service";
+import { GameSnapshotService } from "./game.snapshot.service";
 
 @Injectable()
 export class    GameUpdateService {
@@ -33,7 +34,8 @@ export class    GameUpdateService {
     constructor(
         private readonly gameService: GameService,
         private readonly socketHelper: SocketHelper,
-        private readonly reconciliationService: GameReconciliationService
+        private readonly reconciliationService: GameReconciliationService,
+        private readonly snapshotService: GameSnapshotService
     ) {
         this.games = new Map<string, Game>();
         this.gameSelections = new Map<string, GameSelection>;
@@ -315,7 +317,11 @@ export class    GameUpdateService {
                         gameSelectionData: IGameSelectionData): Game {
         let game : Game;
 
-        game = new Game(gameSelectionData, this.reconciliationService);
+        game = new Game(
+            gameSelectionData,
+            this.reconciliationService,
+            this.snapshotService
+        );
         this.games.set(gameId, game);
         return (game);
     }
