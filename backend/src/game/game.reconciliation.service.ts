@@ -63,15 +63,14 @@ export class    GameReconciliationService {
         } as IGameData, (snapshot) => {
             return (snapshot.when);
         });
-        if (snapshotBuffer[snapshotIndex].when != input.when)
-            --snapshotIndex;
-        if (snapshotIndex <= 0)
-            return ([]);
         /*
         **  Select previous snapshot to take as a starting point
         **  for the reconstruction.
         */
-        --snapshotIndex;
+        if (snapshotBuffer[snapshotIndex].when != input.when)
+            --snapshotIndex;
+        if (snapshotIndex < 0)
+            return ([]);
         //Array of object references
         return (snapshotBuffer.slice(snapshotIndex));
     }
