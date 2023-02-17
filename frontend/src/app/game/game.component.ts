@@ -11,6 +11,7 @@ import { StartScene } from "./scenes/StartScene";
 import { LagCompensationService } from "./services/lag-compensation.service";
 import { LoadService } from "./services/load.service";
 import { SocketService } from "./services/socket.service";
+import { GameRecoveryService } from "./services/recovery.service";
 import { SoundService } from "./services/sound.service";
 
 @Component({
@@ -28,7 +29,8 @@ export class    GameComponent implements OnInit {
         private readonly socketService: SocketService,
         private readonly lagCompensator: LagCompensationService,
         private readonly loadService: LoadService,
-        private readonly soundService: SoundService
+        private readonly soundService: SoundService,
+        private readonly recoveryService: GameRecoveryService
     ) {
         this.config = {
             type: Phaser.CANVAS,
@@ -52,23 +54,33 @@ export class    GameComponent implements OnInit {
 
     ngOnInit(): void {
         const   startScene: StartScene =
-                    new StartScene(this.socket, "Game1");
+                    new StartScene(this.socket, "Game1", this.recoveryService);
         const   menuScene: MenuScene =
-                    new MenuScene(this.socket, "Game1");
+                    new MenuScene(this.socket, "Game1", this.recoveryService);
         const   menuHeroScene: MenuHeroScene =
-                    new MenuHeroScene(this.socket, "Game1", this.soundService);
+                    new MenuHeroScene(this.socket, "Game1",
+                                        this.soundService,
+                                        this.recoveryService);
         const   playerScene: PlayerScene =
-                    new PlayerScene(this.socket, "Game1", this.lagCompensator,
-                                        this.loadService, this.soundService);
+                    new PlayerScene(this.socket, "Game1",
+                                        this.lagCompensator,
+                                        this.loadService,
+                                        this.soundService,
+                                        this.recoveryService);
         const   classicPlayerScene: ClassicPlayerScene =
                     new ClassicPlayerScene(this.socket, "Game1",
-                                        this.lagCompensator, this.loadService,
-                                        this.soundService);
+                                        this.lagCompensator,
+                                        this.loadService,
+                                        this.soundService,
+                                        this.recoveryService);
         const   spectatorScene: SpectatorScene =
-                    new SpectatorScene(this.socket, "Game1", this.lagCompensator,
-                                        this.loadService, this.soundService);
+                    new SpectatorScene(this.socket, "Game1",
+                                        this.lagCompensator,
+                                        this.loadService,
+                                        this.soundService,
+                                        this.recoveryService);
         const   endScene: EndScene =
-                    new EndScene(this.socket, "Game1");
+                    new EndScene(this.socket, "Game1", this.recoveryService);
             
         this.config.scene = [
             startScene, menuScene, menuHeroScene, playerScene,

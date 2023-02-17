@@ -103,6 +103,46 @@ export class    Match {
         dst.when = src.when;
     }
 
+    static initToData(data: IMatchInitData): IMatchData {
+        return ({
+            ball: {
+                xPos: data.ball.xPos,
+                yPos: data.ball.yPos,
+                xVel: data.ball.xVel,
+                yVel: data.ball.yVel
+            },
+            playerA: Player.initToData(data.playerA),
+            playerB: Player.initToData(data.playerB),
+            when: data.when
+        });
+    }
+
+    get nickA(): string {
+        return (this._playerA.nick);
+    }
+
+    get nickB(): string {
+        return (this._playerB.nick);
+    }
+
+    get stage(): StageName | undefined {
+        if (!this._stage)
+            return (undefined);
+        if (this._stage instanceof Atlantis)
+            return (StageName.Atlantis);
+        if (this._stage instanceof Metropolis)
+            return (StageName.Metropolis);
+        return (StageName.Wakanda);
+    }
+
+    get heroA(): string | undefined {
+        return (this._playerA.hero);
+    }
+
+    get heroB(): string | undefined {
+        return (this._playerB.hero);
+    }
+
     get snapshot(): IMatchData {    
         return ({
             playerA: this._playerA.data,
@@ -110,6 +150,10 @@ export class    Match {
             ball: this._ball.data,
             when: this._when
         });
+    }
+
+    stopPointTitle(): void {
+        this._pointTitle.stop();
     }
 
     update(data: IMatchData | undefined): void {

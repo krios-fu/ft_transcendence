@@ -18,6 +18,17 @@ import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameReconciliationService } from "./game.reconciliation.service";
 
+export interface    IGameResultData {
+    aNick: string;
+    bNick: string;
+    aCategory: string,
+    bCategory: string,
+    aScore: number;
+    bScore: number;
+    aAvatar: string;
+    bAvatar: string;
+}
+
 @Injectable()
 export class    GameUpdateService {
 
@@ -65,6 +76,25 @@ export class    GameUpdateService {
         if (game)
             return (game.clientStartData());
         return (undefined);
+    }
+
+    getGameResult(roomId): IGameResultData | undefined {
+        const   game: Game | undefined = this.games.get(roomId);
+        const   players : [UserEntity, UserEntity] | undefined =
+                    this.gameService.getPlayers(roomId);
+
+        if (!game
+                || game.state != GameState.Finished
+                || !players
+                || !players[0]
+                || !players[1])
+            return (undefined);
+        return (
+            this.buildResultData(
+                [{...players[0]}, {...players[1]}],
+                game.getResult()
+            )
+        );
     }
 
     attemptGameInit(roomId: string): void {
@@ -148,6 +178,22 @@ export class    GameUpdateService {
         }, 10000);
     }
 
+    private buildResultData(players: [UserEntity, UserEntity],
+                                result: IGameResult): IGameResultData {
+        return ({
+            aNick: players[0].nickName,
+            bNick: players[1].nickName,
+            aCategory: GameSelection.stringifyCategory(players[0].category),
+            bCategory: GameSelection.stringifyCategory(players[1].category),
+            aScore: players[0].nickName === result.winnerNick
+                        ? result.winnerScore : result.loserScore,
+            bScore: players[1].nickName === result.winnerNick
+                        ? result.winnerScore : result.loserScore,
+            aAvatar: players[0].photoUrl,
+            bAvatar: players[1].photoUrl
+        });
+    }
+
     private gameEnd(gameId: string, gameResult: IGameResult): void {
         const   players : [UserEntity, UserEntity] =
                             this.gameService.getPlayers(gameId);
@@ -157,18 +203,11 @@ export class    GameUpdateService {
             gameResult.winnerNick = players[0].nickName;
             gameResult.loserNick = players[1].nickName;
         }
-        this.socketHelper.emitToRoom(gameId, "end", {
-            aNick: players[0].nickName,
-            bNick: players[1].nickName,
-            aCategory: GameSelection.stringifyCategory(players[0].category),
-            bCategory: GameSelection.stringifyCategory(players[1].category),
-            aScore: players[0].nickName === gameResult.winnerNick
-                        ? gameResult.winnerScore : gameResult.loserScore,
-            bScore: players[1].nickName === gameResult.winnerNick
-                        ? gameResult.winnerScore : gameResult.loserScore,
-            aAvatar: players[0].photoUrl,
-            bAvatar: players[1].photoUrl
-        });
+        this.socketHelper.emitToRoom(
+            gameId,
+            "end",
+            this.buildResultData(players, gameResult)
+        );
         this.gameService.endGame(gameId, gameResult);
         this.socketHelper.clearRoom(`${gameId}-PlayerA`);
         this.socketHelper.clearRoom(`${gameId}-PlayerB`);

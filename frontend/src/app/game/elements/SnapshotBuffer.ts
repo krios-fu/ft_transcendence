@@ -76,4 +76,8 @@ export class   SnapshotBuffer {
                                     heroMove, currentSnapshot);
     }
 
+    empty(): void {
+        this._buffer = [];
+    }
+
 }
