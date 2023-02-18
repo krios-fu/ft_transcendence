@@ -1,0 +1,12 @@
+# ~~ dependencies ~~
+node_modules
+dist
+
+# ~~ git | metadata ~~
+.git
+.gitignore
+.dockerignore
+
+# ~~ not needed in ctxt ~~
+Dockerfile
+.env

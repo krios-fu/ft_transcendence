@@ -4,6 +4,7 @@ import * as fs from "fs";
 import { extname } from "path";
 import { BadRequestException, UnprocessableEntityException } from "@nestjs/common";
 import { IRequestUser } from "src/common/interfaces/request-payload.interface";
+import { Express } from 'express';
 
 export const DEFAULT_AVATAR_PATH = 'http://localhost:3000/default-avatar.jpg';
 
