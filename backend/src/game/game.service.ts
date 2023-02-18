@@ -4,10 +4,8 @@ import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
 import { WinnerEntity } from "src/match/winner/winner.entity";
-import {
-    Category,
-    UserEntity
-} from "src/user/entities/user.entity";
+import { UserEntity } from "src/user/entities/user.entity";
+import { Category } from "../user/enum/category.enum";
 import { UserService } from "src/user/services/user.service";
 import { UpdateResult } from "typeorm";
 import { IGameResult } from "./elements/Game";

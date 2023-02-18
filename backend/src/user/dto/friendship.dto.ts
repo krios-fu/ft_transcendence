@@ -1,5 +1,5 @@
 import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsObject } from "class-validator";
-import { FriendshipStatus } from "../entities/friendship.entity";
+import { FriendshipStatus } from "../enum/friendship-status.enum";
 import { UserEntity } from "../entities/user.entity";
 
 export class    FriendDto {
