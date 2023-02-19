@@ -1,6 +1,6 @@
 #!/bin/bash
 
-usage="usage: $(basename $0) [ up | down | prune | exec [ backend | db | pgadmin | frontend ] ]"
+usage="usage: $(basename $0) [up | down | prune | exec [backend | db | pgadmin | frontend]]"
 
 case $1 in
     "--help"|"-h")
@@ -12,6 +12,8 @@ case $1 in
     "prune")
         docker-compose down
         docker system prune --all ;;
+    "test")
+        ...;;
     "exec")
         case $2 in
         "backend")

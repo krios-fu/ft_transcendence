@@ -1,3 +1,7 @@
+# --------------------- #
+#   DEVELOPMENT BUILD   #
+# --------------------- #
+
 FROM node:18-alpine as dev
 
 WORKDIR /usr/src/app
@@ -6,23 +10,23 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .
+COPY src tsconfig*.json .
 
-RUN npm run build
+RUN ["npm", "run", "build"]
 
-FROM node:18-alpine as testing
+# ----------------- #
+#   TESTING BUILD   #
+# ----------------- #
 
-WORKDIR /usr/src/app
+FROM dev as testing
 
-COPY package*.json ./
+COPY test .
 
-RUN npm install
+RUN ["npm", "run", "test:e2e", "--config ./test/jest-e2e.json"]
 
-COPY . .
-
-COPY --from=dev /usr/src/app/dist ./dist
-
-CMD ["npm", "run test:e2e --config ./test/jest-e2e.json"]
+# -------------------- #
+#   PRODUCTION BUILD   #
+# -------------------- #
 
 FROM node:18-alpine as prod
 
@@ -36,7 +40,7 @@ COPY package*.json ./
 RUN npm install --omit=dev \
     && npm cache clean --force
 
-COPY . .
+COPY src tsconfig*.json .
 
 COPY --from=dev /usr/src/app/dist ./dist
 
