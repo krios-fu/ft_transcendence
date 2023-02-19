@@ -252,7 +252,20 @@ export class   Game {
             copyHeroPos(heroAPhysics, result.playerA.hero);
             copyHeroPos(heroBPhysics, result.playerB.hero);
         }
-        return (result as IGamePhysicsData);
+        return ({
+            ball: {...snapshot.ball},
+            playerA: {
+                paddleY: snapshot.playerA.paddleY,
+                hero: heroAPhysics ? heroAPhysics : undefined,
+                score: snapshot.playerA.score
+            },
+            playerB: {
+                paddleY: snapshot.playerB.paddleY,
+                hero: heroBPhysics ? heroBPhysics : undefined,
+                score: snapshot.playerB.score
+            },
+            when: snapshot.when
+        });
     }
 
     private updateSnapshot(snapshot: Readonly<IGameData>,
