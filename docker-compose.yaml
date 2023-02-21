@@ -2,10 +2,10 @@ version: "3.9"
 services:
   backend:
     env_file: .env
-    container_name: backend_${NODE_ENV}
+    container_name: backend_dev
     build:
       context: ./backend/
-      target: "${NODE_ENV}"
+      target: dev
     ports:
       - 3000:3000   # default port
       - 9229:9229   # default debug port
@@ -18,7 +18,7 @@ services:
     depends_on:
       - db
     working_dir: /usr/src/app
-    entrypoint: ["npm", "run", "start:${NODE_ENV}"]
+    entrypoint: ["npm", "run", "start:dev"]
     #entrypoint: ["sleep", "infinity"]
     restart: unless-stopped
 

@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  backend:
+    #env_file: .env
+    container_name: backend_prod
+    build:
+      context: ./backend/
+      target: prod
+    #ports:
+    #  - 3000:3000   # default port
+    #  - 3001:3001   # websockets
+    #networks:
+    #  - webapp-network
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+    #depends_on:
+    #  - db
+    #working_dir: /usr/src/app
+    #entrypoint: ["npm", "run", "start:prod"]
+    entrypoint: ["sleep", "infinity"]
+    restart: always
+
+  # frontend in prod

@@ -10,7 +10,8 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY src tsconfig*.json .
+#COPY src tsconfig*.json ./
+COPY . .
 
 RUN ["npm", "run", "build"]
 
@@ -22,7 +23,7 @@ FROM dev as testing
 
 COPY test .
 
-RUN ["npm", "run", "test:e2e", "--config ./test/jest-e2e.json"]
+CMD ["npm", "run", "test:e2e", "--config ./test/jest-e2e.json"]
 
 # -------------------- #
 #   PRODUCTION BUILD   #
@@ -40,7 +41,7 @@ COPY package*.json ./
 RUN npm install --omit=dev \
     && npm cache clean --force
 
-COPY src tsconfig*.json .
+COPY . .
 
 COPY --from=dev /usr/src/app/dist ./dist
 
