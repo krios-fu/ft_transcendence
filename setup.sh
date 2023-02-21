@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euf
+
 usage="usage: $(basename "$0") [up | down | prune | exec [backend | db | pgadmin | frontend]]"
 
 case $1 in
@@ -8,8 +10,8 @@ case $1 in
         case $2 in
             "--prod") docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up --build ;;
             "--test") docker-compose -f docker-compose.yaml -f docker-compose.test.yaml up --build ;;
-            * | "--dev") docker-compose up --build ;;
-          esac ;;
+            * | "--dev") docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build ;;
+        esac ;;
     "down")
         docker-compose down ;;
     "prune")

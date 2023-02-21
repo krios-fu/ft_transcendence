@@ -1,16 +1,17 @@
-version: "3.9"
 services:
   backend:
-    env_file: .env
-    container_name: backend_testing
+    container_name: backend_dev
     build:
       context: ./backend/
-      target: testing
+      target: dev
     ports:
       - 9229:9229   # default debug port
     networks:
       - webapp-network
     volumes:
       - ./backend/:/usr/src/app
-    entrypoint: ["npm", "run", "test:e2e", "--config ./test/jest-e2e.json"]
+    depends_on:
+      - db
+    working_dir: /usr/src/app
+    entrypoint: ["npm", "run", "start:dev"]
     restart: unless-stopped
