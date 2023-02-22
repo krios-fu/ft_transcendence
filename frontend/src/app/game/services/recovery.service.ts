@@ -44,7 +44,7 @@ export class    GameRecoveryService {
                 || recData.scene === "menuHero")
         {
             data = recData.data as IMenuInit;
-            if (data.hero)
+            if (data.selection.heroA != undefined)
                 scene.scene.start("MenuHero", data);
             else
                 scene.scene.start("Menu", data);
