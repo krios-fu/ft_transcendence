@@ -58,6 +58,8 @@ export enum GameUpdateResult {
     Lag
 }
 
+export type GameType = "classic" | "hero";
+
 export class   Game {
 
     private _width: number; //Make it static
