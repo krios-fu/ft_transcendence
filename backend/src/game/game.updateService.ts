@@ -182,7 +182,7 @@ export class    GameUpdateService {
                 this.gameEnd(gameId, game.getResult());
                 return ;
             }
-            else
+            else if (game.state != GameState.Terminated)
                 game.serveBall();
             this.pointTimeout = undefined;
         }, 5000);
@@ -196,7 +196,7 @@ export class    GameUpdateService {
         {
             if (game.state === GameState.Finished)
                 return ;
-            game.state = GameState.Finished;
+            game.state = GameState.Terminated;
             this.gameEnd(room, {
                 winnerNick: "",
                 loserNick: "",
@@ -344,7 +344,7 @@ export class    GameUpdateService {
             return ;
         if (game)
         {
-            game.state = GameState.Finished;
+            game.state = GameState.Terminated;
             game.forceWin(winner);
             this.gameEnd(roomId, game.getResult());
             return ;
