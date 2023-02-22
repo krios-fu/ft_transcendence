@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
-import { CreateRoomDto, UpdateRoomDto } from "./dto/room.dto";
+import { CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { UpdateResult } from "typeorm";
@@ -34,7 +34,7 @@ export class RoomService {
         return (await room).owner;
     }
 
-    public async updateRoom(roomId: number, dto: UpdateRoomDto): Promise<UpdateResult> {
+    public async updateRoom(roomId: number, dto: UpdateRoomDto | UpdateRoomOwnerDto): Promise<UpdateResult> {
         return await this.roomRepository.update(roomId, dto);
     }
 

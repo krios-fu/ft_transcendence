@@ -50,8 +50,8 @@ export class UserRoomService {
         /* tmp */
         var usersInRoom: UserEntity[] = [];
         for (var username in userList) {
-        const user = await this.userService.findOneByUsername(username);
-        usersInRoom.push(user);
+            const user = await this.userService.findOneByUsername(username);
+            usersInRoom.push(user);
         }
         return usersInRoom;
     }

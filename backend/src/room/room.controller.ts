@@ -27,12 +27,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
 import * as fs from 'fs';
 import { Express } from 'express';
+import { UserRoomService } from "src/user_room/user_room.service";
 
 @Controller('room')
 export class RoomController {
     constructor(
         private readonly roomService: RoomService,
         private readonly userService: UserService,
+        private readonly userRoomService: UserRoomService,
     ) { 
         this.roomLogger = new Logger(RoomController.name);
     }
@@ -58,16 +60,28 @@ export class RoomController {
         return await this.roomService.findRoomOwner(id)
     }
 
+
+     /*
+    Comprobar que la sala existe
+    Comprobar que el usuario existe
+    Validar que el usuario se encuentra registrado en la sala
+    */
     @Put(':room_id/owner/:owner_id')
     public async updateRoomOwner(
         @Param('room_id', ParseIntPipe)  id: number,
         @Param('owner_id', ParseIntPipe) newOwnerId: number
     ): Promise<UpdateResult> {
         if (await this.roomService.findOne(id) === null) {
+            this.roomLogger.error(`No room with id ${id} present in database`);
             throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }
         if (await this.userService.findOne(newOwnerId) === null) {
+            this.roomLogger.error(`No user with id ${newOwnerId} present in database`);
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+        }
+        if (await this.userRoomService.findUserRoomIds(newOwnerId, id) === null) {
+            this.roomLogger.error(`User with id ${newOwnerId} is not registered in room`);
+            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }
         return await this.roomService.updateRoom(id, { ownerId: newOwnerId });
     }
