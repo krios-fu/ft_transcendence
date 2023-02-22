@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import * as fs from 'fs';
 import filetype from 'magic-bytes.js';
+import { Express } from 'express';
 
 const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
 
