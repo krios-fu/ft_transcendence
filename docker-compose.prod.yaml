@@ -3,7 +3,6 @@ services:
   backend:
     container_name: backend_prod
     build:
-      context: ./backend/
       target: prod
     entrypoint: ["npm", "run", "start:prod"]
     restart: always

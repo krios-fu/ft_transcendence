@@ -22,7 +22,7 @@ FROM dev as testing
 
 COPY test .
 
-CMD ["npm", "run", "test:e2e", "--config ./test/jest-e2e.json"]
+CMD ["npm", "run", "test:e2e"]
 
 # -------------------- #
 #   PRODUCTION BUILD   #

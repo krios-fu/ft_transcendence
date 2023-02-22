@@ -2,16 +2,10 @@ services:
   backend:
     container_name: backend_dev
     build:
-      context: ./backend/
       target: dev
     ports:
       - 9229:9229   # default debug port
-    networks:
-      - webapp-network
     volumes:
       - ./backend/:/usr/src/app
-    depends_on:
-      - db
-    working_dir: /usr/src/app
     entrypoint: ["npm", "run", "start:dev"]
     restart: unless-stopped
