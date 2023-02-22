@@ -179,8 +179,6 @@ export class    GameService {
                     return ;
             }
         }
-        players[0] = undefined;
-        players[1] = undefined;
         return ;
     }
 
