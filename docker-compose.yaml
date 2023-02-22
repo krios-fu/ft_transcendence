@@ -15,7 +15,6 @@ services:
       - db
     working_dir: /usr/src/app
     entrypoint: ["npm", "run", "start:dev"]
-    #entrypoint: ["sleep", "infinity"]
 
   db:
     container_name: db

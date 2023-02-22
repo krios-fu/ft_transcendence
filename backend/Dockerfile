@@ -10,7 +10,6 @@ COPY package*.json ./
 
 RUN npm install
 
-#COPY src tsconfig*.json ./
 COPY . .
 
 RUN ["npm", "run", "build"]
@@ -40,8 +39,6 @@ COPY package*.json ./
 
 RUN npm install --omit=dev \
     && npm cache clean --force
-
-COPY . .
 
 COPY --from=dev /usr/src/app/dist ./dist
 

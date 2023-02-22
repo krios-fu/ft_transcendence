@@ -6,5 +6,4 @@ services:
       context: ./backend/
       target: prod
     entrypoint: ["npm", "run", "start:prod"]
-    entrypoint: ["sleep", "infinity"]
     restart: always
