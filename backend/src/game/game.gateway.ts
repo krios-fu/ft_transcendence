@@ -39,7 +39,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {}
   
     afterInit() {
-        this.updateService.initServer(this.server);
+        this.socketHelper.initServer(this.server);
         console.log("Game Gateway initiated");
     }
 
@@ -69,6 +69,7 @@ export class    GameGateway implements OnGatewayInit,
         }); //Provisional
         client.join(username);
         //client.join(userSession)
+        this.queueService.clientInitQueuesLength("Game1", client.id);
         gameSelectionData = this.updateService.getGameSelectionData("Game1");
         if (gameSelectionData)
         {
@@ -118,7 +119,7 @@ export class    GameGateway implements OnGatewayInit,
     async addToGameHeroQueue(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
-    ) {
+    ) {    
         if (!client.rooms.has(data.room))
             return ;
         //Need to implement user authentication

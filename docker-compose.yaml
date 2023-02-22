@@ -2,21 +2,19 @@ version: "3.9"
 services:
   backend:
     env_file: .env
-    container_name: backend
-    image: node:18-alpine
+    build:
+      context: ./backend/
     ports:
       - 3000:3000   # default port
-      - 9229:9229   # default debug port
       - 3001:3001   # websockets
     networks:
       - webapp-network
     volumes:
-      - ./backend/:/usr/src/
+      - node_modules:/usr/src/app/node_modules
     depends_on:
       - db
-    working_dir: /usr/src/
-    command: sh -c "npm install && npm run start:dev"
-    restart: unless-stopped
+    working_dir: /usr/src/app
+    entrypoint: ["npm", "run", "start:dev"]
 
   db:
     container_name: db
@@ -79,4 +77,5 @@ networks:
 volumes:
   dbdata: {}
   pgadmindata: {}
+  node_modules: {} # tmp definition
 

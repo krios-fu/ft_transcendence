@@ -4,6 +4,7 @@ import * as fs from "fs";
 import { extname } from "path";
 import { BadRequestException, UnprocessableEntityException } from "@nestjs/common";
 import { IRequestUser } from "src/common/interfaces/request-payload.interface";
+import { Express } from 'express';
 
 export const DEFAULT_AVATAR_PATH = 'http://localhost:3000/default-avatar.jpg';
 
@@ -53,7 +54,7 @@ export const uploadRoomAvatarSettings: MulterOptions = {
             cb(null, dir);
         },
         filename: (req: IRequestUser, file: Express.Multer.File, cb): void => {
-            const roomId = req.params['room_id'];
+            const roomId = req.param['room_id'];
             if (roomId === undefined || isNaN(Number(roomId))) {
                 cb(new BadRequestException('no valid room id provided'), null);
             } else {
