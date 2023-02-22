@@ -19,7 +19,6 @@ export interface   ISelectionData {
 }
 
 export interface   IMenuInit {
-    hero: boolean;
     //PlayerA, PlayerB, Spectator
     role: string;
     selection: ISelectionData;

@@ -264,6 +264,7 @@ export class    GameUpdateService {
         });
     }
 
+
     private async prepareClients(gameId: string, gameType: GameType,
                                     players: [UserEntity, UserEntity],
                                     selectionData: IGameSelectionData)
@@ -280,7 +281,7 @@ export class    GameUpdateService {
         this.sendSelectionData(gameHero, "PlayerB", selectionData, playerRoom);
         this.socketHelper.emitToRoom(playerRoom, "unqueue");
         this.sendSelectionData(gameHero, "Spectator", selectionData, gameId);
-}
+    }
 
     private async startGame(gameId: string): Promise<void> {
         let gameSelection: GameSelection;
@@ -299,7 +300,7 @@ export class    GameUpdateService {
             categoryB: players[1].category,
             avatarA: players[0].photoUrl,
             avatarB: players[1].photoUrl
-        })).get(gameId);
+        }, gameType === "hero")).get(gameId);
         selectionData = gameSelection.data;
         await this.prepareClients(gameId, gameType, players, selectionData);
         if (gameType === "classic")
