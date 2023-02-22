@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import {
-    Category,
-    UserEntity
-} from "../user/entities/user.entity";
+import { UserEntity } from "../user/entities/user.entity";
 import { UserService } from "../user/services/user.service";
 import { GameType } from "./elements/Game";
 import { SocketHelper } from "./game.socket.helper";
+import { Category } from "../user/enum/category.enum";
 
 interface   IQueueElement
 {
