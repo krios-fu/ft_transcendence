@@ -61,6 +61,13 @@ export class RoomService {
         return await this.updateRoom(roomId, { photoUrl: photoUrl });
     }
 
+    public async searchForOwnerInRoom(room: RoomEntity): Promise<UserEntity> {
+        const { id, ownerId } = room;
+
+        return (await this.roomRepository.createQueryBuilder('room'))
+
+    }
+
     ///**************** room auth services *****************/
     //public async loginToRoom(loginInfo: LoginInfoDto): Promise<boolean> {
     //    const roomEntity = await this.roomRepository.findOne({

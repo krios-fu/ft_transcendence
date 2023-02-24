@@ -71,7 +71,8 @@ export class RoomController {
         @Param('room_id', ParseIntPipe)  id: number,
         @Param('owner_id', ParseIntPipe) newOwnerId: number
     ): Promise<UpdateResult> {
-        if (await this.roomService.findOne(id) === null) {
+        const room: RoomEntity =await this.roomService.findOne(id);
+        if (room === null) {
             this.roomLogger.error(`No room with id ${id} present in database`);
             throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
         }

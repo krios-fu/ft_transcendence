@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
 import { UserRoomController } from './user_room.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
