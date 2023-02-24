@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
+import { RoomRolesEntity } from 'src/room_roles/entity/room_roles.entity';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
@@ -60,8 +61,8 @@ export class UserRoomService {
         let rooms: RoomEntity[] = [];
 
         const userRooms = await this.userRoomRepository.find({
-        relations: { room: true },
-        where:     { userId: userId },
+            relations: { room: true },
+            where:     { userId: userId },
         });
 
         for (let userRoom of userRooms) {
@@ -75,23 +76,30 @@ export class UserRoomService {
         return await this.userRoomRepository.save(userInRoom);
     }
 
+
+    // if user exits room being an owner, remove it from owner //
     public async remove(id: number): Promise<void> {
-        const roomRole = await this.userRoomRepository.findOne({
+        const roomRole: RoomRolesEntity = await this.userRoomRepository.findOne({
             select: { roomId: true },
             where: { id: id },
         });
+
         if (roomRole === null) {
             throw new NotFoundException('resource not found');
         }
+        const { room, user_id } = roomRole;
+        const { room_id, owner_id } = room;
+        
         await this.userRoomRepository.delete(id);
         if (await this.roomRolesService.isRole('official', roomRole.roomId) === true) {
             return ;
         }
-        const isEmpty = await this.getAllUsersInRoom(roomRole.roomId);
-        if (isEmpty.length === 0) {
-            await this.roomService.removeRoom(roomRole.room);
+        if ((await this.getAllUsersInRoom(roomRole.roomId)).length === 0) {
+            await this.roomService.removeRoom(room);
         }
-        /* new owner logic goes here */
+        if (owner_id === user_id) {
+            this.roomService.updateRoomOwner(room_id);
+        }
     }
 
     public async findUserRoomIds(userId: number, roomId: number): Promise<UserRoomEntity> {

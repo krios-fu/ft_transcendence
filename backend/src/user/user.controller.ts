@@ -252,6 +252,7 @@ export class UserController {
     //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const user = await this.userService.findOne(id);
+        
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);
             throw new NotFoundException('resource not found');

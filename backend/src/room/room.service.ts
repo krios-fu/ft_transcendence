@@ -64,8 +64,29 @@ export class RoomService {
     public async searchForOwnerInRoom(room: RoomEntity): Promise<UserEntity> {
         const { id, ownerId } = room;
 
-        return (await this.roomRepository.createQueryBuilder('room'))
+        const user: UserEntity = (await this.roomRepository.createQueryBuilder('room'))
+            .leftJoinAndSelect('user_room', 'user_room.room')
+            .where('user_room.room_id = :room_id', { 'room_id': id })
+            .andWhere('user_room.user_id = :user_id', { 'user_id': ownerId})
+            .select('user')
+            .getOne();
+        console.log(`currently debugging...${user}`);
+        return user;
+    }
 
+    public async updateRoomOwner(roomId: number): Promise<void | UpdateResult> {
+        const users: UserEntity[] = (await this.roomRepository.createQueryBuilder('room'))
+            .leftJoinAndSelect('user_room', 'user_room.room')
+            .where('user_room.room_id = :room_id', { 'room_id': roomId })
+            .orderBy('user_room.created_at', 'ASC')
+            .select('user_room.user')
+            .getMany();
+        if (users.length === 0) {
+            const room = await this.findOne(roomId);
+            // return await this.remmoveRoom(room);
+        }
+        const newOwnerId: number = users[0].id;
+        return this.updateRoom(roomId, { ownerId: newOwnerId });
     }
 
     ///**************** room auth services *****************/

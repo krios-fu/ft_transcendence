@@ -76,17 +76,20 @@ def del_room_cascade_test(auth_token):
         post_room(r, i, auth_token)
     for i in range(3):
         post_user_room(1, i, auth_token)
+    r = requests.get('https://localhost:3000/users_room/room/1', headers=auth_token)        
+    print(f'[ WHAT WE\'VE GOT ]', r.json())
     try:
         r = requests.delete('http://localhost:3000/room/1', headers=auth_token)
         r.raise_for_status()
     except HttpError:
         print('Error trying to delete a room')
         sys.exit(1)
-    r = requests.
-    # query users in deleted room
-    pass
+    r = requests.get('https://localhost:3000/users_room/room/1', headers=auth_token)
+    print(f'[ WHAT WE\'VE LEFT ]', r.json())
 
 def put_new_owner(auth_token):
+    # put a valid new owner and check
+    # put an invalid new owner (no tin room, does not exist)
     pass
 
 def del_user_as_owner(auth_token):

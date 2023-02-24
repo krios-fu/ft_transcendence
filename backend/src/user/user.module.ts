@@ -13,6 +13,7 @@ import { ChatMapper } from 'src/chat/mapper/chat.mapper';
 import { BlockEntity } from './entities/block.entity';
 import { BlockService } from './services/block.service';
 import { BlockRepository } from './repositories/block.repository';
+import { RoomModule } from 'src/room/room.module';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
@@ -20,10 +21,10 @@ import { BlockRepository } from './repositories/block.repository';
             FriendshipEntity, 
             BlockEntity, 
             ChatEntity,
-            // MembershipEntity
-        ])
+        ]),
+        RoomModule,
     ],
-    exports: [UserService], //Usado por el módulo externo AuthModule
+    exports: [UserService],
     controllers: [UserController],
     providers: [
         UserService,

@@ -7,7 +7,7 @@ import {
 } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
@@ -15,13 +15,14 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import * as fs from 'fs';
 import { DEFAULT_AVATAR_PATH } from 'src/common/config/upload-avatar.config';
-import { NotFoundError } from 'rxjs';
+import { RoomService } from 'src/room/room.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: UserRepository,
+        private roomService: RoomService,
     ) { }
 
     public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
@@ -89,7 +90,10 @@ export class UserService {
     }
 
     public async deleteUser(user: UserEntity): Promise<void> {
-        const { photoUrl } = user;
+        const { id, photoUrl } = user;
+        const rooms: RoomEntity[] = await this.getRoomsInWhichUserIsOwner(id);
+
+        // if user was a room owner, call service that actualizes new owner
         if (photoUrl !== DEFAULT_AVATAR_PATH) {
             try {
                 fs.accessSync(photoUrl, fs.constants.W_OK);
@@ -97,6 +101,21 @@ export class UserService {
             } catch (err) { }
         }
         await this.userRepository.remove(user);
+        if (rooms.length != 0) {
+            rooms.forEach(async room => await this.roomService.updateRoomOwner(room.id));
+        }
+    }
+
+    public async getRoomsInWhichUserIsOwner(userId: number): Promise<RoomEntity[]> {
+        return (await this.userRepository.createQueryBuilder('user'))
+            .leftJoinAndSelect(
+                'room',
+                'room.owner',
+                'room.owner_id = :user_id',
+                { 'user_id': userId }
+            )
+            .select('room')
+            .getMany();
     }
 
     /*

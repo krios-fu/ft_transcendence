@@ -18,7 +18,6 @@ import { BadRequestException, Body,
     Put, 
     Query,
     UploadedFile,
-    UseGuards,
     UseInterceptors
 } from "@nestjs/common";
 import { RoomQueryDto } from "./dto/room.query.dto";
@@ -66,6 +65,7 @@ export class RoomController {
     Comprobar que el usuario existe
     Validar que el usuario se encuentra registrado en la sala
     */
+
     @Put(':room_id/owner/:owner_id')
     public async updateRoomOwner(
         @Param('room_id', ParseIntPipe)  id: number,
