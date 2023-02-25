@@ -26,14 +26,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
 import * as fs from 'fs';
 import { Express } from 'express';
-import { UserRoomService } from "src/user_room/user_room.service";
 
 @Controller('room')
 export class RoomController {
     constructor(
         private readonly roomService: RoomService,
         private readonly userService: UserService,
-        private readonly userRoomService: UserRoomService,
     ) { 
         this.roomLogger = new Logger(RoomController.name);
     }
@@ -80,7 +78,7 @@ export class RoomController {
             this.roomLogger.error(`No user with id ${newOwnerId} present in database`);
             throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
         }
-        if (await this.userRoomService.findUserRoomIds(newOwnerId, id) === null) {
+        if (await this.roomService.isUserInRoom(newOwnerId, id) === null) {
             this.roomLogger.error(`User with id ${newOwnerId} is not registered in room`);
             throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }

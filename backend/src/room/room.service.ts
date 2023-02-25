@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -8,12 +8,15 @@ import { RoomQueryDto } from "./dto/room.query.dto";
 import { QueryMapper } from "src/common/mappers/query.mapper";
 import { UserEntity } from "src/user/entities/user.entity";
 import * as fs from 'fs';
+import { UserService } from "src/user/services/user.service";
+
 
 @Injectable()
 export class RoomService {
     constructor(
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
+        private readonly userService: UserService,
     ) { }
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
@@ -61,32 +64,38 @@ export class RoomService {
         return await this.updateRoom(roomId, { photoUrl: photoUrl });
     }
 
-    public async searchForOwnerInRoom(room: RoomEntity): Promise<UserEntity> {
-        const { id, ownerId } = room;
-
-        const user: UserEntity = (await this.roomRepository.createQueryBuilder('room'))
-            .leftJoinAndSelect('user_room', 'user_room.room')
-            .where('user_room.room_id = :room_id', { 'room_id': id })
-            .andWhere('user_room.user_id = :user_id', { 'user_id': ownerId})
-            .select('user')
-            .getOne();
-        console.log(`currently debugging...${user}`);
-        return user;
+    public async getRoomsOwnedByUser(userId: number): Promise<RoomEntity[]> {
+        return (await this.roomRepository.createQueryBuilder('room'))
+            .leftJoinAndSelect(
+                'room.owner',
+                'user',
+                'room.owner_id = :user_id',
+                { 'user_id': userId }
+            )
+            .getMany();
     }
 
     public async updateRoomOwner(roomId: number): Promise<void | UpdateResult> {
-        const users: UserEntity[] = (await this.roomRepository.createQueryBuilder('room'))
-            .leftJoinAndSelect('user_room', 'user_room.room')
-            .where('user_room.room_id = :room_id', { 'room_id': roomId })
-            .orderBy('user_room.created_at', 'ASC')
-            .select('user_room.user')
-            .getMany();
+        const users: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
+
         if (users.length === 0) {
-            const room = await this.findOne(roomId);
-            // return await this.remmoveRoom(room);
+            throw new BadRequestException('owner must chose and administrator');
         }
         const newOwnerId: number = users[0].id;
         return this.updateRoom(roomId, { ownerId: newOwnerId });
+    }
+
+    public async isUserInRoom(userId: number, roomId: number): Promise<boolean> {
+        const room: RoomEntity =  await (this.roomRepository.createQueryBuilder('room'))
+            .leftJoinAndSelect(
+                'room.userRoom',
+                'user_room',
+                'user_room.user_id = user_id',
+                { 'user_id': userId }
+            )
+            .where('id = :room_id', { 'room_id': roomId })
+            .getOne();
+            return (room !== null);
     }
 
     ///**************** room auth services *****************/

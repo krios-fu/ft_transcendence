@@ -4,6 +4,7 @@ import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import {
 	Column,
 	Entity,
@@ -14,15 +15,6 @@ import {
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
 import { Category } from "../enum/category.enum";
-
-/*export enum Category {
-	Pending,
-	Iron,
-	Bronze,
-	Silver,
-	Gold,
-	Platinum
-}*/
 
 @Entity({
 	name: 'user'
@@ -123,7 +115,10 @@ export class UserEntity extends BaseEntity {
 	})
 	category : Category;
 
-	@OneToMany(() => MessageEntity, (message) => message.author )
+	@OneToMany(() => UserRoomEntity, (userRoom) => userRoom.user)
+	userRoom: UserRoomEntity[];
+
+	@OneToMany(() => MessageEntity, (message) => message.author)
 	messages : MessageEntity[];
 
 	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
@@ -132,7 +127,7 @@ export class UserEntity extends BaseEntity {
 	@OneToOne
 	(
 		() => RefreshTokenEntity,
-		(tokenEntity) => tokenEntity.authUser,
+		(tokenEntity: RefreshTokenEntity) => tokenEntity.authUser,
 		{ cascade: true }
 	)
 	token: RefreshTokenEntity

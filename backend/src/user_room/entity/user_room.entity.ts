@@ -1,7 +1,8 @@
 import { BaseEntity } from "src/common/classes/base.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/entities/user.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
+import { Column, Entity, Index, JoinColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateUserRoomDto } from "../dto/user_room.dto";
 
 @Entity({name: 'users_room'})
@@ -59,4 +60,7 @@ export class UserRoomEntity extends BaseEntity {
         update: false,
     })
     createdAt: Date
+
+    @OneToMany(() => UserRoomRolesEntity, (userRoomRole) => userRoomRole.userRoom)
+    userRoomRole: UserRoomRolesEntity[];
 }

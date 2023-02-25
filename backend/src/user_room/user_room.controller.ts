@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe, Query, Logger, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { 
+    Controller, 
+    Get, 
+    Post, 
+    Body, 
+    Param, 
+    Delete, 
+    ParseIntPipe, 
+    Query, 
+    Logger, 
+    HttpException,
+    NotFoundException,
+    BadRequestException,
+    HttpStatus, 
+    UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateUserRoomDto } from './dto/user_room.dto';
@@ -32,8 +46,8 @@ export class UserRoomController {
     public async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserRoomEntity> {
         const userRoom = await this.userRoomService.findOne(id);
         if (userRoom === null) {
-            this.userRoomLogger.error('No user room relation with id ' + id + ' found in database');
-            throw new HttpException('no user role in db', HttpStatus.NOT_FOUND);
+            this.userRoomLogger.error(`No user room relation with id ${id} found in database`);
+            throw new NotFoundException('no user role in db');
         }
         return userRoom;
     }
@@ -42,8 +56,8 @@ export class UserRoomController {
     @Get('/rooms/:room_id/users')
     public async getAllUsersInRoom(@Param(':room_id', ParseIntPipe) roomId: number): Promise<UserEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
-            this.userRoomLogger.error('No room with id ' + roomId + ' found in database');
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            this.userRoomLogger.error(`No room with id ${roomId} found in database`);
+            throw new NotFoundException('no room in db');
         }
         return await this.userRoomService.getAllUsersInRoom(roomId);
     }
@@ -52,8 +66,8 @@ export class UserRoomController {
     @Get('/users/:user_id/rooms')
     public async getAllRoomsWithUser(@Param(':user_id', ParseIntPipe) userId: number): Promise<RoomEntity[]> {
         if (await this.userService.findOne(userId) === null) {
-            this.userRoomLogger.error('No user with id ' + userId + ' found in database');
-            throw new HttpException('no user in db', HttpStatus.NOT_FOUND);
+            this.userRoomLogger.error(`No user with id ${userId} found in database`);
+            throw new NotFoundException('no user in db');
         }
         return await this.userRoomService.getAllRoomsWithUser(userId);
     }
@@ -65,8 +79,8 @@ export class UserRoomController {
     public async create(@Body() dto: CreateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;
         if (await this.userRoomService.findUserRoomIds(userId, roomId) !== null) {
-            this.userRoomLogger.error('User ' + userId + ' already present in room ' + roomId + ' in database');
-            throw new HttpException('user room already in db', HttpStatus.BAD_REQUEST);
+            this.userRoomLogger.error(`User ${userId} already registered in room ${roomId}`);
+            throw new BadRequestException('user room already in db');
         }
         return await this.userRoomService.create(dto);
     }
@@ -75,6 +89,12 @@ export class UserRoomController {
     /* at least room mod || me needed */
     @Delete(':id')
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return await this.userRoomService.remove(id);
+        const userRoom: UserRoomEntity = await this.userRoomService.findOne(id);
+
+        if (userRoom === null) {
+            this.userRoomLogger.error(`Entity ${id} not found in database`);
+            throw new NotFoundException('resource not found');
+        }
+        return await this.userRoomService.remove(userRoom);
     }
 }

@@ -6,13 +6,11 @@ import { RoomEntity } from './entity/room.entity';
 import { RoomRepository } from './repository/room.repository';
 import { UserModule } from 'src/user/user.module';
 import { RoomGateway } from './room.gateway';
-import { UserRoomModule } from "../user_room/user_room.module";
+import { UserRoomModule } from 'src/user_room/user_room.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      RoomEntity,
-    ]),
+    TypeOrmModule.forFeature([ RoomEntity ]),
     UserModule,
   ],
   controllers: [RoomController],

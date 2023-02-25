@@ -89,14 +89,22 @@ def del_room_cascade_test(auth_token):
 
 def put_new_owner(auth_token):
     # put a valid new owner and check
-    # put an invalid new owner (no tin room, does not exist)
+    # put an invalid new owner (not in room, does not exist)
     pass
 
 def del_user_as_owner(auth_token):
+    # put user in room
+    # remove user
+    # query room, check owner
     pass
 
 def del_user_in_room_as_owner(auth_token):
+    # put user in room
+    # make user owner
+    # remove user in room
+    # query room, check owner
     pass
+
 
 def main():
    # get token

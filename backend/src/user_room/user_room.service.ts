@@ -35,6 +35,15 @@ export class UserRoomService {
         });
     }
 
+    public async findUserRoomIds(userId: number, roomId: number): Promise<UserRoomEntity> {
+        return await this.userRoomRepository.findOne({
+            where: {
+                userId: userId,
+                roomId: roomId
+            }
+        });
+    }
+
     public async getAllUsersInRoom(roomId: number): Promise<UserEntity[]> {
         const userList = this.userRoomRepository.find({
         select: { userId: true },
@@ -75,39 +84,20 @@ export class UserRoomService {
         const userInRoom = new UserRoomEntity(newDto);
         return await this.userRoomRepository.save(userInRoom);
     }
-
-
-    // if user exits room being an owner, remove it from owner //
-    public async remove(id: number): Promise<void> {
-        const roomRole: RoomRolesEntity = await this.userRoomRepository.findOne({
-            select: { roomId: true },
-            where: { id: id },
-        });
-
-        if (roomRole === null) {
-            throw new NotFoundException('resource not found');
-        }
-        const { room, user_id } = roomRole;
-        const { room_id, owner_id } = room;
+    
+    public async remove(userRoom: UserRoomEntity): Promise<void> {
+        const { id, room, userId: user_id } = userRoom;
+        const { id: room_id, ownerId: owner_id } = room;
         
-        await this.userRoomRepository.delete(id);
-        if (await this.roomRolesService.isRole('official', roomRole.roomId) === true) {
+        await this.userRoomRepository.delete(id); /* delete or remove ?? */
+        if (await this.roomRolesService.isRole('official', room_id) === true) {
             return ;
         }
-        if ((await this.getAllUsersInRoom(roomRole.roomId)).length === 0) {
+        if ((await this.getAllUsersInRoom(room_id)).length === 0) {
             await this.roomService.removeRoom(room);
         }
         if (owner_id === user_id) {
             this.roomService.updateRoomOwner(room_id);
         }
-    }
-
-    public async findUserRoomIds(userId: number, roomId: number): Promise<UserRoomEntity> {
-        return await this.userRoomRepository.findOne({
-            where: {
-                userId: userId,
-                roomId: roomId
-            }
-        });
     }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendshipEntity } from './entities/friendship.entity';
 import { UserEntity } from './entities/user.entity';
@@ -22,7 +22,6 @@ import { RoomModule } from 'src/room/room.module';
             BlockEntity, 
             ChatEntity,
         ]),
-        RoomModule,
     ],
     exports: [UserService],
     controllers: [UserController],

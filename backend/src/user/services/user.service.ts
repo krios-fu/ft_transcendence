@@ -22,7 +22,6 @@ export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private userRepository: UserRepository,
-        private roomService: RoomService,
     ) { }
 
     public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
@@ -91,7 +90,6 @@ export class UserService {
 
     public async deleteUser(user: UserEntity): Promise<void> {
         const { id, photoUrl } = user;
-        const rooms: RoomEntity[] = await this.getRoomsInWhichUserIsOwner(id);
 
         // if user was a room owner, call service that actualizes new owner
         if (photoUrl !== DEFAULT_AVATAR_PATH) {
@@ -101,20 +99,39 @@ export class UserService {
             } catch (err) { }
         }
         await this.userRepository.remove(user);
-        if (rooms.length != 0) {
-            rooms.forEach(async room => await this.roomService.updateRoomOwner(room.id));
-        }
     }
 
-    public async getRoomsInWhichUserIsOwner(userId: number): Promise<RoomEntity[]> {
+    public async getUsersInRoom(roomId: number): Promise<UserEntity[]> {
         return (await this.userRepository.createQueryBuilder('user'))
             .leftJoinAndSelect(
-                'room',
-                'room.owner',
-                'room.owner_id = :user_id',
-                { 'user_id': userId }
+                'user.userRoom',
+                'user_room',
+                'user_room.room_id = :room_id',
+                { 'room_id': roomId }
             )
-            .select('room')
+            .orderBy('user_room.createdAt', 'ASC')
+            .getMany();
+    }
+
+    public async getAdminsInRoom(roomId: number): Promise<UserEntity[]> {
+        return (await this.userRepository.createQueryBuilder('user'))
+            .leftJoinAndSelect(
+                'user.userRoom',
+                'user_room',
+                'user_room.room_id = :room_id',
+                { 'room_id': roomId }
+            )
+            .leftJoinAndSelect(
+                'user_room.userRoomRoles',
+                'user_room_roles',
+            )
+            .leftJoinAndSelect(
+                'user_room_roles.role',
+                'roles',
+                'roles.role = :role',
+                { 'role': 'administrator' }
+            )
+            .orderBy('user_room_roles.createdAt', 'ASC')
             .getMany();
     }
 
