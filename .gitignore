@@ -4,3 +4,6 @@
 
 .*
 !.gitignore
+
+# ~~ python virtual environment ~~ #
+venv
