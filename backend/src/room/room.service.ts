@@ -3,7 +3,7 @@ import { RoomEntity } from "./entity/room.entity";
 import { CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
-import { UpdateResult } from "typeorm";
+import { UpdateResult, DataSource } from "typeorm";
 import { RoomQueryDto } from "./dto/room.query.dto";
 import { QueryMapper } from "src/common/mappers/query.mapper";
 import { UserEntity } from "src/user/entities/user.entity";
@@ -17,6 +17,7 @@ export class RoomService {
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
         private readonly userService: UserService,
+        private readonly dataSource: DataSource
     ) { }
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
@@ -42,6 +43,7 @@ export class RoomService {
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
+        /* post user in room */
         return await this.roomRepository.save(new RoomEntity(dto));
     }
 
@@ -86,16 +88,37 @@ export class RoomService {
     }
 
     public async isUserInRoom(userId: number, roomId: number): Promise<boolean> {
-        const room: RoomEntity =  await (this.roomRepository.createQueryBuilder('room'))
+        const room: RoomEntity = await (this.roomRepository.createQueryBuilder('room'))
             .leftJoinAndSelect(
                 'room.userRoom',
                 'user_room',
-                'user_room.user_id = user_id',
+                'user_room.user_id = :user_id',
                 { 'user_id': userId }
             )
             .where('id = :room_id', { 'room_id': roomId })
             .getOne();
             return (room !== null);
+    }
+
+    public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
+        const room: RoomEntity = await (this.roomRepository.createQueryBuilder('room'))
+        .where('room.id = :room_id', { 'room_id': roomId })
+        .leftJoinAndSelect(
+            'room.userRoom',
+            'user_room',
+            'user_room.user_id = :user_id',
+            { 'user_id': userId }
+        )
+        .leftJoinAndSelect(
+            'user_room.userRoomRoles',
+            'user_room_roles',
+        )
+        .leftJoinAndSelect(
+            'user_room_roles.role',
+            'roles',
+            'roles.role = :role',
+            { 'role': 'admin' }
+        )
     }
 
     ///**************** room auth services *****************/

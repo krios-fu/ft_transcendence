@@ -135,6 +135,10 @@ export class UserService {
             .getMany();
     }
 
+    public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
+        
+    }
+
     /*
     **  ~~   [ Validation guard services ]   ~~
     **

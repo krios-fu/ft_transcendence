@@ -82,6 +82,7 @@ export class RoomController {
             this.roomLogger.error(`User with id ${newOwnerId} is not registered in room`);
             throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
         }
+        /* is user an admin */
         return await this.roomService.updateRoom(id, { ownerId: newOwnerId });
     }
 

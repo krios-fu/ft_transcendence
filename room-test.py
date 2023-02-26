@@ -6,59 +6,114 @@ from dotenv import load_dotenv
 # TEMPORAL, ESTO TIENE QUE IMPLEMENTARSE EN LA BATERIA DE E2E EN JEST
 
 
-def generate_credentials(user):
-    load_dotenv()
-    api_id = os.getenv('FORTYTWO_APP_ID')
-    secret_id = os.getenv('FORTYTWO_APP_SECRET')
-    token_creds = {
-        'userProfile': {
-            'username': user,
-            'firstName': f'{user}-fn',
-            'lastName': f'{user}-ln',
-            'profileUrl': 'none',
-            'email': f'{user}@test.com',
-            'photoUrl': 'none'
-        },
-        'app_id': api_id,
-        'app_secret': secret_id
-    }
-    token_url = 'http://localhost:3000/auth/generate'
+class APITrans():
+    def __init__(self, *args, **kwargs):
+        load_dotenv()
+        for key, value in kwargs.items():
+            self.__setattr__(key, value))
+            api_id = os.getenv('FORTYTWO_APP_ID')
+            api_secret = os.getenv('FORTYTWO_APP_SECRET')
+            if api_id == None or api_secret == None:
+                raise Exception('api credentials were not provided')
+            self.__setattr__('api_id', api_id)
+            self.__setattr__('api_secret', api_secret)
+            self.__get_creds('admin')
+            self.__seed_db()
 
-    r = requests.post(token_url, json=token_creds, timeout=0.2)
-    return r.json()['accessToken']
+    def __setattr__(self, key, value):
+        self.__dict__[key] = value
+
+    def __get_creds(self, user):
+        token_creds = {
+                'userProfile': {
+                'username': user,
+                'firstName': f'{user}-fn',
+                'lastName': f'{user}-ln',
+                'profileUrl': 'none',
+                'email': f'{user}@test.com',
+                'photoUrl': 'none'
+            }, 
+            'app_id': self.__getitem__('api_id'),
+            'app_secret': self.__getitem__('api_secret')
+        }
+        token_url = 'http://localhost:3000/auth/generate'
+        try:
+            r = requests.post(token_url, json=token_creds, timeout=0.2)
+            r.raise_for_status()
+        except requests.ConnectionError as e:
+            print('Error trying to establish a connection to API', file=sys.stderr)
+            raise e
+        except requests.HTTPError as e:
+            print(f'Caught exception: {str(e)}')
+            raise e
+        token = r.json()['accessToken']
+        self.__setattr__('auth_token', { 'Authentication': f'Bearer: {token}' })
+
+    def __post_user(self, username):
+        url = 'http://localhost:3000/user'
+        data = {
+            'username': username,
+            'firstName': f'{username}-fn',
+            'lastName': f'{username}-ln',
+            'profileUrl': f'{username}-pu',
+            'email': f'{username}-e',
+            'photoUrl': f'{username}-pu'
+        }
+        try:
+            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
+            r.raise_for_status()
+        except requests.ConnectionError as e:
+            print('Error trying to establish a connection to API', file=sys.stderr)
+            raise e
+        except requests.HTTPError as e:
+            print(f'Caught exception: {str(e)}')
+            raise e
+        return r.json()
+
+    def __post_room(self, roomname, owner_id):
+        url = 'http://localhost:3000/room'
+        data = {
+            'roomName': roomname,
+            'ownerId': owner_id
+        }
+        try:
+            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
+            r.raise_for_status()
+        except requests.ConnectionError as e:
+            print('Error trying to establish a connection to API', file=sys.stderr)
+            raise e
+        except requests.HTTPError as e:
+            print(f'Caught exception: {str(e)}')
+            raise e
+        return r.json()
+
+    def __post_room(self, roomname, owner_id):
+        url = 'http://localhost:3000/room'
+        data = {
+            'roomName': roomname,
+            'ownerId': owner_id
+        }
+        try:
+            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
+            r.raise_for_status()
+        except requests.ConnectionError as e:
+            print('Error trying to establish a connection to API', file=sys.stderr)
+            raise e
+        except requests.HTTPError as e:
+            print(f'Caught exception: {str(e)}')
+            raise e
+        return r.json()
 
 
-def post_user(username, auth_token):
-    url = 'http://localhost:3000/user'
-    headers = auth_token
-    data = {
-        'username': username,
-        'firstName': f'{username}-fn',
-        'lastName': f'{username}-ln',
-        'profileUrl': f'{username}-pu',
-        'email': f'{username}-e',
-        'photoUrl': f'{username}-pu'
-    }
-    try:
-        r = requests.post(url, headers=headers, data=data)
-        r.raise_for_status()
-    except HTTPError:
-        print('Error trying to post an user')
-        sys.exit(1)
 
-def post_room(roomname, ownerId, auth_token):
-    url = 'http://localhost:3000/room'
-    headers=auth_token
-    data = {
-        'roomName': roomname,
-        'ownerId': ownerId
-    }
-    try:
-        r = requests.post(url, headers=headers, data=data)
-        r.raise_for_status()
-    except HTTPError:
-        print('Error trying to post a room')
-        sys.exit(1)
+    def __post_role(self, rolename):
+        pass
+
+    def __seed_db(self):
+        users = [ self.__post_user(u) for u in ['bob', 'tim', 'eric']]
+        rooms = [ self.__post_room(r, i) for r in ['room-1', 'room-2', 'room-3'] for i in users[0]['id']]
+        role = self.__post_role('admin')
+
 
 def post_user_room(roomId, userId, auth_token):
     url = 'http://localhost:3000/user_room'
@@ -131,3 +186,11 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
+
+# user room roles
+
+put new owner test: the purpose of this test is to check and validate the new owner of the room we are trying to 
+update: new owner has to be registered in the room, and has to have an administrator role
+    test we are going to make: posting an user not in the room, posting a non adminn user, posting a valid user
+    what we need: two users, one user_room, one role ('admin')
