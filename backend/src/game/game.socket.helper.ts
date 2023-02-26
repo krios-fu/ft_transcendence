@@ -5,18 +5,49 @@ import {
     Socket
 } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class    SocketHelper {
 
     private _server: Server;
+    private _mockUserNum: number = 1; //Provisional
 
-    constructor() {
+    constructor(
+        private readonly jwtService: JwtService
+    ) {
         this._server = undefined;
     }
 
     initServer(server: Server): void {
         this._server = server;
+    }
+
+    authenticateConnection(client: Socket, token: string): string | undefined {
+        try {
+            return (
+                this.jwtService.verify(token, {
+                    secret: process.env.FORTYTWO_APP_SECRET
+                })
+                .data.username
+            );
+        }
+        catch(err) {
+            console.error(err);
+            return (undefined);
+        }
+    }
+
+    registerUser(client: Socket, username: string): void {
+        console.log("User authenticated as: ", username);
+        client.emit("mockUser", {
+            mockUser: `user-${this._mockUserNum}`
+        }); //Provisional
+        client.join(`user-${this._mockUserNum}`);
+        console.log(
+            `With id: ${client.id} and username user-${this._mockUserNum}`
+        );
+        ++this._mockUserNum; //Provisional
     }
 
     async addUserToRoom(username: string,

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from 'src/auth/auth.module';
 import { LoserModule } from 'src/match/loser/loser.module';
 import { MatchModule } from 'src/match/match.module';
 import { WinnerModule } from 'src/match/winner/winner.module';
@@ -17,7 +18,8 @@ import { GameUpdateService } from './game.updateService';
     UserModule,
     MatchModule,
     WinnerModule,
-    LoserModule
+    LoserModule,
+    AuthModule
   ],
   providers: [
     GameGateway,
@@ -27,7 +29,7 @@ import { GameUpdateService } from './game.updateService';
     GameRankingService,
     GameReconciliationService,
     SocketHelper,
-    GameRecoveryService,
+    GameRecoveryService
   ],
 })
 export class GameModule {}

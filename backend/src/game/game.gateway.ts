@@ -24,14 +24,14 @@ import { GameUpdateService } from './game.updateService';
 
 @WebSocketGateway(3001, {
     cors: {
-        origin: '*',
+        origin: 'http://localhost:4200',
+        credentials: true
     },
 })
 export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer() server: Server;
-    mockUserNum: number = 1; //Provisional
 
     constructor(
         private readonly updateService: GameUpdateService,
@@ -60,32 +60,20 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     async handleConnection(client: Socket, ...args: any[]) {
-        let gameSelectionData: IGameSelectionData;
-        let gameStartData: IGameClientStart;
-        let username: string = `user-${this.mockUserNum}`; //Provisional
+        let username: string | undefined = undefined;
 
-        console.log("User joined Game room");
-        client.join("Game1"); //Provisional
-        client.emit("mockUser", {
-            mockUser: username
-        }); //Provisional
-        client.join(username);
-        //client.join(userSession)
-        this.queueService.clientInitQueuesLength("Game1", client.id);
-        gameSelectionData = this.updateService.getGameSelectionData("Game1");
-        if (gameSelectionData)
+        if (client.handshake.auth)
         {
-            client.emit("newGame", {
-                role: "Spectator",
-                selection: gameSelectionData
-            });
+            username = this.socketHelper.authenticateConnection(
+                client,
+                client.handshake.auth.token
+            );
         }
+        if (!username)
+            return client.emit("authFailure");
         else
-        {
-            gameStartData = this.updateService.getGameClientStartData("Game1");
-            if (gameStartData)
-                client.emit("startMatch", gameStartData);
-        }
+            client.emit("authSuccess");
+        this.socketHelper.registerUser(client, username);
         client.on("disconnecting", () => {
             const   rooms: IterableIterator<string> = client.rooms.values();
 
@@ -97,12 +85,58 @@ export class    GameGateway implements OnGatewayInit,
                     this.queueService.removeAll(room, username);
             }
         });
-        ++this.mockUserNum; //Provisional
-        console.log(`With id: ${client.id} and username ${username}`);
     }
 
     handleDisconnect(client: Socket) {
         console.log(`Socket ${client.id} disconnected`);
+    }
+
+    @SubscribeMessage("authentication")
+    async authentication(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() token: string
+    ) {
+        const   username: string | undefined =
+                    this.socketHelper.authenticateConnection(client, token);
+    
+        if (!username)
+        {
+            client.emit("authFailure");
+            return ;
+        }
+        this.socketHelper.registerUser(client, username);
+        client.emit("authSuccess");
+    }
+
+    @SubscribeMessage("joinRoom")
+    async joinRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        let gameSelectionData: IGameSelectionData;
+        let gameStartData: IGameClientStart;
+    
+        /*if (!checkRoomExistsInDB()
+                || !checkAuthConnection()
+                || !checkUserAuthorization)
+            return ;*/
+        client.join(roomId);
+        this.queueService.clientInitQueuesLength(roomId, client.id);
+        gameSelectionData = this.updateService.getGameSelectionData(roomId);
+        if (gameSelectionData)
+        {
+            client.emit("newGame", {
+                role: "Spectator",
+                selection: gameSelectionData
+            });
+        }
+        else
+        {
+            gameStartData = this.updateService.getGameClientStartData(roomId);
+            if (gameStartData)
+                client.emit("startMatch", gameStartData);
+        }
+        console.log(`User joined Game room ${roomId}`);
     }
 
     @SubscribeMessage('addToGameQueue')
