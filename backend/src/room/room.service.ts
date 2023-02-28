@@ -106,9 +106,9 @@ export class RoomService {
     }
 
     public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
-        const admins: UserEntity[] = this.userService.getAdminsInRoom(roomId);
+        const admins: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
-        return (admins.filter((user) => user['id'] == userId)).length > 0;
+        return (admins.filter(user => user['id'] == userId)).length > 0;
     }
 
     ///**************** room auth services *****************/

@@ -82,7 +82,6 @@ export class RoomController {
             this.roomLogger.error(`User with id ${newOwnerId} is not allowed to be owner`);
             throw new BadRequestException('no user in room');
         }
-        /* is user an admin */
         return await this.roomService.updateRoom(id, { ownerId: newOwnerId });
     }
 

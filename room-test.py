@@ -1,6 +1,5 @@
 import sys
 import requests
-from requests import HTTPError
 import os
 from dotenv import load_dotenv
 # TEMPORAL, ESTO TIENE QUE IMPLEMENTARSE EN LA BATERIA DE E2E EN JEST
@@ -10,18 +9,21 @@ class APITrans():
     def __init__(self, *args, **kwargs):
         load_dotenv()
         for key, value in kwargs.items():
-            self.__setattr__(key, value)
-            api_id = os.getenv('FORTYTWO_APP_ID')
-            api_secret = os.getenv('FORTYTWO_APP_SECRET')
-            if api_id is None or api_secret is None:
-                raise Exception('api credentials were not provided')
-            self.__setattr__('api_id', api_id)
-            self.__setattr__('api_secret', api_secret)
-            self.__get_creds('admin')
-            self.__seed_db()
+            self.set_param(key, value)
+        api_id = os.getenv('FORTYTWO_APP_ID')
+        api_secret = os.getenv('FORTYTWO_APP_SECRET')
+        if api_id is None or api_secret is None:
+            raise Exception('api credentials were not provided')
+        self.set_param('api_id', api_id)
+        self.set_param('api_secret', api_secret)
+        self.__get_creds('admin')
+        self.__seed_db()
 
-    def __setattr__(self, key, value):
+    def set_param(self, key, value):
         self.__dict__[key] = value
+
+    def get_param(self, key):
+        return self.__dict__[key]
 
     def __get_creds(self, user):
         token_creds = {
@@ -33,25 +35,25 @@ class APITrans():
                 'email': f'{user}@test.com',
                 'photoUrl': 'none'
             }, 
-            'app_id': self.__getitem__('api_id'),
-            'app_secret': self.__getitem__('api_secret')
+            'app_id': self.get_param('api_id'),
+            'app_secret': self.get_param('api_secret')
         }
         token_url = 'http://localhost:3000/auth/generate'
         try:
-            r = requests.post(token_url, json=token_creds, timeout=0.2)
+            r = requests.post(token_url, json=token_creds)
             r.raise_for_status()
         except requests.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
+            raise 'FATAL'
         except requests.HTTPError as e:
             print(f'Caught exception: {str(e)}')
-            raise e
+            raise 'FATAL'
         token = r.json()['accessToken']
-        self.__setattr__('auth_token', { 'Authentication': f'Bearer: {token}' })
+        self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
 
-    def __request_wrapper(self, url, data):
+    def __request_post_wrapper(self, url, data):
         try:
-            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
+            r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
         except requests.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
@@ -62,7 +64,7 @@ class APITrans():
         return r.json()
 
     def __post_user(self, username):
-        url = 'http://localhost:3000/user'
+        url = 'http://localhost:3000/users'
         data = {
             'username': username,
             'firstName': f'{username}-fn',
@@ -71,7 +73,7 @@ class APITrans():
             'email': f'{username}-e',
             'photoUrl': f'{username}-pu'
         }
-        return self.__request_wrapper(url, data)
+        return self.__request_post_wrapper(url, data)
 
     def __post_room(self, room_name, owner_id):
         url = 'http://localhost:3000/room'
@@ -79,13 +81,13 @@ class APITrans():
             'roomName': room_name,
             'ownerId': owner_id
         }
-        return self.__request_wrapper(url, data)
+        return self.__request_post_wrapper(url, data)
 
     def __post_role(self, role_name):
         """ Set up administrator role """
 
         url = 'http://localhosst:3000/roles';
-        return self.__request_wrapper(url, { 'role': role_name })
+        return self.__request_post_wrapper(url, { 'role': role_name })
 
     def __post_user_room(self, room_id, user_id):
         url = 'http://localhost:3000/user_room'
@@ -93,52 +95,91 @@ class APITrans():
             'userId': user_id,
             'roomId': room_id
         }
-        return self.__request_wrapper(url, data)
+        return self.__request_post_wrapper(url, data)
 
-    def __post_user_room_role(room_id, user_id, role_id):
+    def __post_user_room_role(self, room_id, user_id, role_id):
         url = 'http://localhost:3000/user_room_roles'
         data = { 'roomId': room_id, 'userId': user_id, 'roleId': role_id }
-        return self.__request_wrapper(url, data)
+        return self.__request_post_wrapper(url, data)
 
 
     def __seed_db(self):
-        self.__setattr__('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
-        self.__setattr__('rooms', [ self.__post_room(r, i) for r in ['room-1', 'room-2', 'room-3'] for i in users[0]['id']])
-        self.__setattr__('roles', [ self.__post_role('admin') ])
+        self.set_param('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
+        self.set_param('rooms', [ self.__post_room(r, i) for r in ['room-1', 'room-2', 'room-3'] for i in self.users[0]['id']])
+        self.set_param('roles', [ self.__post_role('admin') ])
 
-def put_new_owner(auth_token):
-    """
-    Try the next three cases:
-        Push an unregistered user as an owner
-        Push a non-admin user as an owner
-        Push a room admin as an owner
-    """
-    room_id = self.rooms[0]['id']
-    user_id = self.users[1]['id']
-    url = f'http://localhost:3000/room/{room_id}/owner/{owner_id}'
+    def put_new_owner(self):
+        """
+        Try the next three cases:
+            Push an unregistered user as an owner
+            Push a non-admin user as an owner
+            Push a room admin as an owner
+        """
+        room_id = self.get_param('rooms')[0]['id']
+        user_id = self.users[1]['id']
+        role_id = self.roles[0]['id']
+        url = f'http://localhost:3000/room/{room_id}/owner/{user_id}'
 
-    print('[ Unregistered user as owner ]')
-    self.__request_wrapper()
+        print('[ Unregistered user as owner ]')
+        try:
+            r = requests.put(url, headers=self.get_param('auth_token'))
+            r.raise_for_status()
+            print(f'Request returned with status code {r.status_code}', file=sys.stderr)
+            raise 'FAILED TEST'
+        except requests.HTTPError as e:
+            print(f'Request returned: {e}')
+        except requests.ConnectionError as e:
+            raise e
+
+        print('[ Registered user as owner ]')
+        self.__post_user_room(room_id, user_id)
+        try:
+            r = requests.put(url, headers=self.get_param('auth_token'))
+            r.raise_for_status()
+            print(f'Request returned with status code {r.status_code}', file=sys.stderr)
+            raise 'FAILED TEST'
+        except requests.HTTPError as e:
+            print(f'Request returned: {e}')
+        except requests.ConnectionError as e:
+            raise e
+
+        print('[ Admin user as owner ]')
+        self.__post_user_room_role(room_id, user_id, role_id)
+        try:
+            r = requests.put(url, headers=self.get_param('auth_token'))
+            r.raise_for_status()
+            print(f'Request returned with status code {r.status_code}', file=sys.stderr)
+        except requests.HTTPError as e:
+            print(f'Request returned: {e}')
+            raise 'FAILED TEST'
+        except requests.ConnectionError as e:
+            raise e
+        
+    def del_room_cascade_test(self):
+        print('[ Delete room in cascade ]')
+        room_id = self.rooms[2]['id']
+        user_rooms = [ self.__post_user_room(room_id, user_id) for user_id in 
+            [self.users[i]['id'] for i in len(self.users)] 
+        ]
+        url_get = f'http://localhost:3000/user_room/rooms/{room_id}/users'
+        url_del = f'http://localhost:3000/room/{room_id}'
+        try:
+            print('[ posting users in room... ]')
+            r = requests.get(url_get, headers=self.get_param('auth_token'))
+            print(f'debuga: {r.json()}')
+            assert r.json() == user_rooms, 'Bad user_room post'
+            print('[ deleting room... ]')
+            r = requests.delete(url_del, headers=self.get_param('auth_token'))
+            print('[ querying users in room... ]')
+            r = requests.get(url_get, headers=self.get_param('auth_token'))
+            assert r.json() == [], 'Still users in room !?'
+        except requests.ConnectionError as e:
+            raise e
+        print('[ ...ok ')
 
 
 
-def del_room_cascade_test(auth_token):
-    for u in [ 'user-1', 'user-2', 'user-3' ]:
-        post_user(u, auth_token)
-    for i, r in enumerate([ 'room-1', 'room-2', 'room-3' ]):
-        post_room(r, i, auth_token)
-    for i in range(3):
-        post_user_room(1, i, auth_token)
-    r = requests.get('https://localhost:3000/users_room/room/1', headers=auth_token)        
-    print(f'[ WHAT WE\'VE GOT ]', r.json())
-    try:
-        r = requests.delete('http://localhost:3000/room/1', headers=auth_token)
-        r.raise_for_status()
-    except HTTPError:
-        print('Error trying to delete a room')
-        sys.exit(1)
-    r = requests.get('https://localhost:3000/users_room/room/1', headers=auth_token)
-    print(f'[ WHAT WE\'VE LEFT ]', r.json())
+
 
 def del_user_as_owner(auth_token):
     # put user in room
@@ -155,15 +196,15 @@ def del_user_in_room_as_owner(auth_token):
 
 
 def main():
-   # get token
-   api = APITrans()
+    # get token
+    api = APITrans()
 
     print('[ STARTING TESTS... ]')
     print('[ ... ]')
     print('[ PUT NEW OWNER TESTS ]')
-    put_new_owner(auth_token)
+    api.put_new_owner()
     print('[ DEL ROOM TESTS ]')
-    del_room_cascade_test(auth_token)
+    api.del_room_cascade_test()
     #print('[ DEL USER AS OWNER TESTS ]')
     #del_user_as_owner(auth_token)
     #print('[ DEL USER IN ROOM AS OWNER ]')
@@ -186,5 +227,6 @@ update: new owner has to be registered in the room, and has to have an administr
 del room test: check if cascade has been correctly set up: add multiple user_room entities on a room,
     then delete that room and check if these entities still exist.
 
+del user as owner: 
 
 """
