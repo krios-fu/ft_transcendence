@@ -9,6 +9,7 @@ import { QueryMapper } from "src/common/mappers/query.mapper";
 import { UserEntity } from "src/user/entities/user.entity";
 import * as fs from 'fs';
 import { UserService } from "src/user/services/user.service";
+import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 
 
 @Injectable()
@@ -43,8 +44,12 @@ export class RoomService {
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
-        /* post user in room */
-        return await this.roomRepository.save(new RoomEntity(dto));
+        const room: RoomEntity = new RoomEntity(dto);
+        const { ownerId, id } = room;
+        const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
+
+        room.userRoom.push(userRoom);
+        return await this.roomRepository.save(room);
     }
 
     public async removeRoom(room: RoomEntity): Promise<void> {
@@ -101,24 +106,9 @@ export class RoomService {
     }
 
     public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
-        const room: RoomEntity = await (this.roomRepository.createQueryBuilder('room'))
-        .where('room.id = :room_id', { 'room_id': roomId })
-        .leftJoinAndSelect(
-            'room.userRoom',
-            'user_room',
-            'user_room.user_id = :user_id',
-            { 'user_id': userId }
-        )
-        .leftJoinAndSelect(
-            'user_room.userRoomRoles',
-            'user_room_roles',
-        )
-        .leftJoinAndSelect(
-            'user_room_roles.role',
-            'roles',
-            'roles.role = :role',
-            { 'role': 'admin' }
-        )
+        const admins: UserEntity[] = this.userService.getAdminsInRoom(roomId);
+
+        return (admins.filter((user) => user['id'] == userId)).length > 0;
     }
 
     ///**************** room auth services *****************/

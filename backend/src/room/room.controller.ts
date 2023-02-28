@@ -72,15 +72,15 @@ export class RoomController {
         const room: RoomEntity =await this.roomService.findOne(id);
         if (room === null) {
             this.roomLogger.error(`No room with id ${id} present in database`);
-            throw new HttpException('no room in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no room in db');
         }
         if (await this.userService.findOne(newOwnerId) === null) {
             this.roomLogger.error(`No user with id ${newOwnerId} present in database`);
-            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no user in db');
         }
-        if (await this.roomService.isUserInRoom(newOwnerId, id) === null) {
-            this.roomLogger.error(`User with id ${newOwnerId} is not registered in room`);
-            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
+        if (await this.roomService.validateAdmin(newOwnerId, id) === null) {
+            this.roomLogger.error(`User with id ${newOwnerId} is not allowed to be owner`);
+            throw new BadRequestException('no user in room');
         }
         /* is user an admin */
         return await this.roomService.updateRoom(id, { ownerId: newOwnerId });
@@ -90,11 +90,11 @@ export class RoomController {
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
         if (await this.userService.findOne(ownerId) === null) {
-            throw new HttpException('no user in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no user in db');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
             this.roomLogger.error('room with name ' + roomName + ' already in database');
-            throw new HttpException('room already in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('room already in db');
         }
         return await this.roomService.createRoom(dto);
     }

@@ -97,7 +97,7 @@ export class UserRoomService {
             await this.roomService.removeRoom(room);
         }
         if (owner_id === user_id) {
-            this.roomService.updateRoomOwner(room_id);
+            await this.roomService.updateRoomOwner(room_id);
         }
     }
 }
