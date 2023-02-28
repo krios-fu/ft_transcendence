@@ -13,15 +13,16 @@ import {
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
+import { Category } from "../enum/category.enum";
 
-export enum Category {
+/*export enum Category {
 	Pending,
 	Iron,
 	Bronze,
 	Silver,
 	Gold,
 	Platinum
-}
+}*/
 
 @Entity({
 	name: 'user'
@@ -113,7 +114,6 @@ export class UserEntity extends BaseEntity {
 	acceptedTerms: boolean;
 
 	@Column({
-		type: 'bigint',
 		default: 1500
 	})
 	ranking: number;

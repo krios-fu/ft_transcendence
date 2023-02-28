@@ -20,7 +20,8 @@ import { GameUpdateService } from '../game.updateService';
 export enum GameState {
     Running,
     Paused,
-    Finished
+    Finished, // Natural end
+    Terminated // Forced end
 }
 
 export interface    IGameClientStart {
@@ -57,6 +58,8 @@ export enum GameUpdateResult {
     Point,
     Lag
 }
+
+export type GameType = "classic" | "hero";
 
 export class   Game {
 

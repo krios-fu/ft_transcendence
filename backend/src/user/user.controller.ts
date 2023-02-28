@@ -14,10 +14,8 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    UseGuards,
     NotFoundException,
     HttpCode,
-
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -36,6 +34,7 @@ import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
 import { Public } from 'src/common/decorators/public.decorator';
+import { Express } from 'express';
 
 @Controller('users')
 export class UserController {

@@ -68,8 +68,26 @@ export class    Player {
         return (this._nick);
     }
 
+    get hero(): string | undefined {
+        if (!this._hero)
+            return (undefined);
+        if (this._hero instanceof Aquaman)
+            return ("aquaman");
+        if (this._hero instanceof BlackPanther)
+            return ("blackPanther");
+        return ("superman");
+    }
+
     set score(s: number) {
         this._score = s;
+    }
+
+    static initToData(data: IPlayerInitData): IPlayerData {
+        return ({
+            paddleY: data.paddle.yPos,
+            hero: data.hero ? Hero.initToData(data.hero) : undefined,
+            score: data.score
+        })
     }
 
     update(data: IPlayerData): void {

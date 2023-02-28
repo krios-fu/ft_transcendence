@@ -4,10 +4,10 @@ import {
     IMatchInitData,
     IMatchData
 } from '../elements/Match';
-import { Txt } from '../elements/Txt';
 import { SnapshotBuffer } from '../elements/SnapshotBuffer';
 import { LagCompensationService } from '../services/lag-compensation.service';
 import { LoadService } from '../services/load.service';
+import { GameRecoveryService } from '../services/recovery.service';
 import {
     MatchSoundKeys,
     SoundService
@@ -33,7 +33,8 @@ export class    MatchScene extends BaseScene {
         role: string, socket: SocketIO.Socket, room: string,
         readonly lagCompensator: LagCompensationService,
         readonly loadService: LoadService,
-        readonly soundService: SoundService
+        readonly soundService: SoundService,
+        readonly recoveryService: GameRecoveryService
     ) {
         super(role, socket, room);
         this.queue = [];
@@ -47,15 +48,13 @@ export class    MatchScene extends BaseScene {
         if (Object.keys(initData).length != 0)
             this.initData = initData;
         this.socket.once("end", (data) => {
-            this.match?.destroy();
-            this.buffer = undefined;
-            this.soundService.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             this.scene.start("End", data);
         });
         this.socket.on("matchUpdate", (snapshot: IMatchData) => {
             this.queue.push(snapshot);
         });
+        this.recoveryService.setUp(this);
     }
 
     //Called after init()
@@ -117,6 +116,37 @@ export class    MatchScene extends BaseScene {
             this.buffer.fill(this.queue, this.match.snapshot);
             this.lastServerUpdate = time;
         }
+    }
+
+    destroy(): void {
+        this.removeAllListeners();
+        this.match?.destroy();
+        this.buffer = undefined;
+        this.soundService.destroy();
+    }
+
+    recover(data: IMatchInitData): void {
+        if (!this.match)
+            return ;
+        this.match.stopPointTitle();
+        if (data.playerA.nick != this.match.nickA
+            || data.playerB.nick != this.match.nickB
+            || data.stage != this.match.stage
+            || data.playerA.hero?.name != this.match.heroA
+            || data.playerB.hero?.name != this.match.heroB)
+        {
+            this.destroy();
+            this.init({
+                role: "Spectator", //Improve!!! It could have a different role
+                matchData: data
+            });
+            this.preload();
+            this.create();
+            return ;
+        }
+        this.match.update(Match.initToData(data));
+        this.queue = [];
+        this.buffer?.empty();
     }
 
 }

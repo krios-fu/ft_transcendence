@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import {
-    Category,
-    UserEntity
-} from "../user/entities/user.entity";
+import { UserEntity } from "../user/entities/user.entity";
 import { UserService } from "../user/services/user.service";
+import { GameType } from "./elements/Game";
+import { SocketHelper } from "./game.socket.helper";
+import { Category } from "../user/enum/category.enum";
 
 interface   IQueueElement
 {
@@ -18,38 +18,54 @@ export class    GameQueueService {
 
     constructor(
         private readonly userService: UserService,
+        private readonly socketHelper: SocketHelper
     ) {
         this.gameQueue = new Map<string, IQueueElement[]>;
         this.gameHeroQueue = new Map<string, IQueueElement[]>;
     }
 
-    /*
-    **  Second element in response tuple indicates:
-    **  0 === Classic game
-    **  1 === Hero game
-    */
-    private getNextQueue(gameId): [IQueueElement[], number] {
+    private getNextQueue(gameId): [IQueueElement[], GameType] {
         let queue: IQueueElement[] = this.gameQueue.get(gameId) || [];
         let queueHero: IQueueElement[] = this.gameHeroQueue.get(gameId) || [];
     
         if (queue.length < 2 && queueHero.length < 2)
             return ([[], undefined]);
         if (queue.length < 2 && queueHero.length > 1)
-            return ([queueHero, 1]);
+            return ([queueHero, "hero"]);
         if (queueHero.length < 2 && queue.length > 1)
-            return ([queue, 0]);
+            return ([queue, "classic"]);
         if (queue[0].insertTime < queueHero[0].insertTime)
-            return ([queue, 0]);
-        return ([queueHero, 1]);
+            return ([queue, "classic"]);
+        return ([queueHero, "hero"]);
     }
 
-    /*
-    **  Third element in response tuple indicates:
-    **  0 === Classic game
-    **  1 === Hero game
-    */
-    getNextPlayers(gameId: string): [UserEntity, UserEntity, number] {
-        let [queue, type]: [IQueueElement[], number] =
+    private _emitUpdate(room: string, gameType: GameType,
+                            length: number): void {
+        this.socketHelper.emitToRoom(
+            room,
+            gameType === "classic" ? "queueClassicLength" : "queueHeroLength",
+            length
+        );
+    }
+
+    clientInitQueuesLength(gameId: string, client: string): void {
+        const   queue: IQueueElement[] = this.gameQueue.get(gameId);
+        const   queueHero: IQueueElement[] = this.gameHeroQueue.get(gameId);    
+    
+        this._emitUpdate(
+            client,
+            "classic",
+            queue ? queue.length : 0
+        );
+        this._emitUpdate(
+            client,
+            "hero",
+            queueHero ? queueHero.length : 0
+        );
+    }
+
+    getNextPlayers(gameId: string): [UserEntity, UserEntity, GameType] {
+        let [queue, type]: [IQueueElement[], GameType] =
                                                 this.getNextQueue(gameId);
         let playerA: UserEntity = undefined;
         let playerB: UserEntity = undefined;
@@ -77,6 +93,11 @@ export class    GameQueueService {
         }
         this.removeFromQueue(queue, playerA.username);
         this.removeFromQueue(queue, playerB.username);
+        this._emitUpdate(
+            gameId,
+            type,
+            queue.length
+        )
         return ([playerA, playerB, type]);
     }
 
@@ -84,7 +105,8 @@ export class    GameQueueService {
         return (queue.findIndex((elem) => elem.user.username === username));
     }
 
-    async add(gameId: string, hero: boolean, username: string): Promise<void> {
+    async add(gameId: string, hero: boolean,
+                    username: string): Promise<void> {
         let     targetIndex: number;
         const   userEntity: UserEntity =
                                     await this.userService.findOneByUsername(username);
@@ -108,6 +130,11 @@ export class    GameQueueService {
                 insertTime: Date.now()
             });
         }
+        this._emitUpdate(
+            gameId,
+            hero ? "hero" : "classic",
+            queue.length
+        );
     }
 
     private removeFromQueue(queue: IQueueElement[], username: string): void {
@@ -121,22 +148,17 @@ export class    GameQueueService {
         }
     }
 
-    removeAll(gameId: string, username: string): void {        
-        let queue: IQueueElement[] = this.gameQueue.get(gameId);
-        let queueHero: IQueueElement[] = this.gameHeroQueue.get(gameId);
-
-        if (username === "")
-            return ;
-        this.removeFromQueue(queue, username);
-        this.removeFromQueue(queueHero, username);
-    }
-
     removeClassic(gameId, username: string): void {
         let queue: IQueueElement[] = this.gameQueue.get(gameId);
 
         if (username === "")
             return ;
         this.removeFromQueue(queue, username);
+        this._emitUpdate(
+            gameId,
+            "classic",
+            queue ? queue.length : 0
+        );
     }
 
     removeHero(gameId, username: string): void {
@@ -145,6 +167,18 @@ export class    GameQueueService {
         if (username === "")
             return ;
         this.removeFromQueue(queueHero, username);
+        this._emitUpdate(
+            gameId,
+            "hero",
+            queueHero ? queueHero.length : 0
+        );
+    }
+
+    removeAll(gameId: string, username: string): void {        
+        if (username === "")
+            return ;
+        this.removeClassic(gameId, username);
+        this.removeHero(gameId, username);
     }
 
 }

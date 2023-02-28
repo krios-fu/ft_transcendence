@@ -2,6 +2,7 @@ import { Socket } from "socket.io-client";
 import { IMatchInitData } from "../elements/Match";
 import { MenuHeroRenderer } from "../elements/MenuHeroRenderer";
 import { MenuSelector } from "../elements/MenuSelector";
+import { GameRecoveryService } from "../services/recovery.service";
 import {
     SelectionSoundKeys,
     SoundService
@@ -21,18 +22,16 @@ export class    MenuHeroScene extends MenuScene {
     enter?: any; //Enter key
 
     constructor(sock: Socket, room: string,
-                    private readonly soundService: SoundService) {
-        super(sock, room, "MenuHero");
+                    private readonly soundService: SoundService,
+                    override readonly recoveryService: GameRecoveryService) {
+        super(sock, room, recoveryService, "MenuHero");
     }
 
     override init(initData: IMenuInit) {
         this.role = initData.role;
         this.initData = initData.selection;
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
-            if (this._menuHeroRenderer)
-                this._menuHeroRenderer.destroy();
-            this.soundService.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             if (this.role != "Spectator")
             {
                 this.scene.start("Player", {
@@ -49,12 +48,10 @@ export class    MenuHeroScene extends MenuScene {
             }
         });
         this.socket.once("end", (data) => {
-            if (this._menuHeroRenderer)
-                this._menuHeroRenderer.destroy();
-            this.soundService.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             this.scene.start("End", data);
         });
+        this.recoveryService.setUp(this);
     }
 
     override preload() {
@@ -132,6 +129,29 @@ export class    MenuHeroScene extends MenuScene {
                 this.selector?.confirm(this.role);
             }
         });
+    }
+
+    override destroy(): void {
+        super.destroy();
+        if (this._menuHeroRenderer)
+            this._menuHeroRenderer.destroy();
+        this.soundService.destroy();
+    }
+
+    override recover(data: IMenuInit): void {
+        /*
+        **  This can be improved checking if it is necessary
+        **  to reset the scene, update some values, or do nothing.
+        */
+       this._menuHeroRenderer?.destroy();
+       this.role = data.role;
+       this.initData = data.selection;
+        this._menuHeroRenderer = new MenuHeroRenderer(
+            this,
+            this.initData,
+            this.soundService
+        );
+        this.selector = new MenuSelector(this.initData, this._menuHeroRenderer);
     }
 
 }

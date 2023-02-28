@@ -6,7 +6,8 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { FriendshipRepository } from 'src/user/repositories/friendship.repository';
-import { FriendshipEntity, FriendshipStatus } from 'src/user/entities/friendship.entity';
+import { FriendshipEntity } from 'src/user/entities/friendship.entity';
+import { FriendshipStatus } from "../enum/friendship-status.enum";
 import { CreateFriendDto } from 'src/user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 import { BlockEntity } from "../entities/block.entity";

@@ -170,15 +170,15 @@ export class    MenuSelector {
     }
 
     serverUpdate(data: ISelectionData, role?: string): void {
-        if (this._status === SelectionStatus.Hero
-            && data.status != this._status)
+        if (this._status === SelectionStatus.Hero)
         {
             this.updateHeroes(data);
-            this._status = data.status;
-            this._renderer.changeStatus(this._status);
+            if (data.status != this._status)
+            {
+                this._status = data.status;
+                this._renderer.changeStatus(this._status);
+            }
         }
-        if (this._status === SelectionStatus.Hero)
-            this.updateHeroes(data);
         else
         {
             if (this._stage != data.stage)
@@ -186,7 +186,7 @@ export class    MenuSelector {
                 this._stage = data.stage;
                 this._renderer.render(this._status, "PlayerA", this._stage, false);
             }
-            else if (role === "PlayerB")
+            else if (role != "PlayerA")
                 this._renderer.finish(this._stage);
         }
     }

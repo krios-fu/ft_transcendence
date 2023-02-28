@@ -80,6 +80,17 @@ export abstract class    Hero {
         return ({...this._data});
     }
 
+    static initToData(data: IHeroInitData): IHeroData {
+        return ({
+            xPos: data.sprite.xPos,
+            yPos: data.sprite.yPos,
+            lowXPos: data.spriteLow.xPos,
+            lowYPos: data.spriteLow.yPos,
+            active: data.active,
+            pointInvocation: data.pointInvocation
+        });
+    }
+
     private _updateRenderPosition(heroSprite: Phaser.GameObjects.Sprite,
                                     upper: boolean): void {
         heroSprite.x = upper ? this._data.xPos : this._data.lowXPos;
