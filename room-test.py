@@ -10,10 +10,10 @@ class APITrans():
     def __init__(self, *args, **kwargs):
         load_dotenv()
         for key, value in kwargs.items():
-            self.__setattr__(key, value))
+            self.__setattr__(key, value)
             api_id = os.getenv('FORTYTWO_APP_ID')
             api_secret = os.getenv('FORTYTWO_APP_SECRET')
-            if api_id == None or api_secret == None:
+            if api_id is None or api_secret is None:
                 raise Exception('api credentials were not provided')
             self.__setattr__('api_id', api_id)
             self.__setattr__('api_secret', api_secret)
@@ -49,6 +49,18 @@ class APITrans():
         token = r.json()['accessToken']
         self.__setattr__('auth_token', { 'Authentication': f'Bearer: {token}' })
 
+    def __request_wrapper(self, url, data):
+        try:
+            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
+            r.raise_for_status()
+        except requests.ConnectionError as e:
+            print('Error trying to establish a connection to API', file=sys.stderr)
+            raise e
+        except requests.HTTPError as e:
+            print(f'Caught exception: {str(e)}')
+            raise e
+        return r.json()
+
     def __post_user(self, username):
         url = 'http://localhost:3000/user'
         data = {
@@ -59,90 +71,40 @@ class APITrans():
             'email': f'{username}-e',
             'photoUrl': f'{username}-pu'
         }
-        try:
-            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
-            r.raise_for_status()
-        except requests.ConnectionError as e:
-            print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
-        except requests.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
-            raise e
-        return r.json()
+        return self.__request_wrapper(url, data)
 
-    def __post_room(self, roomname, owner_id):
+    def __post_room(self, room_name, owner_id):
         url = 'http://localhost:3000/room'
         data = {
-            'roomName': roomname,
+            'roomName': room_name,
             'ownerId': owner_id
         }
-        try:
-            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
-            r.raise_for_status()
-        except requests.ConnectionError as e:
-            print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
-        except requests.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
-            raise e
-        return r.json()
+        return self.__request_wrapper(url, data)
 
-    def __post_room(self, roomname, owner_id):
-        url = 'http://localhost:3000/room'
-        data = {
-            'roomName': roomname,
-            'ownerId': owner_id
-        }
-        try:
-            r = requests.post(url, data=data, headers=self.__getitem__('auth_token'))
-            r.raise_for_status()
-        except requests.ConnectionError as e:
-            print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
-        except requests.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
-            raise e
-        return r.json()
-
-
-    def __post_role(self, rolename):
+    def __post_role(self, role_name):
         """ Set up administrator role """
 
         url = 'http://localhosst:3000/roles';
-        try:
-            r = requests.post(url, data={ 'role': rolename }, headers=self.__getitem__('auth_token'))
-            r.raise_for_status()
-        except requests.ConnectionError as e:
-            print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
-        except requests.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
-            raise e
-        return r.json()
+        return self.__request_wrapper(url, { 'role': role_name })
 
-
-    def __seed_db(self):
-        users = [ self.__post_user(u) for u in ['bob', 'tim', 'eric']]
-        rooms = [ self.__post_room(r, i) for r in ['room-1', 'room-2', 'room-3'] for i in users[0]['id']]
-        role = self.__post_role('admin')
-
-
-    def __post_user_room(room_id, user_id, auth_token):
+    def __post_user_room(self, room_id, user_id):
         url = 'http://localhost:3000/user_room'
-        headers = auth_token
         data = {
             'userId': user_id,
             'roomId': room_id
         }
-        try:
-            r = requests.post(url, headers=headers, data=data)
-            r.raise_for_status()
-        except HTTPError:
-            print('Error trying to post a user_room')
-            sys.exit(1)
+        return self.__request_wrapper(url, data)
 
-    def __post_user_room_role(room_id, )
+    def __post_user_room_role(room_id, user_id, role_id):
+        url = 'http://localhost:3000/user_room_roles'
+        data = { 'roomId': room_id, 'userId': user_id, 'roleId': role_id }
+        return self.__request_wrapper(url, data)
 
+
+    def __seed_db(self):
+        self.__setattr__('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
+        self.__setattr__('rooms', [ self.__post_room(r, i) for r in ['room-1', 'room-2', 'room-3'] for i in users[0]['id']])
+        self.__setattr__('roles', [ self.__post_role('admin') ])
 
 def put_new_owner(auth_token):
     """
@@ -151,7 +113,13 @@ def put_new_owner(auth_token):
         Push a non-admin user as an owner
         Push a room admin as an owner
     """
+    room_id = self.rooms[0]['id']
+    user_id = self.users[1]['id']
+    url = f'http://localhost:3000/room/{room_id}/owner/{owner_id}'
+
     print('[ Unregistered user as owner ]')
+    self.__request_wrapper()
+
 
 
 def del_room_cascade_test(auth_token):
