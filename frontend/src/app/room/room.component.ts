@@ -18,6 +18,8 @@ export class RoomComponent implements AfterViewInit {
 
  public CHATS_USERS = [] as UserDto[];
  public FRIENDS_USERS = [] as UserDto[];
+ public FRIENDS_USERS_PENDDING = [] as UserDto[];
+
 
 
   statusTree = false;
@@ -61,7 +63,21 @@ export class RoomComponent implements AfterViewInit {
       }
       console.log("USER FRIENS", this.FRIENDS_USERS)
     })
+
+    this.http.get<any[]>('http://localhost:3000/users/me/friends/as_pendding')
+    .subscribe((friends: any[]) => {
+      for (let friend in friends) {
+        const { receiver } = friends[friend];
+        const { sender } = friends[friend];
+
+        const user = (receiver) ? receiver : sender;
+        if (sender.username && (sender.username !== user_sesion) )
+            this.FRIENDS_USERS_PENDDING.push(user);
+      }
+    })
   }
 
+
+  
   
 }

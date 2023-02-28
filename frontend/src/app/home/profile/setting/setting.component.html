@@ -1,7 +1,5 @@
 <div class="head">
 
-
-	<!-- <div>setting</div> -->
 	<figure class="avatar">
 		<img src={{getPhoto()}} />
 	</figure>
@@ -18,36 +16,36 @@
 
 <form class="example-form" #form="ngForm" (ngSubmit)="alertFormValues(form.form, login.value)" *ngIf="this.user">
 
-	<div>
+	<div style="padding-top: 20px;">
 		<div>
 			<div>
 				<div>
 					<div>
 						<div>
 
-		<br>
-		<br>
-		<br>
-		<section style="justify-content: center; align-items: center; display: flex; background-color: inherit;">
-			<button>
-				<mat-icon style="transform: scale(1.5); padding: 0px;">{{icon}}</mat-icon>
-			</button>
-		</section>
-		<br>
-		<br>
-		<br>
+							<br>
+							<br>
+							<br>
+							<section
+								style="justify-content: center; align-items: center; display: flex; background-color: inherit;">
+								<button>
+									<mat-icon style="transform: scale(1.5); padding: 0px;">{{icon}}</mat-icon>
+								</button>
+							</section>
+							<br>
+							<br>
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	</div>
-</div>
-</div>	</div>
-</div>
-
-	<div style="font-size:x-small; padding: 15px; justify-content: center;">
 
 
+	<section style="padding-top: 20px;">
 
-
-		<mat-tab-group style="font-size: large;">
+		<mat-tab-group mat-align-tabs="end" color="primary" aria-label="primary" style="padding: 10px;">
 			<mat-tab label="General">
 
 				<div style="justify-content: center; align-items: center; align-content: center; padding: 10px;">
@@ -110,9 +108,5 @@
 				</div>
 			</mat-tab>
 		</mat-tab-group>
-
-	</div>
-
-
-
+	</section>
 </form>

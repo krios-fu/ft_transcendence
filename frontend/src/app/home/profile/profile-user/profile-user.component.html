@@ -32,9 +32,9 @@ justify-content: space-around;
 </div>
 
 
-<section style="margin-top: 15px">
-	<span>
-		<a *ngIf="icon_friend_activate" mat-icon-button class="send_friendship" (click)="post_friendship()">
+<section style="margin-top: 15px" *ngIf="icon_activate">
+	<span >
+		<a  mat-icon-button class="send_friendship" (click)="post_friendship()">
 			<mat-icon >{{this.icon_friend}}</mat-icon>
 		</a>
 	</span>
@@ -43,11 +43,19 @@ justify-content: space-around;
 			<mat-icon >chat</mat-icon>
 		</a>
 	</span>
+	<span>
+		<a mat-icon-button class="send_friendship" [routerLink]="[ '/', { outlets: {  game: 'room' } }]" >
+			<mat-icon >videogame_asset</mat-icon>
+		</a>
+	</span>
 </section>
 
-<mat-tab-group >
+
+
+<mat-tab-group  mat-align-tabs="end" color="primary" aria-label="primary" style="padding: 10px;">
+
     
-    <mat-tab label="FRIENDS">
+    <mat-tab label="FRIENDS {{FRIENDS_USERS.length}}">
       <section style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
         <cdk-virtual-scroll-viewport class="efect"
         class="scroll_friend" itemSize="5">
