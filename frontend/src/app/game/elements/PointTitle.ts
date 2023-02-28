@@ -64,6 +64,11 @@ export class    PointTitle {
         });
     }
 
+    stop():void {
+        if (this._tween?.isPlaying())
+            this._tween.complete();
+    }
+
     destroy(): void {
         if (this._tween)
             this._tween.stop();

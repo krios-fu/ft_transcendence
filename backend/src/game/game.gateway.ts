@@ -18,6 +18,7 @@ import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { IGameClientStart } from './elements/Game'
 import { IGameSelectionData } from './elements/GameSelection';
 import { GameQueueService } from './game.queueService';
+import { GameRecoveryService } from './game.recovery.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameUpdateService } from './game.updateService';
 
@@ -35,11 +36,12 @@ export class    GameGateway implements OnGatewayInit,
     constructor(
         private readonly updateService: GameUpdateService,
         private readonly queueService: GameQueueService,
-        private readonly socketHelper: SocketHelper
+        private readonly socketHelper: SocketHelper,
+        private readonly recoveryService: GameRecoveryService
     ) {}
   
     afterInit() {
-        this.updateService.initServer(this.server);
+        this.socketHelper.initServer(this.server);
         console.log("Game Gateway initiated");
     }
 
@@ -69,6 +71,7 @@ export class    GameGateway implements OnGatewayInit,
         }); //Provisional
         client.join(username);
         //client.join(userSession)
+        this.queueService.clientInitQueuesLength("Game1", client.id);
         gameSelectionData = this.updateService.getGameSelectionData("Game1");
         if (gameSelectionData)
         {
@@ -118,7 +121,7 @@ export class    GameGateway implements OnGatewayInit,
     async addToGameHeroQueue(
         @ConnectedSocket() client: Socket,
         @MessageBody() data: any
-    ) {
+    ) {    
         if (!client.rooms.has(data.room))
             return ;
         //Need to implement user authentication
@@ -203,6 +206,14 @@ export class    GameGateway implements OnGatewayInit,
         const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
         this.updateService.heroInput(room, player, false, when);
+    }
+
+    @SubscribeMessage('recover')
+    recover(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        this.recoveryService.recover(client, roomId);
     }
 
   }

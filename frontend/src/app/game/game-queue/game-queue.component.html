@@ -1,0 +1,18 @@
+<div id="container" style="padding: 15px; margin: 0;">
+    <div style="padding: 0; margin: 0;">
+        <button class="button-queue" type="button"
+                [disabled]="queued" (click)="addToQueue()">
+            <span class="button-queue-title">Join Classic Queue</span>
+            <br>
+            <span class="button-queue-number">Waiting Players: {{classicLength}}</span>
+        </button>
+    </div>
+    <div style="padding: 0; margin: 0;">
+        <button class="button-queue" type="button"
+                [disabled]="queued" (click)="addToHeroQueue()">
+            <span class="button-queue-title">Join Hero Queue</span>
+            <br>
+            <span class="button-queue-number">Waiting Players: {{heroLength}}</span>
+        </button>
+    </div>
+</div>

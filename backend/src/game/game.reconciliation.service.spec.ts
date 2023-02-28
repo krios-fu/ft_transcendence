@@ -159,9 +159,9 @@ describe('GameReconciliationService', () => {
             let     result: IGameData[];
         
             result = service.getAffectedSnapshots(input, snapshotBuffer);
-            expect(result.length).toBe(3);
-            expect(result[0].when).toBe(0);
-            expect(result[1].when).toBe(5);
+            expect(result.length).toBe(2);
+            expect(result[0].when).toBe(5);
+            expect(result[1].when).toBe(55);
         });
 
         it("should get correct snapshots", () => {
@@ -175,45 +175,44 @@ describe('GameReconciliationService', () => {
             let     result: IGameData[];
         
             result = service.getAffectedSnapshots(input, snapshotBuffer);
-            expect(result.length).toBe(3);
-            expect(result[0].when).toBe(5);
-            expect(result[2].when).toBe(105);
+            expect(result.length).toBe(2);
+            expect(result[0].when).toBe(55);
+            expect(result[1].when).toBe(105);
         });
+    });
 
-        describe("getAffectedInputs()", () => {
+    describe("getAffectedInputs()", () => {
 
-            it("should get correct inputs", () => {
-                const   snapshot: IGameData = {when: 10} as IGameData;
-                const   inputBuffer: IInputData[] = [
-                    {when: 0} as IInputData,
-                    {when: 5} as IInputData,
-                    {when: 55} as IInputData
-                ];
-                let     result: IInputData[];
-            
-                result = service.getAffectedInputs(snapshot, inputBuffer);
-                expect(result.length).toBe(1);
-                expect(result[0].when).toBe(55);
-            });
-    
-            it("should get correct inputs", () => {
-                const   snapshot: IGameData = {when: 55} as IGameData;
-                const   inputBuffer: IInputData[] = [
-                    {when: 0} as IInputData,
-                    {when: 5} as IInputData,
-                    {when: 55} as IInputData,
-                    {when: 105} as IInputData
-                ];
-                let     result: IInputData[];
-            
-                result = service.getAffectedInputs(snapshot, inputBuffer);
-                expect(result.length).toBe(2);
-                expect(result[0].when).toBe(55);
-                expect(result[1].when).toBe(105);
-            });
+        it("should get correct inputs", () => {
+            const   snapshot: IGameData = {when: 10} as IGameData;
+            const   inputBuffer: IInputData[] = [
+                {when: 0} as IInputData,
+                {when: 5} as IInputData,
+                {when: 55} as IInputData
+            ];
+            let     result: IInputData[];
         
+            result = service.getAffectedInputs(snapshot, inputBuffer);
+            expect(result.length).toBe(1);
+            expect(result[0].when).toBe(55);
         });
 
+        it("should get correct inputs", () => {
+            const   snapshot: IGameData = {when: 55} as IGameData;
+            const   inputBuffer: IInputData[] = [
+                {when: 0} as IInputData,
+                {when: 5} as IInputData,
+                {when: 55} as IInputData,
+                {when: 105} as IInputData
+            ];
+            let     result: IInputData[];
+        
+            result = service.getAffectedInputs(snapshot, inputBuffer);
+            expect(result.length).toBe(2);
+            expect(result[0].when).toBe(55);
+            expect(result[1].when).toBe(105);
+        });
+    
     });
 
 });

@@ -1,4 +1,22 @@
-/*
-**  No styles yet...
-*/
+#container {
+    display: grid;
+    position: relative;
+    width: 100%;
+    height: auto;
+    place-items: center;
+    color: white;
+}
 
+#container-sub {
+    width: 80%;
+}
+
+#container-title {
+    text-align: center;
+}
+
+#container-title h1 {
+    padding: 0;
+    margin: 0;
+    padding-top: 20px;
+}
