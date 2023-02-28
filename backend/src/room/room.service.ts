@@ -86,7 +86,7 @@ export class RoomService {
         const users: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
         if (users.length === 0) {
-            throw new BadRequestException('owner must chose and administrator');
+            throw new BadRequestException('owner must chose and administrator first');
         }
         const newOwnerId: number = users[0].id;
         return this.updateRoom(roomId, { ownerId: newOwnerId });

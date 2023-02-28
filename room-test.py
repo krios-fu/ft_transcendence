@@ -105,9 +105,21 @@ class APITrans():
         return r.json()
 
 
-
     def __post_role(self, rolename):
-        pass
+        """ Set up administrator role """
+
+        url = 'http://localhosst:3000/roles';
+        try:
+            r = requests.post(url, data={ 'role': rolename }, headers=self.__getitem__('auth_token'))
+            r.raise_for_status()
+        except requests.ConnectionError as e:
+            print('Error trying to establish a connection to API', file=sys.stderr)
+            raise e
+        except requests.HTTPError as e:
+            print(f'Caught exception: {str(e)}')
+            raise e
+        return r.json()
+
 
     def __seed_db(self):
         users = [ self.__post_user(u) for u in ['bob', 'tim', 'eric']]
@@ -115,19 +127,32 @@ class APITrans():
         role = self.__post_role('admin')
 
 
-def post_user_room(roomId, userId, auth_token):
-    url = 'http://localhost:3000/user_room'
-    headers = auth_token
-    data = {
-        'userId': userId,
-        'roomId': roomId
-    }
-    try:
-        r = requests.post(url, headers=headers, data=data)
-        r.raise_for_status()
-    except HTTPError:
-        print('Error trying to post a user_room')
-        sys.exit(1)
+    def __post_user_room(room_id, user_id, auth_token):
+        url = 'http://localhost:3000/user_room'
+        headers = auth_token
+        data = {
+            'userId': user_id,
+            'roomId': room_id
+        }
+        try:
+            r = requests.post(url, headers=headers, data=data)
+            r.raise_for_status()
+        except HTTPError:
+            print('Error trying to post a user_room')
+            sys.exit(1)
+
+    def __post_user_room_role(room_id, )
+
+
+def put_new_owner(auth_token):
+    """
+    Try the next three cases:
+        Push an unregistered user as an owner
+        Push a non-admin user as an owner
+        Push a room admin as an owner
+    """
+    print('[ Unregistered user as owner ]')
+
 
 def del_room_cascade_test(auth_token):
     for u in [ 'user-1', 'user-2', 'user-3' ]:
@@ -147,12 +172,6 @@ def del_room_cascade_test(auth_token):
     r = requests.get('https://localhost:3000/users_room/room/1', headers=auth_token)
     print(f'[ WHAT WE\'VE LEFT ]', r.json())
 
-def put_new_owner(auth_token):
-    # put a valid new owner and check
-    # r = requests.get('https://localhost:3000/')
-    # put an invalid new owner (not in room, does not exist)
-    pass
-
 def del_user_as_owner(auth_token):
     # put user in room
     # remove user
@@ -169,7 +188,7 @@ def del_user_in_room_as_owner(auth_token):
 
 def main():
    # get token
-    auth_token = generate_credentials('test')
+   api = APITrans()
 
     print('[ STARTING TESTS... ]')
     print('[ ... ]')
@@ -190,7 +209,14 @@ if __name__ == '__main__':
 
 # user room roles
 
+"""
 put new owner test: the purpose of this test is to check and validate the new owner of the room we are trying to 
 update: new owner has to be registered in the room, and has to have an administrator role
     test we are going to make: posting an user not in the room, posting a non adminn user, posting a valid user
     what we need: two users, one user_room, one role ('admin')
+
+del room test: check if cascade has been correctly set up: add multiple user_room entities on a room,
+    then delete that room and check if these entities still exist.
+
+
+"""

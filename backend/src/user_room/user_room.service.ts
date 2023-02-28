@@ -82,6 +82,7 @@ export class UserRoomService {
 
     public async create(newDto: CreateUserRoomDto) {
         const userInRoom = new UserRoomEntity(newDto);
+
         return await this.userRoomRepository.save(userInRoom);
     }
     
@@ -95,6 +96,7 @@ export class UserRoomService {
         }
         if ((await this.getAllUsersInRoom(room_id)).length === 0) {
             await this.roomService.removeRoom(room);
+            return ;
         }
         if (owner_id === user_id) {
             await this.roomService.updateRoomOwner(room_id);
