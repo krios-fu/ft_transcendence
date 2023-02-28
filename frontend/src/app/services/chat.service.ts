@@ -10,6 +10,7 @@ export class ChatService{
 	){}
 
 	createChat(id_friend: number){
+		console.log("ID_FRIENDS", id_friend)
 		this.http.post('http://localhost:3000/users/me/chat', {
 			friendId : id_friend
 		}).subscribe(

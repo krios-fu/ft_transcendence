@@ -16,14 +16,10 @@ export class ProfileUserComponent implements OnInit {
 
   user: UserDto | undefined;
 
-  state = {
-    'send': true,
-    'pending': false,
-    'accept': false,
-  };
-
   icon_friend = 'person_add'
-  icon_friend_activate = true;
+  icon_activate = true;
+
+  id_friendship = -1
 
   urlApi = 'http://localhost:3000/';
 
@@ -40,48 +36,11 @@ export class ProfileUserComponent implements OnInit {
   }
 
 
-
-
   ngOnInit() {
-    this.route.params.subscribe(({ id }) => {
-      // this.formMessage.patchValue({ id });
-      this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
-        .subscribe((user: UserDto[]) => {
-          this.user = user[0];
-          this.chatService.createChat(this.user.id);
-
-          this.FRIENDS_USERS = [];
-          this.icon_friend_activate = true;
-
-          // change de icone visible add o remove 
-          this.http.get<any>(this.urlApi + 'users/me/friends/' + this.user?.id)
-            .subscribe((friend: any) => {
-              if (friend) {
-                const { receiver } = friend;
-                const { sender } = friend;
-                const user = (receiver) ? receiver : sender;
-                if (user.username == this.user?.username)
-                  this.icon_friend = 'person_remove';
-              }
-              else
-                this.icon_friend_activate = false;
-
-              this.http.get<any[]>(`http://localhost:3000/users/${this.user?.id}/friends`)
-                .subscribe((friends: any[]) => {
-                  for (let friend in friends) {
-                    const { receiver } = friends[friend];
-                    const { sender } = friends[friend];
-                    const user = (receiver) ? receiver : sender;
-                    if (user)
-                      this.FRIENDS_USERS.push(user);
-                  }
-                  console.log("USER FRIENS", this.FRIENDS_USERS)
-                })
-
-            })
-        });
-    });
+    this.friend();
   }
+
+
 
 
 
@@ -95,18 +54,77 @@ export class ProfileUserComponent implements OnInit {
   }
 
   post_friendship() {
-
     if (this.icon_friend === 'person_add') {
       this.http.post(`${this.urlApi}users/me/friends`, {
         receiverId: this.user?.id,
       }).subscribe(
         data => {
-          console.log(data);
+          this.icon_friend = 'pending'
         })
     }
     else if (this.icon_friend === 'person_remove') {
-      // endpoiint deleted friend
+      this.http.delete(`http://localhost:3000/users/me/friends/deleted/${this.id_friendship}`)
+        .subscribe(data => {
+          this.icon_friend = 'person_add'
+        })
     }
+    else if (this.icon_friend === 'check')
+      this.http.patch(`http://localhost:3000/users/me/friends/accept`, {
+        id: this.user?.id
+      })
+        .subscribe(data => {
+          this.icon_friend = 'person_remove'
+        })
+  }
+
+  friend() {
+    this.route.params.subscribe(({ id }) => {
+      // this.formMessage.patchValue({ id });
+      this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
+        .subscribe((user: UserDto[]) => {
+          this.user = user[0];
+          this.icon_activate = true;
+
+          console.log("USERRR CREATED CHAT", this.user)
+          if (this.user.username == this.authService.getAuthUser()){
+            this.icon_activate = true;
+          }
+          else
+            this.chatService.createChat(this.user.id);
+
+
+          this.FRIENDS_USERS = [];
+          // change de icone visible add o remove 
+
+          this.http.get<any>(this.urlApi + `users/me/friends/as_pendding?filter[nickName]=${id}`)
+            .subscribe((friend: any) => {
+              if (friend.length > 0) {
+                const { receiver } = friend[0];
+                if (receiver && this.user?.username == receiver.username)
+                  this.icon_friend = 'pending';
+                else
+                  this.icon_friend = 'check';
+              }
+            });
+          this.http.get<any>(this.urlApi + 'users/me/friends/' + this.user?.id)
+            .subscribe((friend: any) => {
+              if (friend) {
+                this.id_friendship = friend.id
+                this.icon_friend = 'person_remove';
+              }
+              this.http.get<any[]>(`http://localhost:3000/users/${this.user?.id}/friends`)
+                .subscribe((friends: any[]) => {
+                  for (let friend in friends) {
+                    const { receiver } = friends[friend];
+                    const { sender } = friends[friend];
+                    const user = (receiver) ? receiver : sender;
+                    if (user)
+                      this.FRIENDS_USERS.push(user);
+                  }
+                })
+            })
+        });
+    });
   }
 
 }

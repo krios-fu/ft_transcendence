@@ -36,7 +36,6 @@ export class ChatIdComponent implements OnInit {
     private http: HttpClient) {
 
     this.unfold = 'unfold_less';
-    console.log("CHAT COMPONENT", this.route.params)
     // this.login = this.route.snapshot.paramMap.get('id')?.toString();
   }
 
@@ -60,6 +59,8 @@ export class ChatIdComponent implements OnInit {
       this.chat.getMessageApi(id);
     });
   }
+
+
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
     console.log(message, room)
@@ -87,6 +88,5 @@ export class ChatIdComponent implements OnInit {
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
 
-    // this.state["chat"] =  true;
   }
 }

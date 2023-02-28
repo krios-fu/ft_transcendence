@@ -13,7 +13,7 @@ import { UpdateResult, DataSource } from 'typeorm';
 import { BlockEntity } from "../entities/block.entity";
 
 @Injectable()
-export class    FriendshipService {
+export class FriendshipService {
     constructor(
         @InjectRepository(FriendshipEntity)
         private readonly friendRepository: FriendshipRepository,
@@ -34,11 +34,11 @@ export class    FriendshipService {
     */
 
     public async addFriend(dto: CreateFriendDto)
-                    : Promise<FriendshipEntity> {
-        const   { senderId, receiverId } = dto;
-        const   friendship = new FriendshipEntity();
-        const   queryRunner = this.datasource.createQueryRunner();
-        let     users: UserEntity[];
+        : Promise<FriendshipEntity> {
+        const { senderId, receiverId } = dto;
+        const friendship = new FriendshipEntity();
+        const queryRunner = this.datasource.createQueryRunner();
+        let users: UserEntity[];
 
         //Start transaction
         await queryRunner.connect();
@@ -58,19 +58,19 @@ export class    FriendshipService {
                 ? users[0] : users[1];
             friendship.senderId = friendship.sender.id;
             friendship.receiverId = friendship.receiver.id;
-            if ( (await queryRunner.manager.find(FriendshipEntity, {
+            if ((await queryRunner.manager.find(FriendshipEntity, {
                 where: {
                     senderId: receiverId,
                     receiverId: senderId
                 }
-            })).length != 0 )
+            })).length != 0)
                 throw new HttpException("Conflict", HttpStatus.CONFLICT);
             await queryRunner.manager.insert(FriendshipEntity, friendship);
             await queryRunner.commitTransaction();
         } catch (err) {
             console.log(err);
             throw new HttpException("Internal Server Error",
-                                    HttpStatus.INTERNAL_SERVER_ERROR);
+                HttpStatus.INTERNAL_SERVER_ERROR);
         } finally {
             await queryRunner.release();
         }
@@ -83,12 +83,12 @@ export class    FriendshipService {
                 "friendship.sender",
                 "sender",
                 "sender.id!= :id",
-                {id: userId})
+                { id: userId })
             .leftJoinAndSelect(
                 "friendship.receiver",
                 "receiver",
                 "receiver.id!= :id",
-                {id: userId})
+                { id: userId })
             .where(
                 "friendship.senderId= :id"
                 + " AND friendship.status= :status",
@@ -110,47 +110,47 @@ export class    FriendshipService {
 
     public async getPossibleFriends(userId: number): Promise<FriendshipEntity[]> {
         return await this.friendRepository.createQueryBuilder('friendship')
-        .leftJoinAndSelect(
-            "friendship.sender",
-            "sender",
-            "sender.id!= :id",
-            {id: userId})
-        .leftJoinAndSelect(
-            "friendship.receiver",
-            "receiver",
-            "receiver.id!= :id",
-            {id: userId})
-        .where(
-            "friendship.senderId= :id"
-            + " AND friendship.status= :status",
-            {
-                id: userId,
-                status: FriendshipStatus.PENDING
-            })
-        .orWhere(
-            "friendship.receiverId= :id"
-            + " AND friendship.status= :status",
-            {
-                id: userId,
-                status: FriendshipStatus.PENDING
-            })
-        .getMany()
+            .leftJoinAndSelect(
+                "friendship.sender",
+                "sender",
+                "sender.id!= :id",
+                { id: userId })
+            .leftJoinAndSelect(
+                "friendship.receiver",
+                "receiver",
+                "receiver.id!= :id",
+                { id: userId })
+            .where(
+                "friendship.senderId= :id"
+                + " AND friendship.status= :status",
+                {
+                    id: userId,
+                    status: FriendshipStatus.PENDING
+                })
+            .orWhere(
+                "friendship.receiverId= :id"
+                + " AND friendship.status= :status",
+                {
+                    id: userId,
+                    status: FriendshipStatus.PENDING
+                })
+            .getMany()
     }
 
 
     public async getOneFriend(userId: number, friendId: number)
-                        : Promise<FriendshipEntity> {
+        : Promise<FriendshipEntity> {
         return (await this.friendRepository.createQueryBuilder("friendship")
             .leftJoinAndSelect(
                 "friendship.sender",
                 "sender",
                 "sender.id!= :id",
-                {id: userId})
+                { id: userId })
             .leftJoinAndSelect(
                 "friendship.receiver",
                 "receiver",
                 "receiver.id!= :id",
-                {id: userId})
+                { id: userId })
             .where(
                 "friendship.senderId= :uId"
                 + " AND friendship.receiverId= :fId"
@@ -183,7 +183,7 @@ export class    FriendshipService {
                 'friendship.senderId = :id'
                 + ' AND friendship.status = :status',
                 {
-                    id:     id,
+                    id: id,
                     status: FriendshipStatus.BLOCKED
                 }
             )
@@ -191,7 +191,7 @@ export class    FriendshipService {
                 'friendship.receiverId = :id'
                 + ' AND friendship.status = "status',
                 {
-                    id:     id,
+                    id: id,
                     status: FriendshipStatus.BLOCKED
                 }
             ).getMany();
@@ -221,9 +221,9 @@ export class    FriendshipService {
                 + ' AND friendship.status = :status'
                 + ' AND friendship.block.',
                 {
-                    user_id:    userId,
+                    user_id: userId,
                     blocked_id: blockedId,
-                    status:     FriendshipStatus.BLOCKED
+                    status: FriendshipStatus.BLOCKED
 
                 })
             .orWhere(
@@ -231,9 +231,9 @@ export class    FriendshipService {
                 + ' AND friendship.senderId = :blocked_id'
                 + ' AND friendship.status = "status',
                 {
-                    user_id:    userId,
+                    user_id: userId,
                     blocked_id: blockedId,
-                    status:     FriendshipStatus.BLOCKED
+                    status: FriendshipStatus.BLOCKED
                 })
             .getOne();
     }
@@ -244,14 +244,22 @@ export class    FriendshipService {
     */
 
     public async acceptFriend(receiverId: number, senderId: number)
-                        :  Promise<UpdateResult> {
+        : Promise<UpdateResult> {
         return await this.friendRepository.update(
             {
                 senderId: senderId,
                 receiverId: receiverId,
-                status : FriendshipStatus.PENDING
+                status: FriendshipStatus.PENDING
             },
             { status: FriendshipStatus.CONFIRMED }
+        );
+    }
+
+    public async deletedFriend(id_deleted){
+        return await this.friendRepository.delete(
+            {
+                id : id_deleted
+            }
         );
     }
 
@@ -261,7 +269,7 @@ export class    FriendshipService {
     */
 
     public async refuseFriend(receiverId: number, senderId: number)
-                        :  Promise<UpdateResult> {
+        : Promise<UpdateResult> {
         return await this.friendRepository.update(
             {
                 senderId: senderId,
