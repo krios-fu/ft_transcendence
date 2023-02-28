@@ -11,6 +11,7 @@ import { GameReconciliationService } from './game.reconciliation.service';
 import { GameRecoveryService } from './game.recovery.service';
 import { GameService } from './game.service';
 import { SocketHelper } from './game.socket.helper';
+import { GameSocketAuthService } from './game.socketAuth.service';
 import { GameUpdateService } from './game.updateService';
 
 @Module({
@@ -29,7 +30,8 @@ import { GameUpdateService } from './game.updateService';
     GameRankingService,
     GameReconciliationService,
     SocketHelper,
-    GameRecoveryService
+    GameRecoveryService,
+    GameSocketAuthService
   ],
 })
 export class GameModule {}

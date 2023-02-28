@@ -4,6 +4,17 @@ import * as SockIO from 'socket.io-client';
 import { IAuthPayload } from 'src/app/interfaces/iauth-payload.interface';
 import { AuthService } from 'src/app/services/auth.service';
 
+enum SocketException {
+    Unauthorized = "unauthorized",
+    Forbidden = "forbidden"
+}
+
+interface   SocketExceptionData {
+    cause: SocketException;
+    data: any;
+    targetEvent: string;
+}
+
 @Injectable({
     providedIn: "root"
 })
@@ -11,23 +22,25 @@ export class    SocketService {
 
     private _socket: SockIO.Socket;
     private _authAttempts: number;
+    private _authenticating: boolean;
+    private _failedEvents: SocketExceptionData[];
     private _room: string;
     private _username?: string; //Provisional
 
     constructor(
         private readonly authService: AuthService
     ) {
-        this._socket = SockIO.io("ws://localhost:3001", {
-            auth: {
-                token: this.authService.getAuthToken()
-            },
-        });
+        this._socket = SockIO.io("ws://localhost:3001");
         this._addConnectionEvents();
         this._authAttempts = 0;
+        this._authenticating = false;
+        this._failedEvents = [];
         this._room = "Game1"; //Provisional
         this._socket.once("mockUser", (data: any) => {
             this._username = data.mockUser;
         }); //Provisional
+        //Authenticate through this event to register user in socket server
+        this.emit("authentication", this.authService.getAuthToken());
     }
 
     get socket(): SockIO.Socket {
@@ -42,38 +55,72 @@ export class    SocketService {
         return (this._username);
     }
 
+    private _checkMaxAuthAttempts(): boolean {
+        if (this._authAttempts < 3)
+            return (false);
+        this._authAttempts = 0;
+        this._authenticating = false;
+        this._socket.disconnect();
+        this._socket.connect();
+        return (true);
+    }
+
     // Don't need to unsubscribe, as it returns just one value
     private _authenticateConnection(): void {
+        if (this._checkMaxAuthAttempts())
+            return ;
+        ++this._authAttempts;
         this.authService.directRefreshToken().subscribe(
             (payload: IAuthPayload | undefined) => {
                 console.log(payload);
                 if (!payload)
                     return ;
+                this._socket.auth = { token: payload.accessToken };
+                console.log("New Token: ", payload.accessToken);
                 this._socket.emit("authentication", payload.accessToken);
             }
         );
     }
 
+    private _emitFailedEvents(): void {
+        this._failedEvents.forEach((event) => {
+            this.emit(event.targetEvent, event.data);
+        });
+        this._failedEvents = [];
+    }
+
     private _addConnectionEvents(): void {
-        this._socket.on("authFailure", () => {
-            if (this._authAttempts < 3)
+        this._socket.on("exception", (xcpt: SocketExceptionData) => {
+            console.log("Exception: ", xcpt);
+            if (xcpt.cause === SocketException.Unauthorized)
             {
-                ++this._authAttempts;
+                if (xcpt.targetEvent != "authentication")
+                    this._failedEvents.push(xcpt);
+                if (this._authenticating)
+                    return ;
+                this._authenticating = true;
                 this._authenticateConnection();
             }
         });
         this.socket.on("authSuccess", () => {
+            this._authenticating = false;
             this._authAttempts = 0;
+            this._emitFailedEvents();
+        });
+        this._socket.on("disconnect", () => {
+            console.log("Disconnected");
+            this._socket.removeAllListeners();
+            this.socket.connect();
         });
     }
 
     joinRoom(roomId: string): void {
         if (!roomId || roomId === "")
             return ;
-        this._socket.emit("joinRoom", roomId);
+        this.emit<string>("joinRoom", roomId);
     }
 
-    emit<T>(event: string, data: T): void {
+    emit<T = undefined>(event: string, data?: T): void {
         this._socket.emit(event, data);
     }
 
