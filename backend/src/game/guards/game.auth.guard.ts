@@ -32,7 +32,7 @@ export class    GameAuthGuard implements CanActivate {
         return (token as string);
     }
 
-    // Validate JWT token and inject username into client.
+    // Validate JWT token and inject token and username into client.
     private _identifyUser(client: Socket, handlerName: string,
                             ctx: WsArgumentsHost): boolean {
         let token: string;
