@@ -55,29 +55,39 @@ export class    SocketService {
         return (this._username);
     }
 
+    private _reconnect(): void {
+        this._socket.connect();
+        //Authenticate through this event to register user in socket server
+        this.emit("authentication", this.authService.getAuthToken());
+    }
+
     private _checkMaxAuthAttempts(): boolean {
         if (this._authAttempts < 3)
             return (false);
         this._authAttempts = 0;
         this._authenticating = false;
         this._socket.disconnect();
-        this._socket.connect();
+        this._reconnect();
         return (true);
     }
 
-    // Don't need to unsubscribe, as it returns just one value
+    /*
+    **  Don't need to unsubscribe, as it returns just one value.
+    **
+    **  Not using handshake.auth because it cannot be modified after
+    **  the initial assignment after connection. And don't want to disconnect
+    **  the socket each time the token gets refreshed, as it would impact UX
+    **  negatively.
+    */
     private _authenticateConnection(): void {
         if (this._checkMaxAuthAttempts())
             return ;
         ++this._authAttempts;
         this.authService.directRefreshToken().subscribe(
             (payload: IAuthPayload | undefined) => {
-                console.log(payload);
                 if (!payload)
                     return ;
-                this._socket.auth = { token: payload.accessToken };
-                console.log("New Token: ", payload.accessToken);
-                this._socket.emit("authentication", payload.accessToken);
+                this.emit<string>("authentication", payload.accessToken);
             }
         );
     }
@@ -108,9 +118,7 @@ export class    SocketService {
             this._emitFailedEvents();
         });
         this._socket.on("disconnect", () => {
-            console.log("Disconnected");
-            this._socket.removeAllListeners();
-            this.socket.connect();
+            this._reconnect();
         });
     }
 
