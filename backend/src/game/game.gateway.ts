@@ -21,6 +21,7 @@ import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
 import { GameUpdateService } from './game.updateService';
 import { GameAuthGuard } from './guards/game.auth.guard';
+import { GameRoomGuard } from './guards/game.room.guard';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -74,7 +75,7 @@ export class    GameGateway implements OnGatewayInit,
         client.emit("authSuccess");
     }
 
-    @UseGuards(GameAuthGuard)
+    @UseGuards(GameAuthGuard, GameRoomGuard)
     @SubscribeMessage("joinRoom")
     async joinRoom(
         @ConnectedSocket() client: Socket,
@@ -102,30 +103,32 @@ export class    GameGateway implements OnGatewayInit,
         console.log(`${client.data.username} joined Game room ${roomId}`);
     }
 
-    @UseGuards(GameAuthGuard)
+    @UseGuards(GameAuthGuard, GameRoomGuard)
     @SubscribeMessage('addToGameQueue')
     async addToGameQueue(
         @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
+        @MessageBody() roomId: string
     ) {
-        if (!client.rooms.has(data.room))
-            return ;
-        //Need to implement user authentication
-        await this.queueService.add(data.room, false, data.username);
-        this.updateService.attemptGameInit(data.room);
+        await this.queueService.add(
+            roomId,
+            false,
+            client.data.mockUser //Provisional
+        );
+        this.updateService.attemptGameInit(roomId);
     }
 
-    @UseGuards(GameAuthGuard)
+    @UseGuards(GameAuthGuard, GameRoomGuard)
     @SubscribeMessage('addToGameHeroQueue')
     async addToGameHeroQueue(
         @ConnectedSocket() client: Socket,
-        @MessageBody() data: any
-    ) {    
-        if (!client.rooms.has(data.room))
-            return ;
-        //Need to implement user authentication
-        await this.queueService.add(data.room, true, data.username);
-        this.updateService.attemptGameInit(data.room);
+        @MessageBody() roomId: string
+    ) {
+        await this.queueService.add(
+            roomId,
+            true,
+            client.data.mockUser // Provisional
+        );
+        this.updateService.attemptGameInit(roomId);
     }
 
     @SubscribeMessage('leftSelection')
@@ -207,6 +210,7 @@ export class    GameGateway implements OnGatewayInit,
         this.updateService.heroInput(room, player, false, when);
     }
 
+    @UseGuards(GameRoomGuard)
     @SubscribeMessage('recover')
     recover(
         @ConnectedSocket() client: Socket,

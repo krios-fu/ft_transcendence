@@ -36,18 +36,18 @@ export class    QueueService {
     }
 
     addToQueue(): boolean {
-        this.socketService.emit<any>("addToGameQueue", {
-            room: this.socketService.room,
-            username: this.socketService.username
-        });
+        this.socketService.emit<any>(
+            "addToGameQueue",
+            this.socketService.room
+        );
         return (true);
     }
 
     addToHeroQueue() {
-        this.socketService.emit<any>("addToGameHeroQueue", {
-            room: this.socketService.room,
-            username: this.socketService.username
-        });
+        this.socketService.emit<any>(
+            "addToGameHeroQueue",
+            this.socketService.room
+        );
         return (true);
     }
 
