@@ -8,6 +8,7 @@ import { Observable } from "rxjs";
 import { Socket } from "socket.io";
 import { AuthService } from "src/auth/auth.service";
 import { IJwtPayload } from "src/common/interfaces/request-payload.interface";
+import { BadRequestWsException } from "../exceptions/badRequest.wsException";
 import { UnauthorizedWsException } from "../exceptions/unauthorized.wsException";
 import { GameSocketAuthService } from "../game.socketAuth.service";
 
@@ -34,11 +35,9 @@ export class    GameAuthGuard implements CanActivate {
 
     // Validate JWT token and inject token and username into client.
     private _identifyUser(client: Socket, handlerName: string,
-                            ctx: WsArgumentsHost): boolean {
-        let token: string;
+                            token: string): boolean {
         let payload: IJwtPayload | undefined;
     
-        token = this._getToken(client, handlerName, ctx);
         payload = this.authService.validateJWToken(token);
         if (!payload)
             return (false);
@@ -53,12 +52,22 @@ export class    GameAuthGuard implements CanActivate {
                     : boolean | Promise<boolean> | Observable<boolean> {
         const   wsContext: WsArgumentsHost = context.switchToWs();
         const   client: Socket = wsContext.getClient<Socket>();
+        const   handlerName: string = context.getHandler().name;
+        const   token = this._getToken(client, handlerName, wsContext);
     
-        if (!this._identifyUser(client, context.getHandler().name, wsContext))
+        if (!token)
+        {
+            this.socketAuthService.addAuthTimeout(client);
+            throw new BadRequestWsException(
+                handlerName, //Handlers must have same name as event
+                wsContext.getData()
+            );
+        }
+        if (!this._identifyUser(client, handlerName, token))
         {
             this.socketAuthService.addAuthTimeout(client);
             throw new UnauthorizedWsException(
-                context.getHandler().name, //Handlers must have same name as event
+                handlerName, //Handlers must have same name as event
                 wsContext.getData()
             );
         }

@@ -6,7 +6,8 @@ import { AuthService } from 'src/app/services/auth.service';
 
 enum SocketException {
     Unauthorized = "unauthorized",
-    Forbidden = "forbidden"
+    Forbidden = "forbidden",
+    BadRequest = "badRequest"
 }
 
 interface   SocketExceptionData {
@@ -102,7 +103,7 @@ export class    SocketService {
     private _addConnectionEvents(): void {
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
             console.log("Exception: ", xcpt);
-            if (xcpt.cause === SocketException.Unauthorized)
+            if (xcpt.cause != SocketException.Forbidden)
             {
                 if (xcpt.targetEvent != "authentication")
                     this._failedEvents.push(xcpt);
