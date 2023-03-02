@@ -67,6 +67,7 @@ export class    GameGateway implements OnGatewayInit,
         this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
         client.on("disconnecting", () => {
+            this.socketAuthService.removeUser(client, client.data.mockUser); //Provisional
             this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
