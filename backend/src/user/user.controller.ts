@@ -78,9 +78,10 @@ export class UserController {
     ** Find one user registered into app by id (regex: param must be a number).
     */
 
-    @Get('$(0-9)*^')
+    @Get(':id([0-9]+)')
     async findOneUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
-        const user = await this.userService.findOne(id);
+        const user: UserEntity = await this.userService.findOne(id);
+
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);
             throw new HttpException('no user in db', HttpStatus.NOT_FOUND);
@@ -93,9 +94,10 @@ export class UserController {
     ** (regex: param must be only ascii characters).
     */
 
-    @Get('$(A-Za-z\-)*^')
+    @Get(':id([a-zA-Z-]{3,})')
     public async findOneUserByUsername(@Param('id') id: string): Promise<UserEntity> {
-        const user = await this.userService.findOneByUsername(id);
+        const user: UserEntity = await this.userService.findOneByUsername(id);
+
         if (user === null) {
             this.userLogger.error(`User with login ${id} not found in database`);
             throw new HttpException('no user in db', HttpStatus.NOT_FOUND);

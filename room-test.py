@@ -51,32 +51,38 @@ class APITrans():
         token = r.json()['accessToken']
         self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
 
+    def __request_get_wrapper(self, url, id):
+        pass
+
     def __request_post_wrapper(self, url, data):
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
-        except requests.ConnectionError as e:
+        except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
-        except requests.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
             raise e
         return r.json()
 
     def __post_user(self, username):
-        url = 'http://localhost:3000/users'
+        url = 'http://localhost:3000/users/'
         data = {
             'username': username,
             'firstName': f'{username}-fn',
             'lastName': f'{username}-ln',
             'profileUrl': f'{username}-pu',
-            'email': f'{username}-e',
+            'email': f'{username}@email.com',
             'photoUrl': f'{username}-pu'
         }
-        return self.__request_post_wrapper(url, data)
+        user = []
+        try:
+            user = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError as e:
+            print(f'[ logging HTTP error... ] {r.json()}', file=sys.stderr)
+            user = self.__request_get_wrapper(url, data['username'])
+        return user
 
     def __post_room(self, room_name, owner_id):
-        url = 'http://localhost:3000/room'
+        url = 'http://localhost:3000/room/'
         data = {
             'roomName': room_name,
             'ownerId': owner_id
@@ -86,7 +92,7 @@ class APITrans():
     def __post_role(self, role_name):
         """ Set up administrator role """
 
-        url = 'http://localhosst:3000/roles';
+        url = 'http://localhosst:3000/roles/';
         return self.__request_post_wrapper(url, { 'role': role_name })
 
     def __post_user_room(self, room_id, user_id):
@@ -105,7 +111,7 @@ class APITrans():
 
     def __seed_db(self):
         self.set_param('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
-        self.set_param('rooms', [ self.__post_room(r, i) for r in ['room-1', 'room-2', 'room-3'] for i in self.users[0]['id']])
+        self.set_param('rooms', [ self.__post_room(r, self.users[0]['id']) for r in ['room-1', 'room-2', 'room-3']])
         self.set_param('roles', [ self.__post_role('admin') ])
 
     def put_new_owner(self):
@@ -126,9 +132,9 @@ class APITrans():
             r.raise_for_status()
             print(f'Request returned with status code {r.status_code}', file=sys.stderr)
             raise 'FAILED TEST'
-        except requests.HTTPError as e:
+        except requests.exceptions.HTTPError as e:
             print(f'Request returned: {e}')
-        except requests.ConnectionError as e:
+        except requests.exceptions.ConnectionError as e:
             raise e
 
         print('[ Registered user as owner ]')
@@ -138,9 +144,9 @@ class APITrans():
             r.raise_for_status()
             print(f'Request returned with status code {r.status_code}', file=sys.stderr)
             raise 'FAILED TEST'
-        except requests.HTTPError as e:
+        except requests.exceptions.HTTPError as e:
             print(f'Request returned: {e}')
-        except requests.ConnectionError as e:
+        except requests.exceptions.ConnectionError as e:
             raise e
 
         print('[ Admin user as owner ]')
@@ -149,10 +155,10 @@ class APITrans():
             r = requests.put(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             print(f'Request returned with status code {r.status_code}', file=sys.stderr)
-        except requests.HTTPError as e:
+        except requests.exceptions.HTTPError as e:
             print(f'Request returned: {e}')
             raise 'FAILED TEST'
-        except requests.ConnectionError as e:
+        except requests.exceptions.ConnectionError as e:
             raise e
         
     def del_room_cascade_test(self):
@@ -173,7 +179,7 @@ class APITrans():
             print('[ querying users in room... ]')
             r = requests.get(url_get, headers=self.get_param('auth_token'))
             assert r.json() == [], 'Still users in room !?'
-        except requests.ConnectionError as e:
+        except requests.exceptions.ConnectionError as e:
             raise e
         print('[ ...ok ')
 
