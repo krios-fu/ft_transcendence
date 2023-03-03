@@ -25,6 +25,8 @@ export class    GameComponent implements OnInit {
     private socket: SockIO.Socket;
     private game?: Phaser.Game;
 
+    roomId: string;
+
     constructor (
         private readonly socketService: SocketService,
         private readonly lagCompensator: LagCompensationService,
@@ -50,6 +52,8 @@ export class    GameComponent implements OnInit {
             scene: undefined // Will be assigned afterwards
         };
         this.socket = this.socketService.socket;
+        this.roomId = "Game1";
+        this.socketService.joinRoom(this.roomId);
     }
 
     ngOnInit(): void {

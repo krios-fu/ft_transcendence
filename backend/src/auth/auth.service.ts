@@ -7,6 +7,7 @@ import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { CreateUserDto } from 'src/user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
+import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { authenticator } from 'otplib';
@@ -166,5 +167,20 @@ export class AuthService {
             throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);
+    }
+
+    public validateJWToken(token: string): IJwtPayload | undefined {
+        let result: IJwtPayload | undefined;
+    
+        try {
+            result = this.jwtService.verify<IJwtPayload>(token, {
+                secret: process.env.FORTYTWO_APP_SECRET
+            });
+        }
+        catch(err) {
+            console.error(err);
+            result = undefined;
+        }
+        return (result);
     }
 }

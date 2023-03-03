@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
     OnGatewayInit,
     OnGatewayConnection,
@@ -6,38 +7,38 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    WsResponse,
     ConnectedSocket,
 } from '@nestjs/websockets';
 import {
-    RemoteSocket,
     Server,
     Socket
 } from 'socket.io';
-import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { IGameClientStart } from './elements/Game'
 import { IGameSelectionData } from './elements/GameSelection';
 import { GameQueueService } from './game.queueService';
 import { GameRecoveryService } from './game.recovery.service';
 import { SocketHelper } from './game.socket.helper';
+import { GameSocketAuthService } from './game.socketAuth.service';
 import { GameUpdateService } from './game.updateService';
+import { GameAuthGuard } from './guards/game.auth.guard';
 
 @WebSocketGateway(3001, {
     cors: {
-        origin: '*',
+        origin: 'http://localhost:4200',
+        credentials: true
     },
 })
 export class    GameGateway implements OnGatewayInit,
                                 OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer() server: Server;
-    mockUserNum: number = 1; //Provisional
 
     constructor(
         private readonly updateService: GameUpdateService,
         private readonly queueService: GameQueueService,
         private readonly socketHelper: SocketHelper,
-        private readonly recoveryService: GameRecoveryService
+        private readonly recoveryService: GameRecoveryService,
+        private readonly socketAuthService: GameSocketAuthService
     ) {}
   
     afterInit() {
@@ -45,34 +46,46 @@ export class    GameGateway implements OnGatewayInit,
         console.log("Game Gateway initiated");
     }
 
-    async handlePlayerDisconnect(playerRoom: string): Promise<void> {
-        const   roomId: string = playerRoom.slice(0, playerRoom.indexOf('-'));
-        let     roomSockets: RemoteSocket<DefaultEventsMap, any>[];
-    
-        roomSockets = await this.server.in(playerRoom).fetchSockets();
-        /*
-        **  Checking for > 1, because socket has not left the room yet.
-        **  socket.io Event "disconnecting".
-        */
-        if (roomSockets.length > 1)
-            return ;
-        this.updateService.playerWithdrawal(roomId, playerRoom);
+    handleConnection(client: Socket, ...args: any[]) {
+        console.log(`Socket ${client.id} connected`);
+        this.socketAuthService.addAuthTimeout(client);
     }
 
-    async handleConnection(client: Socket, ...args: any[]) {
+    handleDisconnect(client: Socket) {
+        console.log(`Socket ${client.id} disconnected`);
+    }
+
+    @UseGuards(GameAuthGuard)
+    @SubscribeMessage("authentication")
+    authentication(
+        @ConnectedSocket() client: Socket
+    ) {
+        const   clientId: string = client.id;
+        const   username: string = client.data.username;
+    
+        this.socketAuthService.clearTimeout(clientId);
+        this.socketAuthService.registerUser(client, username);
+        client.removeAllListeners("disconnecting");
+        client.on("disconnecting", () => {
+            this.socketAuthService.removeUser(client, client.data.mockUser); //Provisional
+            this.socketAuthService.removeUser(client, username);
+            this.socketAuthService.deleteTimeout(clientId);
+        });
+        client.emit("authSuccess");
+    }
+
+    @UseGuards(GameAuthGuard)
+    @SubscribeMessage("joinRoom")
+    async joinRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
         let gameSelectionData: IGameSelectionData;
         let gameStartData: IGameClientStart;
-        let username: string = `user-${this.mockUserNum}`; //Provisional
-
-        console.log("User joined Game room");
-        client.join("Game1"); //Provisional
-        client.emit("mockUser", {
-            mockUser: username
-        }); //Provisional
-        client.join(username);
-        //client.join(userSession)
-        this.queueService.clientInitQueuesLength("Game1", client.id);
-        gameSelectionData = this.updateService.getGameSelectionData("Game1");
+    
+        client.join(roomId);
+        this.queueService.clientInitQueuesLength(roomId, client.id);
+        gameSelectionData = this.updateService.getGameSelectionData(roomId);
         if (gameSelectionData)
         {
             client.emit("newGame", {
@@ -82,29 +95,14 @@ export class    GameGateway implements OnGatewayInit,
         }
         else
         {
-            gameStartData = this.updateService.getGameClientStartData("Game1");
+            gameStartData = this.updateService.getGameClientStartData(roomId);
             if (gameStartData)
                 client.emit("startMatch", gameStartData);
         }
-        client.on("disconnecting", () => {
-            const   rooms: IterableIterator<string> = client.rooms.values();
-
-            for (const room of rooms)
-            {
-                if (room.includes("Player"))
-                    this.handlePlayerDisconnect(room);
-                else
-                    this.queueService.removeAll(room, username);
-            }
-        });
-        ++this.mockUserNum; //Provisional
-        console.log(`With id: ${client.id} and username ${username}`);
+        console.log(`${client.data.username} joined Game room ${roomId}`);
     }
 
-    handleDisconnect(client: Socket) {
-        console.log(`Socket ${client.id} disconnected`);
-    }
-
+    @UseGuards(GameAuthGuard)
     @SubscribeMessage('addToGameQueue')
     async addToGameQueue(
         @ConnectedSocket() client: Socket,
@@ -117,6 +115,7 @@ export class    GameGateway implements OnGatewayInit,
         this.updateService.attemptGameInit(data.room);
     }
 
+    @UseGuards(GameAuthGuard)
     @SubscribeMessage('addToGameHeroQueue')
     async addToGameHeroQueue(
         @ConnectedSocket() client: Socket,
