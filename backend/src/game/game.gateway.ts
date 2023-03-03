@@ -1,4 +1,7 @@
-import { UseGuards } from '@nestjs/common';
+import {
+    UseGuards,
+    UsePipes
+} from '@nestjs/common';
 import {
     OnGatewayInit,
     OnGatewayConnection,
@@ -22,6 +25,8 @@ import { GameSocketAuthService } from './game.socketAuth.service';
 import { GameUpdateService } from './game.updateService';
 import { GameAuthGuard } from './guards/game.auth.guard';
 import { GameRoomGuard } from './guards/game.room.guard';
+import { NumberValidator } from './validators/number.validator';
+import { StringValidator } from './validators/string.validator';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -76,6 +81,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
     @SubscribeMessage("joinRoom")
     async joinRoom(
         @ConnectedSocket() client: Socket,
@@ -104,6 +110,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
     @SubscribeMessage('addToGameQueue')
     async addToGameQueue(
         @ConnectedSocket() client: Socket,
@@ -118,6 +125,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
     @SubscribeMessage('addToGameHeroQueue')
     async addToGameHeroQueue(
         @ConnectedSocket() client: Socket,
@@ -169,7 +177,8 @@ export class    GameGateway implements OnGatewayInit,
             this.updateService.attemptSelectionFinish(room);
         }
     }
-    
+
+    @UsePipes(NumberValidator)
     @SubscribeMessage('paddleUp')
     paddleUp(
         @ConnectedSocket() client: Socket,
@@ -180,6 +189,7 @@ export class    GameGateway implements OnGatewayInit,
         this.updateService.paddleInput(room, player, true, when);
     }
 
+    @UsePipes(NumberValidator)
     @SubscribeMessage('paddleDown')
     paddleDown(
         @ConnectedSocket() client: Socket,
@@ -190,6 +200,7 @@ export class    GameGateway implements OnGatewayInit,
         this.updateService.paddleInput(room, player, false, when);
     }
 
+    @UsePipes(NumberValidator)
     @SubscribeMessage('heroUp')
     heroUp(
         @ConnectedSocket() client: Socket,
@@ -200,6 +211,7 @@ export class    GameGateway implements OnGatewayInit,
         this.updateService.heroInput(room, player, true, when);
     }
 
+    @UsePipes(NumberValidator)
     @SubscribeMessage('heroDown')
     heroDown(
         @ConnectedSocket() client: Socket,
@@ -211,6 +223,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameRoomGuard)
+    @UsePipes(StringValidator)
     @SubscribeMessage('recover')
     recover(
         @ConnectedSocket() client: Socket,

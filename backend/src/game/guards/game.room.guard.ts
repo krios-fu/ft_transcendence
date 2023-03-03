@@ -6,6 +6,7 @@ import {
 import { WsArgumentsHost } from "@nestjs/common/interfaces";
 import { Observable } from "rxjs";
 import { Socket } from "socket.io";
+import { BadRequestWsException } from "../exceptions/badRequest.wsException";
 import { ForbiddenWsException } from "../exceptions/forbidden.wsException";
 import { SocketHelper } from "../game.socket.helper";
 
@@ -33,12 +34,16 @@ export class    GameRoomGuard implements CanActivate {
                             roomId: string): boolean {
         const   username: string = client.data.username;
     
-        if (!roomId || typeof roomId != "string")
-            return (false);
         if (handlerName === "joinRoom")
             return (this._checkRoomJoin(roomId, username));
         else
             return (this._checkClientInRoom(roomId, client));
+    }
+
+    private _validData(data: any): boolean {
+        if (!data || typeof data != "string")
+            return (false);
+        return (true);
     }
 
     canActivate(context: ExecutionContext)
@@ -48,6 +53,13 @@ export class    GameRoomGuard implements CanActivate {
         const   data: any = wsContext.getData<any>();
         const   handlerName: string = context.getHandler().name;
     
+        if (!this._validData(data))
+        {
+            throw new BadRequestWsException(
+                handlerName, //Handlers must have same name as event
+                data
+            )
+        }
         if (!this._validateRoom(client, handlerName, data))
         {
             throw new ForbiddenWsException(
