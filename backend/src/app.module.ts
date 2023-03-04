@@ -40,7 +40,7 @@ import { join } from 'path';
             database: process.env.DB_NAME,
             entities: ["dist/**/*.entity{.ts,.js}"],
             synchronize: true,
-            // logging: true
+            logging: true
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),

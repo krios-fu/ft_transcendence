@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query, Req } from '@nestjs/common';
+import { Body, 
+    Controller, 
+    Delete, 
+    Get, 
+    NotFoundException,
+    BadRequestException,
+    HttpStatus, 
+    Logger, 
+    Param, 
+    ParseIntPipe, 
+    Post, 
+    Query } from '@nestjs/common';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -29,10 +40,11 @@ export class UserRoomRolesController {
     /* Get user with role in a room */
     @Get(':id')
     public async findRole(@Param('id', ParseIntPipe) id: number): Promise<UserRoomRolesEntity> { 
-        const role = await this.userRoomRolesService.getRole(id);
+        const role: UserRoomRolesEntity = await this.userRoomRolesService.findRole(id);
+
         if (role === null) {
-            this.userRoomRolesLogger.error('No user role in room with id ' + id + ' present in database');
-            throw new HttpException('no role in db', HttpStatus.NOT_FOUND);
+            this.userRoomRolesLogger.error(`No user role in room with id ${id} present in database`);
+            throw new NotFoundException('resource not found in database');
         }
         return role;
     }
@@ -41,10 +53,10 @@ export class UserRoomRolesController {
     @Get('/rooms/:room_id')
     public async getRolesFromRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<UserRoomRolesEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
-            this.userRoomRolesLogger.error('No room with id ' + roomId + ' present in database');
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            this.userRoomRolesLogger.error(`No room with id ${roomId} present in database`);
+            throw new NotFoundException('resource not found in database');
         }
-        return this.userRoomRolesService.getRolesFromRoom(roomId);
+        return await this.userRoomRolesService.getRolesFromRoom(roomId);
     }
 
     /* Get all users with a specific role in a room */
@@ -55,11 +67,11 @@ export class UserRoomRolesController {
     ): Promise<UserEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
             this.userRoomRolesLogger.error('No room with id ' + roomId + ' present in database');
-            throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('resource not found in database');
         }
         if (await this.rolesService.findOne(roleId) === null) {
             this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
-            throw new HttpException('no role in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
     }
@@ -72,18 +84,19 @@ export class UserRoomRolesController {
         const userRoom = await this.userRoomService.findAll({ 
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });
+
         if (!userRoom.length) {
             this.userRoomRolesLogger.error(`No user ${userId} in room ${roomId} present in database`);
-            throw new HttpException('no user in room', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('resource not found in database');
         }
         const userRoomId = userRoom[0].id;
         if (await this.rolesService.findOne(roleId) === null) {
-            this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
-            throw new HttpException('no role in db', HttpStatus.BAD_REQUEST);
+            this.userRoomRolesLogger.error(`No role with id ${roleId} present in database`);
+            throw new BadRequestException('resource not found in database');
         }
         if (await this.userRoomRolesService.findRoleByIds(userRoomId, roleId) !== null) {
             this.userRoomRolesLogger.error(`User role ${userRoomId} with role ${roleId} already in database`);
-            throw new HttpException('role already in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('resource not found in database');
         }
         return await this.userRoomRolesService.postRoleInRoom(
             new UserRoomRolesDto({
@@ -97,6 +110,10 @@ export class UserRoomRolesController {
     /* at least mod role required */
     @Delete(':id')
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        if (await this.userRoomRolesService.findRole(id) === null) {
+            this.userRoomRolesLogger.error(`No user role in room with id ${id} present in database`);
+            throw new NotFoundException('resource not found in database');
+        }
         return await this.remove(id);
     }
 }

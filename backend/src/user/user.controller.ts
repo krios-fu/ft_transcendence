@@ -9,11 +9,11 @@ import {
     ParseIntPipe,
     Query,
     Logger,
-    HttpException,
     HttpStatus,
     Req,
     UploadedFile,
     UseInterceptors,
+    BadRequestException,
     NotFoundException,
     HttpCode,
 } from '@nestjs/common';
@@ -61,7 +61,7 @@ export class UserController {
 
     @Get()
     async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[]> {
-        return this.userService.findAllUsers(queryParams);
+        return await this.userService.findAllUsers(queryParams);
     }
 
     /*
@@ -100,7 +100,7 @@ export class UserController {
 
         if (user === null) {
             this.userLogger.error(`User with login ${id} not found in database`);
-            throw new HttpException('no user in db', HttpStatus.NOT_FOUND);
+            throw new NotFoundException('resource does not exists in database');
         }
         return user;
     }
@@ -111,10 +111,9 @@ export class UserController {
     async postUser(@Body() newUser: CreateUserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
             this.userLogger.error(`User with id ${newUser.username} already exists in database`);
-            throw new HttpException('User already exists',
-                HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('resource already exists');
         }
-        return this.userService.postUser(newUser);
+        return await this.userService.postUser(newUser);
     }
 
 
@@ -131,6 +130,10 @@ export class UserController {
         @Param('id', ParseIntPipe) id: number,
         @Body() dto: UpdateUserDto
     ): Promise<UserEntity> {
+        if (await this.userService.findOne(id) === null) {
+            this.userLogger.error(`User with login ${id} not found in database`);
+            throw new NotFoundException('resource does not exists in database');
+        }
         await this.userService.updateUser(id, dto);
         return await this.userService.findOne(id);
     }

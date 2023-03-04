@@ -23,7 +23,7 @@ export class UserRoomRolesService {
         return this.userRoomRolesRepository.find();
     }
 
-    public async getRole(id: number): Promise<UserRoomRolesEntity> { 
+    public async findRole(id: number): Promise<UserRoomRolesEntity> { 
         return this.userRoomRolesRepository.findOne({
             where: { id: id }
         });

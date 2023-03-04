@@ -25,7 +25,7 @@ export class RoomEntity extends BaseEntity {
 
     @Column({
         type: 'varchar',
-        name: 'room_id',
+        name: 'room_name',
         unique: true,
         length: 15,
     })

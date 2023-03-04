@@ -54,6 +54,7 @@ class APITrans():
     def __request_get_wrapper(self, url):
         """ Requests entity detail view via ID. """
         try:
+            print(f'[ request to {url} ]')
             r = requests.get(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             return r.json()
@@ -97,7 +98,7 @@ class APITrans():
         try:
             room = self.__request_post_wrapper(url, data)
         except requests.exceptions.HTTPError as e:
-            room = self.__request_get_wrapper(f'{url}{data["username"]}')
+            room = self.__request_get_wrapper(f'{url}{data["roomName"]}')
         return room
 
     def __post_role(self, role_name):
@@ -111,7 +112,7 @@ class APITrans():
         return role
 
     def __post_user_room(self, room_id, user_id):
-        url = 'http://localhost:3000/user_room'
+        url = 'http://localhost:3000/user_room/'
         data = {
             'userId': user_id,
             'roomId': room_id
@@ -119,18 +120,23 @@ class APITrans():
         try:
             user_room = self.__request_post_wrapper(url, data)
         except requests.exceptions.HTTPError:
-            user_room = self.__request_get_wrapper(url, role_name)
+            user_room = self.__request_get_wrapper(f'{url}?filter[userId]={user_id}&filter[roomId]={room_id}')
         return user_room
 
     def __post_user_room_role(self, room_id, user_id, role_id):
         url = 'http://localhost:3000/user_room_roles'
         data = { 'roomId': room_id, 'userId': user_id, 'roleId': role_id }
-        return self.__request_post_wrapper(url, data)
+        try:
+            user_room_role = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError:
+            url = f'{url}?filter[userId]={user_id}&filter[roomId]={room_id}&filter[roleId]={role_id}'
+            user_room_role = self.__request_get_wrapper(url, headers=self.get_param('auth_token'))
+        return user_room_role
 
 
     def __seed_db(self):
         self.set_param('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
-        self.set_param('rooms', [ self.__post_room(r, self.users[0]['id']) for r in ['room-1', 'room-2', 'room-3']])
+        self.set_param('rooms', [ self.__post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
         self.set_param('roles', [ self.__post_role('admin') ])
 
 
@@ -146,7 +152,7 @@ class APITrans():
         role_id = self.roles[0]['id']
         url = f'http://localhost:3000/room/{room_id}/owner/{user_id}'
 
-        print('[ Unregistered user as owner ]')
+        print('[ TEST: Unregistered user as owner ]')
         try:
             r = requests.put(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
@@ -156,8 +162,9 @@ class APITrans():
             print(f'Request returned: {e}')
         except requests.exceptions.ConnectionError as e:
             raise e
+        
 
-        print('[ Registered user as owner ]')
+        print('[ TEST: Registered user as owner ]')
         self.__post_user_room(room_id, user_id)
         try:
             r = requests.put(url, headers=self.get_param('auth_token'))
@@ -202,36 +209,53 @@ class APITrans():
             assert r.json() == [], 'Still users in room !?'
         except requests.exceptions.ConnectionError as e:
             raise e
-        print('[ ...ok ')
+        print('[ ...ok ]')
 
 
 
-def del_user_as_owner(auth_token):
-    # put user in room
-    # remove user
-    # query room, check owner
-    pass
+    def del_user_as_owner(self):
+        user = self.__post_user('del_user')
+        rooms = [self.__post_room(room_id, user['id']) for room_id in ['room_del_user_1', 'room_del_user_2', 'room_del_user_2']]
 
-def del_user_in_room_as_owner(auth_token):
-    # put user in room
-    # make user owner
-    # remove user in room
-    # query room, check owner
-    pass
+        print('[ Query room for users in first room (should be owner) ]')
+        try: 
+            url = f'http://localhost:3000/user_room/room/{rooms[0]["id"]}/users'
+            r = requests.get(url, headers=self.get_param('auth_token'))
+            r.raise_for_status()
+            print(f'[ Query results ] {r.text}')
+        except requests.exceptions.HTTPError as e:
+            print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
+            raise e
+        
+        # remove user
+        try:
+            user_id = user['id']
+            url = f'http://localhost:3000/users/{user_id}'
+            r = requests.delete(url, headers=self.get_param('auth_token'))
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
+            raise e
+
+        # query room, check owner
+        responses = [ self.__request_get_wrapper() for room_id in r['id'] for r in rooms ]
+        
+
+    def del_user_in_room_as_owner(self):
+        # put user in room
+        # make user owner
+        # remove user in room
+        # query room, check owner
+        pass
 
 
 def main():
     # get token
     api = APITrans()
 
-    print('[ STARTING TESTS... ]')
-    print('[ ... ]')
-    print('[ PUT NEW OWNER TESTS ]')
     api.put_new_owner()
-    print('[ DEL ROOM TESTS ]')
     api.del_room_cascade_test()
-    #print('[ DEL USER AS OWNER TESTS ]')
-    #del_user_as_owner(auth_token)
+    #api.del_user_as_owner()
     #print('[ DEL USER IN ROOM AS OWNER ]')
     #del_user_in_room_as_owner(auth_token)
     #print('[ REMOVE ROOM IF NO USERS ARE PRESEENT ]')
@@ -244,9 +268,10 @@ if __name__ == '__main__':
 # user room roles
 
 """
-put new owner test: the purpose of this test is to check and validate the new owner of the room we are trying to 
-update: new owner has to be registered in the room, and has to have an administrator role
-    test we are going to make: posting an user not in the room, posting a non adminn user, posting a valid user
+put new owner test: 
+    the purpose of this test is to check and validate the new owner of the room we are trying to 
+    update: new owner has to be registered in the room, and has to have an administrator role
+    test we are going to make: posting an user not in the room, posting a non admin user, posting a valid user
     what we need: two users, one user_room, one role ('admin')
 
 del room test: check if cascade has been correctly set up: add multiple user_room entities on a room,
@@ -257,4 +282,11 @@ del user as owner:
     1. make a query to get all rooms in which user is owner
     2. delete user
     3. make a query with every room id, check that every petition returns 404
+
+del user in room as room owner:
+    cases:
+    1. i am owner and unique user in a room
+    2. i am owner and there is no other admin in room
+    3. i am owner and there is three admins in rooom
+
 """

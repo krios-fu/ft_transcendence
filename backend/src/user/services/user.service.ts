@@ -122,7 +122,7 @@ export class UserService {
                 { 'room_id': roomId }
             )
             .leftJoinAndSelect(
-                'user_room.userRoomRoles',
+                'user_room.userRoomRole',
                 'user_room_roles',
             )
             .leftJoinAndSelect(

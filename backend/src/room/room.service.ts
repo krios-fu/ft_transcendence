@@ -34,9 +34,19 @@ export class RoomService {
         });
     }
 
+    public async findByName(roomName: string): Promise<RoomEntity> {
+        return await this.roomRepository.findOne({
+            where: { roomName: roomName }
+        });
+    }
+
     public async findRoomOwner(roomId: number): Promise<UserEntity> {
-        const room = this.findOne(roomId);
-        return (await room).owner;
+        const room: RoomEntity = await this.findOne(roomId);
+
+        if (room == null) {
+            return null;
+        }
+        return room.owner;
     }
 
     public async updateRoom(roomId: number, dto: UpdateRoomDto | UpdateRoomOwnerDto): Promise<UpdateResult> {
@@ -48,7 +58,7 @@ export class RoomService {
         const { ownerId, id } = room;
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
-        room.userRoom.push(userRoom);
+        room.userRoom = [userRoom];
         return await this.roomRepository.save(room);
     }
 
@@ -108,6 +118,7 @@ export class RoomService {
     public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
         const admins: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
+        console.log('debuga: ', admins)
         return (admins.filter(user => user['id'] == userId)).length > 0;
     }
 
