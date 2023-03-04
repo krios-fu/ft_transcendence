@@ -44,7 +44,7 @@ export class UserRoomController {
     /* Get one user in a room */
     @Get(':id')
     public async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserRoomEntity> {
-        const userRoom = await this.userRoomService.findOne(id);
+        const userRoom: UserRoomEntity = await this.userRoomService.findOne(id);
         if (userRoom === null) {
             this.userRoomLogger.error(`No user room relation with id ${id} found in database`);
             throw new NotFoundException('no user role in db');

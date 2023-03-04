@@ -42,17 +42,24 @@ class APITrans():
         try:
             r = requests.post(token_url, json=token_creds)
             r.raise_for_status()
-        except requests.ConnectionError as e:
+        except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
             raise 'FATAL'
         except requests.HTTPError as e:
             print(f'Caught exception: {str(e)}')
-            raise 'FATAL'
+            raise e
         token = r.json()['accessToken']
         self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
 
-    def __request_get_wrapper(self, url, id):
-        pass
+    def __request_get_wrapper(self, url):
+        """ Requests entity detail view via ID. """
+        try:
+            r = requests.get(url, headers=self.get_param('auth_token'))
+            r.raise_for_status()
+            return r.json()
+        except requests.exceptions.HTTPError as e:
+            print(f'[ logging exception ] {e}', file=sys.stderr)
+            raise e
 
     def __request_post_wrapper(self, url, data):
         try:
@@ -77,8 +84,7 @@ class APITrans():
         try:
             user = self.__request_post_wrapper(url, data)
         except requests.exceptions.HTTPError as e:
-            print(f'[ logging HTTP error... ] {r.json()}', file=sys.stderr)
-            user = self.__request_get_wrapper(url, data['username'])
+            user = self.__request_get_wrapper(f'{url}{data["username"]}')
         return user
 
     def __post_room(self, room_name, owner_id):
@@ -87,13 +93,22 @@ class APITrans():
             'roomName': room_name,
             'ownerId': owner_id
         }
-        return self.__request_post_wrapper(url, data)
+        room = []
+        try:
+            room = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError as e:
+            room = self.__request_get_wrapper(f'{url}{data["username"]}')
+        return room
 
     def __post_role(self, role_name):
         """ Set up administrator role """
 
-        url = 'http://localhosst:3000/roles/';
-        return self.__request_post_wrapper(url, { 'role': role_name })
+        url = 'http://localhost:3000/roles/';
+        try:
+            role = self.__request_post_wrapper(url, { 'role': role_name })
+        except requests.exceptions.HTTPError:
+            role = self.__request_get_wrapper(url, role_name)
+        return role
 
     def __post_user_room(self, room_id, user_id):
         url = 'http://localhost:3000/user_room'
@@ -101,7 +116,11 @@ class APITrans():
             'userId': user_id,
             'roomId': room_id
         }
-        return self.__request_post_wrapper(url, data)
+        try:
+            user_room = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError:
+            user_room = self.__request_get_wrapper(url, role_name)
+        return user_room
 
     def __post_user_room_role(self, room_id, user_id, role_id):
         url = 'http://localhost:3000/user_room_roles'
@@ -113,6 +132,7 @@ class APITrans():
         self.set_param('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
         self.set_param('rooms', [ self.__post_room(r, self.users[0]['id']) for r in ['room-1', 'room-2', 'room-3']])
         self.set_param('roles', [ self.__post_role('admin') ])
+
 
     def put_new_owner(self):
         """
@@ -161,6 +181,7 @@ class APITrans():
         except requests.exceptions.ConnectionError as e:
             raise e
         
+        
     def del_room_cascade_test(self):
         print('[ Delete room in cascade ]')
         room_id = self.rooms[2]['id']
@@ -182,8 +203,6 @@ class APITrans():
         except requests.exceptions.ConnectionError as e:
             raise e
         print('[ ...ok ')
-
-
 
 
 
@@ -234,5 +253,8 @@ del room test: check if cascade has been correctly set up: add multiple user_roo
     then delete that room and check if these entities still exist.
 
 del user as owner: 
-
+    should remove every room user is owner:
+    1. make a query to get all rooms in which user is owner
+    2. delete user
+    3. make a query with every room id, check that every petition returns 404
 """
