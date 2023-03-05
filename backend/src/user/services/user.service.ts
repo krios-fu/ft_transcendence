@@ -40,21 +40,21 @@ export class UserService {
     }
 
     public async findOneByUsername(username: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({ 
+        const user: UserEntity = await this.userRepository.findOne({ 
             where: { username: username },
         });
         return user;
     }
 
     public async findOneByNickName(nickName: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({ 
+        const user: UserEntity = await this.userRepository.findOne({ 
             where: { nickName: nickName },
         });
         return user;
     }
 
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
-        const newEntity = new UserEntity(newUser);
+        const newEntity: UserEntity = new UserEntity(newUser);
 
         await this.userRepository.insert(newEntity);
         return newEntity;
@@ -114,23 +114,31 @@ export class UserService {
     }
 
     public async getAdminsInRoom(roomId: number): Promise<UserEntity[]> {
+        //return (await this.userRepository.createQueryBuilder('user'))
+        //    .leftJoinAndSelect(
+        //        'user.userRoom',
+        //        'user_room',
+        //        'user_room.room_id = :room_id',
+        //        { 'room_id': roomId }
+        //    )
+        //    .leftJoinAndSelect(
+        //        'user_room.userRoomRole',
+        //        'user_room_roles',
+        //    )
+        //    .leftJoinAndSelect(
+        //        'user_room_roles.role',
+        //        'roles',
+        //        'roles.role = :role',
+        //        { 'role': 'administrator' }
+        //    )
+        //    .orderBy('user_room_roles.createdAt', 'ASC')
+        //    .getMany();
         return (await this.userRepository.createQueryBuilder('user'))
-            .leftJoinAndSelect(
-                'user.userRoom',
-                'user_room',
-                'user_room.room_id = :room_id',
-                { 'room_id': roomId }
-            )
-            .leftJoinAndSelect(
-                'user_room.userRoomRole',
-                'user_room_roles',
-            )
-            .leftJoinAndSelect(
-                'user_room_roles.role',
-                'roles',
-                'roles.role = :role',
-                { 'role': 'administrator' }
-            )
+            .leftJoinAndSelect('user.userRoom', 'user_room')
+            .leftJoinAndSelect('user_room.userRoomRole', 'user_room_roles')
+            .leftJoinAndSelect('user_room_roles.role', 'roles')
+            .where('user_room.room_id = :room_id', {'room_id': roomId})
+            .andWhere('roles.role = :role', {'role': 'administrator'})
             .orderBy('user_room_roles.createdAt', 'ASC')
             .getMany();
     }

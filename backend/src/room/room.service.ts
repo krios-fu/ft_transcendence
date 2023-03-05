@@ -54,12 +54,21 @@ export class RoomService {
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
-        const room: RoomEntity = new RoomEntity(dto);
+        const roomEntity: RoomEntity = new RoomEntity(dto);
+        const room: RoomEntity | null = await this.roomRepository.save(roomEntity);
+
+        if (room === null) {
+            return room;
+        }
         const { ownerId, id } = room;
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
+        console.log('user room debuga; ', userRoom);
         room.userRoom = [userRoom];
-        return await this.roomRepository.save(room);
+        console.log('room debuga: ', room);
+        const room_two =  await this.roomRepository.save(room);
+        console.log('room debuga 2: ', room_two );
+        return room_two;
     }
 
     public async removeRoom(room: RoomEntity): Promise<void> {
@@ -118,7 +127,7 @@ export class RoomService {
     public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
         const admins: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
-        console.log('debuga: ', admins)
+        console.log('debuga: ', admins);
         return (admins.filter(user => user['id'] == userId)).length > 0;
     }
 

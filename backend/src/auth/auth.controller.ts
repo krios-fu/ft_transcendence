@@ -10,9 +10,9 @@ import {
     Req,
     Res,
     UnauthorizedException,
+    ForbiddenException,
     UseGuards,
 } from '@nestjs/common';
-
 import { Public } from 'src/common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
@@ -159,7 +159,7 @@ export class AuthController {
         if (app_id !== process.env.FORTYTWO_APP_ID ||
             app_secret !== process.env.FORTYTWO_APP_SECRET) {
                 this.authLogger.error('Invalid app credentials');
-                throw new HttpException('wrong app credentials', HttpStatus.FORBIDDEN);
+                throw new ForbiddenException('wrong app credentials')
         }
         return await this.authService.authUser(userProfile, res);
     }

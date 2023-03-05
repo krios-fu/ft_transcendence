@@ -108,7 +108,7 @@ class APITrans():
         try:
             role = self.__request_post_wrapper(url, { 'role': role_name })
         except requests.exceptions.HTTPError:
-            role = self.__request_get_wrapper(url, role_name)
+            role = self.__request_get_wrapper(f'{url}{role_name}')
         return role
 
     def __post_user_room(self, room_id, user_id):
@@ -130,14 +130,14 @@ class APITrans():
             user_room_role = self.__request_post_wrapper(url, data)
         except requests.exceptions.HTTPError:
             url = f'{url}?filter[userId]={user_id}&filter[roomId]={room_id}&filter[roleId]={role_id}'
-            user_room_role = self.__request_get_wrapper(url, headers=self.get_param('auth_token'))
+            user_room_role = self.__request_get_wrapper(url)
         return user_room_role
 
 
     def __seed_db(self):
         self.set_param('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
         self.set_param('rooms', [ self.__post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
-        self.set_param('roles', [ self.__post_role('admin') ])
+        self.set_param('roles', [ self.__post_role('administrator') ])
 
 
     def put_new_owner(self):
@@ -157,7 +157,7 @@ class APITrans():
             r = requests.put(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             print(f'Request returned with status code {r.status_code}', file=sys.stderr)
-            raise 'FAILED TEST'
+            raise Exception('FAILED TEST')
         except requests.exceptions.HTTPError as e:
             print(f'Request returned: {e}')
         except requests.exceptions.ConnectionError as e:
@@ -184,7 +184,7 @@ class APITrans():
             print(f'Request returned with status code {r.status_code}', file=sys.stderr)
         except requests.exceptions.HTTPError as e:
             print(f'Request returned: {e}')
-            raise 'FAILED TEST'
+            raise Exception('FAILED TEST')
         except requests.exceptions.ConnectionError as e:
             raise e
         

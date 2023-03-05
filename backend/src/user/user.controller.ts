@@ -167,7 +167,7 @@ export class UserController {
             this.userLogger.error(`User with id ${user.id} not found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        return this.userService.updateUser(user.id, settingsDto);
+        return await this.userService.updateUser(user.id, settingsDto);
     }
 
     /*
@@ -492,7 +492,7 @@ export class UserController {
             this.userLogger.error(`User with username ${username} not found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const friendship = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
+        const friendship: FriendshipEntity = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
         if (friendship === null) {
             this.userLogger.error(`No friendship between users ${me.id} and ${dto.blockReceiverId}`);
             throw new BadRequestException('resource not found in database');

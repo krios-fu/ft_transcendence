@@ -51,7 +51,7 @@ export class RoomController {
         return room;
     }
 
-    @Get(':room_name([A-Za-z_]{1,15})')
+    @Get(':room_name([A-Za-z]{1}[A-Za-z0-9_]{0,14})')
     public async findByName(@Param('room_name') roomName: string): Promise<RoomEntity> {
         const room: RoomEntity = await this.roomService.findByName(roomName);
 
@@ -78,19 +78,19 @@ export class RoomController {
         @Param('room_id', ParseIntPipe) id: number,
         @Param('owner_id', ParseIntPipe) newOwnerId: number
     ): Promise<UpdateResult> {
-        const room: RoomEntity =await this.roomService.findOne(id);
+        const room: RoomEntity = await this.roomService.findOne(id);
 
         if (room === null) {
             this.roomLogger.error(`No room with id ${id} present in database`);
-            throw new BadRequestException('no room in db');
+            throw new BadRequestException('resource not found in database');
         }
         if (await this.userService.findOne(newOwnerId) === null) {
             this.roomLogger.error(`No user with id ${newOwnerId} present in database`);
-            throw new BadRequestException('no user in db');
+            throw new BadRequestException('resource not found in database');
         }
-        if (await this.roomService.validateAdmin(newOwnerId, id) === null) {
+        if (await this.roomService.validateAdmin(newOwnerId, id) === false) {
             this.roomLogger.error(`User with id ${newOwnerId} is not allowed to be owner`);
-            throw new BadRequestException('no user in room');
+            throw new BadRequestException('resource not found in database');
         }
         return await this.roomService.updateRoom(id, { ownerId: newOwnerId });
     }
