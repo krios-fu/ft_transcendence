@@ -28,7 +28,7 @@ export class UserRoomEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         {
-            cascade: true,
+            /*cascade: true,*/
             eager: true,
             onDelete: 'CASCADE'
         }
