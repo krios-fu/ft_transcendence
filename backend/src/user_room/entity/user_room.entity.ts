@@ -27,11 +27,7 @@ export class UserRoomEntity extends BaseEntity {
 
     @ManyToOne(
         () => UserEntity,
-        {
-            /*cascade: true,*/
-            eager: true,
-            onDelete: 'CASCADE'
-        }
+        { eager: true }
     )
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;
@@ -46,10 +42,6 @@ export class UserRoomEntity extends BaseEntity {
     @ManyToOne(
         () => RoomEntity,
         { eager: true }
-/*             cascade: true, */
-/*             eager: true, */
-/*             onDelete: 'CASCADE' */
-/*         } */
     )
     @JoinColumn({ name: 'room_id' })
     room: RoomEntity;
@@ -61,6 +53,13 @@ export class UserRoomEntity extends BaseEntity {
     })
     createdAt: Date
 
-    @OneToMany(() => UserRoomRolesEntity, (userRoomRole) => userRoomRole.userRoom)
+    @OneToMany(
+        () => UserRoomRolesEntity, 
+        (userRoomRole: UserRoomRolesEntity) => userRoomRole.userRoom,
+        {
+            cascade: true,
+            onDelete: 'CASCADE'
+        }
+    )
     userRoomRole: UserRoomRolesEntity[];
 }

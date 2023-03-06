@@ -124,12 +124,12 @@ class APITrans():
         return user_room
 
     def __post_user_room_role(self, room_id, user_id, role_id):
-        url = 'http://localhost:3000/user_room_roles'
+        url = 'http://localhost:3000/user_room_roles/'
         data = { 'roomId': room_id, 'userId': user_id, 'roleId': role_id }
         try:
             user_room_role = self.__request_post_wrapper(url, data)
         except requests.exceptions.HTTPError:
-            url = f'{url}?filter[userId]={user_id}&filter[roomId]={room_id}&filter[roleId]={role_id}'
+            url = f'{url}users/{user_id}/rooms/{room_id}/roles/{role_id}'
             user_room_role = self.__request_get_wrapper(url)
         return user_room_role
 

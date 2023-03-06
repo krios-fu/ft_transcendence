@@ -20,11 +20,11 @@ export class UserRoomRolesService {
         if (queryParams !== undefined) {
             return await this.userRoomRolesRepository.find(new QueryMapper(queryParams));
         }
-        return this.userRoomRolesRepository.find();
+        return await this.userRoomRolesRepository.find();
     }
 
     public async findRole(id: number): Promise<UserRoomRolesEntity> { 
-        return this.userRoomRolesRepository.findOne({
+        return await this.userRoomRolesRepository.findOne({
             where: { id: id }
         });
     }
@@ -42,7 +42,7 @@ export class UserRoomRolesService {
     }
 
     public async getUsersInRoomByRole(roomId: number, roleId: number): Promise<UserEntity[]> {
-        const rolesInRoom = this.userRoomRolesRepository.find({
+        const rolesInRoom: UserRoomRolesEntity[] = await this.userRoomRolesRepository.find({
             relations: {
                 userRoom: { user: true },
             },
@@ -55,7 +55,8 @@ export class UserRoomRolesService {
             },
         });
         let users: UserEntity[] = [];
-        (await rolesInRoom).forEach(async (role) => {
+
+        rolesInRoom.forEach(async (role) => {
             const user = await this.userService.findOne(role.userRoom.userId);
             users.push(user);
         });
@@ -69,7 +70,7 @@ export class UserRoomRolesService {
     }
 
     public async remove(id: number): Promise<void> {
-        await this.userRoomRolesRepository.softDelete(id);
+        await this.userRoomRolesRepository.delete(id);
     }
 
     public async findRoleByIds(userRoomId: number, roleId: number): Promise<UserRoomRolesEntity> {
@@ -79,5 +80,18 @@ export class UserRoomRolesService {
                 roleId: roleId,
             }
         });
+    }
+
+    public async findRoleByAllIds(
+        userId: number,
+        roomId: number,
+        roleId: number
+    ): Promise<UserRoomRolesEntity> {
+        return (await this.userRoomRolesRepository.createQueryBuilder('user_room_roles'))
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .where('user_room.userId = :user_id', { 'user_id': userId })
+            .andWhere('user_room.roomId = :room_id', { 'room_id': roomId })
+            .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
+            .getOne();
     }
 }

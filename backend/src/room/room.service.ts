@@ -64,7 +64,7 @@ export class RoomService {
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
         console.log('user room debuga; ', userRoom);
-        room.userRoom = [userRoom];
+        room.userRoom.push(userRoom);
         console.log('room debuga: ', room);
         const room_two =  await this.roomRepository.save(room);
         console.log('room debuga 2: ', room_two );
@@ -108,6 +108,7 @@ export class RoomService {
             throw new BadRequestException('owner must chose and administrator first');
         }
         const newOwnerId: number = users[0].id;
+
         return this.updateRoom(roomId, { ownerId: newOwnerId });
     }
 
@@ -127,7 +128,8 @@ export class RoomService {
     public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
         const admins: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
-        console.log('debuga: ', admins);
+        console.log('admins in room: ', admins);
+        console.log('id: ', userId);
         return (admins.filter(user => user['id'] == userId)).length > 0;
     }
 

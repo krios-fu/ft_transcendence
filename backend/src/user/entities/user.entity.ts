@@ -4,6 +4,7 @@ import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+import { RoomEntity } from "src/room/entity/room.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import {
 	Column,
@@ -78,6 +79,12 @@ export class UserEntity extends BaseEntity {
 		length: 8
 	})
 	nickName : string;
+
+	@OneToMany(
+		() => RoomEntity,
+		(room: RoomEntity) => room.owner,
+		{ onDelete: 'CASCADE' } 
+	)
 
 	@Column({
 		type: 'boolean',
