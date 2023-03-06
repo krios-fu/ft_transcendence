@@ -45,11 +45,11 @@ export class UserRoomEntity extends BaseEntity {
 
     @ManyToOne(
         () => RoomEntity,
-        {
-            cascade: true,
-            eager: true,
-            onDelete: 'CASCADE'
-        }
+        { eager: true }
+/*             cascade: true, */
+/*             eager: true, */
+/*             onDelete: 'CASCADE' */
+/*         } */
     )
     @JoinColumn({ name: 'room_id' })
     room: RoomEntity;

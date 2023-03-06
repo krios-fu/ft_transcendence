@@ -58,7 +58,10 @@ export class RoomEntity extends BaseEntity {
     @OneToMany(
         () => UserRoomEntity, 
         (userRoom: UserRoomEntity) => userRoom.room,
-        { cascade: true }
+        { 
+            cascade: true ,
+            onDelete: 'CASCADE'
+        }
     )
     userRoom: UserRoomEntity[];
 
