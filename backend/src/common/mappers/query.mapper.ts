@@ -19,6 +19,7 @@ export class QueryMapper {
         if (filter !== undefined) {
             this.where = [];
             for (let key in filter) {
+                console.log("FILTER IN KEY: ", filter[key])
                 filter[key].forEach((value: string) => {
                     if (key === 'nickName' || key === 'roomName') {
                         this.where.push({ [key]: Like(`${value}%`) });

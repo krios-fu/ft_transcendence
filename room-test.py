@@ -53,8 +53,8 @@ class APITrans():
 
     def __request_get_wrapper(self, url):
         """ Requests entity detail view via ID. """
+        print(f'  [ GET: {url} ]') 
         try:
-            print(f'[ request to {url} ]')
             r = requests.get(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             return r.json()
@@ -63,6 +63,7 @@ class APITrans():
             raise e
 
     def __request_post_wrapper(self, url, data):
+        print(f'  [ POST: {url} ]')
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
@@ -176,7 +177,7 @@ class APITrans():
         except requests.exceptions.ConnectionError as e:
             raise e
 
-        print('[ Admin user as owner ]')
+        print('[ TEST: Admin user as owner ]')
         self.__post_user_room_role(room_id, user_id, role_id)
         try:
             r = requests.put(url, headers=self.get_param('auth_token'))

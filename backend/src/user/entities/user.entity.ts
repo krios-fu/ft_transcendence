@@ -122,7 +122,14 @@ export class UserEntity extends BaseEntity {
 	})
 	category : Category;
 
-	@OneToMany(() => UserRoomEntity, (userRoom) => userRoom.user)
+	@OneToMany(
+		() => UserRoomEntity,
+		(userRoom: UserRoomEntity) => userRoom.user,
+		{ 
+            cascade: true,
+            onDelete: 'CASCADE'
+        }
+	)
 	userRoom: UserRoomEntity[];
 
 	@OneToMany(() => MessageEntity, (message) => message.author)

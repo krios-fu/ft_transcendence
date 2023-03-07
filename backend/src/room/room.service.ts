@@ -10,6 +10,7 @@ import { UserEntity } from "src/user/entities/user.entity";
 import * as fs from 'fs';
 import { UserService } from "src/user/services/user.service";
 import {UserRoomEntity} from "../user_room/entity/user_room.entity";
+import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 
 
 @Injectable()
@@ -17,8 +18,7 @@ export class RoomService {
     constructor(
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
-        private readonly userService: UserService,
-        private readonly dataSource: DataSource
+        private readonly userService: UserService
     ) { }
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
@@ -49,8 +49,9 @@ export class RoomService {
         return room.owner;
     }
 
-    public async updateRoom(roomId: number, dto: UpdateRoomDto | UpdateRoomOwnerDto): Promise<UpdateResult> {
-        return await this.roomRepository.update(roomId, dto);
+    public async updateRoom(roomId: number, dto: UpdateRoomDto | UpdateRoomOwnerDto): Promise<RoomEntity> {
+        await this.roomRepository.update(roomId, dto);
+        return await this.findOne(roomId);
     }
 
     public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
@@ -64,9 +65,9 @@ export class RoomService {
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
         console.log('user room debuga; ', userRoom);
-        room.userRoom.push(userRoom);
+        room.userRoom = [userRoom];
         console.log('room debuga: ', room);
-        const room_two =  await this.roomRepository.save(room);
+        const room_two = await this.roomRepository.save(room);
         console.log('room debuga 2: ', room_two );
         return room_two;
     }
@@ -85,9 +86,10 @@ export class RoomService {
         });
     }
 
-    public async removeRoomAvatar(roomId: number, photoUrl: string): Promise<UpdateResult> {
+    public async removeRoomAvatar(roomId: number, photoUrl: string): Promise<RoomEntity> {
         fs.unlinkSync(photoUrl);
-        return await this.updateRoom(roomId, { photoUrl: photoUrl });
+        await this.updateRoom(roomId, { photoUrl: DEFAULT_AVATAR_PATH });
+        return this.findOne(roomId);
     }
 
     public async getRoomsOwnedByUser(userId: number): Promise<RoomEntity[]> {
@@ -101,7 +103,7 @@ export class RoomService {
             .getMany();
     }
 
-    public async updateRoomOwner(roomId: number): Promise<void | UpdateResult> {
+    public async updateRoomOwner(roomId: number): Promise<RoomEntity> {
         const users: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
         if (users.length === 0) {
@@ -109,7 +111,8 @@ export class RoomService {
         }
         const newOwnerId: number = users[0].id;
 
-        return this.updateRoom(roomId, { ownerId: newOwnerId });
+        await this.updateRoom(roomId, { ownerId: newOwnerId });
+        return await this.findOne(roomId);
     }
 
     public async isUserInRoom(userId: number, roomId: number): Promise<boolean> {

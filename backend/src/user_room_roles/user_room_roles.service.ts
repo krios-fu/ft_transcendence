@@ -64,9 +64,11 @@ export class UserRoomRolesService {
     }
 
     public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
-        return await this.userRoomRolesRepository.save(
+        const role = await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
         );
+        console.log('posting role: ', role);
+        return role;
     }
 
     public async remove(id: number): Promise<void> {

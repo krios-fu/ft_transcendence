@@ -77,7 +77,7 @@ export class RoomController {
     public async updateRoomOwner(
         @Param('room_id', ParseIntPipe) id: number,
         @Param('owner_id', ParseIntPipe) newOwnerId: number
-    ): Promise<UpdateResult> {
+    ): Promise<RoomEntity> {
         const room: RoomEntity = await this.roomService.findOne(id);
 
         if (room === null) {
@@ -130,19 +130,19 @@ export class RoomController {
         (
             @Param('room_id', ParseIntPipe) id: number,
             @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
-        ): Promise<UpdateResult> {
+        ): Promise<RoomEntity> {
         if (await this.roomService.findOne(id) === null) {
             fs.unlinkSync(avatar.path);
             throw new BadRequestException('no room in db');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        const photoUrl: string = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
 
         return await this.roomService.updateRoom(id, { photoUrl: photoUrl })
     }
 
     /* must be owner */
     @Delete(':room_id/avatar')
-    public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) id: number): Promise<UpdateResult> {
+    public async deleteRoomAvatar(@Param('room_id', ParseIntPipe) id: number): Promise<RoomEntity> {
         const room: RoomEntity = await this.roomService.findOne(id);
 
         if (room === null) {
