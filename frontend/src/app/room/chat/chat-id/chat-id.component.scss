@@ -231,7 +231,10 @@ Mixins
 		margin: 3px 0 3px 35px;
 		position: relative;
 		line-height: 2;
-
+		// max-width: 100px;
+		// width: 100px;
+		// white-space: break-word;
+		word-break:break-all;
 		text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 
 		.timestamp {
@@ -274,12 +277,15 @@ Mixins
 				border-left: 5px solid transparent;
 				border-top: 4px solid #04b5e6;
 				bottom: -4px;
+
 			}
 		}
 
 		&:last-child {
 			margin-bottom: 20px;
 			margin-top: 7px;
+		white-space: break-word;
+
 		}
 
 		&.new {

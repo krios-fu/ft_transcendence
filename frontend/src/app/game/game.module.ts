@@ -42,7 +42,8 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     MatCheckboxModule,
     FormsModule,
     MatIconModule,
-    MatMenuModule
+    MatMenuModule,
+    
     // MatLabel
   ],
   providers: [

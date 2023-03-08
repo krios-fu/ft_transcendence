@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RoomDto } from 'src/app/dtos/room.dto';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
@@ -21,11 +22,21 @@ export class OnlineComponent implements OnInit {
   is_admin = false;
   admins = []
 
+  public formMessage = new FormGroup({
+    message: new FormControl('')
+  })
+  
   constructor(private http: HttpClient,
-    public router: Router) {
+    public router: Router,private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
+
+  this.route.params.subscribe(({ id }) => {
+  this.formMessage.patchValue({ id });
+  this.admins = []
+  this.players = [] 
+
     let user: UserDto;
     this.http.get(`http://localhost:3000/users/me`)
       .subscribe((entity) => {
@@ -41,7 +52,7 @@ export class OnlineComponent implements OnInit {
     this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`)
       .subscribe((entity) => {
         this.admins = Object.assign(entity);
-        this.http.get(`http://localhost:3000/user_room/rooms/1/users`)
+        this.http.get(`http://localhost:3000/user_room/rooms/${this.id_room}/users`)
           .subscribe((entity) => {
             let data = Object.assign(entity);
             for (let user in data) {
@@ -55,6 +66,7 @@ export class OnlineComponent implements OnInit {
             }
           });
       });
+    });
 
   }
 

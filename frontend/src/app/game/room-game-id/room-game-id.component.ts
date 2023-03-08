@@ -69,22 +69,13 @@ export class RoomGameIdComponent implements OnInit {
 
         this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
-      
-      
             this.room_id = id;
-      
-            // this.chat.resetChat();
             delete this.room_dto;
-      
             this.http.get<RoomDto>(`http://localhost:3000/room/${this.room_id}`)
               .subscribe((entity) => {
                   this.room_dto = entity;
                   console.log(`ROOM_ID: ${this.room_id}`,this.room_dto);
-                // let chats = Object.assign(entity)
-                // this.user = (chats[0].users[0].nickName == this.room_id)
-                //   ? chats[0].users[0] : chats[0].users[1];
               });
-            // this.chat.getMessageApi(id);
           });
 
 

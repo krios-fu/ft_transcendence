@@ -56,6 +56,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe((event) => {
       if (this.authService.isAuthenticated() === true) {
         this.getPenddingFriends();
+        // this.ngOnInit();
+
       }
     });
   }
