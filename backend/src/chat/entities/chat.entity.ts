@@ -3,12 +3,13 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
-    OneToMany,
+    OneToMany, OneToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
 import {MessageEntity} from "./message.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { UserService } from "src/user/services/user.service";
+import {RoomEntity} from "../../room/entity/room.entity";
 
 @Entity({
     name : 'chats'
@@ -38,4 +39,7 @@ export class ChatEntity {
     @OneToMany(()=> MessageEntity, (messages)=> messages.chat)
     @JoinTable()
     messages: MessageEntity[];
+
+    @OneToOne(() => RoomEntity)
+    room: RoomEntity;
 }
