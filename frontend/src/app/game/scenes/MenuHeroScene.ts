@@ -2,6 +2,11 @@ import { Socket } from "socket.io-client";
 import { IMatchInitData } from "../elements/Match";
 import { MenuHeroRenderer } from "../elements/MenuHeroRenderer";
 import { MenuSelector } from "../elements/MenuSelector";
+import { GameRecoveryService } from "../services/recovery.service";
+import {
+    SelectionSoundKeys,
+    SoundService
+} from "../services/sound.service";
 import {
     IMenuInit,
     ISelectionData,
@@ -16,49 +21,71 @@ export class    MenuHeroScene extends MenuScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     enter?: any; //Enter key
 
-    constructor(sock: Socket, room: string) {
-        super(sock, room, "MenuHero");
+    constructor(sock: Socket, room: string,
+                    private readonly soundService: SoundService,
+                    override readonly recoveryService: GameRecoveryService) {
+        super(sock, room, recoveryService, "MenuHero");
     }
 
     override init(initData: IMenuInit) {
         this.role = initData.role;
         this.initData = initData.selection;
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
-            if (this._menuHeroRenderer)
-                this._menuHeroRenderer.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             if (this.role != "Spectator")
-                this.scene.start("Player", gameData);
+            {
+                this.scene.start("Player", {
+                    role: this.role,
+                    matchData: gameData
+                });
+            }
             else
-                this.scene.start(this.role, gameData);
+            {
+                this.scene.start(this.role, {
+                    role: this.role,
+                    matchData: gameData
+                });
+            }
         });
         this.socket.once("end", (data) => {
-            if (this._menuHeroRenderer)
-                this._menuHeroRenderer.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             this.scene.start("End", data);
         });
+        this.recoveryService.setUp(this);
     }
 
     override preload() {
+        const   selectSounds: SelectionSoundKeys =
+                                SoundService.selectionSoundKeys;
+        
         super.preload();
         this.load.image('aquamanMenu', '/assets/aquaman_menu.jpg');
         this.load.image('supermanMenu', '/assets/superman_menu.jpg');
         this.load.image('blackPantherMenu', '/assets/blackPanther_menu.jpeg');
-        this.load.image('aquamanConfirm', '/assets/aquaman_menu.jpg');
-        this.load.image('supermanConfirm', '/assets/superman_menu.jpg');
-        this.load.image('blackPantherConfirm', '/assets/blackPanther_menu.jpeg');
+        this.load.image('aquamanConfirm', '/assets/aquaman_menu_confirm.png');
+        this.load.image('supermanConfirm', '/assets/superman_menu_confirm.jpg');
+        this.load.image('blackPantherConfirm',
+                            '/assets/blackPanther_menu_confirm.jpeg');
         this.load.image('atlantisMenu', '/assets/atlantis_menu.jpeg');
         this.load.image('metropolisMenu', '/assets/metropolis_menu.jpeg');
-        this.load.image('wakandaMenu', '/assets/wakanda_menu.png');
+        this.load.image('wakandaMenu', '/assets/wakanda_menu.jpg');
+        this.load.image('atlantisConfirm', '/assets/atlantis_menu_confirm.jpeg');
+        this.load.image('metropolisConfirm', '/assets/metropolis_menu_confirm.jpeg');
+        this.load.image('wakandaConfirm', '/assets/wakanda_menu_confirm.jpg');
+        this.load.audio(selectSounds.theme, '/assets/selection_theme.mp3');
+        this.load.audio(selectSounds.change, '/assets/selection_change.mp3');
+        this.load.audio(selectSounds.confirm, '/assets/selection_confirm.mp3');
+        this.load.audio(selectSounds.finish, '/assets/selection_finish.mp3');
     }
 
     override create() {
         if (!this.initData)
             return ;
+        this.soundService.load(this, SoundService.selectionSoundKeys);
         this._menuHeroRenderer = new MenuHeroRenderer(
             this,
-            this.initData
+            this.initData,
+            this.soundService
         );
         this.selector = new MenuSelector(this.initData, this._menuHeroRenderer);
         this.socket.on("leftSelection", (data: ISelectionData) => {
@@ -68,7 +95,7 @@ export class    MenuHeroScene extends MenuScene {
             this.selector?.serverUpdate(data);
         });
         this.socket.on("confirmSelection", (data: ISelectionData) => {
-            this.selector?.serverUpdate(data);
+            this.selector?.serverUpdate(data, this.role);
         });
         this.cursors = this.input.keyboard.createCursorKeys(); //up, left, down, right
         this.enter = this.input.keyboard.addKey("ENTER");
@@ -102,6 +129,29 @@ export class    MenuHeroScene extends MenuScene {
                 this.selector?.confirm(this.role);
             }
         });
+    }
+
+    override destroy(): void {
+        super.destroy();
+        if (this._menuHeroRenderer)
+            this._menuHeroRenderer.destroy();
+        this.soundService.destroy();
+    }
+
+    override recover(data: IMenuInit): void {
+        /*
+        **  This can be improved checking if it is necessary
+        **  to reset the scene, update some values, or do nothing.
+        */
+       this._menuHeroRenderer?.destroy();
+       this.role = data.role;
+       this.initData = data.selection;
+        this._menuHeroRenderer = new MenuHeroRenderer(
+            this,
+            this.initData,
+            this.soundService
+        );
+        this.selector = new MenuSelector(this.initData, this._menuHeroRenderer);
     }
 
 }

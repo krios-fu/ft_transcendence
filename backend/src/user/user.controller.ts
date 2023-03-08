@@ -14,10 +14,8 @@ import {
     Req,
     UploadedFile,
     UseInterceptors,
-    UseGuards,
     NotFoundException,
     HttpCode,
-
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -35,6 +33,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
+import { Public } from 'src/common/decorators/public.decorator';
+import { Express } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -106,6 +106,7 @@ export class UserController {
 
     /* role guards ?? (or admin) */
     /* it is me! */
+    @Public()
     @Post()
     async postUser(@Body() newUser: CreateUserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
@@ -466,6 +467,50 @@ export class UserController {
             throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
         }
         return this.friendshipService.acceptFriend(userId, friendId);
+    }
+
+    @Patch('me/friends/accept')
+    public async meAcceptFriend(
+        // @Param('user_id', ParseIntPipe) userId: number,
+        // @Param('friend_id', ParseIntPipe) friendId: number,
+        @Req() req: IRequestUser,
+        @Body() friend: any
+    ): Promise<UpdateResult> {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+       const  userId = user.id;
+       const friendId = friend.id;
+       console.log("friends", userId,"<--->" ,friendId)
+        if ((await this.userService.findAllUsers({ filter: { id: [userId, friendId] } }))
+            .length != 2) {
+            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.acceptFriend(userId, friendId);
+    }
+
+    @Delete('me/friends/deleted/:id')
+    public async meDeletedFriend(
+        @Param('id', ParseIntPipe) id_deleted: number,
+        // @Param('friend_id', ParseIntPipe) friendId: number,
+        @Req() req: IRequestUser,
+        @Body() friend: any
+    ) {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.deletedFriend(id_deleted);
     }
 
     /*

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Category } from '../user/user.entity';
+import { Category } from '../user/enum/category.enum';
 import {
     GameRankingService,
     RankingData

@@ -1,4 +1,4 @@
-import { Category } from "src/user/entities/user.entity";
+import { Category } from "../../user/enum/category.enum";
 
 export enum HeroId {
     Aquaman,
@@ -35,11 +35,11 @@ export interface    IGameSelectionData {
     categoryB: string;
     avatarA: string;
     avatarB: string;
-    heroA: HeroId;
-    heroB: HeroId;
-    heroAConfirmed: boolean;
-    heroBConfirmed: boolean;
-    stage: StageId;
+    heroA?: HeroId;
+    heroB?: HeroId;
+    heroAConfirmed?: boolean;
+    heroBConfirmed?: boolean;
+    stage?: StageId;
     status: SelectionStatus;
 }
 
@@ -51,30 +51,37 @@ export class    GameSelection {
     private _categoryB: Category;
     private _avatarA: string;
     private _avatarB: string;
-    private _heroA: HeroId;
-    private _heroB: HeroId;
-    private _heroAConfirmed: boolean;
-    private _heroBConfirmed: boolean;
-    private _stage: number;
+    private _heroA?: HeroId;
+    private _heroB?: HeroId;
+    private _heroAConfirmed?: boolean;
+    private _heroBConfirmed?: boolean;
+    private _stage?: number;
     private _status: SelectionStatus;
 
-    constructor(initData: IGameSelectionInit) {
+    constructor(initData: IGameSelectionInit, hero: boolean) {
         this._nickPlayerA = initData.nickPlayerA;
         this._nickPlayerB = initData.nickPlayerB;
         this._categoryA = initData.categoryA;
         this._categoryB = initData.categoryB;
         this._avatarA = initData.avatarA;
         this._avatarB = initData.avatarB;
-        this._heroA = HeroId.Aquaman;
-        this._heroB = HeroId.Aquaman;
-        this._heroAConfirmed = false;
-        this._heroBConfirmed = false;
-        this._stage = StageId.Atlantis;
+        if (hero)
+        {
+            this._heroA = HeroId.Aquaman;
+            this._heroB = HeroId.Aquaman;
+            this._heroAConfirmed = false;
+            this._heroBConfirmed = false;
+            this._stage = StageId.Atlantis;
+        }
         this._status = SelectionStatus.Hero;
     }
 
     set status(input: SelectionStatus) {
         this._status = input;
+    }
+
+    get status(): SelectionStatus {
+        return (this._status);
     }
 
     get finished(): boolean {

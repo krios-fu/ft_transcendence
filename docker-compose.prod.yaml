@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  backend:
+    container_name: backend_prod
+    build:
+      target: prod
+    entrypoint: ["npm", "run", "start:prod"]
+    restart: always

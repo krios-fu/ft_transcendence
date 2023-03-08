@@ -1,5 +1,3 @@
-import { arrayBuffer } from "stream/consumers";
-
 export interface    IPaddleInit {
     width: number;
     height: number;
@@ -14,11 +12,7 @@ export interface    IPaddleClientStart {
     xPos: number;
     yPos: number;
     color: number;
-}
-
-export interface    IPaddleData {
-    xPos: number;
-    yPos: number;
+    displacement: number; // In pixels
 }
 
 export class    Paddle {
@@ -32,6 +26,7 @@ export class    Paddle {
     private _side: number; //side: 0 === left, 1 === right
     private _xPos: number;
     private _yPos: number;
+    private _displacement: number;
 
     constructor(init: IPaddleInit) {
         this._width = init.width;
@@ -43,6 +38,7 @@ export class    Paddle {
         this._leftBorder = this._xPos - this._halfWidth;
         this._rightBorder = this._xPos + this._halfWidth;
         this._side = init.side;
+        this._displacement = 8;
     }
 
     get height(): number {
@@ -77,35 +73,29 @@ export class    Paddle {
         return (this._side);
     }
 
+    set yPos(yPos: number) {
+        this._yPos = yPos;
+    }
+
     up(): void {
-        if (this._yPos - 8 < this._halfHeight)
+        if (this._yPos - this._displacement < this._halfHeight)
             this._yPos = this._halfHeight;
         else
-            this._yPos -= 8;
+            this._yPos -= this._displacement;
     }
 
     down(gameHeight: number): void {
-        if (this._yPos + 8 > gameHeight - this.halfHeight)
+        if (this._yPos + this._displacement > gameHeight - this.halfHeight)
             this._yPos = gameHeight - this.halfHeight;
         else
-            this._yPos += 8;
+            this._yPos += this._displacement;
     }
 
-    //0: Down, 1: Up
-    update(moves: number[], gameHeight: number): void {
-        moves.forEach(element => {
-            if (element === 1)
-                this.up();
-            else
-                this.down(gameHeight);
-        });
-    }
-
-    data(): IPaddleData {
-        return ({
-            xPos: this._xPos,
-            yPos: this._yPos
-        });
+    update(up: boolean, gameHeight: number): void {
+        if (up)
+            this.up();
+        else
+            this.down(gameHeight);
     }
     
     clientStartData(): IPaddleClientStart {
@@ -114,7 +104,8 @@ export class    Paddle {
             height: this._height,
             xPos: this._xPos,
             yPos: this._yPos,
-            color: 0xffffff
+            color: 0xffffff,
+            displacement: this._displacement
         })
     }
 

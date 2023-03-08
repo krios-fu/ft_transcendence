@@ -4,13 +4,14 @@ import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
 import { WinnerEntity } from "src/match/winner/winner.entity";
-import {
-    Category,
-    UserEntity
-} from "src/user/entities/user.entity";
+import { UserEntity } from "src/user/entities/user.entity";
+import { Category } from "../user/enum/category.enum";
 import { UserService } from "src/user/services/user.service";
 import { UpdateResult } from "typeorm";
-import { IGameResult } from "./elements/Game";
+import {
+    GameType,
+    IGameResult
+} from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
 
@@ -31,9 +32,9 @@ export class    GameService {
         return (this.gamePlayers.get(gameId));
     }
 
-    startGame(gameId: string): [[UserEntity, UserEntity], number] {
+    startGame(gameId: string): [[UserEntity, UserEntity], GameType] {
         let nextPlayers: [UserEntity, UserEntity] = [undefined, undefined];
-        let gameType: number;
+        let gameType: GameType;
         let currentPlayers: [UserEntity, UserEntity];
     
         [nextPlayers[0], nextPlayers[1], gameType] =
@@ -166,17 +167,18 @@ export class    GameService {
         let     isOfficial: boolean;
         let     winner: number;
 
-        isOfficial = this.isOfficial(gameId);
-        winner = this.getWinner(players[0], gameResult);
-        if (!(await this.saveMatch(players, gameResult, isOfficial)))
-            console.error(`Failed database insertion for match: ${gameId}`);
-        if (isOfficial)
-        {
-            if (!(await this.updatePlayerRankings(players, winner)))
-                return ;
+        if (gameResult.winnerScore != gameResult.loserScore)
+        { // Matches cancelled because of lag don't satisfy this condition
+            isOfficial = this.isOfficial(gameId);
+            winner = this.getWinner(players[0], gameResult);
+            if (!(await this.saveMatch(players, gameResult, isOfficial)))
+                console.error(`Failed database insertion for match: ${gameId}`);
+            if (isOfficial)
+            {
+                if (!(await this.updatePlayerRankings(players, winner)))
+                    return ;
+            }
         }
-        players[0] = undefined;
-        players[1] = undefined;
         return ;
     }
 
