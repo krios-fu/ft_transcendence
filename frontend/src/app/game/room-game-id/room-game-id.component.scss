@@ -1,0 +1,75 @@
+#container {
+    display: grid;
+    position: relative;
+    width: 100%;
+    padding-top: 25px;
+    place-items: center;
+    color: white;
+}
+
+#container-sub {
+    width: 80%;
+    // height: 80vh;
+    // box-shadow: 10px 10px inset lightblue;
+}
+
+#container-title {
+    text-align: center;
+}
+
+#container-title h1 {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    // padding-top: 100px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+span{
+    padding-left:10px;
+  }
+  
+  ::ng-deep .mat-icon {
+    color: white;
+  }
+  
+  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+    color: white!important;
+  
+  }
+
+  .avatar {
+    // position: absolute;
+  
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    // overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 3px solid rgba(0, 0, 0, 0.24);
+  
+  
+    img {
+    //   margin-right: 10px;
+      width: 100%;
+      height: auto;
+  
+    }
+  }
+
+//   .mat-grid-tile .mat-grid-tile-content {
+//     // justify-content: flex-start;
+//     align-items: left;
+//     justify-content: left;
+//   }
+
+// my-grid-list {
+    // padding-top: 24px !important;
+    // border: 4px !important; 
+// }

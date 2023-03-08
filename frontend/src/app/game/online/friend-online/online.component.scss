@@ -9,6 +9,18 @@
 
 
 
+
+  .badge {
+
+
+	display: flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	overflow: initial;
   
 .avatar {
 	position: relative;
@@ -33,7 +45,7 @@
 		// border-;
 		background-image: linear-gradient(
 		  var(--rotate)
-		  , #5ddcff, #82e33c 43%, #6700c2);
+		  , #3c4f55, #a8a8a8 43%, #d1d1d1);
 		//   position: absolute;
 		//   z-index: -1;
 		  top: -1%;
@@ -44,10 +56,13 @@
 	img {
 	  width: 100%;
 	  height: auto;
+	  //scale gray
+	//   -webkit-filter: grayscale(100%);
+	//   filter: grayscale(100%);
   
 	}
 	
-  }
+  }}
   @keyframes spin {
 	0% {
 	  --rotate: 0deg;
@@ -56,3 +71,10 @@
 	  --rotate: 360deg;
 	}
   }
+
+
+  .icon-display {
+  transform: scale(0.6) translateX(42px);
+  color: greenyellow;
+  box-shadow: inset 4px;
+}

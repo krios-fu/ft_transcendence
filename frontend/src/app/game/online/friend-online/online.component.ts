@@ -1,5 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { RoomDto } from 'src/app/dtos/room.dto';
 import { UserDto } from 'src/app/dtos/user.dto';
+import { AuthService } from 'src/app/services/auth.service';
+
+enum role {
+  Admin = 1
+}
 
 @Component({
   selector: 'app-online',
@@ -8,33 +16,51 @@ import { UserDto } from 'src/app/dtos/user.dto';
 })
 export class OnlineComponent implements OnInit {
 
-  friends = [] as UserDto [];
+  players = [] as UserDto[];
+  @Input() id_room?: string = '';
+  is_admin = false;
+  admins = []
 
-  constructor() { 
-    console.log("CONSTRUCTOR ONLINE ROOM")
+  constructor(private http: HttpClient,
+    public router: Router) {
   }
 
   ngOnInit(): void {
-/* 
-    username:string,
-		firstName:string,
-		lastName:string,
-		profileUrl:string,
-		email:string,
-		photoUrl:string */
-  
+    let user: UserDto;
+    this.http.get(`http://localhost:3000/users/me`)
+      .subscribe((entity) => {
+        user = Object.assign(entity)[0];
+        this.http.get(`http://localhost:3000/user_roles/users/${user.id}`)
+          .subscribe((entity) => {
+            let data = Object.assign(entity);
+            if (data.length && data[0]['roleId'] == role.Admin)
+              this.is_admin = true;
+          });
+      });
 
-    // const b = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    // this.friends.push(b);
-    // const c = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    // this.friends.push(c);
-    // const d = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    // this.friends.push(d);
-    // const e = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    // this.friends.push(e);
-    // const f = new UserDto("onapoli-","Omar","Napoli larrabure","https://api.intra.42.fr/v2/users/onapoli-", "onapoli-@student.42madrid.com","https://cdn.intra.42.fr/users/eae7df33c0c049a30bf2189a772000fd/onapoli-.jpg" )
-    // this.friends.push(f);
+    this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`)
+      .subscribe((entity) => {
+        this.admins = Object.assign(entity);
+        this.http.get(`http://localhost:3000/user_room/rooms/1/users`)
+          .subscribe((entity) => {
+            let data = Object.assign(entity);
+            for (let user in data) {
+              let player = data[user]['user'] as UserDto;
+              player.is_admin = false;
+              this.admins.forEach((element: any) => {
+                if (element.userId === player['id'])
+                  player.is_admin = true;
+              });
+              this.players.push(player)
+            }
+          });
+      });
 
+  }
+
+
+  goTochat($event: any) {
+    console.log($event);
   }
 
 }

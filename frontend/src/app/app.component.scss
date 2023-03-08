@@ -119,14 +119,19 @@
 	padding: 0;
 	position: relative;
 	border-left: none;
-	background: repeating-linear-gradient(
-      to bottom,
-      rgb(0, 0, 0),
-      rgb(0, 0, 0) 2px,
-       /* lighten(#000002, 3%) 2px, */
-        lighten(#212020, 3%) 4px,
-        lighten(#000000, 3%) 4px
-    );
+	// background: repeating-linear-gradient(
+    //   to bottom,
+    //   rgb(0, 0, 0),
+    //   rgb(0, 0, 0) 2px,
+    //    /* lighten(#000002, 3%) 2px, */
+    //     lighten(#212020, 3%) 4px,
+    //     lighten(#000000, 3%) 4px
+    // );
+	background-image: url("https://images2.alphacoders.com/109/1092728.jpg");
+	// opacity: 0.4;
+	background-position: center; /* Center the image */
+  	// background-repeat: no-repeat; /* Do not repeat the image */
+  	background-size: cover;
 	nav{
 	position: relative;
 	.title{
