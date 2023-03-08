@@ -29,10 +29,11 @@ export class UserRoomService {
             const ur = await this.userRoomRepository.find(new QueryMapper(queryParams));
             console.log('gotten user room: ', ur);
             console.log('another user room: ', await this.userRoomRepository.find({
-                where: [ { userId: [3, 2] }, { roomId: 1 } ]
+                where: [ { userId: 2 }, { roomId: 1 } ]
             }));
             console.log('another user room 2: ', await this.userRoomRepository.find({
-                where: [{ userId: 2 }, { roomId: 1}]
+                where: { },
+                
             }));
             return ur;
         }
