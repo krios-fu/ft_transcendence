@@ -22,6 +22,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips'
 import { MatListModule } from '@angular/material/list';
 import { SocketNotificationService } from '../services/socket-notification.service';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { StatsComponent } from './stats/stats.component';
+import { MatchHistoryComponent } from './stats/match-history/match-history.component';
 // import { MatDividerModule } from '@angular/material/divider';
 
 
@@ -34,7 +38,11 @@ import { SocketNotificationService } from '../services/socket-notification.servi
         SettingComponent,
         FriendOnlineComponent,
         ProfileUserComponent,
+        StatsComponent,
+        MatchHistoryComponent,
         // DialogNotification
+        // GameComponent
+        // LoginComponent
     ],
     exports: [
     ],
@@ -60,13 +68,12 @@ import { SocketNotificationService } from '../services/socket-notification.servi
         MatInputModule,
         MatTabsModule,
         MatListModule,
+        MatTableModule,
+        MatPaginatorModule,
         // MatDividerModule,
         // MatDialogModule,
 
     ],
-    // entryComponents: [
-    //     DialogNotification
-    //   ]
 })
 export class HomeModule {
     constructor(router: Router) {
