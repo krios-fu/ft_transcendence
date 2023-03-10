@@ -39,16 +39,18 @@ export class ProfileUserComponent implements OnInit {
   ) {
     this.user = undefined;
 
-    this.userService.getUser('me')
-    .subscribe((user : UserDto[]) => {
-      this.me = user[0];
-    } )
+
 
   }
 
 
   ngOnInit() {
     this.friend();
+    this.userService.getUser('me')
+    .subscribe((user : UserDto[]) => {
+      this.me = user[0];
+      this.socketGameNotification.joinRoom(this.me.username);
+    } )
   }
 
 
@@ -103,11 +105,11 @@ export class ProfileUserComponent implements OnInit {
           this.icon_activate = true;
 
           console.log("USERRR CREATED CHAT", this.user)
-          if (this.user.username == this.authService.getAuthUser()){
+          if (this.user.username != this.authService.getAuthUser()){
             this.icon_activate = true;
           }
-          else
-            this.chatService.createChat(this.user.id);
+          // else
+            this.chatService.createChat(this.user.id).subscribe(data => console.log('CHAT POST', data));
 
 
           this.FRIENDS_USERS = [];

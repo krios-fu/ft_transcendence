@@ -24,7 +24,7 @@ export class SocketNotificationService implements OnInit {
         this.socket.emit('join_room_notification', username);
     }
     sendNotification(payload: any) {
-        console.log("SEND NOTIFICATION", `notifications_${payload.user.username}`, payload.title);
+        console.log("SEND NOTIFICATION", `notifications_${payload.dest}`, payload.title);
         this.socket.emit(`notifications`, payload)
     }
 }

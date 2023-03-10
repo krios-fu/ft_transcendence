@@ -144,16 +144,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(this.route);
   }
 
-
   getPenddingFriends() {
-    this.usersService.getFriends('me')
-      .subscribe((data: any) => {
-        this.nPenddingFriends = data.length;
-        console.log(this.nPenddingFriends);
+    this.usersService.getUser('me')
+      .subscribe((user: UserDto[]) => {
+        this.usersService.getFriends('me')
+          .subscribe((data: any) => {
+            let friends_pending = Object.assign(data);
+            this.nPenddingFriends = (friends_pending.filter((friend: any) =>
+              friend['sender'].username != user[0].username)).length;
+          })
       })
   }
-
-
 
   send_chat_profile(e: any) {
     return e;
@@ -169,6 +170,5 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.friend_state = !this.friend_state;
     this.alertService.openFriendPending();
   }
-
 
 }
