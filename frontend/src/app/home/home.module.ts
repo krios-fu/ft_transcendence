@@ -30,6 +30,7 @@ import { MatchHistoryComponent } from './stats/match-history/match-history.compo
 
 
 
+
 @NgModule({
     declarations: [
         HomeComponent,
@@ -40,9 +41,9 @@ import { MatchHistoryComponent } from './stats/match-history/match-history.compo
         ProfileUserComponent,
         StatsComponent,
         MatchHistoryComponent,
-        // DialogNotification
         // GameComponent
         // LoginComponent
+        // DialogNotification
     ],
     exports: [
     ],
