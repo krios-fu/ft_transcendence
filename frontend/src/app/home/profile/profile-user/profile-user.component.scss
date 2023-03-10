@@ -1,239 +1,227 @@
 @property --rotate {
-	syntax: "<angle>";
-	initial-value: 132deg;
-	inherits: false;
+    syntax: "<angle>";
+    initial-value: 132deg;
+    inherits: false;
 }
 
 @keyframes spin {
-	0% {
-		--rotate: 0deg;
-	}
+    0% {
+        --rotate: 0deg;
+    }
 
-	100% {
-		--rotate: 360deg;
-	}
+    100% {
+        --rotate: 360deg;
+    }
 
 
 }
 
 .avatar {
-	position: relative;
-	background: lawngreen;
-	//z-index: 1;
-	left: 5px;
-	border-radius: 50%;
-	width: 60px;
-	height: 60px;
-	overflow: hidden;
-	margin: 0;
-	padding:0;
-	border: 3px solid rgba(255, 255, 255, 0.24);
-  
-	img {
-	  width: 100%;
-	  height: auto;
-  
-	}
-  }
-  
-  div{
-	// border: 1px solid rgba(245, 245, 245, 0.29);
-	border: outset 2px silver;
-  
-	//border-bottom: none;
-	// &:last-child{
-	//   border-bottom: 1px solid rgba(245, 245, 245, 0.29);
-	// }
-  
-  }
-  
-  
-  .icon_nav{
-	color: white;
-  
-	&:hover{
-	  color: rgb(237, 235, 139);
-	}
-  }
-  
-  .send_friendship{
-	color: white;
-  
-	&:hover{
-	  color: rgb(28, 225, 71);
-	}
-  }
-  
-  .tree{
-	  font-family: 'Super Mario World Text Box', sans-serif;
-	  font-size: 12px;
-	padding: 10px;
-	margin-top: 15px;
-	}
-  
-  .cdk-virtual-scroll-content-wrapper {
-	  display: flex;
-	  flex-direction: row;
-	  justify-content: center;
-	  align-items: center;
-	  scrollbar-base-color : whitesmoke;
-  
-   
-	
-	}
-  
-  .effect{
-	
-  
-	animation: bounce-in 2s ease;
-	animation: fade-in 2s linear both;
-  
-	@keyframes fade-in {
-	  from { opacity: 0; }
-	  to { opacity: 1; }
-	}
-  } 
+    position: relative;
+    left: 5px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    margin-top: 10px;
+    border: 3px solid rgb(255, 255, 255);
+
+    img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+div {
+    border: outset 2px silver;
+    border-radius: 22px;
+}
+
+.icon_nav {
+    color: white;
+    &:hover {
+        color: rgb(237, 235, 139);
+    }
+}
+
+.send_friendship {
+    color: white;
+
+    &:hover {
+        color: rgb(28, 225, 71);
+    }
+}
+
+.tree {
+    font-family: 'Super Mario World Text Box', sans-serif;
+    font-size: 12px;
+    padding: 10px;
+    margin-top: 15px;
+}
+
+.cdk-virtual-scroll-content-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    scrollbar-base-color: whitesmoke;
 
 
-  /////////
-  /// 
-  /// 
-  /// .
-  /// 
- .tree_friend {
-  background: none;
-  // border: 1px solid rgba(245, 245, 245, 0.29);
-  font-family: 'Super Mario World Text Box', sans-serif;
-  font-size: 9px;
+
+}
+
+.effect {
+
+
+    animation: bounce-in 2s ease;
+    animation: fade-in 2s linear both;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+
+/////////
+/// 
+/// 
+/// .
+/// 
+.tree_friend {
+    background: none;
+    // border: 1px solid rgba(245, 245, 245, 0.29);
+    font-family: 'Super Mario World Text Box', sans-serif;
+    font-size: 9px;
 
 }
 
 a {
-  text-decoration: none;
-  color: white;
-  font-size: 9px;
+    text-decoration: none;
+    color: white;
+    font-size: 9px;
 
-  &:hover {
-    color: goldenrod;
-  }
+    &:hover {
+        color: goldenrod;
+    }
 }
 
 .effect_friend {
 
-  animation: bounce-in 2s ease;
-  animation: fade-in 2s linear both;
+    animation: bounce-in 2s ease;
+    animation: fade-in 2s linear both;
 
-  @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
 
-    to {
-      opacity: 1;
+        to {
+            opacity: 1;
+        }
     }
-  }
 }
 
 
 .avatar_friend_online {
-	position: relative;
-	// background: lawngreen;
-	//z-index: 1;
-	// left: 5px;
-	border-radius: 50%;
-	width: 45px;
-	height: 45px;
-	overflow: hidden;
-	margin: 0;
-	padding: 0;
-	border: 3px solid rgba(255, 255, 255, 0.24);
-	  // content: "";
-	  background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
-	  // top: -1%;
-	  // left: 1%;
-	  animation: spin 2.5s linear infinite;
-	  //   }
-  
-	  img {
-		  width: 100%;
-		  height: auto;
-  
-	  }
+    position: relative;
+
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 3px solid rgba(255, 255, 255, 0.24);
+    background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
+    animation: spin 2.5s linear infinite;
+    img {
+        width: 100%;
+        height: auto;
+    }
 
 }
 
 .avatar_friend {
-  position: relative;
-  // background: lawngreen;
-  //z-index: 1;
-  // left: 5px;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  border: 3px solid rgba(255, 255, 255, 0.24);
-	// content: "";
-	// background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
-	// // top: -1%;
-	// // left: -2%;
-	// animation: spin 2.5s linear infinite;
-	//   }
+    position: relative;
+    // background: lawngreen;
+    //z-index: 1;
+    // left: 5px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    border: 3px solid rgba(255, 255, 255, 0.24);
+    // content: "";
+    // background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
+    // // top: -1%;
+    // // left: -2%;
+    // animation: spin 2.5s linear infinite;
+    //   }
 
-	img {
-		width: 100%;
-		height: auto;
+    img {
+        width: 100%;
+        height: auto;
 
-	}
+    }
 
 }
 
 .scroll_friend {
-  height: 30vh;
-  position: relative;
-  color: white;
-  /* box-shadow: 0 0 4px 0 goldenrod; */
-  border-radius: 20px;
-  flex-direction: column-reverse;
+    height: 30vh;
+    position: relative;
+    color: white;
+    /* box-shadow: 0 0 4px 0 goldenrod; */
+    border-radius: 20px;
+    flex-direction: column-reverse;
 
 }
 
 .tag_friend {
-	padding-left: 0;
-	border-radius: 22px;
-	height: 50px;
-	box-shadow: 10px rgb(255, 255, 255);
-  
-	// background: linear-gradient(90deg, rgba(222, 0, 89, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-  
-	color: white;
-	border: outset 3px silver;
-	margin-top: 10px;
-	
+    padding-left: 0;
+    border-radius: 22px;
+    height: 50px;
+    box-shadow: 10px rgb(255, 255, 255);
+
+    // background: linear-gradient(90deg, rgba(222, 0, 89, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
+    background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+
+    color: white;
+    border: outset 3px silver;
+    margin-top: 10px;
+
 
 }
 
-span{
-  padding-left:10px; font-size: xx-small;
+span {
+    padding-left: 10px;
+    // font-size: xx-small;
 }
 
 ::ng-deep .mat-icon {
-  color: white;
+    color: white;
 }
 
 ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
-  color: white!important;
+    color: white !important;
 }
 
 [aria-label=primary] {
 
-	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.103) 120%);
-	background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
-  
-	border:3px outset rgba(255, 255, 255, 0.499);
-	font-family: 'Super Mario World Text Box', sans-serif;
-	border-radius: 22px;
-  
-  }
+    // background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.103) 120%);
+    background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
+
+    border: 3px outset rgba(255, 255, 255, 0.499);
+    font-family: 'Super Mario World Text Box', sans-serif;
+    border-radius: 22px;
+
+}

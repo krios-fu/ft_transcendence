@@ -16,6 +16,8 @@ import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common
 import { throwError } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { SettingComponent } from './profile/setting/setting.component';
+import { AlertServices } from '../services/alert.service';
+import { SocketNotificationService } from '../services/socket-notification.service';
 
 
 
@@ -50,6 +52,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private alertService: AlertServices,
   ) {
     this.subscriber = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -110,9 +113,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.user = userDto.username;
                 // this.firstName = userDto.firstName;
                 // this.lastName = userDto.lastName;
-                
-                 console.log(userDto.doubleAuth)
-                if (userDto[0].doubleAuth === true){
+                console.log(userDto.doubleAuth)
+                if (userDto[0].doubleAuth === true) {
                   this.authService.redirecOtpSesion()
                 }
                 else
@@ -165,8 +167,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   hello() {
     this.friend_state = !this.friend_state;
-
-    console.log('HELLO WORLD');
+    this.alertService.openFriendPending();
   }
 
 
