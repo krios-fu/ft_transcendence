@@ -23,8 +23,15 @@ export class UserService {
         private userRepository: UserRepository,
     ) { }
 
-    public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
+    public async findAllUsers(queryParams?: UserQueryDto)
+                                : Promise<UserEntity[]
+                                            | [UserEntity[], number]> {
         if (queryParams !== undefined) {
+            if (queryParams.count === true)
+            {
+                return await this.userRepository
+                                .findAndCount(new QueryMapper(queryParams));
+            }
             return await this.userRepository.find(new QueryMapper(queryParams));
         }
         return await this.userRepository.find();
