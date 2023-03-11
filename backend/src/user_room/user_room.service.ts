@@ -1,9 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
-import { RoomRolesEntity } from 'src/room_roles/entity/room_roles.entity';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
@@ -28,9 +27,20 @@ export class UserRoomService {
             console.log('check querymapper: ', new QueryMapper(queryParams));
             const ur = await this.userRoomRepository.find(new QueryMapper(queryParams));
             console.log('gotten user room: ', ur);
-            console.log('another user room: ', await this.userRoomRepository.find({
-                where: [ { userId: 2 }, { roomId: 1 } ]
-            }));
+            const findOpts: FindManyOptions = {
+                where: (qb) => {
+                    qb.where(
+                      new Brackets((qb1) => {
+                          qb.where({ userId: 3 });
+                      }),
+                    ).andWhere(
+                      new Brackets((qb2) => {
+                          qb.where({ roomId: 1 });
+                      }),
+                    );
+                  },
+            };
+            console.log('another user room: ', await this.userRoomRepository.find(findOpts));
             console.log('another user room 2: ', await this.userRoomRepository.find({
                 where: { },
                 

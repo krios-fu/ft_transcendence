@@ -1,4 +1,5 @@
 import { Exclude } from "class-transformer";
+import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
 import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
 import { ChatEntity } from "src/chat/entities/chat.entity";
 import { MessageEntity } from "src/chat/entities/message.entity";
@@ -132,7 +133,15 @@ export class UserEntity extends BaseEntity {
 	)
 	userRoom: UserRoomEntity[];
 
-	@OneToMany(() => MessageEntity, (message) => message.author)
+	@OneToMany(
+		() => MessageEntity, 
+		(message: MessageEntity) => message.author,
+		{
+			cascade: true,
+			onDelete: 'CASCADE',
+			eager: true
+		}
+	)
 	messages : MessageEntity[];
 
 	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
@@ -145,4 +154,15 @@ export class UserEntity extends BaseEntity {
 		{ cascade: true }
 	)
 	token: RefreshTokenEntity
+
+	@OneToMany(
+		() => AchievementUserEntity, 
+		(achvmUsr: AchievementUserEntity) => achvmUsr.user,
+		{
+			cascade: true,
+			onDelete: 'CASCADE',
+			eager: true
+		}
+	)
+	achievementUser: AchievementUserEntity[];
 }

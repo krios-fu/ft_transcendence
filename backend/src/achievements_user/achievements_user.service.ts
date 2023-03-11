@@ -44,7 +44,7 @@ export class AchievementsUserService {
     */
     public async removeAchievementUser(id: number): Promise<void> {
         /* a testear */
-        const tal = this.achievementsUserRepository.softDelete(id);
+        const tal = this.achievementsUserRepository.delete(id);
         console.log('testing testings...' + tal);
     }
 }
