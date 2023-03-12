@@ -67,18 +67,18 @@ export class    GameGateway implements OnGatewayInit,
 
     @UseGuards(GameAuthGuard)
     @SubscribeMessage("authentication")
-    authentication(
+    async authentication(
         @ConnectedSocket() client: Socket
     ) {
         const   clientId: string = client.id;
         const   username: string = client.data.username;
     
         this.socketAuthService.clearTimeout(clientId);
-        this.socketAuthService.registerUser(client, username);
+        await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
-        client.on("disconnecting", () => {
-            this.socketAuthService.removeUser(client, client.data.mockUser); //Provisional
-            this.socketAuthService.removeUser(client, username);
+        client.on("disconnecting", async () => {
+            await this.socketAuthService.removeUser(client, client.data.mockUser); //Provisional
+            await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
         client.emit("authSuccess");

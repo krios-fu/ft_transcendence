@@ -221,7 +221,8 @@ export class    GameUpdateService {
         });
     }
 
-    private gameEnd(gameId: string, gameResult: IGameResult): void {
+    private async gameEnd(gameId: string,
+                            gameResult: IGameResult): Promise<void> {
         const   players : [UserEntity, UserEntity] =
                             this.gameService.getPlayers(gameId);
         
@@ -235,7 +236,7 @@ export class    GameUpdateService {
             "end",
             this.buildResultData(players, gameResult)
         );
-        this.gameService.endGame(gameId, gameResult);
+        await this.gameService.endGame(gameId, gameResult);
         this.socketHelper.clearRoom(`${gameId}-PlayerA`);
         this.socketHelper.clearRoom(`${gameId}-PlayerB`);
         this.gameTransition(gameId);
@@ -397,7 +398,7 @@ export class    GameUpdateService {
         this.manageUpdateInterval();
     }
 
-    playerWithdrawal(roomId: string, playerRoomId: string): void {
+    async playerWithdrawal(roomId: string, playerRoomId: string): Promise<void> {
         const   gameSelection: GameSelection = this.getGameSelection(roomId);
         const   game: Game = this.getGame(roomId);
         const   winner: number = playerRoomId[playerRoomId.length - 1] === 'A'
@@ -412,11 +413,11 @@ export class    GameUpdateService {
         {
             game.state = GameState.Terminated;
             game.forceWin(winner);
-            this.gameEnd(roomId, game.getResult());
+            await this.gameEnd(roomId, game.getResult());
             return ;
         }
         gameSelection.status = SelectionStatus.Canceled;
-        this.gameEnd(roomId, {
+        await this.gameEnd(roomId, {
             winnerNick: winner === 0 ? gameSelection.data.nickPlayerA
                                         : gameSelection.data.nickPlayerB,
             loserNick: winner != 0 ? gameSelection.data.nickPlayerA
