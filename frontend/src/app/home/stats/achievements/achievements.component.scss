@@ -1,0 +1,25 @@
+#achievements-container {
+    width: 100%;
+}
+
+#card-container {
+    display: grid;
+    padding: 20px;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 280px));
+    justify-content: space-evenly;
+}
+
+.mat-card {
+    background-color: rgba($color: white, $alpha: 0.6);
+    background-image: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0px, rgba(12, 0, 81, 0.25) 100%)
+}
+
+.card-header-image {
+    background-size: cover;
+}
+
+.date-span {
+    font-weight: bold;
+}
+  
