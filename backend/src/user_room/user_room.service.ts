@@ -25,26 +25,18 @@ export class UserRoomService {
         console.log('asd')
         if (queryParams !== undefined) {
             console.log('check querymapper: ', new QueryMapper(queryParams));
-            const ur = await this.userRoomRepository.find(new QueryMapper(queryParams));
+            const ur = await this.userRoomRepository.find();
             console.log('gotten user room: ', ur);
-            const findOpts: FindManyOptions = {
-                where: (qb) => {
-                    qb.where(
-                      new Brackets((qb1) => {
-                          qb.where({ userId: 3 });
-                      }),
-                    ).andWhere(
-                      new Brackets((qb2) => {
-                          qb.where({ roomId: 1 });
-                      }),
-                    );
-                  },
-            };
-            console.log('another user room: ', await this.userRoomRepository.find(findOpts));
+            console.log('another user room: ', await this.userRoomRepository.find());
             console.log('another user room 2: ', await this.userRoomRepository.find({
                 where: { },
-                
             }));
+            let query: UserRoomQueryDto = { 'filter': {
+                'id': [1, 2, 3],
+                'userId': [4, 5, 5],
+                'roomId': [3]
+            }};
+            new QueryMapper(query);
             return ur;
         }
         return await this.userRoomRepository.find();

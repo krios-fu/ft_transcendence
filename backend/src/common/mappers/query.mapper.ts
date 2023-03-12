@@ -18,19 +18,47 @@ export class QueryMapper {
         }
         if (filter !== undefined) {
             this.where = [];
+            let tmp = [];
+            console.log('filter: ', filter);
             for (let key in filter) {
-                console.log("FILTER IN KEY: ", filter[key])
-                filter[key].forEach((value: string) => {
-                    if (key === 'nickName' || key === 'roomName') {
-                        this.where.push({ [key]: Like(`${value}%`) });
+                console.log('key:, ', key);
+                tmp.push(filter[key].map(
+                    function(e: string) {
+                        return { [key]: e };
                     }
-                    else {
-                        this.where.push({ [key]: value });
-                    }
-                });
+                ));
+            }
+            console.log('test: ', tmp);
+            let new_arr = tmp.reduce((acc, cv) => {
+                console.log('acc, cv: ', acc, cv);
+                //console.log('test in cb: ', [[1,2,3]].map(acci => {
+                //    console.log('acci, ', acci);
+                //    return cv.map(cvi => {
+                //        console.log('cvi, ', cvi);
+                //        return acci.push(cvi)
+                //    })
+                //}));
+                return acc.map(acci => {
+                    console.log('acci, ', acci);
+                    return cv.map(cvi => {
+                        console.log('cvi, ', cvi);
+                        return acci.push(cvi)
+                    })
+                })
+            }, []);
+            console.log('new arr: ', new_arr);
+
+        //        console.log("FILTER IN KEY: ", filter[key])
+        //        filter[key].forEach((value: string) => {
+        //            if (key === 'nickName' || key === 'roomName') {
+        //                this.where.push({ [key]: Like(`${value}%`) });
+        //            }
+        //            else {
+        //                this.where.push({ [key]: value });
+        //            }
+        //        });
             }
         }
-    }
     take?: number;
     skip?: number;
     order?: { [key: string]: string }

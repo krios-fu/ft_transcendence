@@ -45,7 +45,7 @@ class APITrans():
         except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
             raise 'FATAL'
-        except requests.HTTPError as e:
+        except requests.exceptions.HTTPError as e:
             print(f'Caught exception: {str(e)}')
             raise e
         token = r.json()['accessToken']

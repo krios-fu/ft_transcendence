@@ -143,6 +143,13 @@ export class UserService {
             .getMany();
     }
 
+    public async findAllUsersWithAchievement(id: number): Promise<UserEntity[]> {
+        return (await this.userRepository.createQueryBuilder('user'))
+            .leftJoinAndSelect('user.achievementUser', 'achievement_user')
+            .where('achievement_user.achievementId = :achvId', { 'achvId': id })
+            .getMany();
+    }
+
     /*
     **  ~~   [ Validation guard services ]   ~~
     **

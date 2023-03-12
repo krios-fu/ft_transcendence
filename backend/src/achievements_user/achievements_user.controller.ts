@@ -3,12 +3,12 @@ import { Body,
     Delete, 
     Get, 
     BadRequestException, 
-    HttpStatus, 
     Logger, 
     Param, 
     ParseIntPipe, 
     Post } from '@nestjs/common';
 import { AchievementsService } from 'src/achievements/achievements.service';
+import { AchievementEntity } from 'src/achievements/entity/achievement.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/services/user.service';
 import { AchievementsUserService } from './achievements_user.service';
@@ -48,15 +48,16 @@ export class AchievementsUserController {
             this.achievementsUserLogger.error(`No achievement with id ${id} present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        return this.achievementsUserService.findAllUsersWithAchievement(id);
+        return await this.userService.findAllUsersWithAchievement(id);
     }
 
     @Get('/users/:id')
-    public async getAllAchievementsFromUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity[]> {
+    public async getAllAchievementsFromUser(@Param('id', ParseIntPipe) id: number): Promise<AchievementEntity[]> {
         if (await this.userService.findOne(id) === null) {
             this.achievementsUserLogger.error(`No user with id ${id} present in database`);
             throw new BadRequestException('resource not found in database');
         }
+        return await this.achievementsService.findAllAchievementsFromUser(id);
     }
 
     @Post()

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AchievementEntity } from 'src/achievements/entity/achievement.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';
 import { AchievementsUserRepository } from './repository/achievements_user.repository';

@@ -138,8 +138,7 @@ export class UserEntity extends BaseEntity {
 		(message: MessageEntity) => message.author,
 		{
 			cascade: true,
-			onDelete: 'CASCADE',
-			eager: true
+			onDelete: 'CASCADE'
 		}
 	)
 	messages : MessageEntity[];
