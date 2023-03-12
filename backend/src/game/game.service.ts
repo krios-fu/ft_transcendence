@@ -128,16 +128,23 @@ export class    GameService {
     }
 
     private createPlayerEntities(players: [UserEntity, UserEntity],
-                            gameResult: IGameResult) : [WinnerEntity, LoserEntity] {
+                                    gameResult: IGameResult)
+                                        : [WinnerEntity, LoserEntity] {
         let     winnerEntity: WinnerEntity = new WinnerEntity;
         let     loserEntity: LoserEntity = new LoserEntity;
         const   winnerNick: string = gameResult.winnerNick;
+        const   [winnerUser, loserUser]: [UserEntity, UserEntity]
+                    = players[0].nickName === winnerNick
+                        ? [players[0], players[1]]
+                        : [players[1], players[0]];
 
-        winnerEntity.user = players[0].nickName === winnerNick
-                            ? players[0] : players[1];
+        winnerEntity.user = winnerUser;
+        winnerEntity.ranking = winnerUser.ranking;
+        winnerEntity.category = winnerUser.category;
         winnerEntity.score = gameResult.winnerScore;
-        loserEntity.user = players[0].nickName != winnerNick
-                            ? players[0] : players[1];
+        loserEntity.user = loserUser;
+        loserEntity.ranking = loserUser.ranking;
+        loserEntity.category = loserUser.category;
         loserEntity.score = gameResult.loserScore;
         return ([winnerEntity, loserEntity]);
     }
