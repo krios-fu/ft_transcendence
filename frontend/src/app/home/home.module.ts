@@ -26,6 +26,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { StatsComponent } from './stats/stats.component';
 import { MatchHistoryComponent } from './stats/match-history/match-history.component';
+import { RankingComponent } from './stats/ranking/ranking.component';
 // import { MatDividerModule } from '@angular/material/divider';
 
 
@@ -41,6 +42,7 @@ import { MatchHistoryComponent } from './stats/match-history/match-history.compo
         ProfileUserComponent,
         StatsComponent,
         MatchHistoryComponent,
+        RankingComponent,
         // GameComponent
         // LoginComponent
         // DialogNotification
