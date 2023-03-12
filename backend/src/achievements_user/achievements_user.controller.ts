@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { AchievementsService } from 'src/achievements/achievements.service';
 import { UserService } from 'src/user/services/user.service';
 import { AchievementsUserService } from './achievements_user.service';
+import { AchievementsUserQueryDto } from './dto/achievements_user.query.dto';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';
 
@@ -17,8 +18,8 @@ export class AchievementsUserController {
     private readonly achievementsUserLogger: Logger;
 
     @Get()
-    public async getAllAchievementsUser(): Promise<AchievementUserEntity[]> {
-        return await this.achievementsUserService.getAllAchievementsUser();
+    public async getAllAchievementsUser(@Query() queryParams: AchievementsUserQueryDto): Promise<AchievementUserEntity[]> {
+        return await this.achievementsUserService.getAllAchievementsUser(queryParams);
     }
 
     @Get(':id')
