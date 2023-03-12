@@ -23,18 +23,18 @@ export class UserService {
         private userRepository: UserRepository,
     ) { }
 
-    public async findAllUsers(queryParams?: UserQueryDto)
-                                : Promise<UserEntity[]
-                                            | [UserEntity[], number]> {
+    public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
         if (queryParams !== undefined) {
-            if (queryParams.count === true)
-            {
-                return await this.userRepository
-                                .findAndCount(new QueryMapper(queryParams));
-            }
             return await this.userRepository.find(new QueryMapper(queryParams));
         }
         return await this.userRepository.find();
+    }
+
+    public async findAndCountAllUsers(queryParams?: UserQueryDto)
+                                        : Promise<[UserEntity[], number]> {
+        return await this.userRepository.findAndCount(
+            new QueryMapper(queryParams)
+        );
     }
 
     public async findOne(userId: number): Promise<UserEntity> {

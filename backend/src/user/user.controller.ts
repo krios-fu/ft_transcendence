@@ -59,7 +59,9 @@ export class UserController {
 
     @Get()
     async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[] | [UserEntity[], number]> {
-        return this.userService.findAllUsers(queryParams);
+        if (queryParams.count)
+            return await this.userService.findAndCountAllUsers(queryParams);
+        return await this.userService.findAllUsers(queryParams);
     }
 
     /*
