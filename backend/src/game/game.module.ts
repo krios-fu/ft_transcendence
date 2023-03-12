@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
+import { AchievementsModule } from 'src/achievements/achievements.module';
+import { AchievementsUserModule } from 'src/achievements_user/achievements_user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { LoserModule } from 'src/match/loser/loser.module';
 import { MatchModule } from 'src/match/match.module';
 import { WinnerModule } from 'src/match/winner/winner.module';
 import { UserModule } from 'src/user/user.module';
+import { GameAchievementsService } from './game.achievements.service';
 import { GameGateway } from './game.gateway';
 import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';
@@ -20,7 +23,9 @@ import { GameUpdateService } from './game.updateService';
     MatchModule,
     WinnerModule,
     LoserModule,
-    AuthModule
+    AuthModule,
+    AchievementsModule,
+    AchievementsUserModule
   ],
   providers: [
     GameGateway,
@@ -31,7 +36,8 @@ import { GameUpdateService } from './game.updateService';
     GameReconciliationService,
     SocketHelper,
     GameRecoveryService,
-    GameSocketAuthService
+    GameSocketAuthService,
+    GameAchievementsService
   ],
 })
 export class GameModule {}
