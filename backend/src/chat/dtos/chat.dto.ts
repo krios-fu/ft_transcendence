@@ -1,12 +1,12 @@
 import { IsNotEmpty, 
     IsString,
     IsNumber } from "class-validator";
-import {MessageEntity} from "../entities/message.entity";
+import { ChatMessageEntity } from "../entities/chat-message.entity";
 
 export class ChatDto {
     id?: number;
     begin_at: Date;
-    messages?: MessageEntity[];
+    messages?: ChatMessageEntity[];
 }
 
 
