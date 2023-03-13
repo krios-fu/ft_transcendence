@@ -1,0 +1,276 @@
+Building backend
+Building backend
+#1 [internal] load build definition from Dockerfile
+#1 [internal] load build definition from Dockerfile
+#1 sha256:6bc4c47f7ea25121e315159705c11a2c42eeb34a3fd096840f036f8c7ba6dea7
+#1 transferring dockerfile: 38B done
+#1 DONE 0.0s
+
+#2 [internal] load .dockerignore
+#2 sha256:0bd85fad9b9fe6eeec368bda89abff8e8080d2343ea5349dbe64971659a388f8
+#2 transferring context: 35B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 sha256:c7ddcdb449347fb14fd88eab6b6351683fc669399d296a38e5a23e64c4ea7112
+#3 DONE 0.0s
+#1 sha256:6bc4c47f7ea25121e315159705c11a2c42eeb34a3fd096840f036f8c7ba6dea7
+#1 transferring dockerfile: 38B done
+#1 DONE 0.0s
+
+#2 [internal] load .dockerignore
+#2 sha256:0bd85fad9b9fe6eeec368bda89abff8e8080d2343ea5349dbe64971659a388f8
+#2 transferring context: 35B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 sha256:c7ddcdb449347fb14fd88eab6b6351683fc669399d296a38e5a23e64c4ea7112
+#3 DONE 0.0s
+
+#4 [dev 1/6] FROM docker.io/library/node:18-alpine
+
+#4 [dev 1/6] FROM docker.io/library/node:18-alpine
+#4 sha256:94445b8c557a57362fd9f99d2d96722bc13dcc7d5f3339baf1350fc1dc3ade9a
+#4 DONE 0.0s
+
+#6 [internal] load build context
+#4 sha256:94445b8c557a57362fd9f99d2d96722bc13dcc7d5f3339baf1350fc1dc3ade9a
+#4 DONE 0.0s
+
+#6 [internal] load build context
+#6 sha256:34a442a56dfd964770c1d00a665ad3f0a0aeed87b73f14897b193357550e645e
+#6 sha256:34a442a56dfd964770c1d00a665ad3f0a0aeed87b73f14897b193357550e645e
+#6 transferring context: 17.08kB 0.0s done
+#6 transferring context: 17.08kB 0.0s done
+#6 DONE 0.0s
+
+#7 [dev 3/6] COPY package*.json ./
+#7 sha256:40c5ac2024973d84efc6464f3cb19a0ac8249b0bd1f36f52073b5a526d2c8754
+#7 CACHED
+
+#5 [dev 2/6] WORKDIR /usr/src/app
+#5 sha256:cc1ff837eb3c5a5b3a2cb01c976f3566840405d93cda703968fe5d5cb71794e1
+#6 DONE 0.0s
+
+#7 [dev 3/6] COPY package*.json ./
+#7 sha256:40c5ac2024973d84efc6464f3cb19a0ac8249b0bd1f36f52073b5a526d2c8754
+#7 CACHED
+
+#5 [dev 2/6] WORKDIR /usr/src/app
+#5 sha256:cc1ff837eb3c5a5b3a2cb01c976f3566840405d93cda703968fe5d5cb71794e1
+#5 CACHED
+
+#5 CACHED
+
+#8 [dev 4/6] RUN npm install
+#8 sha256:9d2241c68ac1c84879ee6c194bbb6ee0d84227dc388e618c7aa70289d3ab7dda
+#8 CACHED
+
+#9 [dev 5/6] COPY . .
+#9 sha256:a54d6bd023bf630cc8037f7407dbad0a732fde699cbae167f08b417a6372542a
+#9 DONE 0.1s
+#8 [dev 4/6] RUN npm install
+#8 sha256:9d2241c68ac1c84879ee6c194bbb6ee0d84227dc388e618c7aa70289d3ab7dda
+#8 CACHED
+
+#9 [dev 5/6] COPY . .
+#9 sha256:a54d6bd023bf630cc8037f7407dbad0a732fde699cbae167f08b417a6372542a
+#9 DONE 0.1s
+
+#10 [dev 6/6] RUN ["npm", "run", "build"]
+#10 sha256:f9342f920c003032c562c90171ab678ae0ead3cf18185bb4e86367894b7387ea
+
+#10 [dev 6/6] RUN ["npm", "run", "build"]
+#10 sha256:f9342f920c003032c562c90171ab678ae0ead3cf18185bb4e86367894b7387ea
+#10 0.768 
+#10 0.768 
+#10 0.768 > api@0.0.1 prebuild
+#10 0.768 > rimraf dist
+#10 0.768 
+#10 0.842 
+#10 0.842 > api@0.0.1 build
+#10 0.842 > nest build
+#10 0.842 
+#10 0.768 > api@0.0.1 prebuild
+#10 0.768 > rimraf dist
+#10 0.768 
+#10 0.842 
+#10 0.842 > api@0.0.1 build
+#10 0.842 > nest build
+#10 0.842 
+#10 12.13 [96msrc/chat/chat.gateway.ts[0m:[93m11[0m:[93m32[0m - [91merror[0m[90m TS2307: [0mCannot find module './message/message.service' or its corresponding type declarations.
+#10 12.13 [96msrc/chat/chat.gateway.ts[0m:[93m11[0m:[93m32[0m - [91merror[0m[90m TS2307: [0mCannot find module './message/message.service' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m11[0m import { MessageService } from './message/message.service';
+#10 12.13 [7m  [0m [91m                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/chat.module.ts[0m:[93m10[0m:[93m35[0m - [91merror[0m[90m TS2307: [0mCannot find module './message/message.controller' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m10[0m import { MessageController } from './message/message.controller';
+#10 12.13 [7m  [0m [91m                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/chat.module.ts[0m:[93m11[0m:[93m32[0m - [91merror[0m[90m TS2307: [0mCannot find module './message/message.service' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m11[0m import { MessageService } from './message/message.service';
+#10 12.13 
+#10 12.13 [7m11[0m import { MessageService } from './message/message.service';
+#10 12.13 [7m  [0m [91m                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/chat.module.ts[0m:[93m10[0m:[93m35[0m - [91merror[0m[90m TS2307: [0mCannot find module './message/message.controller' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m10[0m import { MessageController } from './message/message.controller';
+#10 12.13 [7m  [0m [91m                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/chat.module.ts[0m:[93m11[0m:[93m32[0m - [91merror[0m[90m TS2307: [0mCannot find module './message/message.service' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m11[0m import { MessageService } from './message/message.service';
+#10 12.13 [7m  [0m [91m                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m23[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ users: true; messages: false; }' is not assignable to type 'FindOptionsSelect<ChatEntity> | FindOptionsSelectByString<ChatEntity>'.
+#10 12.13   Object literal may only specify known properties, and 'messages' does not exist in type 'FindOptionsSelect<ChatEntity> | FindOptionsSelectByString<ChatEntity>'.
+#10 12.13 
+#10 12.13 [7m23[0m                 messages: false
+#10 12.13 [7m  [0m [91m                ~~~~~~~~~~~~~~~[0m
+#10 12.13 
+#10 12.13 [7m  [0m [91m                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m23[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ users: true; messages: false; }' is not assignable to type 'FindOptionsSelect<ChatEntity> | FindOptionsSelectByString<ChatEntity>'.
+#10 12.13   Object literal may only specify known properties, and 'messages' does not exist in type 'FindOptionsSelect<ChatEntity> | FindOptionsSelectByString<ChatEntity>'.
+#10 12.13 
+#10 12.13 [7m23[0m                 messages: false
+#10 12.13 [7m  [0m [91m                ~~~~~~~~~~~~~~~[0m
+#10 12.13 
+#10 12.13   [96mnode_modules/typeorm/find-options/FindOneOptions.d.ts[0m:[93m19[0m:[93m5[0m
+#10 12.13     [7m19[0m     select?: FindOptionsSelect<Entity> | FindOptionsSelectByString<Entity>;#10 12.13   [96mnode_modules/typeorm/find-options/FindOneOptions.d.ts[0m:[93m19[0m:[93m5[0m
+#10 12.13     [7m19[0m     select?: FindOptionsSelect<Entity> | FindOptionsSelectByString<Entity>;
+
+#10 12.13     [7m  [0m [96m    ~~~~~~[0m#10 12.13     [7m  [0m [96m    ~~~~~~[0m
+#10 12.13     The expected type comes from property 'select' which is declared here on type 'FindManyOptions<ChatEntity>'
+
+#10 12.13     The expected type comes from property 'select' which is declared here on type 'FindManyOptions<ChatEntity>'
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m36[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ users: true; messages: true; }' is not assignable to type 'FindOptionsRelationByString | FindOptionsRelations<ChatEntity>'.
+#10 12.13   Object literal may only specify known properties, and 'messages' does not exist in type 'FindOptionsRelationByString | FindOptionsRelations<ChatEntity>'.#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m36[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ users: true; messages: true; }' is not assignable to type 'FindOptionsRelationByString | FindOptionsRelations<ChatEntity>'.
+#10 12.13   Object literal may only specify known properties, and 'messages' does not exist in type 'FindOptionsRelationByString | FindOptionsRelations<ChatEntity>'.
+#10 12.13 
+
+#10 12.13 
+#10 12.13 [7m36[0m                 messages: true,
+#10 12.13 [7m  [0m [91m                ~~~~~~~~~~~~~~[0m#10 12.13 [7m36[0m                 messages: true,
+#10 12.13 [7m  [0m [91m                ~~~~~~~~~~~~~~[0m
+#10 12.13 
+
+#10 12.13 
+#10 12.13   [96mnode_modules/typeorm/find-options/FindOneOptions.d.ts[0m:[93m27[0m:[93m5[0m
+#10 12.13     [7m27[0m     relations?: FindOptionsRelations<Entity> | FindOptionsRelationByString;
+#10 12.13   [96mnode_modules/typeorm/find-options/FindOneOptions.d.ts[0m:[93m27[0m:[93m5[0m
+#10 12.13     [7m27[0m     relations?: FindOptionsRelations<Entity> | FindOptionsRelationByString;
+#10 12.13     [7m  [0m [96m    ~~~~~~~~~[0m#10 12.13     [7m  [0m [96m    ~~~~~~~~~[0m
+
+#10 12.13     The expected type comes from property 'relations' which is declared here on type 'FindManyOptions<ChatEntity>'
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m44[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ messages: { id: string; }; }' is not assignable to type 'FindOptionsOrder<ChatEntity>'.#10 12.13     The expected type comes from property 'relations' which is declared here on type 'FindManyOptions<ChatEntity>'
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m44[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ messages: { id: string; }; }' is not assignable to type 'FindOptionsOrder<ChatEntity>'.
+#10 12.13   Object literal may only specify known properties, and 'messages' does not exist in type 'FindOptionsOrder<ChatEntity>'.
+
+#10 12.13   Object literal may only specify known properties, and 'messages' does not exist in type 'FindOptionsOrder<ChatEntity>'.
+#10 12.13 
+#10 12.13 [7m44[0m                 messages: {
+#10 12.13 [7m  [0m [91m                ~~~~~~~~~~~[0m#10 12.13 
+#10 12.13 [7m44[0m                 messages: {
+#10 12.13 [7m  [0m [91m                ~~~~~~~~~~~[0m
+#10 12.13 [7m45[0m                     id: "ASC",
+#10 12.13 [7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [7m45[0m                     id: "ASC",
+#10 12.13 [7m  [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [7m46[0m                 }
+
+#10 12.13 [7m46[0m                 }
+#10 12.13 [7m  [0m [91m~~~~~~~~~~~~~~~~~[0m
+#10 12.13 
+#10 12.13 [7m  [0m [91m~~~~~~~~~~~~~~~~~[0m
+#10 12.13 
+#10 12.13   [96mnode_modules/typeorm/find-options/FindOneOptions.d.ts[0m:[93m45[0m:[93m5[0m
+#10 12.13     [7m45[0m     order?: FindOptionsOrder<Entity>;#10 12.13   [96mnode_modules/typeorm/find-options/FindOneOptions.d.ts[0m:[93m45[0m:[93m5[0m
+#10 12.13     [7m45[0m     order?: FindOptionsOrder<Entity>;
+#10 12.13     [7m  [0m [96m    ~~~~~[0m
+
+#10 12.13     [7m  [0m [96m    ~~~~~[0m
+#10 12.13     The expected type comes from property 'order' which is declared here on type 'FindManyOptions<ChatEntity>'
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m69[0m:[93m23[0m - [91merror[0m[90m TS2739: [0mType 'UserEntity' is missing the following properties from type 'ChatUserEntity': chatId, chat, userId, user, messages#10 12.13     The expected type comes from property 'order' which is declared here on type 'FindManyOptions<ChatEntity>'
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m69[0m:[93m23[0m - [91merror[0m[90m TS2739: [0mType 'UserEntity' is missing the following properties from type 'ChatUserEntity': chatId, chat, userId, user, messages
+
+#10 12.13 
+#10 12.13 [7m69[0m         chat.users = [user1, user2];#10 12.13 
+#10 12.13 [7m69[0m         chat.users = [user1, user2];
+#10 12.13 [7m  [0m [91m                      ~~~~~[0m
+
+#10 12.13 [7m  [0m [91m                      ~~~~~[0m
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m69[0m:[93m30[0m - [91merror[0m[90m TS2322: [0mType 'UserEntity' is not assignable to type 'ChatUserEntity'.
+#10 12.13 
+#10 12.13 [96msrc/chat/chat.service.ts[0m:[93m69[0m:[93m30[0m - [91merror[0m[90m TS2322: [0mType 'UserEntity' is not assignable to type 'ChatUserEntity'.
+#10 12.13 
+#10 12.13 [7m69[0m         chat.users = [user1, user2];
+#10 12.13 [7m  [0m [91m                             ~~~~~[0m#10 12.13 [7m69[0m         chat.users = [user1, user2];
+#10 12.13 [7m  [0m [91m                             ~~~~~[0m
+#10 12.13 [96msrc/chat/dtos/chat.dto.ts[0m:[93m4[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../entities/message.entity' or its corresponding type declarations.
+
+#10 12.13 [96msrc/chat/dtos/chat.dto.ts[0m:[93m4[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '../entities/message.entity' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m4[0m import {MessageEntity} from "../entities/message.entity";#10 12.13 
+#10 12.13 [7m4[0m import {MessageEntity} from "../entities/message.entity";
+#10 12.13 [7m [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+#10 12.13 [7m [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/entities/chat.entity.ts[0m:[93m28[0m:[93m13[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ onCascade: string; cascade: true; }' is not assignable to parameter of type 'RelationOptions'.#10 12.13 [96msrc/chat/entities/chat.entity.ts[0m:[93m28[0m:[93m13[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ onCascade: string; cascade: true; }' is not assignable to parameter of type 'RelationOptions'.
+#10 12.13   Object literal may only specify known properties, but 'onCascade' does not exist in type 'RelationOptions'. Did you mean to write 'cascade'?
+
+#10 12.13   Object literal may only specify known properties, but 'onCascade' does not exist in type 'RelationOptions'. Did you mean to write 'cascade'?
+#10 12.13 
+#10 12.13 [7m28[0m             onCascade: 'DELETE',
+#10 12.13 
+#10 12.13 [7m28[0m             onCascade: 'DELETE',
+#10 12.13 [7m  [0m [91m            ~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/message/chat-message.service.ts[0m:[93m5[0m:[93m35[0m - [91merror[0m[90m TS2307: [0mCannot find module '../entities/message.entity' or its corresponding type declarations.#10 12.13 [7m  [0m [91m            ~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/chat/message/chat-message.service.ts[0m:[93m5[0m:[93m35[0m - [91merror[0m[90m TS2307: [0mCannot find module '../entities/message.entity' or its corresponding type declarations.
+#10 12.13 
+#10 12.13 [7m5[0m import { ChatMessageEntity } from '../entities/message.entity';
+#10 12.13 [7m [0m [91m                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+#10 12.13 
+#10 12.13 [7m5[0m import { ChatMessageEntity } from '../entities/message.entity';
+#10 12.13 [7m [0m [91m                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/room/entity/room-message.entity.ts[0m:[93m11[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'CreateRoomMessageDto'.
+#10 12.13 [96msrc/room/entity/room-message.entity.ts[0m:[93m11[0m:[93m23[0m - [91merror[0m[90m TS2304: [0mCannot find name 'CreateRoomMessageDto'.
+#10 12.13 
+#10 12.13 
+#10 12.13 [7m11[0m     constructor(dto?: CreateRoomMessageDto) {
+#10 12.13 [7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [7m11[0m     constructor(dto?: CreateRoomMessageDto) {
+#10 12.13 [7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/room/entity/room-message.entity.ts[0m:[93m11[0m:[93m23[0m - [91merror[0m[90m TS4063: [0mParameter 'dto' of constructor from exported class has or is using private name 'CreateRoomMessageDto'.
+#10 12.13 #10 12.13 [96msrc/room/entity/room-message.entity.ts[0m:[93m11[0m:[93m23[0m - [91merror[0m[90m TS4063: [0mParameter 'dto' of constructor from exported class has or is using private name 'CreateRoomMessageDto'.
+#10 12.13 
+#10 12.13 [7m11[0m     constructor(dto?: CreateRoomMessageDto) {
+#10 12.13 [7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [7m11[0m     constructor(dto?: CreateRoomMessageDto) {
+#10 12.13 [7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 [96msrc/room/entity/room-message.entity.ts[0m:[93m11[0m:[93m23[0m - [91merror[0m[90m TS4063: [0mParameter 'dto' of constructor from exported class has or is using private name 'CreateRoomMessageDto'.
+
+#10 12.13 [96msrc/room/entity/room-message.entity.ts[0m:[93m11[0m:[93m23[0m - [91merror[0m[90m TS4063: [0mParameter 'dto' of constructor from exported class has or is using private name 'CreateRoomMessageDto'.
+#10 12.13 
+#10 12.13 [7m11[0m     constructor(dto?: CreateRoomMessageDto) {
+#10 12.13 [7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 #10 12.13 
+#10 12.13 [7m11[0m     constructor(dto?: CreateRoomMessageDto) {
+#10 12.13 [7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~[0m
+#10 12.13 
+#10 12.14 Found 14 error(s).
+#10 12.14 
+
+#10 12.14 Found 14 error(s).
+#10 12.14 
+#10 ERROR: executor failed running [npm run build]: exit code: 1
+#10 ERROR: executor failed running [npm run build]: exit code: 1
+------
+ > [dev 6/6] RUN ["npm", "run", "build"]:
+------
+------
+ > [dev 6/6] RUN ["npm", "run", "build"]:
+------
+executor failed running [npm run build]: exit code: 1
+executor failed running [npm run build]: exit code: 1
+Service 'backend' failed to build
+Service 'backend' failed to build

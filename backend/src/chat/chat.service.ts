@@ -1,9 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { ChatEntity } from "./entities/chat.entity";
 import { ChatRepository } from "./repository/chat.repository";
-import { ChatMapper } from "./mapper/chat.mapper";
-import { UserService } from 'src/user/services/user.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
@@ -11,11 +9,10 @@ export class ChatService {
     constructor(
         @InjectRepository(ChatEntity)
         private chatRepository: ChatRepository,
-        private chatMapper: ChatMapper,
     ) {
     }
 
-    async findChats(): Promise<ChatEntity[]> {
+    public async findChats(): Promise<ChatEntity[]> {
         return await this.chatRepository.find()
     }
 
@@ -32,8 +29,13 @@ export class ChatService {
         });
     }
 
-    async findChatsUser(id_user: number): Promise<ChatEntity[]> {
-        return await this.chatRepository.find({
+    public async findChatsUser(id_user: number): Promise<ChatEntity[]> {
+        return (await this.chatRepository.createQueryBuilder('chat'))
+            .leftJoinAndSelect('chat.chatUser', 'chat_user')
+            .where('chat_user.userId = :user_id', { 'user_id': id_user })
+            .orderBy({ 'chat_user.messageId': 'ASC' })
+            .getMany();
+        /*return await this.chatRepository.find({
             relations: {
                 users: true,
                 messages: true,
@@ -48,10 +50,10 @@ export class ChatService {
                     id: "ASC",
                 }
             }
-        })
+        })*/
     }
 
-    async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
+    public async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
         let chats = await this.findChatsUser(id_user);
 
         return chats.filter((chat) => {
@@ -62,7 +64,7 @@ export class ChatService {
 
     }
 
-    async post(user1: UserEntity, user2: UserEntity): Promise<ChatEntity> {
+    public async post(user1: UserEntity, user2: UserEntity): Promise<ChatEntity> {
 
         const chatid = await this.findChatUser(user1.id, user2.id)
         if (chatid.length !== 0)
