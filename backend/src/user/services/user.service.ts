@@ -15,7 +15,6 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import * as fs from 'fs';
 import { DEFAULT_AVATAR_PATH } from 'src/common/config/upload-avatar.config';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UserService {

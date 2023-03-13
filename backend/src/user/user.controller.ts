@@ -27,7 +27,6 @@ import { UserService } from './services/user.service';
 import { FriendshipService } from './services/friendship.service';
 import { UserEntity } from './entities/user.entity';
 import { BlockService } from './services/block.service';
-import { ChatService } from 'src/chat/chat.service';
 import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
@@ -42,7 +41,6 @@ export class UserController {
         private readonly userService: UserService,
         private readonly blockService: BlockService,
         private readonly friendshipService: FriendshipService,
-        private readonly chatService: ChatService,
     ) {
         this.userLogger = new Logger(UserController.name);
     }
@@ -261,78 +259,6 @@ export class UserController {
         return this.userService.deleteUser(user);
     }
 
-
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *\
-    **                                               **
-    **               ( chat endpoints )              **
-    **                                               **
-    \* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-    @Get('me/chats')
-    async findChats(@Req() req: IRequestUser) {
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-        }
-
-        let lol = await this.chatService.findChatsUser(user.id);
-        console.log('chats:',  lol);
-        return lol;
-    }
-
-    @Get('me/chat/:nick_friend')
-    async findChat(@Req() req: IRequestUser, @Param('nick_friend') nick_friend: string) {
-
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user = await this.userService.findOneByUsername(req.user.data.username);
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-        }
-
-        const friend = await this.userService.findOneByNickName(nick_friend);
-
-        if (friend === null) {
-            this.userLogger.error(`User with login ${nick_friend} not present in database`);
-            throw new HttpException('friend not found in database', HttpStatus.BAD_REQUEST);
-        }
-
-        return await this.chatService.findChatUser(user.id, friend.id);
-
-    }
-
-    @Post('me/chat')
-    async postChat(
-        @Req() req: IRequestUser,
-        @Body() payload: chatPayload) {
-        const username = req.user.data.username;
-        if (username === undefined) {
-            this.userLogger.error('request user has not logged in');
-            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
-        }
-        const user1 = await this.userService.findOneByUsername(username);
-
-        console.log(user1);
-        if (user1 === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-        }
-        const user2 = await this.userService.findOne(payload.friendId);
-        console.log(user2)
-
-        return this.chatService.post(user1, user2);
-
-    }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
     **           ( friendship endpoints )            **
