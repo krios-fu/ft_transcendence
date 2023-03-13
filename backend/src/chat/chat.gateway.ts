@@ -34,9 +34,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(args);
   }
 
-  handleDisconnect(client: any) {
-    console.log('Disconnect');
-    console.log(client.id);
+  handleDisconnect(client: Socket) {
+    // client.leave();
   }
 
 
@@ -58,6 +57,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
 
+  /*
+   ** Funtions send notification to user "invite game "
+   **
+   */
+
   @SubscribeMessage('join_room_notification')
   handleJoinnotification(client: Socket, room: string) {
     client.join(`notifications_${room}`);
@@ -69,11 +73,49 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: {
       user: any,
-      dest : string
+      dest: string
       msg: string
     }) {
-      console.log('PAYLOAD', payload)
+    console.log('PAYLOAD', payload)
     this.server.to(`notifications_${payload.dest}`).emit('notifications', payload)
   }
 
+  @SubscribeMessage('join_room_game')
+  async joinRoomGame(
+    client: Socket,
+    payload: { room: string, user: any }) {
+
+    let users_send = [];
+    client.data = payload.user;
+    client.join(`noti_roomGame_${payload.room}`);
+    client.join(payload.user.username);
+    let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
+
+    for (let user of users_in_room) {
+      let data = user.data;
+      if (!(users_send.find((element: any) => element.id == data.id)))
+        users_send.push(data);
+    }
+    // send all user in room
+    this.server.to(payload.user.username).emit(payload.user.username, users_send);
+    this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', payload);
+  }
+
+  @SubscribeMessage('room_leave')
+  leaveRoomGame(
+    client: Socket,
+    payload: { room: string, user: any }) {
+    console.log("ROOM LEAVE:", payload)
+    this.server.to(`noti_roomGame_${payload.room}`).emit('room_leave', payload)
+    client.leave(`noti_roomGame_${payload.room}`);
+  }
+
+
+  @SubscribeMessage('noti_game_room')
+  notificationRoomGame(
+    client: Socket,
+    payload: { room: string, user: any }) {
+    console.log('PAYLOAD', payload)
+    this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', payload)
+  }
 }

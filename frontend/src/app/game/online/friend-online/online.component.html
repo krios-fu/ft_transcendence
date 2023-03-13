@@ -12,11 +12,11 @@
         <div style="font-size:5px; padding: 5px; ">{{player.username}}</div>
         <mat-menu #menu="matMenu">
             <!--disabled option -->
-            <button mat-menu-item [routerLink]="[ '/', { outlets: {  game: ['room', player.username] } }]">
+            <button mat-menu-item (click)="sendInvitationGame(player)">
                 <mat-icon>videogame_asset</mat-icon>
                 <span>Game</span>
             </button>
-            <button mat-menu-item [routerLink]="[ '/', { outlets: {  chat: ['chat', player.username] } }]">
+            <button mat-menu-item (click)="goTochat(player)">
                 <mat-icon>chat</mat-icon>
                 <span>Chat</span>
             </button>

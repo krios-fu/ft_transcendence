@@ -1,4 +1,4 @@
-<div [ngClass]="state" *ngIf="user && login">
+<div [ngClass]="state" *ngIf="user && login" >
     <div class="chat-title">
 
         <div
@@ -31,7 +31,7 @@
             </button>
             <mat-menu #menu="matMenu">
                 <!--disabled option -->
-                <button mat-menu-item [routerLink]="[ '/', { outlets: {  game: ['room', user.username] } }]">
+                <button mat-menu-item (click)="sendInvitationGame()" [routerLink]="[ '/', { outlets: {  game: ['room', user.username] } }]">
                     <mat-icon>videogame_asset</mat-icon>
                     <span>Game</span>
                 </button>

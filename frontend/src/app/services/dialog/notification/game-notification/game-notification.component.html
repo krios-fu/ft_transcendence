@@ -5,7 +5,7 @@
     <figure class="avatar">
       <img src={{data.user.photoUrl}} />
     </figure>
-    <h5 style="color: aliceblue;">{{data.user.nickName}}</h5>
+    <h5 style="color: aliceblue;">{{data.user.nickName.toUpperCase()}}</h5>
   </div>
 </section>
 <mat-progress-bar mode="determinate" [value]="progressbarValue"></mat-progress-bar>

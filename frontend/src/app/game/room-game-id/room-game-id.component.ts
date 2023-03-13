@@ -18,6 +18,8 @@ import { HttpClient } from "@angular/common/http";
 import { UserDto } from "src/app/dtos/user.dto";
 import { FormControl, FormGroup } from "@angular/forms";
 import { RoomDto } from "src/app/dtos/room.dto";
+import { SocketNotificationService } from "src/app/services/socket-notification.service";
+import { UsersService } from "src/app/services/users.service";
 
 @Component({
   selector: 'app-room-game-id',
@@ -28,8 +30,9 @@ export class RoomGameIdComponent implements OnInit {
     private config: Phaser.Types.Core.GameConfig;
     private socket: SockIO.Socket;
     private game?: Phaser.Game;
+    me ?: UserDto;
     user?: UserDto;
-    room_id?= '';
+    room_id?: string;
     room_dto? : RoomDto;
     public formMessage = new FormGroup({
         message: new FormControl('')
@@ -42,6 +45,8 @@ export class RoomGameIdComponent implements OnInit {
         private readonly loadService: LoadService,
         private readonly soundService: SoundService,
         private readonly recoveryService: GameRecoveryService,
+        private gameServiceNoti: SocketNotificationService,
+        private userService: UsersService,
         private route: ActivatedRoute,
         private http: HttpClient
     ) {
@@ -76,6 +81,11 @@ export class RoomGameIdComponent implements OnInit {
                   this.room_dto = entity;
                   console.log(`ROOM_ID: ${this.room_id}`,this.room_dto);
               });
+
+              this.userService.getUser('me')
+              .subscribe((users : UserDto[]) => {
+                this.me = users[0];
+              })
           });
 
 
@@ -113,6 +123,10 @@ export class RoomGameIdComponent implements OnInit {
             classicPlayerScene, spectatorScene, endScene
         ];
         this.game = new Phaser.Game(this.config);
+    }
+
+    leaveRoom(){
+        this.gameServiceNoti.roomLeave(this.room_id, this.me);
     }
 
 }

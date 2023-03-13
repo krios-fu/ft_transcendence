@@ -22,7 +22,7 @@
           </a>
         </span>
         <span>
-          <a mat-icon-button [routerLink]="[ '/', { outlets: {  chat: ['chat', this.room_dto?.id ] } }]">
+          <a mat-icon-button (click)="leaveRoom()">
             <mat-icon>logout</mat-icon>
           </a>
         </span>

@@ -12,7 +12,7 @@ justify-content: center;" mat-dialog-title>
             <mat-chip class="tag">
                 <img class="avatar" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
                 <a [routerLink]="['/home/profile/', user.username]">
-                    <span> {{user.nickName}} </span></a>
+                    <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span></a>
                     <a mat-icon-button (click)="add_friend(user.id)">
                         <mat-icon>check_small</mat-icon>
                     </a>

@@ -49,7 +49,7 @@ export class ProfileUserComponent implements OnInit {
     this.userService.getUser('me')
     .subscribe((user : UserDto[]) => {
       this.me = user[0];
-      this.socketGameNotification.joinRoom(this.me.username);
+      this.socketGameNotification.joinRoomNotification(this.me.username);
     } )
   }
 

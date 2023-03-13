@@ -58,9 +58,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event) => {
       if (this.authService.isAuthenticated() === true) {
-        this.getPenddingFriends();
         // this.ngOnInit();
-
+        this.getPenddingFriends();
       }
     });
   }
@@ -148,10 +147,10 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.usersService.getUser('me')
       .subscribe((user: UserDto[]) => {
         this.usersService.getFriends('me')
-          .subscribe((data: any) => {
-            let friends_pending = Object.assign(data);
-            this.nPenddingFriends = (friends_pending.filter((friend: any) =>
-              friend['sender'].username != user[0].username)).length;
+        .subscribe((data: any) => {
+          let friends_pending = Object.assign(data);
+          console.log("PENDING", user[0].username)
+            this.nPenddingFriends = (friends_pending.filter((friend: any) => friend['sender'] && friend['sender'].username != user[0].username)).length;
           })
       })
   }

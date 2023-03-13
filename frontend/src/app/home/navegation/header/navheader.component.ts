@@ -39,7 +39,7 @@ export class NavHeaderComponent implements OnInit {
     this.usersService.getUser('me')
       .subscribe((user: UserDto[]) => {
         this.user = user[0];
-       this.gameNotification.joinRoom(this.user.username);
+       this.gameNotification.joinRoomNotification(this.user.username);
 
         this.color_icon = (this.user.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.user.defaultOffline) ? 'sentiment_very_satisfied' : 'sentiment_very_dissatisfied';

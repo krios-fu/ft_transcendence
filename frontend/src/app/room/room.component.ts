@@ -18,6 +18,8 @@ export class RoomComponent implements AfterViewInit {
   public ROOM_USER = [] as RoomDto[];
   public FRIENDS_USERS = [] as UserDto[];
 
+  count_message = [{}]
+
   statusTree = false;
 
   constructor(private http: HttpClient,
@@ -33,10 +35,8 @@ export class RoomComponent implements AfterViewInit {
 
     this.http.get<RoomDto[]>(`http://localhost:3000/user_room/me/rooms`)
       .subscribe((entity) => {
-        console.log("ROOM USERS", entity)
         let data = Object.assign(entity);
         for (let room in data) {
-          console.log("ROOM USERS", data[room])
           this.ROOM_USER.push(data[room])
         }
       });
@@ -54,11 +54,12 @@ export class RoomComponent implements AfterViewInit {
           }
           if (!(this.CHATS_USERS.find((user) => {
             return user.nickName === user_save.nickName;
-          })))
+          }))){
+            this.count_message.push({ user: user_save.username, new: 0 })
             this.CHATS_USERS.push(user_save);
+          }
         }
       });
-    console.log('NEW VERSION', this.CHATS_USERS);
 
     this.http.get<any[]>(`http://localhost:3000/users/me/friends`)
       .subscribe((friends: any[]) => {
@@ -68,13 +69,6 @@ export class RoomComponent implements AfterViewInit {
           const user = (receiver) ? receiver : sender;
           this.FRIENDS_USERS.push(user);
         }
-        console.log("USER FRIENS", this.FRIENDS_USERS)
       })
-
-
   }
-
-
-
-
 }
