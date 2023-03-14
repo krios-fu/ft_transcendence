@@ -46,7 +46,17 @@ export class OnlineComponent implements OnInit, OnDestroy {
         this.me = user[0];
         this.socketGameNotification.getUserAll(this.me.username)
           .subscribe((payload: any) => {
-            this.players = Object.assign(payload);
+            let data = Object.assign(payload);
+            for (let user in data) {
+              let player = data[user] as UserDto;
+              player.is_admin = false;
+              this.admins.forEach((element: any) => {
+                if (element.userId === player['id'])
+                  player.is_admin = true;
+              });
+              if (!(this.players.find((element: UserDto) => player.id == element.id)))
+                this.players.push(player)
+            }
           })
       });
 
@@ -60,7 +70,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
         if (!(this.players.find((player: UserDto) => player.id == payload.user.id)))
           this.players.push(payload.user)
       })
-
 
     this.socketGameNotification.userLeave()
       .subscribe((payload: any) => {

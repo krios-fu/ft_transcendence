@@ -4,37 +4,41 @@
     <div id="container-title">
       <app-game-queue></app-game-queue>
     </div >
-
-    <mat-grid-list cols="2" rowHeight="80px" >
-      <mat-grid-tile-header>
-        <mat-grid-tile>
-          <img class="avatar" src={{this.room_dto?.photoUrl}} alt={{this.room_dto?.roomName}} />
-          <h5 style="align-content: center; justify-content: center; display: flex; margin-left: 10px;">
-            ROOM:
-            <span>{{this.room_dto?.roomName?.toUpperCase()}} ID: {{this.room_dto?.id}}</span>
-          </h5>
-        </mat-grid-tile>
-      </mat-grid-tile-header>
-      <mat-grid-tile>
-        <span>
-          <a mat-icon-button [routerLink]="[ '/', { outlets: {  chat: ['chat', this.room_dto?.id ] } }]">
-            <mat-icon>chat</mat-icon>
-          </a>
-        </span>
-        <span>
-          <a mat-icon-button (click)="leaveRoom()">
-            <mat-icon>logout</mat-icon>
-          </a>
-        </span>
-      </mat-grid-tile>
-    </mat-grid-list>
-
-
+    
+    
   </div>
 </div>
-<footer>
+<section style="color: white;">
+  
+      <mat-grid-list cols="3" rowHeight="30px" >
+        <mat-grid-tile-header>
+          <mat-grid-tile>
+            <img class="avatar" src={{this.room_dto?.photoUrl}} alt={{this.room_dto?.roomName}} />
+          </mat-grid-tile>
+        </mat-grid-tile-header>
+        <mat-grid-tile>
+
+        <h5 style="align-content: center; justify-content: center; display: flex; margin-left: 10px;">
+          ROOM:
+          <span>{{this.room_dto?.roomName?.toUpperCase()}} ID: {{this.room_dto?.id}}</span>
+        </h5>
+      </mat-grid-tile>
+
+        <mat-grid-tile>
+          <span>
+            <a mat-icon-button [routerLink]="[ '/', { outlets: {  chat: ['chat', this.room_dto?.id ] } }]">
+              <mat-icon>chat</mat-icon>
+            </a>
+          </span>
+          <span>
+            <a mat-icon-button (click)="leaveRoom()">
+              <mat-icon>logout</mat-icon>
+            </a>
+          </span>
+        </mat-grid-tile>
+      </mat-grid-list>
   <cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"
     style=" height: 10vh; position: relative; color: white;" itemSize="5">
     <app-online  *ngIf="room_id?.length" [id_room]="room_id" ></app-online>
   </cdk-virtual-scroll-viewport>
-</footer>
+</section>
