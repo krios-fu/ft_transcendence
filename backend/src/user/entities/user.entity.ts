@@ -1,13 +1,12 @@
 import { Exclude } from "class-transformer";
 import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
-import { ChatEntity } from "src/chat/entities/chat.entity";
-import { MessageEntity } from "src/chat/entities/message.entity";
+import { ChatUserEntity } from "src/chat/entities/chat-user.entity";
+import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 import {
 	Column,
 	Entity,
-	ManyToMany,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -15,18 +14,7 @@ import {
 import { CreateUserDto } from "../dto/user.dto";
 import { Category } from "../enum/category.enum";
 
-/*export enum Category {
-	Pending,
-	Iron,
-	Bronze,
-	Silver,
-	Gold,
-	Platinum
-}*/
-
-@Entity({
-	name: 'user'
-})
+@Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
 	constructor(dto?: CreateUserDto) {
 		super();
@@ -123,17 +111,24 @@ export class UserEntity extends BaseEntity {
 	})
 	category : Category;
 
-	@OneToMany(() => MessageEntity, (message) => message.author )
-	messages : MessageEntity[];
-
-	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
-	chats : ChatEntity[];
+	@OneToMany(
+		() => ChatUserEntity, 
+		(chatUser: ChatUserEntity) => chatUser.user,
+		{
+			onDelete: 'CASCADE',
+			cascade: true
+		}
+		 )
+	chats: ChatUserEntity[];
 
 	@OneToOne
 	(
 		() => RefreshTokenEntity,
-		(tokenEntity) => tokenEntity.authUser,
-		{ cascade: true }
+		(tokenEntity: RefreshTokenEntity) => tokenEntity.authUser,
+		{ 
+			cascade: true,
+			onDelete: 'CASCADE'
+		}
 	)
 	token: RefreshTokenEntity
 }

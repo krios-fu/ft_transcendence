@@ -1,39 +1,38 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { ChatEntity } from "./entities/chat.entity";
 import { ChatRepository } from "./repository/chat.repository";
-import { ChatMapper } from "./mapper/chat.mapper";
-import { UserService } from 'src/user/services/user.service';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { ChatUserEntity } from './entities/chat-user.entity';
 
 @Injectable()
 export class ChatService {
     constructor(
         @InjectRepository(ChatEntity)
         private chatRepository: ChatRepository,
-        private chatMapper: ChatMapper,
-    ) {
-    }
+        @InjectRepository(ChatUserEntity)
+        private chatUserRepository: Repository<ChatUserEntity>
+    ) { }
 
-    async findChats(): Promise<ChatEntity[]> {
+    public async findChats(): Promise<ChatEntity[]> {
         return await this.chatRepository.find()
     }
 
     async findOne(id_chat: number): Promise<ChatEntity[]> {
-        return await this.chatRepository.find({
-            select: {
-                users: true,
-                messages: false
-            },
-            where: {
-                id: id_chat,
-            }
-
-        });
+        return (await this.chatRepository.createQueryBuilder('chat'))
+            .leftJoinAndSelect('chat.chatUser', 'chat_user')
+            .where('chat_user.chatId = "chat_id', { 'chat_id': id_chat })
+            .getMany();
     }
 
-    async findChatsUser(id_user: number): Promise<ChatEntity[]> {
-        return await this.chatRepository.find({
+    public async findChatsUser(id_user: number): Promise<ChatEntity[]> {
+        return (await this.chatRepository.createQueryBuilder('chat'))
+            .leftJoinAndSelect('chat.chatUser', 'chat_user')
+            .where('chat_user.userId = :user_id', { 'user_id': id_user })
+            .orderBy({ 'chat_user.messageId': 'ASC' })
+            .getMany();
+        /*return await this.chatRepository.find({
             relations: {
                 users: true,
                 messages: true,
@@ -48,29 +47,31 @@ export class ChatService {
                     id: "ASC",
                 }
             }
-        })
+        })*/
     }
 
-    async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
-        let chats = await this.findChatsUser(id_user);
+    public async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
+        let chats: ChatEntity[] = await this.findChatsUser(id_user);
 
         return chats.filter((chat) => {
-            return chat.users[0].id == id_friend
-                || chat.users[1].id == id_friend
+            return chat.users[0].userId == id_friend
+                || chat.users[1].userId == id_friend
         }
         );
 
     }
 
-    async post(user1: UserEntity, user2: UserEntity): Promise<ChatEntity> {
+    public async post(user1: UserEntity, user2: UserEntity): Promise<ChatEntity> {
+        const chats: ChatEntity[] = await this.findChatUser(user1.id, user2.id)
 
-        const chatid = await this.findChatUser(user1.id, user2.id)
-        if (chatid.length !== 0)
-            return chatid[0];
+        if (chats.length !== 0)
+            return chats[0];
+        const chat: ChatEntity = await this.chatRepository.save(new ChatEntity());
+        const {id } = chat; 
 
-        let chat = new ChatEntity();
-        chat.users = [user1, user2];
-        await this.chatRepository.save(chat);
+        await this.chatUserRepository.save({ userId: user1.id, chatId: id });
+        await this.chatUserRepository.save({ userId: user2.id, chatId: id });
+        /* check error control here */
         return chat;
     }
 }

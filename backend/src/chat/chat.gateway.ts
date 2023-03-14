@@ -1,15 +1,12 @@
 import {
-  ConnectedSocket,
-  MessageBody,
-  OnGatewayConnection, OnGatewayDisconnect,
-  OnGatewayInit,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer, WsResponse
+    OnGatewayConnection, OnGatewayDisconnect,
+    OnGatewayInit,
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { MessageService } from './message/message.service';
-import { Public } from "src/common/decorators/public.decorator";
+import { ChatMessageService } from './message/chat-message.service';
 
 @WebSocketGateway(3001, {
   namespace: 'private',
@@ -20,7 +17,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @WebSocketServer()
   server: Server;
 
-  constructor(private messageService: MessageService) {
+    constructor(private messageService : ChatMessageService){
 
   }
   afterInit(Server: any) {
