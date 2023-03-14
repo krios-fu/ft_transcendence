@@ -8,10 +8,8 @@ import {
     ParseIntPipe, 
     Query, 
     Logger, 
-    HttpException,
     NotFoundException,
     BadRequestException,
-    HttpStatus, 
     UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
 import { UserEntity } from 'src/user/entities/user.entity';
