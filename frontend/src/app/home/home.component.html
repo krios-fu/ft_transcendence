@@ -44,6 +44,11 @@ bottom: 1vh;" >
       </a>
     </div>
     <div>
+      <a mat-icon-button [routerLink]="[ '/', { outlets: {  game: 'room' } }]">
+        <mat-icon>videogame_asset</mat-icon>
+      </a>
+    </div>
+    <div>
       <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/home/setting">
         <mat-icon>manage_accounts</mat-icon>
       </a>

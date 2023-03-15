@@ -37,7 +37,7 @@ const HomeRoutes: Routes = [
 
   {
     path: 'room',
-    component: GameComponent, outlet: 'game',
+    loadChildren: () => import('../game/game.module').then(m => m.GameModule), outlet: 'game',
     canActivate: [AuthGuard]
   },
 

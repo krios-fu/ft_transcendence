@@ -5,6 +5,8 @@ import { UsersService } from 'src/app/services/users.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from 'src/app/services/chat.service';
+import { AlertServices } from 'src/app/services/alert.service';
+import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 
 
 @Component({
@@ -25,19 +27,30 @@ export class ProfileUserComponent implements OnInit {
 
   public FRIENDS_USERS = [] as UserDto[];
 
+  me : UserDto | undefined;
 
   constructor(private http: HttpClient,
     private authService: AuthService,
     private route: ActivatedRoute,
     private chatService: ChatService,
+    private alertService: AlertServices,
+    private socketGameNotification : SocketNotificationService,
+    private userService : UsersService
   ) {
     this.user = undefined;
+
+
 
   }
 
 
   ngOnInit() {
     this.friend();
+    this.userService.getUser('me')
+    .subscribe((user : UserDto[]) => {
+      this.me = user[0];
+      this.socketGameNotification.joinRoomNotification(this.me.username);
+    } )
   }
 
 
@@ -51,6 +64,12 @@ export class ProfileUserComponent implements OnInit {
 
   getPhotoUrl() {
     return this.user?.photoUrl;
+  }
+
+
+  send_invitatiion_game(){
+    this.socketGameNotification.sendNotification({ user: this.me, dest : this.user?.username, title: 'INVITE GAME'});
+    this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
   post_friendship() {
@@ -85,12 +104,13 @@ export class ProfileUserComponent implements OnInit {
           this.user = user[0];
           this.icon_activate = true;
 
-          console.log("USERRR CREATED CHAT", this.user)
-          if (this.user.username == this.authService.getAuthUser()){
+          // console.log("USERRR CREATED CHAT", this.user)
+          if (this.user.username != this.authService.getAuthUser()){
             this.icon_activate = true;
           }
-          else
-            this.chatService.createChat(this.user.id);
+          // else
+          console.log("POST CHAT FRIEND");
+            this.chatService.createChat(this.user.id).subscribe(data => console.log('CHAT POST SERVICES', data));
 
 
           this.FRIENDS_USERS = [];

@@ -1,15 +1,10 @@
 import {
     CreateDateColumn,
     Entity,
-    JoinTable,
-    ManyToMany,
-    OneToMany, OneToOne,
+    OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
-import {MessageEntity} from "./message.entity";
-import { UserEntity } from "src/user/entities/user.entity";
-import { UserService } from "src/user/services/user.service";
-import {RoomEntity} from "../../room/entity/room.entity";
+import { ChatUserEntity } from "./chat-user.entity";
 
 @Entity({
     name : 'chats'
@@ -21,25 +16,19 @@ export class ChatEntity {
     }
     
     @PrimaryGeneratedColumn()
-    id : number;
+    id: number;
 
     @CreateDateColumn()
     begin_at: Date;
 
-    @ManyToMany(()=> UserEntity, (user) => user.chats, {
-        eager: true,
-    })
-    @JoinTable()
-    users: UserEntity[];
-
-    // @OneToMany(()=> MembershipEntity, (members) => members.chat)
-    // @JoinTable()
-    // membership : MembershipEntity[];
-
-    @OneToMany(()=> MessageEntity, (messages)=> messages.chat)
-    @JoinTable()
-    messages: MessageEntity[];
-
-    @OneToOne(() => RoomEntity)
-    room: RoomEntity;
+    @OneToMany(
+        ()=> ChatUserEntity, 
+        (chatUser: ChatUserEntity) => chatUser.chat,
+        { 
+            onDelete: 'CASCADE',
+            cascade: true,
+            eager: true
+        }
+    )
+    users: ChatUserEntity[];
 }
