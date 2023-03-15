@@ -44,7 +44,7 @@ class APITrans():
             r.raise_for_status()
         except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
-            raise 'FATAL'
+            raise Exception('FATAL')
         except requests.exceptions.HTTPError as e:
             print(f'Caught exception: {str(e)}')
             raise e
