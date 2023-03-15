@@ -37,8 +37,8 @@ export class ChatUserEntity extends BaseEntity {
 
     @ManyToOne(
         () => ChatEntity,
-        (chat: ChatEntity) => chat.users,
-        { eager: true }
+        (chat: ChatEntity) => chat.users
+        // { eager: true }
     )
     @JoinColumn({ name: 'chat_id' })
     chat: ChatEntity;

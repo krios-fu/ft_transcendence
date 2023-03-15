@@ -43,7 +43,7 @@ export class ChatController {
         return chats;
     }
 
-    @Get('me/')
+    @Get('me')
     async findChats(@Req() req: IRequestUser) {
         const username = req.user.data.username;
         if (username === undefined) {
@@ -81,11 +81,11 @@ export class ChatController {
             throw new HttpException('friend not found in database', HttpStatus.BAD_REQUEST);
         }
 
-        return await this.chatService.findChatUser(user.id, friend.id);
+        return await this.chatService.findChatsUsers(user.id, friend.id);
 
     }
 
-    @Post('me/')
+    @Post('me')
     async postChat(
         @Req() req: IRequestUser,
         @Body() payload: chatPayload) {
@@ -104,7 +104,7 @@ export class ChatController {
         const user2 = await this.userService.findOne(payload.friendId);
         console.log(user2)
 
-        return this.chatService.post(user1, user2);
+        return this.chatService.post(user1.id, user2.id);
     }
 
 }

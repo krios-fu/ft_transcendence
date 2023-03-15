@@ -38,7 +38,7 @@ export class ChatMessageService {
 	public async saveMessages(message : any ) : Promise<ChatMessageEntity>{
 		const receiver: UserEntity = await this.userService.findOneByUsername(message.receiver);
 		const author: UserEntity = await this.userService.findOneByUsername(message.sender);
-		const chat: ChatEntity = await (this.chatService.findChatUser(author.id, receiver.id))[0];
+		const chat: ChatEntity = await (this.chatService.findChatsUsers(author.id, receiver.id))[0];
 		const chatUser: ChatUserEntity = await this.chatUserRepository.save(new ChatUserEntity({
 			'chatId': chat.id,
 			'userId': author.id

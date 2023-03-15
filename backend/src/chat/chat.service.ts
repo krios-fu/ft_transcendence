@@ -26,11 +26,12 @@ export class ChatService {
             .getMany();
     }
 
-    public async findChatsUser(id_user: number): Promise<ChatEntity[]> {
+    public async findChatsUsers(id_user: number, id_friend: number): Promise<ChatEntity[]> {
         return (await this.chatRepository.createQueryBuilder('chat'))
-            .leftJoinAndSelect('chat.chatUser', 'chat_user')
-            .where('chat_user.userId = :user_id', { 'user_id': id_user })
-            .orderBy({ 'chat_user.messageId': 'ASC' })
+            .leftJoinAndSelect('chat.users', 'chat_user')
+            .where('chat_user.userId= :user_id', { 'user_id': id_user })
+            .andWhere('chat_user.userId= :user_id', { 'user_id': id_friend })
+            // .orderBy({ 'chat_user.messageId': 'ASC' })
             .getMany();
         /*return await this.chatRepository.find({
             relations: {
@@ -50,28 +51,62 @@ export class ChatService {
         })*/
     }
 
-    public async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
-        let chats: ChatEntity[] = await this.findChatsUser(id_user);
-
-        return chats.filter((chat) => {
-            return chat.users[0].userId == id_friend
-                || chat.users[1].userId == id_friend
-        }
-        );
-
+    public async findChatsUser(id_user: number): Promise<ChatEntity[]> {
+        return (await this.chatRepository.createQueryBuilder('chat'))
+            .leftJoinAndSelect('chat_user', 'chat_user')
+            .where('chat_user.userId= :user_id', { 'user_id': id_user })
+            // .andWhere('chat_user.userId= :user_id', { 'user_id': id_friend })
+            // .orderBy({ 'chat_user.messageId': 'ASC' })
+            .getMany();
+        /*return await this.chatRepository.find({
+            relations: {
+                users: true,
+                messages: true,
+            },
+            where: {
+                users: {
+                    id: id_user,
+                }
+            },
+            order: {
+                messages: {
+                    id: "ASC",
+                }
+            }
+        })*/
     }
 
-    public async post(user1: UserEntity, user2: UserEntity): Promise<ChatEntity> {
-        const chats: ChatEntity[] = await this.findChatUser(user1.id, user2.id)
+    // public async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
+    //     let chats: ChatEntity[] = await this.findChatsUser(id_user);
+    //     console.log("CHAT FIND", chats);
 
-        if (chats.length !== 0)
-            return chats[0];
-        const chat: ChatEntity = await this.chatRepository.save(new ChatEntity());
-        const {id } = chat; 
+    //     return chats.filter((chat) => {
+    //         return chat.users[0].userId == id_friend
+    //             || chat.users[1].userId == id_friend
+    //     }
+    //     );
 
-        await this.chatUserRepository.save({ userId: user1.id, chatId: id });
-        await this.chatUserRepository.save({ userId: user2.id, chatId: id });
+    // }
+
+    public async post(id_user: number, id_friend: number): Promise<ChatEntity> {
+        const chats: ChatEntity[] = await this.findChatsUsers(id_user, id_friend)
+
+        console.log("CHAT FIND --->", chats[0]['users']);
+
+        // let chat_user = chats.filter((chat) => {
+        //     return chat.users[0].userId == friend.id
+        //         || chat.users[1].userId == friend.id
+        // })
+        // console.log("CHAT FIND --->", chat_user);
+
+        // if (chat_user.length !== 0)
+        //     return chat_user[0];
+        // const chat: ChatEntity = await this.chatRepository.save(new ChatEntity());
+        // const { id } = chat;
+
+        // await this.chatUserRepository.save({ userId: user1.id, chatId: id });
+        // await this.chatUserRepository.save({ userId: friend.id, chatI0});
         /* check error control here */
-        return chat;
+        return chats[0];
     }
 }

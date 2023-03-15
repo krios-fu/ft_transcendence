@@ -104,12 +104,13 @@ export class ProfileUserComponent implements OnInit {
           this.user = user[0];
           this.icon_activate = true;
 
-          console.log("USERRR CREATED CHAT", this.user)
+          // console.log("USERRR CREATED CHAT", this.user)
           if (this.user.username != this.authService.getAuthUser()){
             this.icon_activate = true;
           }
           // else
-            this.chatService.createChat(this.user.id).subscribe(data => console.log('CHAT POST', data));
+          console.log("POST CHAT FRIEND");
+            this.chatService.createChat(this.user.id).subscribe(data => console.log('CHAT POST SERVICES', data));
 
 
           this.FRIENDS_USERS = [];

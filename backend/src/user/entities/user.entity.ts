@@ -131,4 +131,5 @@ export class UserEntity extends BaseEntity {
 		}
 	)
 	token: RefreshTokenEntity
+
 }

@@ -10,7 +10,7 @@ export class ChatService{
 	){}
 
 	createChat(id_friend: number){
-		return this.http.post('http://localhost:3000/users/me/chat', {
+		return this.http.post('http://localhost:3000/chat/me', {
 			friendId : id_friend
 		})
 	}
