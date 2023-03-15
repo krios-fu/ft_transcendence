@@ -33,7 +33,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
-import { Public } from 'src/common/decorators/public.decorator';
 import { Express } from 'express';
 
 @Controller('users')
@@ -106,7 +105,6 @@ export class UserController {
 
     /* role guards ?? (or admin) */
     /* it is me! */
-    @Public()
     @Post()
     async postUser(@Body() newUser: CreateUserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
