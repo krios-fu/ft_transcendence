@@ -22,9 +22,13 @@ import { GameQueueService } from './game.queueService';
 import { GameRecoveryService } from './game.recovery.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
-import { GameUpdateService } from './game.updateService';
+import {
+    GameUpdateService,
+    IGameResultData
+} from './game.updateService';
 import { GameAuthGuard } from './guards/game.auth.guard';
 import { GameRoomGuard } from './guards/game.room.guard';
+import { IMenuInit } from './interfaces/msg.interfaces';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
 
@@ -87,25 +91,17 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        let gameSelectionData: IGameSelectionData;
-        let gameStartData: IGameClientStart;
+        const   [initScene, initData]: [string,
+                                        IMenuInit |
+                                        IGameClientStart |
+                                        IGameResultData |
+                                        undefined] =
+                    this.updateService.getClientInitData(roomId);
     
         client.join(roomId);
         this.queueService.clientInitQueuesLength(roomId, client.id);
-        gameSelectionData = this.updateService.getGameSelectionData(roomId);
-        if (gameSelectionData)
-        {
-            client.emit("newGame", {
-                role: "Spectator",
-                selection: gameSelectionData
-            });
-        }
-        else
-        {
-            gameStartData = this.updateService.getGameClientStartData(roomId);
-            if (gameStartData)
-                client.emit("startMatch", gameStartData);
-        }
+        if (initScene && initData)
+            client.emit(initScene, initData);
         console.log(`${client.data.username} joined Game room ${roomId}`);
     }
 

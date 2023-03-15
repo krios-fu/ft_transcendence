@@ -7,6 +7,10 @@ import {
     GameUpdateService,
     IGameResultData
 } from "./game.updateService";
+import {
+    GameRole,
+    IMenuInit
+} from "./interfaces/msg.interfaces";
 
 export type SceneId =
                 | "start"
@@ -23,14 +27,6 @@ export interface    IRecoverData {
                 | IGameResultData
                 | undefined;
 }
-
-export interface    IMenuInit {
-    hero: boolean;
-    role: GameRole;
-    selection: IGameSelectionData;
-}
-
-export type GameRole = "Spectator" | "PlayerA" | "PlayerB";
 
 @Injectable()
 export class    GameRecoveryService {
@@ -62,7 +58,7 @@ export class    GameRecoveryService {
             return ("start");
         if (this._isSelection(data))
         {
-            if ((data as IMenuInit).hero === true)
+            if ((data as IMenuInit).selection.heroA)
                 return ("menuHero")
             return ("menuClassic");
         }
@@ -81,31 +77,29 @@ export class    GameRecoveryService {
         return (role);
     }
 
-    private _getData(client: Socket, roomId: string)
-                : IMenuInit | IGameClientStart
-                    | IGameResultData | undefined {
-        let selectionData: IGameSelectionData;
-        let matchData: IGameClientStart;
-        let result: IGameResultData;
+    private _getData(client: Socket, roomId: string): IMenuInit |
+                                                        IGameClientStart |
+                                                        IGameResultData |
+                                                        undefined {
+        let data: IGameSelectionData | IGameClientStart | IGameResultData;
 
-        selectionData = this.updateService.getGameSelectionData(roomId);
-        if (selectionData)
+        data = this.updateService.getGameSelectionData(roomId);
+        if (data)
         {
             return ({
-                hero: selectionData.heroA != undefined,
                 role: this._getRole(client),
-                selection: selectionData
+                selection: data
             });
         }
-        matchData = this.updateService.getGameClientStartData(roomId);
-        if (matchData)
+        data = this.updateService.getGameClientStartData(roomId);
+        if (data)
         {
-            return (matchData);
+            return (data);
         }
-        result = this.updateService.getGameResult(roomId);
-        if (result)
+        data = this.updateService.getGameResult(roomId);
+        if (data)
         {
-            return (result);
+            return (data);
         }
         return (undefined);
     }

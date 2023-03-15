@@ -17,6 +17,7 @@ import {
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameReconciliationService } from "./game.reconciliation.service";
+import { IMenuInit } from "./interfaces/msg.interfaces";
 
 export interface    IGameResultData {
     aNick: string;
@@ -65,12 +66,13 @@ export class    GameUpdateService {
     getGameSelectionData(roomId: string): IGameSelectionData {
         const   gameSelection: GameSelection = this.getGameSelection(roomId);
 
-        if (gameSelection)
+        if (gameSelection
+                && gameSelection.status != SelectionStatus.Canceled)
             return (gameSelection.data);
         return (undefined);
     }
 
-    getGameClientStartData(roomId): IGameClientStart {
+    getGameClientStartData(roomId: string): IGameClientStart {
         const   game: Game = this.getGame(roomId);
     
         if (game)
@@ -78,7 +80,7 @@ export class    GameUpdateService {
         return (undefined);
     }
 
-    getGameResult(roomId): IGameResultData | undefined {
+    getGameResult(roomId: string): IGameResultData | undefined {
         const   game: Game | undefined = this.games.get(roomId);
         const   players : [UserEntity, UserEntity] | undefined =
                     this.gameService.getPlayers(roomId);
@@ -95,6 +97,31 @@ export class    GameUpdateService {
                 game.getResult()
             )
         );
+    }
+
+    getClientInitData(roomId: string)
+                        : [string, IMenuInit |
+                                    IGameClientStart |
+                                    IGameResultData |
+                                    undefined] {
+        let data: IGameSelectionData | IGameClientStart |
+                    IGameResultData | undefined = undefined;
+
+        data = this.getGameSelectionData(roomId);
+        if (data)
+        {
+            return (["newGame", {
+                role: "Spectator",
+                selection: data
+            } as IMenuInit]);
+        }
+        data = this.getGameClientStartData(roomId);
+        if (data)
+            return (["startMatch", data]);
+        data = this.getGameResult(roomId);
+        if (data)
+            return (["end", data]);
+        return (["", undefined]);
     }
 
     attemptGameInit(roomId: string): void {
