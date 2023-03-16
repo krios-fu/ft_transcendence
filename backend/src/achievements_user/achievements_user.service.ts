@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
+import { AchievementsUserQueryDto } from './dto/achievements_user.query.dto';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';
 import { AchievementsUserRepository } from './repository/achievements_user.repository';
@@ -14,8 +16,8 @@ export class AchievementsUserService {
     /*
     ** Service: get all achievement user entities.
     */
-    public async getAllAchievementsUser(): Promise<AchievementUserEntity[]> { 
-        return await this.achievementsUserRepository.find();
+    public async getAllAchievementsUser(queryParams: AchievementsUserQueryDto): Promise<AchievementUserEntity[]> { 
+        return await this.achievementsUserRepository.find(new QueryMapper(queryParams));
     }
 
     /*

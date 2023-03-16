@@ -24,9 +24,11 @@ import { MatListModule } from '@angular/material/list';
 import { SocketNotificationService } from '../services/socket-notification.service';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
 import { StatsComponent } from './stats/stats.component';
 import { MatchHistoryComponent } from './stats/match-history/match-history.component';
 import { RankingComponent } from './stats/ranking/ranking.component';
+import { AchievementsComponent } from './stats/achievements/achievements.component';
 // import { MatDividerModule } from '@angular/material/divider';
 
 
@@ -43,6 +45,7 @@ import { RankingComponent } from './stats/ranking/ranking.component';
         StatsComponent,
         MatchHistoryComponent,
         RankingComponent,
+        AchievementsComponent
         // GameComponent
         // LoginComponent
         // DialogNotification
@@ -73,6 +76,7 @@ import { RankingComponent } from './stats/ranking/ranking.component';
         MatListModule,
         MatTableModule,
         MatPaginatorModule,
+        MatCardModule
         // MatDividerModule,
         // MatDialogModule,
 

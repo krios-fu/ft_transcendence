@@ -70,7 +70,7 @@ export class    GameSocketAuthService {
         return (username);
     }
 
-    registerUser(client: Socket, username: string): void {
+    async registerUser(client: Socket, username: string): Promise<void> {
         const   currentUsername: string = this._getCurrentUser(client);
     
         if (currentUsername)
@@ -78,7 +78,7 @@ export class    GameSocketAuthService {
             if (currentUsername === username)
                 return ;
             else
-                this.removeUser(client, username);
+                await this.removeUser(client, username);
         }
         client.emit("mockUser", {
             mockUser: `user-${this._mockUserNum}`
@@ -105,7 +105,7 @@ export class    GameSocketAuthService {
         */
         if (await this.socketHelper.roomSocketLength(playerRoom) > 1)
             return ;
-        this.updateService.playerWithdrawal(roomId, playerRoom);
+        await this.updateService.playerWithdrawal(roomId, playerRoom);
     }
 
     // Not leaving default room in case it is not disconnected
