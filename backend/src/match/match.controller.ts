@@ -5,6 +5,7 @@ import {
     ParseIntPipe,
     Query
 } from "@nestjs/common";
+import { MatchQueryDto } from "./dtos/matchQuery.dto";
 import { MatchEntity } from "./match.entity";
 import { MatchService } from "./match.service";
 
@@ -15,10 +16,10 @@ export class    MatchController {
     ) {}
 
     @Get()
-    async getUserMatches(@Query('userId') userId?: string)
-            : Promise<MatchEntity[]> {
-        if (userId)
-            return (await this.matchService.findUserMatches(userId));
+    async getMatches(@Query() matchQuery: MatchQueryDto)
+                        : Promise<[MatchEntity[], number]> {
+        if (matchQuery.username)
+            return (await this.matchService.findUserMatches(matchQuery));
         return (await this.matchService.findAllMatches());
     }
 
