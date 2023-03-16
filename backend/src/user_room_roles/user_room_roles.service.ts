@@ -64,6 +64,7 @@ export class UserRoomRolesService {
     }
 
     public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
+        console.log('[ POST /user_room_roles ] POSTEOOOOO: ', dto);
         const role = await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
         );
@@ -89,11 +90,28 @@ export class UserRoomRolesService {
         roomId: number,
         roleId: number
     ): Promise<UserRoomRolesEntity> {
-        return (await this.userRoomRolesRepository.createQueryBuilder('user_room_roles'))
+        const userQ = await this.userRoomRolesRepository.createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .where('user_room.userId = :user_id', { 'user_id': userId })
+            .getOne();
+        const roomQ = await this.userRoomRolesRepository.createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .where('user_room.roomId = :room_id', { 'room_id': roomId })
+            .getOne();
+        const roleQ = await this.userRoomRolesRepository.createQueryBuilder('user_room_roles')
+            .where('user_room_roles.roleId = :role_id', { 'role_id': roleId })
+            .getOne()
+        const queried = await this.userRoomRolesRepository.createQueryBuilder('user_room_roles')
             .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
             .where('user_room.userId = :user_id', { 'user_id': userId })
             .andWhere('user_room.roomId = :room_id', { 'room_id': roomId })
             .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
             .getOne();
+        console.log('A cachitos: ')
+        console.log('  user: ', userQ);
+        console.log('  room ', roomQ);
+        console.log('  role: ', roleQ);
+        console.log('queried: ', queried);
+        return queried;
     }
 }

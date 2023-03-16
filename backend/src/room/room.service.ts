@@ -64,9 +64,7 @@ export class RoomService {
         const { ownerId, id } = room;
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
-        console.log('user room debuga; ', userRoom);
         room.userRoom = [userRoom];
-        console.log('room debuga: ', room);
         const room_two = await this.roomRepository.save(room);
         console.log('room debuga 2: ', room_two );
         return room_two;

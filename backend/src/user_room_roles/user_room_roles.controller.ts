@@ -99,6 +99,7 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error('user role in room not found in database');
             throw new NotFoundException('resource not found in database');
         }
+        /* resource NOT found */
         return await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
     }
 
@@ -125,6 +126,7 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error(`User role ${userRoomId} with role ${roleId} already in database`);
             throw new BadRequestException('resource not found in database');
         }
+        /* resource ALREADY found */
         return await this.userRoomRolesService.postRoleInRoom(
             new UserRoomRolesDto({
                 "userRoomId": userRoomId,

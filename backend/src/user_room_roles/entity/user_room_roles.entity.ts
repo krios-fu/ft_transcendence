@@ -1,7 +1,12 @@
 import { BaseEntity } from "src/common/classes/base.entity";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, 
+   Entity, 
+   Index, 
+   JoinColumn, 
+   ManyToOne, 
+   PrimaryGeneratedColumn } from "typeorm";
 import { UserRoomRolesDto } from "../dto/user_room_roles.dto";
 
 @Entity({ name: 'user_room_roles' })
