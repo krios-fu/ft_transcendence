@@ -13,7 +13,8 @@ const filterSetup = filter => {
     }
     return keyFilter;
 }
-const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi) => [aci,cvi].flat())))
+//const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi) => [aci,cvi].flat())))
+const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi) => Object.assign({}, aci, cvi))))
 
 export class QueryMapper {
     constructor(queryParams: IQueryParams) {
@@ -31,22 +32,9 @@ export class QueryMapper {
             });
         }
         if (filter !== undefined) {
-            console.log('filter: ', filter);
-            console.log('2nd: ', filterSetup(filter));
-            console.log('3rd: ', cartesian(filterSetup(filter)));
-            this.where = cartesian(filterSetup(filter));
-        //        console.log("FILTER IN KEY: ", filter[key])
-        //        filter[key].forEach((value: string) => {
-        //            if (key === 'nickName' || key === 'roomName') {
-        //                this.where.push({ [key]: Like(`${value}%`) });
-        //            }
-        //            else {
-        //                this.where.push({ [key]: value });
-        //            }
-        //        });
-            console.log('query: ', this.where);
-            }
+            this.where = cartesian(...filterSetup(filter));
         }
+    } 
     take?: number;
     skip?: number;
     order?: { [key: string]: string }

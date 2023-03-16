@@ -24,20 +24,7 @@ export class UserRoomService {
     public async findAll(queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
         console.log('asd')
         if (queryParams !== undefined) {
-            //console.log('check querymapper: ', new QueryMapper(queryParams));
-            const ur = await this.userRoomRepository.find();
-            //console.log('gotten user room: ', ur);
-            //console.log('another user room: ', await this.userRoomRepository.find());
-            //console.log('another user room 2: ', await this.userRoomRepository.find({
-            //    where: { },
-            //}));
-            let query: UserRoomQueryDto = { 'filter': {
-                'id': [1, 2, 3],
-                'userId': [4, 5, 5],
-                'roomId': [3]
-            }};
-            new QueryMapper(query);
-            return ur;
+            return await this.userRoomRepository.find(new QueryMapper(queryParams));
         }
         return await this.userRoomRepository.find();
     }
