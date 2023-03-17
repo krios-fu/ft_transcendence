@@ -14,6 +14,7 @@ import {
 } from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
+import { GameAchievementsService } from "./game.achievements.service";
 
 @Injectable()
 export class    GameService {
@@ -23,7 +24,8 @@ export class    GameService {
         private readonly userService: UserService,
         private readonly rankingService: GameRankingService,
         private readonly queueService: GameQueueService,
-        private readonly matchService: MatchService
+        private readonly matchService: MatchService,
+        private readonly achievementsService: GameAchievementsService
     ) {
         this.gamePlayers = new Map<string, [UserEntity, UserEntity]>;
     }
@@ -107,7 +109,7 @@ export class    GameService {
     }
 
     private async updatePlayerRankings(players: [UserEntity, UserEntity],
-                                            winner: number): Promise<boolean> {    
+                                            winner: number): Promise<boolean> {
         [ players[0].ranking, players[1].ranking ] =
             this.rankingService.updateRanking(
                 {ranking: players[0].ranking, category: players[0].category},
@@ -128,16 +130,23 @@ export class    GameService {
     }
 
     private createPlayerEntities(players: [UserEntity, UserEntity],
-                            gameResult: IGameResult) : [WinnerEntity, LoserEntity] {
+                                    gameResult: IGameResult)
+                                        : [WinnerEntity, LoserEntity] {
         let     winnerEntity: WinnerEntity = new WinnerEntity;
         let     loserEntity: LoserEntity = new LoserEntity;
         const   winnerNick: string = gameResult.winnerNick;
+        const   [winnerUser, loserUser]: [UserEntity, UserEntity]
+                    = players[0].nickName === winnerNick
+                        ? [players[0], players[1]]
+                        : [players[1], players[0]];
 
-        winnerEntity.user = players[0].nickName === winnerNick
-                            ? players[0] : players[1];
+        winnerEntity.user = winnerUser;
+        winnerEntity.ranking = winnerUser.ranking;
+        winnerEntity.category = winnerUser.category;
         winnerEntity.score = gameResult.winnerScore;
-        loserEntity.user = players[0].nickName != winnerNick
-                            ? players[0] : players[1];
+        loserEntity.user = loserUser;
+        loserEntity.ranking = loserUser.ranking;
+        loserEntity.category = loserUser.category;
         loserEntity.score = gameResult.loserScore;
         return ([winnerEntity, loserEntity]);
     }
@@ -159,7 +168,8 @@ export class    GameService {
     }
 
     /*
-    **  User ranking update and match insertion must be done in a transaction.
+    **  User ranking and achievements update and match insertion must be done
+    **  in a transaction.
     **  Determine failure handling.
     */
     async endGame(gameId: string, gameResult: IGameResult): Promise<void> {
@@ -167,21 +177,20 @@ export class    GameService {
         let     isOfficial: boolean;
         let     winner: number;
 
-        if (gameResult.winnerScore != gameResult.loserScore)
-        { // Matches cancelled because of lag don't satisfy this condition
-            isOfficial = this.isOfficial(gameId);
-            winner = this.getWinner(players[0], gameResult);
-            if (!(await this.saveMatch(players, gameResult, isOfficial)))
-                console.error(`Failed database insertion for match: ${gameId}`);
-            if (isOfficial)
-            {
-                if (!(await this.updatePlayerRankings(players, winner)))
-                    return ;
-            }
-        }
-        players[0] = undefined;
-        players[1] = undefined;
-        return ;
+        // Matches cancelled because of lag don't satisfy this condition
+        if (gameResult.winnerScore === gameResult.loserScore)
+            return ;
+        isOfficial = this.isOfficial(gameId);
+        winner = this.getWinner(players[0], gameResult);
+        if (!(await this.saveMatch(players, gameResult, isOfficial)))
+            console.error(`Failed database insertion for match: ${gameId}`);
+        if (!isOfficial)
+            return ;
+        if (!(await this.updatePlayerRankings(players, winner)))
+            return ;
+        for (const player of players) {
+            await this.achievementsService.updateAchievements(player);
+        };
     }
 
 }

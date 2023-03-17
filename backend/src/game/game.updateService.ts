@@ -17,6 +17,18 @@ import {
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameReconciliationService } from "./game.reconciliation.service";
+import { IMenuInit } from "./interfaces/msg.interfaces";
+
+export interface    IGameResultData {
+    aNick: string;
+    bNick: string;
+    aCategory: string,
+    bCategory: string,
+    aScore: number;
+    bScore: number;
+    aAvatar: string;
+    bAvatar: string;
+}
 
 @Injectable()
 export class    GameUpdateService {
@@ -54,17 +66,62 @@ export class    GameUpdateService {
     getGameSelectionData(roomId: string): IGameSelectionData {
         const   gameSelection: GameSelection = this.getGameSelection(roomId);
 
-        if (gameSelection)
+        if (gameSelection
+                && gameSelection.status != SelectionStatus.Canceled)
             return (gameSelection.data);
         return (undefined);
     }
 
-    getGameClientStartData(roomId): IGameClientStart {
+    getGameClientStartData(roomId: string): IGameClientStart {
         const   game: Game = this.getGame(roomId);
     
         if (game)
             return (game.clientStartData());
         return (undefined);
+    }
+
+    getGameResult(roomId: string): IGameResultData | undefined {
+        const   game: Game | undefined = this.games.get(roomId);
+        const   players : [UserEntity, UserEntity] | undefined =
+                    this.gameService.getPlayers(roomId);
+
+        if (!game
+                || game.state != GameState.Finished
+                || !players
+                || !players[0]
+                || !players[1])
+            return (undefined);
+        return (
+            this.buildResultData(
+                [{...players[0]}, {...players[1]}],
+                game.getResult()
+            )
+        );
+    }
+
+    getClientInitData(roomId: string)
+                        : [string, IMenuInit |
+                                    IGameClientStart |
+                                    IGameResultData |
+                                    undefined] {
+        let data: IGameSelectionData | IGameClientStart |
+                    IGameResultData | undefined = undefined;
+
+        data = this.getGameSelectionData(roomId);
+        if (data)
+        {
+            return (["newGame", {
+                role: "Spectator",
+                selection: data
+            } as IMenuInit]);
+        }
+        data = this.getGameClientStartData(roomId);
+        if (data)
+            return (["startMatch", data]);
+        data = this.getGameResult(roomId);
+        if (data)
+            return (["end", data]);
+        return (["", undefined]);
     }
 
     attemptGameInit(roomId: string): void {
@@ -148,7 +205,24 @@ export class    GameUpdateService {
         }, 10000);
     }
 
-    private gameEnd(gameId: string, gameResult: IGameResult): void {
+    private buildResultData(players: [UserEntity, UserEntity],
+                                result: IGameResult): IGameResultData {
+        return ({
+            aNick: players[0].nickName,
+            bNick: players[1].nickName,
+            aCategory: GameSelection.stringifyCategory(players[0].category),
+            bCategory: GameSelection.stringifyCategory(players[1].category),
+            aScore: players[0].nickName === result.winnerNick
+                        ? result.winnerScore : result.loserScore,
+            bScore: players[1].nickName === result.winnerNick
+                        ? result.winnerScore : result.loserScore,
+            aAvatar: players[0].photoUrl,
+            bAvatar: players[1].photoUrl
+        });
+    }
+
+    private async gameEnd(gameId: string,
+                            gameResult: IGameResult): Promise<void> {
         const   players : [UserEntity, UserEntity] =
                             this.gameService.getPlayers(gameId);
         
@@ -157,19 +231,12 @@ export class    GameUpdateService {
             gameResult.winnerNick = players[0].nickName;
             gameResult.loserNick = players[1].nickName;
         }
-        this.socketHelper.emitToRoom(gameId, "end", {
-            aNick: players[0].nickName,
-            bNick: players[1].nickName,
-            aCategory: GameSelection.stringifyCategory(players[0].category),
-            bCategory: GameSelection.stringifyCategory(players[1].category),
-            aScore: players[0].nickName === gameResult.winnerNick
-                        ? gameResult.winnerScore : gameResult.loserScore,
-            bScore: players[1].nickName === gameResult.winnerNick
-                        ? gameResult.winnerScore : gameResult.loserScore,
-            aAvatar: players[0].photoUrl,
-            bAvatar: players[1].photoUrl
-        });
-        this.gameService.endGame(gameId, gameResult);
+        this.socketHelper.emitToRoom(
+            gameId,
+            "end",
+            this.buildResultData(players, gameResult)
+        );
+        await this.gameService.endGame(gameId, gameResult);
         this.socketHelper.clearRoom(`${gameId}-PlayerA`);
         this.socketHelper.clearRoom(`${gameId}-PlayerB`);
         this.gameTransition(gameId);
@@ -182,7 +249,7 @@ export class    GameUpdateService {
                 this.gameEnd(gameId, game.getResult());
                 return ;
             }
-            else
+            else if (game.state != GameState.Terminated)
                 game.serveBall();
             this.pointTimeout = undefined;
         }, 5000);
@@ -196,7 +263,7 @@ export class    GameUpdateService {
         {
             if (game.state === GameState.Finished)
                 return ;
-            game.state = GameState.Finished;
+            game.state = GameState.Terminated;
             this.gameEnd(room, {
                 winnerNick: "",
                 loserNick: "",
@@ -264,6 +331,7 @@ export class    GameUpdateService {
         });
     }
 
+
     private async prepareClients(gameId: string, gameType: GameType,
                                     players: [UserEntity, UserEntity],
                                     selectionData: IGameSelectionData)
@@ -280,7 +348,7 @@ export class    GameUpdateService {
         this.sendSelectionData(gameHero, "PlayerB", selectionData, playerRoom);
         this.socketHelper.emitToRoom(playerRoom, "unqueue");
         this.sendSelectionData(gameHero, "Spectator", selectionData, gameId);
-}
+    }
 
     private async startGame(gameId: string): Promise<void> {
         let gameSelection: GameSelection;
@@ -299,7 +367,7 @@ export class    GameUpdateService {
             categoryB: players[1].category,
             avatarA: players[0].photoUrl,
             avatarB: players[1].photoUrl
-        })).get(gameId);
+        }, gameType === "hero")).get(gameId);
         selectionData = gameSelection.data;
         await this.prepareClients(gameId, gameType, players, selectionData);
         if (gameType === "classic")
@@ -330,7 +398,7 @@ export class    GameUpdateService {
         this.manageUpdateInterval();
     }
 
-    playerWithdrawal(roomId: string, playerRoomId: string): void {
+    async playerWithdrawal(roomId: string, playerRoomId: string): Promise<void> {
         const   gameSelection: GameSelection = this.getGameSelection(roomId);
         const   game: Game = this.getGame(roomId);
         const   winner: number = playerRoomId[playerRoomId.length - 1] === 'A'
@@ -343,13 +411,13 @@ export class    GameUpdateService {
             return ;
         if (game)
         {
-            game.state = GameState.Finished;
+            game.state = GameState.Terminated;
             game.forceWin(winner);
-            this.gameEnd(roomId, game.getResult());
+            await this.gameEnd(roomId, game.getResult());
             return ;
         }
         gameSelection.status = SelectionStatus.Canceled;
-        this.gameEnd(roomId, {
+        await this.gameEnd(roomId, {
             winnerNick: winner === 0 ? gameSelection.data.nickPlayerA
                                         : gameSelection.data.nickPlayerB,
             loserNick: winner != 0 ? gameSelection.data.nickPlayerA

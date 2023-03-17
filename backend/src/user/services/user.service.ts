@@ -7,7 +7,7 @@ import {
 } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
@@ -15,7 +15,6 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import * as fs from 'fs';
 import { DEFAULT_AVATAR_PATH } from 'src/common/config/upload-avatar.config';
-import { RoomService } from 'src/room/room.service';
 
 @Injectable()
 export class UserService {
@@ -31,6 +30,13 @@ export class UserService {
         return await this.userRepository.find();
     }
 
+    public async findAndCountAllUsers(queryParams?: UserQueryDto)
+                                        : Promise<[UserEntity[], number]> {
+        return await this.userRepository.findAndCount(
+            new QueryMapper(queryParams)
+        );
+    }
+
     public async findOne(userId: number): Promise<UserEntity> {
         return await this.userRepository.findOne({
             where: {
@@ -40,14 +46,14 @@ export class UserService {
     }
 
     public async findOneByUsername(username: string): Promise<UserEntity> {
-        const user: UserEntity = await this.userRepository.findOne({ 
+        const user: UserEntity = await this.userRepository.findOne({
             where: { username: username },
         });
         return user;
     }
 
     public async findOneByNickName(nickName: string): Promise<UserEntity> {
-        const user: UserEntity = await this.userRepository.findOne({ 
+        const user: UserEntity = await this.userRepository.findOne({
             where: { nickName: nickName },
         });
         return user;
@@ -114,26 +120,7 @@ export class UserService {
     }
 
     public async getAdminsInRoom(roomId: number): Promise<UserEntity[]> {
-        //return (await this.userRepository.createQueryBuilder('user'))
-        //    .leftJoinAndSelect(
-        //        'user.userRoom',
-        //        'user_room',
-        //        'user_room.room_id = :room_id',
-        //        { 'room_id': roomId }
-        //    )
-        //    .leftJoinAndSelect(
-        //        'user_room.userRoomRole',
-        //        'user_room_roles',
-        //    )
-        //    .leftJoinAndSelect(
-        //        'user_room_roles.role',
-        //        'roles',
-        //        'roles.role = :role',
-        //        { 'role': 'administrator' }
-        //    )
-        //    .orderBy('user_room_roles.createdAt', 'ASC')
-        //    .getMany();
-        return (await this.userRepository.createQueryBuilder('user'))
+        return await this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.userRoom', 'user_room')
             .leftJoinAndSelect('user_room.userRoomRole', 'user_room_roles')
             .leftJoinAndSelect('user_room_roles.role', 'roles')

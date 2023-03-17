@@ -1,6 +1,7 @@
 import { Socket } from "socket.io-client";
 import { IMatchInitData } from "../elements/Match";
 import { MenuRenderer } from "../elements/MenuRenderer";
+import { GameRecoveryService } from "../services/recovery.service";
 import { BaseScene } from "./BaseScene";
 
 export interface   ISelectionData {
@@ -19,7 +20,6 @@ export interface   ISelectionData {
 }
 
 export interface   IMenuInit {
-    hero: boolean;
     //PlayerA, PlayerB, Spectator
     role: string;
     selection: ISelectionData;
@@ -32,11 +32,10 @@ export class    MenuScene extends BaseScene {
 
     private _menuRenderer?: MenuRenderer;
 
-    constructor(sock: Socket, room: string, sceneName: string = "") {
-        if (sceneName != "")
-            super(sceneName, sock, room);
-        else
-            super("Menu", sock, room);
+    constructor(sock: Socket, room: string,
+                    readonly recoveryService: GameRecoveryService,
+                    sceneName: string = "Menu") {
+        super(sceneName, sock, room);
         this.role = "";
     }
 
@@ -44,9 +43,7 @@ export class    MenuScene extends BaseScene {
         this.role = initData.role;
         this.initData = initData.selection;
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
-            if (this._menuRenderer)
-                this._menuRenderer.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             if (this.role != "Spectator")
             {
                 this.scene.start("ClassicPlayer", {
@@ -63,11 +60,10 @@ export class    MenuScene extends BaseScene {
             }
         });
         this.socket.once("end", (data) => {
-            if (this._menuRenderer)
-                this._menuRenderer.destroy();
-            this.removeAllSocketListeners();
+            this.destroy();
             this.scene.start("End", data);
         });
+        this.recoveryService.setUp(this);
     }
 
     preload() {
@@ -87,6 +83,25 @@ export class    MenuScene extends BaseScene {
             this.initData,
             false
         );
+    }
+
+    destroy(): void {
+        this.removeAllListeners();
+        if (this._menuRenderer)
+            this._menuRenderer.destroy();
+    }
+
+    recover(data: IMenuInit): void {
+        if (this.role != data.role
+            || !this.initData
+            || this.initData.nickPlayerA != data.selection.nickPlayerA
+            || this.initData.nickPlayerB != data.selection.nickPlayerB)
+        {
+            this.destroy();
+            this.init(data);
+            this.preload();
+            this.create();
+        }
     }
 
 }

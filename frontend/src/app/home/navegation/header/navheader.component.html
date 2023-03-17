@@ -1,19 +1,19 @@
-<div class="badge">
+<section class="badge">
 
   <figure class="avatar">
     <img src={{getPhotoUrl()}} />
   </figure>
   <mat-icon [ngStyle]="{'color': color_icon}" class="icon-display"
     style="position: absolute; bottom: -5px;">{{online_icon}}</mat-icon>
-</div>
+</section>
 <!-- </div> -->
-<div style="display: flex; 
+<section style="margin-top: 5px; display: flex; 
 position: relative; 
 align-items: center;  
 justify-content: space-around;
 " *ngIf="user">
   <h1 style="font-size: 14px;">{{getNickname()}}</h1>
-</div>
+</section>
 
 <div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px">
   <span>

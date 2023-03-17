@@ -1,7 +1,7 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsEmail, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsEmail, IsOptional, IsString, ValidateNested } from "class-validator";
 import { HasValidFields } from "src/common/decorators/order.decorator";
-import { BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
+import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
 
 class UserQueryFilterDto extends BaseQueryFilterDto {
@@ -32,14 +32,22 @@ class UserQueryFilterDto extends BaseQueryFilterDto {
     nickName?: string[];
 }
 
-export class UserQueryDto {
+export class UserQueryDto extends BaseQueryDto {
     @IsOptional()
     @IsArray()
-    @Transform(({ value }) => value.split(','))
+    @Transform(({ value }) => intoArrayOfParams(value))
     @HasValidFields(
         ['id', 'username', 'firstName', 'lastName', 'email', 'nickName', 'creationDate', 'lastConnection']
     )
-    sort?: string;
+    order?: string[];
+
+    @IsOptional()
+    @IsArray()
+    @Transform(({ value }) => intoArrayOfParams(value))
+    @HasValidFields(
+        ['id', 'username', 'firstName', 'lastName', 'email', 'nickName', 'creationDate', 'lastConnection']
+    )
+    orderDesc?: string[];
 
     @IsOptional()
     @ValidateNested({
@@ -51,4 +59,9 @@ export class UserQueryDto {
     @IsOptional()
     @IsString({ each: true })
     range?: Map<string, string>;
+
+    @IsOptional()
+    @IsBoolean()
+    @Transform(({ value} ) => value === 'true') //Strings !== 'true' are converted to false
+    count?: boolean;
 }

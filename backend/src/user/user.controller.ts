@@ -9,6 +9,7 @@ import {
     ParseIntPipe,
     Query,
     Logger,
+    HttpException,
     HttpStatus,
     Req,
     UploadedFile,
@@ -27,14 +28,11 @@ import { UserService } from './services/user.service';
 import { FriendshipService } from './services/friendship.service';
 import { UserEntity } from './entities/user.entity';
 import { BlockService } from './services/block.service';
-import { ChatService } from 'src/chat/chat.service';
-import { chatPayload } from 'src/chat/dtos/chat.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from 'src/common/validators/filetype-validator.class';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
 import { Express } from 'express';
-import { ChatEntity } from 'src/chat/entities/chat.entity';
 
 @Controller('users')
 export class UserController {
@@ -42,7 +40,6 @@ export class UserController {
         private readonly userService: UserService,
         private readonly blockService: BlockService,
         private readonly friendshipService: FriendshipService,
-        private readonly chatService: ChatService,
     ) {
         this.userLogger = new Logger(UserController.name);
     }
@@ -61,7 +58,9 @@ export class UserController {
     */
 
     @Get()
-    async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[]> {
+    async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[] | [UserEntity[], number]> {
+        if (queryParams.count)
+            return await this.userService.findAndCountAllUsers(queryParams);
         return await this.userService.findAllUsers(queryParams);
     }
 
@@ -258,7 +257,7 @@ export class UserController {
     //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const user = await this.userService.findOne(id);
-        
+
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);
             throw new NotFoundException('resource not found in database');
@@ -266,64 +265,6 @@ export class UserController {
         return this.userService.deleteUser(user);
     }
 
-
-    /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ *\
-    **                                               **
-    **               ( chat endpoints )              **
-    **                                               **
-    \* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-    @Get('me/chats')
-    async findChats(
-        @Req() req: IRequestUser, 
-        @UserCreds() username: string
-    ): Promise<ChatEntity[]> {
-        const user: UserEntity = await this.userService.findOneByUsername(req.user.data.username);
-
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        return await this.chatService.findChatsUser(user.id);
-    }
-
-    @Get('me/chat/:nick_friend')
-    async findChat(
-        @Param('nick_friend') nick_friend: string,
-        @UserCreds() username: string
-    ): Promise<ChatEntity[]> {
-        const user: UserEntity = await this.userService.findOneByUsername(username);
-
-        if (user === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        const friend: UserEntity = await this.userService.findOneByNickName(nick_friend);
-
-        if (friend === null) {
-            this.userLogger.error(`User with login ${nick_friend} not present in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        return await this.chatService.findChatUser(user.id, friend.id);
-
-    }
-
-    @Post('me/chat')
-    async postChat(
-        @Body() payload: chatPayload,
-        @UserCreds() username: string
-    ): Promise<ChatEntity> {
-        const user1: UserEntity = await this.userService.findOneByUsername(username);
-
-        if (user1 === null) {
-            this.userLogger.error(`User with login ${username} not present in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        const user2: UserEntity = await this.userService.findOne(payload.friendId);
-
-        return this.chatService.post(user1, user2);
-
-    }
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **
     **                                               **
     **           ( friendship endpoints )            **
@@ -438,6 +379,50 @@ export class UserController {
             throw new BadRequestException('resource not found in database');
         }
         return this.friendshipService.acceptFriend(userId, friendId);
+    }
+
+    @Patch('me/friends/accept')
+    public async meAcceptFriend(
+        // @Param('user_id', ParseIntPipe) userId: number,
+        // @Param('friend_id', ParseIntPipe) friendId: number,
+        @Req() req: IRequestUser,
+        @Body() friend: any
+    ): Promise<UpdateResult> {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+       const  userId = user.id;
+       const friendId = friend.id;
+       console.log("friends", userId,"<--->" ,friendId)
+        if ((await this.userService.findAllUsers({ filter: { id: [userId, friendId] } }))
+            .length != 2) {
+            this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
+            throw new HttpException('user not found in db', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.acceptFriend(userId, friendId);
+    }
+
+    @Delete('me/friends/deleted/:id')
+    public async meDeletedFriend(
+        @Param('id', ParseIntPipe) id_deleted: number,
+        // @Param('friend_id', ParseIntPipe) friendId: number,
+        @Req() req: IRequestUser,
+        @Body() friend: any
+    ) {
+        const username = req.user.data.username;
+        if (username === undefined) {
+            this.userLogger.error('request user has not logged in');
+            throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
+        }
+        const user = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
+        }
+        return this.friendshipService.deletedFriend(id_deleted);
     }
 
     /*

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
@@ -34,17 +34,8 @@ export class UserRoomService {
         });
     }
 
-    public async findUserRoomIds(userId: number, roomId: number): Promise<UserRoomEntity> {
-        return await this.userRoomRepository.findOne({
-            where: {
-                userId: userId,
-                roomId: roomId
-            }
-        });
-    }
-
-    public async getAllUsersInRoom(roomId: number): Promise<UserEntity[]> {
-        const userList = this.userRoomRepository.find({
+    public async getAllUsersInRoom(roomId: number): Promise<UserRoomEntity[]> {
+        const userList = await this.userRoomRepository.find({
         select: { userId: true },
         relations: {
             room: true,
@@ -54,15 +45,16 @@ export class UserRoomService {
         });
 
         /* debug */
-        console.log(userList);
+        console.log('GET ALL USERS',userList);
 
-        /* tmp */
-        var usersInRoom: UserEntity[] = [];
-        for (var username in userList) {
-            const user = await this.userService.findOneByUsername(username);
-            usersInRoom.push(user);
-        }
-        return usersInRoom;
+        // /* tmp */ //deleted for krios-fu
+        // he modificado esta query para hacer uso.
+        // var usersInRoom: UserEntity[] = [];
+        // for (var username in userList) {
+        // const user = await this.userService.findOneByUsername(username);
+        // usersInRoom.push(user);
+        // }
+        return userList;
     }
 
     public async getAllRoomsWithUser(userId: number): Promise<RoomEntity[]>  {
@@ -84,11 +76,11 @@ export class UserRoomService {
 
         return await this.userRoomRepository.save(userInRoom);
     }
-    
+
     public async remove(userRoom: UserRoomEntity): Promise<void> {
         const { id, room, userId: user_id } = userRoom;
         const { id: room_id, ownerId: owner_id } = room;
-        
+
         await this.userRoomRepository.delete(id); /* delete or remove ?? */
         if (await this.roomRolesService.isRole('official', room_id) === true) {
             return ;

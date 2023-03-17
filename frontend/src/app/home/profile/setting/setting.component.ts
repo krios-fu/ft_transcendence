@@ -6,6 +6,9 @@ import { UsersService } from 'src/app/services/users.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Data } from 'phaser';
 import { Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
+import { AlertServices } from 'src/app/services/alert.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogNotification } from 'src/app/services/dialog/dialog.notification';
 
 @Component({
   selector: 'app-setting',
@@ -15,7 +18,6 @@ import { Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
 export class SettingComponent implements OnInit {
 
   @Output() messageEvent = new EventEmitter<boolean>();
-
 
   isChecked = true;
   namePhoto = '';
@@ -34,7 +36,10 @@ export class SettingComponent implements OnInit {
   constructor(private http: HttpClient,
     private usersService: UsersService,
     private authService: AuthService,
-    private _formBuilder: FormBuilder) {
+    private _formBuilder: FormBuilder,
+    public alertServices: AlertServices,
+    public dialogo: MatDialog
+    ) {
     this.usersService.getUser('me')
       .subscribe({
         next: (user) => {
@@ -85,25 +90,27 @@ export class SettingComponent implements OnInit {
 
   confir(code: any): Observable<HttpResponse<any>> {
     return this.http.post<any>('http://localhost:3000/auth/2fa/confirm', { token: code }).pipe(
-      tap( (res: any) => {
-        
+      tap((res: any) => {
+
         this.user.doubleAuth = true;
         this.qr_generate = '';
       }),
       catchError((err: HttpErrorResponse) => {
 
         alert("Code otp Error");
-        return throwError(() => err);})
+        return throwError(() => err);
+      })
     )
   }
 
   confimateOtp(code: any) {
     // console.log("Code 2fa:", code);
-    
-    this.confir(code).subscribe( lol => {
+
+    this.confir(code).subscribe(lol => {
       console.log("ESTOY");
-      console.log(lol)})
-}
+      console.log(lol)
+    })
+  }
 
 
   changeDetected() {
@@ -120,7 +127,6 @@ export class SettingComponent implements OnInit {
     }
     const form = formGroup.getRawValue();
 
-    // console.log('Setting form---->', { ...form, nickName: nickname });
 
     if (this.icon === 'lock_open')
 
@@ -144,8 +150,7 @@ export class SettingComponent implements OnInit {
           });
     }
 
-    // if()
-
+    this.alertServices.openSnackBar("Changes saved", "Close");
   }
 
   getPhoto(): string {

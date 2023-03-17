@@ -1,10 +1,10 @@
 import { CreateRoomDto } from "src/room/dto/room.dto";
-import {  
-    Column, 
-    Entity, 
-    JoinColumn, 
-    ManyToOne, 
-    OneToMany, 
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
 import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
@@ -25,7 +25,7 @@ export class RoomEntity extends BaseEntity {
 
     @Column({
         type: 'varchar',
-        name: 'room_name',
+        name: 'room_id',
         unique: true,
         length: 15,
     })
@@ -39,6 +39,7 @@ export class RoomEntity extends BaseEntity {
 
     @Column({
         type: 'varchar',
+        //length: 
         nullable: true,
         unique: true,
         default: null
@@ -53,9 +54,9 @@ export class RoomEntity extends BaseEntity {
     owner!: UserEntity;
 
     @OneToMany(
-        () => UserRoomEntity, 
+        () => UserRoomEntity,
         (userRoom: UserRoomEntity) => userRoom.room,
-        { 
+        {
             cascade: true,
             onDelete: 'CASCADE'
         }
@@ -63,7 +64,7 @@ export class RoomEntity extends BaseEntity {
     userRoom: UserRoomEntity[];
 
     @OneToMany(
-        () => RoomRolesEntity, 
+        () => RoomRolesEntity,
         (roomRole: RoomRolesEntity) => roomRole.roomId
     )
     roomRole: RoomRolesEntity[];

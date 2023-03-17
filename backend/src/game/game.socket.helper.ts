@@ -66,4 +66,10 @@ export class    SocketHelper {
         return ([room, player]);
     }
 
+    async roomSocketLength(roomId: string): Promise<number> {
+        return (
+            (await this._server.in(roomId).fetchSockets()).length
+        );
+    }
+
 }

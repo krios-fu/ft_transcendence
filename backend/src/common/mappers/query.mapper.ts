@@ -18,17 +18,21 @@ const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi)
 
 export class QueryMapper {
     constructor(queryParams: IQueryParams) {
-        const { limit, offset, order, filter } = queryParams; 
+        const { limit, offset, order, orderDesc, filter } = queryParams; 
         if (limit !== undefined) {
             this.take = limit;
         }
         if (offset !== undefined) {
             this.skip = offset;
         }
-        if (order !== undefined) {
+        if (order !== undefined
+                || orderDesc !== undefined) {
             this.order = {};
-            order.forEach((value: string) => {
+            order?.forEach((value: string) => {
                 Object.assign(this.order, { [value]: 'ASC' })
+            });
+            orderDesc?.forEach((value: string) => {
+                Object.assign(this.order, { [value]: 'DESC' })
             });
         }
         if (filter !== undefined) {

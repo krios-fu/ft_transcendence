@@ -37,6 +37,7 @@ import { TwoFactorStrategy } from './strategy/two-factor.strategy';
     exports: [
         PassportModule,
         JwtModule,
+        AuthService
     ],
 })
 export class AuthModule { }

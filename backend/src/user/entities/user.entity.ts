@@ -1,8 +1,7 @@
 import { Exclude } from "class-transformer";
 import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
 import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
-import { ChatEntity } from "src/chat/entities/chat.entity";
-import { MessageEntity } from "src/chat/entities/message.entity";
+import { ChatUserEntity } from "src/chat/entities/chat-user.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 import { RoomEntity } from "src/room/entity/room.entity";
@@ -18,9 +17,7 @@ import {
 import { CreateUserDto } from "../dto/user.dto";
 import { Category } from "../enum/category.enum";
 
-@Entity({
-	name: 'user'
-})
+@Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
 	constructor(dto?: CreateUserDto) {
 		super();
@@ -84,7 +81,7 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(
 		() => RoomEntity,
 		(room: RoomEntity) => room.owner,
-		{ onDelete: 'CASCADE' } 
+		{ onDelete: 'CASCADE' }
 	)
 
 	@Column({
@@ -126,36 +123,36 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(
 		() => UserRoomEntity,
 		(userRoom: UserRoomEntity) => userRoom.user,
-		{ 
-            cascade: true,
-            onDelete: 'CASCADE'
-        }
-	)
-	userRoom: UserRoomEntity[];
-
-	@OneToMany(
-		() => MessageEntity, 
-		(message: MessageEntity) => message.author,
 		{
 			cascade: true,
 			onDelete: 'CASCADE'
 		}
 	)
-	messages : MessageEntity[];
+	userRoom: UserRoomEntity[];
 
-	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
-	chats : ChatEntity[];
+	@OneToMany(
+		() => ChatUserEntity,
+		(chatUser: ChatUserEntity) => chatUser.user,
+		{
+			onDelete: 'CASCADE',
+			cascade: true
+		}
+		 )
+	chats: ChatUserEntity[];
 
 	@OneToOne
 	(
 		() => RefreshTokenEntity,
 		(tokenEntity: RefreshTokenEntity) => tokenEntity.authUser,
-		{ cascade: true }
+		{
+			cascade: true,
+			onDelete: 'CASCADE'
+		}
 	)
-	token: RefreshTokenEntity
+	token: RefreshTokenEntity;
 
 	@OneToMany(
-		() => AchievementUserEntity, 
+		() => AchievementUserEntity,
 		(achvmUsr: AchievementUserEntity) => achvmUsr.user,
 		{
 			cascade: true,

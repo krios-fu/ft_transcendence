@@ -20,7 +20,8 @@ import { GameUpdateService } from '../game.updateService';
 export enum GameState {
     Running,
     Paused,
-    Finished
+    Finished, // Natural end
+    Terminated // Forced end
 }
 
 export interface    IGameClientStart {

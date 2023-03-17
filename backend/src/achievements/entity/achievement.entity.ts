@@ -1,8 +1,8 @@
 import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
-import { 
-    Column, 
-    Entity, 
+import {
+    Column,
+    Entity,
     PrimaryGeneratedColumn,
     OneToMany } from "typeorm";
 import { CreateAchievementDto } from "../dto/achievement.dto";
@@ -22,11 +22,14 @@ export class AchievementEntity extends BaseEntity {
     @Column({ name: 'achievement_name', type: 'varchar' })
     achievementName: string;
 
+    @Column({ name: 'description', type: 'varchar' })
+    description: string;
+
     @Column({ name: 'photo_url', type: 'varchar' })
     photoUrl: string;
 
     @OneToMany(
-		() => AchievementUserEntity, 
+		() => AchievementUserEntity,
 		(achvmUsr: AchievementUserEntity) => achvmUsr.user,
 		{
 			cascade: true,

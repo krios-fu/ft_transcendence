@@ -2,6 +2,7 @@ import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
 import { LagCompensationService } from '../services/lag-compensation.service';
 import { LoadService } from '../services/load.service';
+import { GameRecoveryService } from '../services/recovery.service';
 import { SoundService } from '../services/sound.service';
 import { MatchScene } from './MatchScene';
 
@@ -13,9 +14,11 @@ export class    ClassicPlayerScene extends MatchScene {
         socket: SocketIO.Socket, room: string,
         override readonly lagCompensator: LagCompensationService,
         override readonly loadService: LoadService,
-        override readonly soundService: SoundService
+        override readonly soundService: SoundService,
+        override readonly recoveryService: GameRecoveryService
     ) {
-        super("ClassicPlayer", socket, room, lagCompensator, loadService, soundService);
+        super("ClassicPlayer", socket, room,
+                lagCompensator, loadService, soundService, recoveryService);
     }
 
     override create() {

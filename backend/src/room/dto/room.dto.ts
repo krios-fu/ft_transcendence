@@ -33,3 +33,13 @@ export class RoomMsgDto {
     @IsString() room: string;
     @IsString() message: string;
 }
+
+export class CreateRoomMessageDto {
+    @IsNumber()
+    @IsNotEmpty()
+    userRoomId: number;
+
+    @IsString()
+    @IsNotEmpty()
+    content: string;
+}

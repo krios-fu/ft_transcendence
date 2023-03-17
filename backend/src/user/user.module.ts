@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendshipEntity } from './entities/friendship.entity';
 import { UserEntity } from './entities/user.entity';
@@ -13,14 +13,13 @@ import { ChatMapper } from 'src/chat/mapper/chat.mapper';
 import { BlockEntity } from './entities/block.entity';
 import { BlockService } from './services/block.service';
 import { BlockRepository } from './repositories/block.repository';
-import { RoomModule } from 'src/room/room.module';
+
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             UserEntity, 
             FriendshipEntity, 
-            BlockEntity, 
-            ChatEntity,
+            BlockEntity
         ]),
     ],
     exports: [UserService],
@@ -31,9 +30,7 @@ import { RoomModule } from 'src/room/room.module';
         FriendshipService,
         FriendshipRepository,
         BlockService,
-        BlockRepository,
-        ChatService,
-        ChatMapper
+        BlockRepository
     ]
 })
 export class UserModule { }

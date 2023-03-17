@@ -16,6 +16,8 @@ import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common
 import { throwError } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { SettingComponent } from './profile/setting/setting.component';
+import { AlertServices } from '../services/alert.service';
+import { SocketNotificationService } from '../services/socket-notification.service';
 
 
 
@@ -50,11 +52,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private alertService: AlertServices,
   ) {
     this.subscriber = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event) => {
       if (this.authService.isAuthenticated() === true) {
+        // this.ngOnInit();
         this.getPenddingFriends();
       }
     });
@@ -108,9 +112,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.user = userDto.username;
                 // this.firstName = userDto.firstName;
                 // this.lastName = userDto.lastName;
-                
-                 console.log(userDto.doubleAuth)
-                if (userDto[0].doubleAuth === true){
+                console.log(userDto.doubleAuth)
+                if (userDto[0].doubleAuth === true) {
                   this.authService.redirecOtpSesion()
                 }
                 else
@@ -140,16 +143,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(this.route);
   }
 
-
   getPenddingFriends() {
-    this.usersService.getFriends('me')
-      .subscribe((data: any) => {
-        this.nPenddingFriends = data.length;
-        console.log(this.nPenddingFriends);
+    this.usersService.getUser('me')
+      .subscribe((user: UserDto[]) => {
+        this.usersService.getFriends('me')
+        .subscribe((data: any) => {
+          let friends_pending = Object.assign(data);
+          console.log("PENDING", user[0].username)
+            this.nPenddingFriends = (friends_pending.filter((friend: any) => friend['sender'] && friend['sender'].username != user[0].username)).length;
+          })
       })
   }
-
-
 
   send_chat_profile(e: any) {
     return e;
@@ -163,9 +167,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   hello() {
     this.friend_state = !this.friend_state;
-
-    console.log('HELLO WORLD');
+    this.alertService.openFriendPending();
   }
-
 
 }
