@@ -12,7 +12,6 @@ import {
     BadRequestException,
     UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
-import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { RoomEntity } from 'src/room/entity/room.entity';
@@ -21,9 +20,7 @@ import { RoomService } from 'src/room/room.service';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
 import { IsPrivate } from 'src/common/guards/is-private.guard';
 import { Banned } from './guards/banned.guard';
-import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('user_room')
 export class UserRoomController {

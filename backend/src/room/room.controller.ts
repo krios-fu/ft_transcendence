@@ -3,7 +3,6 @@ import { RoomService } from "./room.service";
 import { UserEntity } from "src/user/entities/user.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { UserService } from "src/user/services/user.service";
-import { UpdateResult } from "typeorm";
 import { BadRequestException, Body, 
     Controller, 
     Delete, 

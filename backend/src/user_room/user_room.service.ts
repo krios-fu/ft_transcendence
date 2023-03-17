@@ -34,6 +34,15 @@ export class UserRoomService {
         });
     }
 
+    public async findUserRoomIds(userId: number, roomId: number): Promise<UserRoomEntity> {
+        return await this.userRoomRepository.findOne({
+            where: {
+                userId: userId,
+                roomId: roomId
+            }
+        });
+    }
+
     public async getAllUsersInRoom(roomId: number): Promise<UserRoomEntity[]> {
         const userList = await this.userRoomRepository.find({
         select: { userId: true },
