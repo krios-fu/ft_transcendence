@@ -65,9 +65,7 @@ export class RoomService {
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
         room.userRoom = [userRoom];
-        const room_two = await this.roomRepository.save(room);
-        console.log('room debuga 2: ', room_two );
-        return room_two;
+        return await this.roomRepository.save(room);
     }
 
     public async removeRoom(room: RoomEntity): Promise<void> {

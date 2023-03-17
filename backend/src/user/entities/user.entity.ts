@@ -123,20 +123,14 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(
 		() => UserRoomEntity,
 		(userRoom: UserRoomEntity) => userRoom.user,
-		{
-			cascade: true,
-			onDelete: 'CASCADE'
-		}
+		{ cascade: true }
 	)
 	userRoom: UserRoomEntity[];
 
 	@OneToMany(
 		() => ChatUserEntity,
 		(chatUser: ChatUserEntity) => chatUser.user,
-		{
-			onDelete: 'CASCADE',
-			cascade: true
-		}
+		{ cascade: true }
 		 )
 	chats: ChatUserEntity[];
 
@@ -144,10 +138,7 @@ export class UserEntity extends BaseEntity {
 	(
 		() => RefreshTokenEntity,
 		(tokenEntity: RefreshTokenEntity) => tokenEntity.authUser,
-		{
-			cascade: true,
-			onDelete: 'CASCADE'
-		}
+		{ cascade: true }
 	)
 	token: RefreshTokenEntity;
 
@@ -156,7 +147,6 @@ export class UserEntity extends BaseEntity {
 		(achvmUsr: AchievementUserEntity) => achvmUsr.user,
 		{
 			cascade: true,
-			onDelete: 'CASCADE',
 			eager: true
 		}
 	)

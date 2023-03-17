@@ -31,7 +31,10 @@ export class UserRoomRolesEntity extends BaseEntity {
 
    @ManyToOne(
       () => UserRoomEntity,
-      { eager: true }
+      {
+         eager: true,
+         onDelete: 'CASCADE'
+      }
    )
    @JoinColumn( {name: 'user_room_id'})
    userRoom: UserRoomEntity;
@@ -45,7 +48,10 @@ export class UserRoomRolesEntity extends BaseEntity {
 
    @ManyToOne(
       () => RolesEntity,
-      { eager: true }
+      {
+         eager: true,
+         onDelete: 'CASCADE'
+      }
    )
    @JoinColumn({ name: 'role_id' })
    role: RolesEntity;
