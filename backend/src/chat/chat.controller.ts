@@ -8,9 +8,7 @@ import {ChatDto} from "./dtos/chat.dto";
 export class ChatController {
     constructor(
      private chatService: ChatService
-    ){
-        console.log('Chat controller start')
-    }
+    ) { }
 
     @Get()
     @Public()

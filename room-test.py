@@ -63,7 +63,7 @@ class APITrans():
             raise e
 
     def __request_post_wrapper(self, url, data):
-        print(f'  [ POST: {url} ]')
+        print(f'  [ POST: {url} // data {data}]')
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
@@ -160,7 +160,7 @@ class APITrans():
             print(f'Request returned with status code {r.status_code}', file=sys.stderr)
             raise Exception('FAILED TEST')
         except requests.exceptions.HTTPError as e:
-            print(f'Request returned: {e}')
+            print(f'Request returned: {e}, {r.reason}')
         except requests.exceptions.ConnectionError as e:
             raise e
         

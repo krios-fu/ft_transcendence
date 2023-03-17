@@ -129,8 +129,6 @@ export class RoomService {
     public async validateAdmin(userId: number, roomId: number): Promise<boolean> {
         const admins: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
 
-        console.log('admins in room: ', admins);
-        console.log('id: ', userId);
         return (admins.filter(user => user['id'] == userId)).length > 0;
     }
 

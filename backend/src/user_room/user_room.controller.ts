@@ -60,7 +60,7 @@ export class UserRoomController {
         return await this.userRoomService.getAllUsersInRoom(roomId);
     }
 
-    /* Get all rooms with an user */
+    /* Get all rooms with a user */
     @Get('/users/:user_id/rooms')
     public async getAllRoomsWithUser(@Param(':user_id', ParseIntPipe) userId: number): Promise<RoomEntity[]> {
         if (await this.userService.findOne(userId) === null) {
@@ -71,11 +71,12 @@ export class UserRoomController {
     }
 
     /* Create a new user in a room */
-    @UseGuards(Banned)
-    @UseGuards(IsPrivate)
+    //@UseGuards(Banned)
+    //@UseGuards(IsPrivate)
     @Post()
     public async create(@Body() dto: CreateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;
+
         if (await this.userRoomService.findUserRoomIds(userId, roomId) !== null) {
             this.userRoomLogger.error(`User ${userId} already registered in room ${roomId}`);
             throw new BadRequestException('user room already in db');

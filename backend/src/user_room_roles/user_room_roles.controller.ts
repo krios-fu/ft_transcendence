@@ -79,9 +79,7 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
             throw new NotFoundException('resource not found in database');
         }
-        const role = await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
-        console.log('gotten role: ', role);
-        return role;
+        return await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
     }
 
     @Get('/users/:user_id/rooms/:room_id/roles/:role_id')
@@ -111,8 +109,7 @@ export class UserRoomRolesController {
         const userRoom: UserRoomEntity[] = await this.userRoomService.findAll({ 
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });
-        console.log('input: ', userId, ', ', roomId);
-        console.log('posting role: ', userRoom);
+
         if (!userRoom.length) {
             this.userRoomRolesLogger.error(`No user ${userId} in room ${roomId} present in database`);
             throw new BadRequestException('resource not found in database');
@@ -124,9 +121,8 @@ export class UserRoomRolesController {
         }
         if (await this.userRoomRolesService.findRoleByIds(userRoomId, roleId) !== null) {
             this.userRoomRolesLogger.error(`User role ${userRoomId} with role ${roleId} already in database`);
-            throw new BadRequestException('resource not found in database');
+            throw new BadRequestException('resource already in database');
         }
-        /* resource ALREADY found */
         return await this.userRoomRolesService.postRoleInRoom(
             new UserRoomRolesDto({
                 "userRoomId": userRoomId,
