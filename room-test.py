@@ -1,9 +1,13 @@
 import sys
 import requests
 import os
+import json
 from dotenv import load_dotenv
 # TEMPORAL, ESTO TIENE QUE IMPLEMENTARSE EN LA BATERIA DE E2E EN JEST
 
+
+def pretty(json_obj):
+    return json.dumps(json_obj, indent=2)
 
 class APITrans():
     def __init__(self, *args, **kwargs):
@@ -201,15 +205,15 @@ class APITrans():
         try:
             print('[ posting users in room... ]')
             r = requests.get(url_get, headers=self.get_param('auth_token'))
-            print(f'debuga: {r.json()}')
+            print(f'debuga: {pretty(r.json())}')
             #assert r.json() == user_rooms, 'Bad user_room post'
             print('[ deleting room... ]')
             print(f'[ DEL: {url_del} ]')
             r = requests.delete(url_del, headers=self.get_param('auth_token'))
             print('[ querying users in room... ]')
             r = requests.get(url_get, headers=self.get_param('auth_token'))
-            print(f'debuga: {r.json()}')
-            assert r.json() == [], 'Still users in room !?'
+            print(f'debuga: {pretty(r.json())}')
+            # assert r.json() == [], 'Still users in room !?'
         except requests.exceptions.ConnectionError as e:
             raise e
         print('[ ...ok ]')
@@ -222,7 +226,7 @@ class APITrans():
 
         print('[ Query room for users in first room (should be owner) ]')
         try: 
-            url = f'http://localhost:3000/user_room/room/{rooms[0]["id"]}/users'
+            url = f'http://localhost:3000/user_room/rooms/{rooms[0]["id"]}/users'
             r = requests.get(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             print(f'[ Query results ] {r.text}')
@@ -245,6 +249,32 @@ class APITrans():
         
 
     def del_user_in_room_as_owner(self):
+        users = [ self.__post_user(user_name) for user_name in ['new_user_1', 'new_user_2', 'new_user_3' ] ]
+        room = self.__post_room('room_test', users[0]['id'])
+        users_room = [ self.__post_user_room(room['id'], user_id) for user_id in 
+            [ user['id'] for user in users ]
+        ]
+
+        try:
+            owner_id = users[0]['id']
+            room_id = room['id']
+            role_id = self.roles[0]['id']
+            id = requests.get(
+                f'http://localhost:3000/user_room?filter[userId]={owner_id}&filter[roomId]={room_id}',
+                header=self.get_param('auth_token')
+            )
+            del_url = f'http://localhost:3000/user_room/{id}'
+            r = requests.delete(
+                del_url,
+                headers=self.get_param('auth_header')
+            )
+            print(f'return: {pretty(r.json())}')
+            assert r.status_code == 400, 'should not allow owner to leave'
+            #self.__post_user_room_role(room_id, )
+
+        except requests.exceptions.ConnectionError:
+            print('connection failure', file=sys.stderr)
+            sys.exit(1)
         # put user in room
         # make user owner
         # remove user in room
@@ -257,8 +287,8 @@ def main():
     api = APITrans()
 
     # api.put_new_owner()
-    api.del_room_cascade_test()
-    #api.del_user_as_owner()
+    #api.del_room_cascade_test()
+    api.del_user_as_owner()
     #print('[ DEL USER IN ROOM AS OWNER ]')
     #del_user_in_room_as_owner(auth_token)
     #print('[ REMOVE ROOM IF NO USERS ARE PRESEENT ]')

@@ -314,7 +314,7 @@ export class UserController {
     }
 
 
-    @Get('me/friends/as_pendding')
+    @Get('me/friends/as_pending')
     public async getFriendsAsPendding(@UserCreds() username: string): Promise<FriendshipEntity[]> {
         const user: UserEntity = await this.userService.findOneByUsername(username);
 

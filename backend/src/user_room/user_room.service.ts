@@ -89,17 +89,18 @@ export class UserRoomService {
     public async remove(userRoom: UserRoomEntity): Promise<void> {
         const { id, room, userId: user_id } = userRoom;
         const { id: room_id, ownerId: owner_id } = room;
+        const users_len: number = (await this.getAllUsersInRoom(room_id)).length;
 
+        if (owner_id === user_id && users_len) {
+            await this.roomService.updateRoomOwner(room_id);
+        }
         await this.userRoomRepository.delete(id); /* delete or remove ?? */
         if (await this.roomRolesService.isRole('official', room_id) === true) {
             return ;
         }
-        if ((await this.getAllUsersInRoom(room_id)).length === 0) {
+        if (!users_len) {
             await this.roomService.removeRoom(room);
             return ;
-        }
-        if (owner_id === user_id) {
-            await this.roomService.updateRoomOwner(room_id);
         }
     }
 }

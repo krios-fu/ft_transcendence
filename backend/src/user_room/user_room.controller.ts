@@ -75,11 +75,11 @@ export class UserRoomController {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userRoomLogger.error(`User with login ${username} not present in database`);
-            throw new NotFoundException('resource not found');
+            throw new NotFoundException('resource not found in database');
         }
         if (await this.userService.findOne(user.id) === null) {
             this.userRoomLogger.error('No user with id ' + user.id+ ' found in database');
-            throw new NotFoundException('resource not found');
+            throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomService.getAllRoomsWithUser(user.id);
     }
@@ -93,7 +93,7 @@ export class UserRoomController {
 
         if (await this.userRoomService.findUserRoomIds(userId, roomId) !== null) {
             this.userRoomLogger.error(`User ${userId} already registered in room ${roomId}`);
-            throw new BadRequestException('user room already in db');
+            throw new BadRequestException('resource already in database');
         }
         return await this.userRoomService.create(dto);
     }
@@ -106,7 +106,7 @@ export class UserRoomController {
 
         if (userRoom === null) {
             this.userRoomLogger.error(`Entity ${id} not found in database`);
-            throw new NotFoundException('resource not found');
+            throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomService.remove(userRoom);
     }

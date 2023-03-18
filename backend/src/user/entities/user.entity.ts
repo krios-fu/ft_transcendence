@@ -81,7 +81,6 @@ export class UserEntity extends BaseEntity {
 	@OneToMany(
 		() => RoomEntity,
 		(room: RoomEntity) => room.owner,
-		{ onDelete: 'CASCADE' }
 	)
 
 	@Column({

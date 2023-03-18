@@ -17,11 +17,18 @@ export class    LoserEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => UserEntity)
+    @ManyToOne(
+        () => UserEntity,
+        { onDelete: 'CASCADE' }
+    )
     @JoinColumn()
     user: UserEntity;
 
-    @OneToOne(() => MatchEntity, (match) => match.loser)
+    @OneToOne(
+        () => MatchEntity, 
+        (match: MatchEntity) => match.loser,
+        { onDelete: 'CASCADE' }
+    )
     match: MatchEntity;
 
     @Column()

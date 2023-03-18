@@ -27,7 +27,7 @@ export class FriendNotificationComponent implements OnInit {
   ngOnInit(): void {
     const user_sesion = this.authService.getAuthUser();
 
-    this.http.get<any[]>('http://localhost:3000/users/me/friends/as_pendding')
+    this.http.get<any[]>('http://localhost:3000/users/me/friends/as_pending')
     .subscribe((friends: any[]) => {
       for (let friend in friends) {
         const { receiver } = friends[friend];

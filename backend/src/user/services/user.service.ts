@@ -131,7 +131,7 @@ export class UserService {
     }
 
     public async findAllUsersWithAchievement(id: number): Promise<UserEntity[]> {
-        return (await this.userRepository.createQueryBuilder('user'))
+        return await this.userRepository.createQueryBuilder('user')
             .leftJoinAndSelect('user.achievementUser', 'achievement_user')
             .where('achievement_user.achievementId = :achvId', { 'achvId': id })
             .getMany();
