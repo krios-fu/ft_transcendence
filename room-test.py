@@ -1,285 +1,85 @@
 import sys
-import requests
-import os
 import json
-from dotenv import load_dotenv
-# TEMPORAL, ESTO TIENE QUE IMPLEMENTARSE EN LA BATERIA DE E2E EN JEST
+import requests
+from api.APITrans import APITrans
 
 
 def pretty(json_obj):
     return json.dumps(json_obj, indent=2)
 
-class APITrans():
-    def __init__(self, *args, **kwargs):
-        load_dotenv()
-        for key, value in kwargs.items():
-            self.set_param(key, value)
-        api_id = os.getenv('FORTYTWO_APP_ID')
-        api_secret = os.getenv('FORTYTWO_APP_SECRET')
-        if api_id is None or api_secret is None:
-            raise Exception('api credentials were not provided')
-        self.set_param('api_id', api_id)
-        self.set_param('api_secret', api_secret)
-        self.__get_creds('admin')
-        self.__seed_db()
+def del_user_as_owner(api):
+    user = api.post_user('del-user')
+    rooms = [api.post_room(room_id, user['id']) for room_id in ['room-del-user-1', 'room-del-user-2', 'room-del-user-2']]
 
-    def set_param(self, key, value):
-        self.__dict__[key] = value
-
-    def get_param(self, key):
-        return self.__dict__[key]
-
-    def __get_creds(self, user):
-        token_creds = {
-                'userProfile': {
-                'username': user,
-                'firstName': f'{user}-fn',
-                'lastName': f'{user}-ln',
-                'profileUrl': 'none',
-                'email': f'{user}@test.com',
-                'photoUrl': 'none'
-            }, 
-            'app_id': self.get_param('api_id'),
-            'app_secret': self.get_param('api_secret')
-        }
-        token_url = 'http://localhost:3000/auth/generate'
-        try:
-            r = requests.post(token_url, json=token_creds)
-            r.raise_for_status()
-        except requests.exceptions.ConnectionError as e:
-            print('Error trying to establish a connection to API', file=sys.stderr)
-            raise Exception('FATAL')
-        except requests.exceptions.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
-            raise e
-        token = r.json()['accessToken']
-        self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
-
-    def __request_get_wrapper(self, url):
-        """ Requests entity detail view via ID. """
-        print(f'  [ GET: {url} ]') 
-        try:
-            r = requests.get(url, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-            return r.json()
-        except requests.exceptions.HTTPError as e:
-            print(f'[ logging exception ] {e}', file=sys.stderr)
-            raise e
-
-    def __request_post_wrapper(self, url, data):
-        print(f'  [ POST: {url} // data {data}]')
-        try:
-            r = requests.post(url, data=data, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-        except requests.exceptions.ConnectionError as e:
-            print('Error trying to establish a connection to API', file=sys.stderr)
-            raise e
-        return r.json()
-
-    def __post_user(self, username):
-        url = 'http://localhost:3000/users/'
-        data = {
-            'username': username,
-            'firstName': f'{username}-fn',
-            'lastName': f'{username}-ln',
-            'profileUrl': f'{username}-pu',
-            'email': f'{username}@email.com',
-            'photoUrl': f'{username}-pu'
-        }
-        user = []
-        try:
-            user = self.__request_post_wrapper(url, data)
-        except requests.exceptions.HTTPError as e:
-            user = self.__request_get_wrapper(f'{url}{data["username"]}')
-        return user
-
-    def __post_room(self, room_name, owner_id):
-        url = 'http://localhost:3000/room/'
-        data = {
-            'roomName': room_name,
-            'ownerId': owner_id
-        }
-        room = []
-        try:
-            room = self.__request_post_wrapper(url, data)
-        except requests.exceptions.HTTPError as e:
-            room = self.__request_get_wrapper(f'{url}{data["roomName"]}')
-        return room
-
-    def __post_role(self, role_name):
-        """ Set up administrator role """
-
-        url = 'http://localhost:3000/roles/';
-        try:
-            role = self.__request_post_wrapper(url, { 'role': role_name })
-        except requests.exceptions.HTTPError:
-            role = self.__request_get_wrapper(f'{url}{role_name}')
-        return role
-
-    def __post_user_room(self, room_id, user_id):
-        url = 'http://localhost:3000/user_room/'
-        data = {
-            'userId': user_id,
-            'roomId': room_id
-        }
-        try:
-            user_room = self.__request_post_wrapper(url, data)
-        except requests.exceptions.HTTPError:
-            user_room = self.__request_get_wrapper(f'{url}?filter[userId]={user_id}&filter[roomId]={room_id}')
-        return user_room
-
-    def __post_user_room_role(self, room_id, user_id, role_id):
-        url = 'http://localhost:3000/user_room_roles/'
-        data = { 'roomId': room_id, 'userId': user_id, 'roleId': role_id }
-        try:
-            user_room_role = self.__request_post_wrapper(url, data)
-        except requests.exceptions.HTTPError:
-            url = f'{url}users/{user_id}/rooms/{room_id}/roles/{role_id}'
-            user_room_role = self.__request_get_wrapper(url)
-        return user_room_role
-
-
-    def __seed_db(self):
-        self.set_param('users', [ self.__post_user(u) for u in ['bob', 'tim', 'eric']])
-        self.set_param('rooms', [ self.__post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
-        self.set_param('roles', [ self.__post_role('administrator') ])
-
-
-    def put_new_owner(self):
-        """
-        Try the next three cases:
-            Push an unregistered user as an owner
-            Push a non-admin user as an owner
-            Push a room admin as an owner
-        """
-        room_id = self.get_param('rooms')[0]['id']
-        user_id = self.users[1]['id']
-        role_id = self.roles[0]['id']
-        url = f'http://localhost:3000/room/{room_id}/owner/{user_id}'
-
-        print('[ TEST: Unregistered user as owner ]')
-        try:
-            r = requests.put(url, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-            print(f'Request returned with status code {r.status_code}', file=sys.stderr)
-            raise Exception('FAILED TEST')
-        except requests.exceptions.HTTPError as e:
-            print(f'Request returned: {e}, {r.reason}')
-        except requests.exceptions.ConnectionError as e:
-            raise e
-        
-
-        print('[ TEST: Registered user as owner ]')
-        self.__post_user_room(room_id, user_id)
-        try:
-            r = requests.put(url, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-            print(f'Request returned with status code {r.status_code}', file=sys.stderr)
-            raise 'FAILED TEST'
-        except requests.exceptions.HTTPError as e:
-            print(f'Request returned: {e}')
-        except requests.exceptions.ConnectionError as e:
-            raise e
-
-        print('[ TEST: Admin user as owner ]')
-        self.__post_user_room_role(room_id, user_id, role_id)
-        try:
-            r = requests.put(url, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-            print(f'Request returned with status code {r.status_code}', file=sys.stderr)
-        except requests.exceptions.HTTPError as e:
-            print(f'Request returned: {e}')
-            raise Exception('FAILED TEST')
-        except requests.exceptions.ConnectionError as e:
-            raise e
-        
-        
-    def del_room_cascade_test(self):
-        print('[ Delete room in cascade ]')
-        room_id = self.rooms[2]['id']
-        user_rooms = [ self.__post_user_room(room_id, user_id) for user_id in 
-            [self.users[i]['id'] for i in range(0, len(self.users))]
-        ]
-        url_get = f'http://localhost:3000/user_room/rooms/{room_id}/users'
-        url_del = f'http://localhost:3000/room/{room_id}'
-        try:
-            print('[ posting users in room... ]')
-            r = requests.get(url_get, headers=self.get_param('auth_token'))
-            print(f'debuga: {pretty(r.json())}')
-            #assert r.json() == user_rooms, 'Bad user_room post'
-            print('[ deleting room... ]')
-            print(f'[ DEL: {url_del} ]')
-            r = requests.delete(url_del, headers=self.get_param('auth_token'))
-            print('[ querying users in room... ]')
-            r = requests.get(url_get, headers=self.get_param('auth_token'))
-            print(f'debuga: {pretty(r.json())}')
-            # assert r.json() == [], 'Still users in room !?'
-        except requests.exceptions.ConnectionError as e:
-            raise e
-        print('[ ...ok ]')
-
-
-
-    def del_user_as_owner(self):
-        user = self.__post_user('del_user')
-        rooms = [self.__post_room(room_id, user['id']) for room_id in ['room_del_user_1', 'room_del_user_2', 'room_del_user_2']]
-
-        print('[ Query room for users in first room (should be owner) ]')
-        try: 
-            url = f'http://localhost:3000/user_room/rooms/{rooms[0]["id"]}/users'
-            r = requests.get(url, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-            print(f'[ Query results ] {r.text}')
-        except requests.exceptions.HTTPError as e:
-            print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
-            raise e
+    print('[ Query room for users in first room (should be owner) ]')
+    try: 
+        url = f'http://localhost:3000/user_room/rooms/{rooms[0]["id"]}/users'
+        r = requests.get(url, headers=api.get_param('auth_token'))
+        r.raise_for_status()
+        print(f'[ Query results ] {r.text}')
+    except requests.exceptions.HTTPError as e:
+        print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
+        raise e
         
         # remove user
-        try:
-            user_id = user['id']
-            url = f'http://localhost:3000/users/{user_id}'
-            r = requests.delete(url, headers=self.get_param('auth_token'))
-            r.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
-            raise e
-
-        # query room, check owner
-        responses = [ self.__request_get_wrapper() for room_id in r['id'] for r in rooms ]
+    try:
+        r = requests.get('http://localhost:3000/room', headers=api.get_param('auth_token'))
+        print(f'rooms before: {pretty(r.json())}')
+        user_id = user['id']
+        url = f'http://localhost:3000/users/{user_id}'
+        r = requests.delete(url, headers=api.get_param('auth_token'))
+        r.raise_for_status()
+        r = requests.get('http://localhost:3000/room', headers=api.get_param('auth_token'))
+        r = requests.delete(url, headers=api.get_param('auth_token'))
+        print(f'rooms after: {pretty(r.json())}')
+        r = requests.get(url, headers=api.get_param('auth_token'))
+        print(f'user after: {pretty(r.json())}')
+    except requests.exceptions.HTTPError as e:
+        print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
+        raise e
         
 
-    def del_user_in_room_as_owner(self):
-        users = [ self.__post_user(user_name) for user_name in ['new_user_1', 'new_user_2', 'new_user_3' ] ]
-        room = self.__post_room('room_test', users[0]['id'])
-        users_room = [ self.__post_user_room(room['id'], user_id) for user_id in 
-            [ user['id'] for user in users ]
-        ]
+def del_user_in_room_as_owner(api):
+    users = [ api.post_user(user_name) for user_name in ['new-user-1', 'new-user-2', 'new-user-3' ] ]
+    room = api.post_room('room_test', users[0]['id'])
+    users_room = [ api.post_user_room(room['id'], user_id) for user_id in 
+        [ user['id'] for user in users ]
+    ]
 
-        try:
-            owner_id = users[0]['id']
-            room_id = room['id']
-            role_id = self.roles[0]['id']
-            id = requests.get(
-                f'http://localhost:3000/user_room?filter[userId]={owner_id}&filter[roomId]={room_id}',
-                header=self.get_param('auth_token')
-            )
-            del_url = f'http://localhost:3000/user_room/{id}'
-            r = requests.delete(
-                del_url,
-                headers=self.get_param('auth_header')
-            )
-            print(f'return: {pretty(r.json())}')
-            assert r.status_code == 400, 'should not allow owner to leave'
-            #self.__post_user_room_role(room_id, )
+    try:
+        owner_id = users[0]['id']
+        room_id = room['id']
+        role_id = self.roles[0]['id']
+        id = requests.get(
+            f'http://localhost:3000/user_room?filter[userId]={owner_id}&filter[roomId]={room_id}',
+            header=api.get_param('auth_token')
+        )
+        del_url = f'http://localhost:3000/user_room/{id}'
+        r = requests.delete(
+            del_url,
+            headers=api.get_param('auth_header')
+        )
+        print(f'return: {pretty(r.json())}')
+        assert r.status_code == 400, 'should not allow owner to leave'
+        api.post_user_room_role(room_id, users[0]['id'], role_id)
+        api.post_user_room_role(room_id, users[1]['id'], role_id)
+        del_url = f'http://localhost:3000/user_room/{id}'
+        r = requests.delete(
+            del_url,
+            headers=api.get_param('auth_header')
+        )
+        print(f'return: {pretty(r.json())}')
+        r = requests.get(f'http://localhost:3000/room/{room_id}', headers=api.get_param('auth_token'))
+        print(f'new owner: {pretty(r.json())}')
 
-        except requests.exceptions.ConnectionError:
-            print('connection failure', file=sys.stderr)
-            sys.exit(1)
-        # put user in room
-        # make user owner
-        # remove user in room
-        # query room, check owner
-        pass
+    except requests.exceptions.ConnectionError:
+        print('connection failure', file=sys.stderr)
+        sys.exit(1)
+    # put user in room
+    # make user owner
+    # remove user in room
+    # query room, check owner
+    pass
 
 
 def main():
@@ -288,9 +88,9 @@ def main():
 
     # api.put_new_owner()
     #api.del_room_cascade_test()
-    api.del_user_as_owner()
+    del_user_as_owner(api)
     #print('[ DEL USER IN ROOM AS OWNER ]')
-    #del_user_in_room_as_owner(auth_token)
+    del_user_in_room_as_owner(api)
     #print('[ REMOVE ROOM IF NO USERS ARE PRESEENT ]')
 
 

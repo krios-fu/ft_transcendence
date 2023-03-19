@@ -99,8 +99,9 @@ export class RoomService {
             .getMany();
     }
 
-    public async updateRoomOwner(roomId: number): Promise<RoomEntity> {
-        const users: UserEntity[] = await this.userService.getAdminsInRoom(roomId);
+    public async updateRoomOwner(ownerId: number, roomId: number): Promise<RoomEntity> {
+        const users: UserEntity[] = (await this.userService.getAdminsInRoom(roomId))
+            .filter((user: UserEntity) => user['id'] != ownerId);
 
         if (users.length === 0) {
             throw new BadRequestException('owner must chose and administrator first');
