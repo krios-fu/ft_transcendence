@@ -77,7 +77,7 @@ export class UserController {
     ** Find one user registered into app by id (regex: param must be a number).
     */
 
-    @Get('$(0-9)*^')
+    @Get(':id')
     async findOneUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
         const user = await this.userService.findOne(id);
         if (user === null) {

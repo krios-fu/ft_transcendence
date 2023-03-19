@@ -1,4 +1,4 @@
-<div [ngClass]="state" *ngIf="user && login" >
+<div [ngClass]="state" *ngIf="user && me" >
     <div class="chat-title">
 
         <div
@@ -14,7 +14,7 @@
             <div *ngIf="this.chat.count_new_msg" matBadge="{{this.chat.count_new_msg}}" matBadgeOverlap="true"
                 matBadgeSize="small" matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="hidden"
                 style="position: absolute; left: 32px; bottom: 6px ; "></div>
-            <span>{{login}}</span>
+            <span>{{user.nickName}}</span>
         </div>
 
 
@@ -52,9 +52,9 @@
 
     </div>
 
-    <div class="messages">
-        <div *ngFor="let msg of viewMessage()">
-            <div readonly  *ngIf="msg.sender === getSocketId(); else other" class="message message-personal new"> {{msg.content}}
+    <div class="messages"  >
+        <div  *ngFor="let msg of viewMessage()" >
+            <div readonly  *ngIf="msg.sender == this.me.id; else other" class="message message-personal new"> {{msg.content}}
             </div>
             <ng-template #other>
                 <div class="message">

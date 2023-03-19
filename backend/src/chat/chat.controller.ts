@@ -31,35 +31,37 @@ export class ChatController {
     async findAll(): Promise<ChatEntity[]> {
         return  this.chatService.findChats();
     }
-
-    @Get(':id')
-    @Public()
-    async findChat(@Param('id', ParseIntPipe) id: number): Promise<ChatEntity[]>{
-        const chats: ChatEntity[]  = await this.chatService.findOne(id);
-        if (chats.length === 0) {
-            this.chatLogger.error( `Chat with ${id} is not present in database`);
-            throw new NotFoundException('resource not found in database');
-        }
-        return chats;
-    }
-
+    
     @Get('me')
     async findChats(@Req() req: IRequestUser) {
         const username = req.user.data.username;
+        console.log("------> ME", username);
+        
         if (username === undefined) {
             this.chatLogger.error('request user has not logged in');
             throw new HttpException('request user has not logged in', HttpStatus.UNAUTHORIZED);
         }
         const user = await this.userService.findOneByUsername(req.user.data.username);
+        console.log("------> ME", user);
         if (user === null) {
             this.chatLogger.error(`User with login ${username} not present in database`);
             throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
         }
-
+        
         let lol = await this.chatService.findChatsUser(user.id);
-        console.log('chats:',  lol);
         return lol;
     }
+    
+        @Get(':id')
+        @Public()
+        async findChat(@Param('id', ParseIntPipe) id: number): Promise<ChatEntity[]>{
+            const chats: ChatEntity[]  = await this.chatService.findOne(id);
+            if (chats.length === 0) {
+                this.chatLogger.error(`Chat with ${id} is not present in database`);
+                throw new NotFoundException('resource not found in database');
+            }
+            return chats;
+        }
 
     @Get('me/:nick_friend')
     async findChatWithFriend(@Req() req: IRequestUser, @Param('nick_friend') nick_friend: string) {

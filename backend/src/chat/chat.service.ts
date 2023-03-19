@@ -12,7 +12,7 @@ export class ChatService {
         @InjectRepository(ChatEntity)
         private chatRepository: ChatRepository,
         @InjectRepository(ChatUserEntity)
-        private chatUserRepository: Repository<ChatUserEntity>
+        private chatUserRepository: Repository<ChatUserEntity>,
     ) { }
 
     public async findChats(): Promise<ChatEntity[]> {
@@ -21,8 +21,8 @@ export class ChatService {
 
     async findOne(id_chat: number): Promise<ChatEntity[]> {
         return (await this.chatRepository.createQueryBuilder('chat'))
-            .leftJoinAndSelect('chat.chatUser', 'chat_user')
-            .where('chat_user.chatId = "chat_id', { 'chat_id': id_chat })
+            .leftJoinAndSelect('chat.users', 'chat_user')
+            .where('chat_user.chatId= :chat_id', { 'chat_id': id_chat })
             .getMany();
     }
 
@@ -33,28 +33,12 @@ export class ChatService {
             .andWhere('chat_user.userId= :user_id', { 'user_id': id_friend })
             // .orderBy({ 'chat_user.messageId': 'ASC' })
             .getMany();
-        /*return await this.chatRepository.find({
-            relations: {
-                users: true,
-                messages: true,
-            },
-            where: {
-                users: {
-                    id: id_user,
-                }
-            },
-            order: {
-                messages: {
-                    id: "ASC",
-                }
-            }
-        })*/
     }
 
     public async findChatsUser(id_user: number): Promise<ChatEntity[]> {
         return (await this.chatRepository.createQueryBuilder('chat'))
-            .leftJoinAndSelect('chat_user', 'chat_user')
-            .where('chat_user.userId= :user_id', { 'user_id': id_user })
+            .leftJoinAndSelect('chat.users', 'chat_user')
+            // .where('chat_user.userId= :user_id', { 'user_id': id_user })
             // .andWhere('chat_user.userId= :user_id', { 'user_id': id_friend })
             // .orderBy({ 'chat_user.messageId': 'ASC' })
             .getMany();
@@ -76,7 +60,7 @@ export class ChatService {
         })*/
     }
 
-    // public async findChatUser(id_user: number, id_friend: number): Promise<ChatEntity[]> {
+    // public async findChat_user(id_user: number, id_friend: number): Promise<ChatEntity[]> {
     //     let chats: ChatEntity[] = await this.findChatsUser(id_user);
     //     console.log("CHAT FIND", chats);
 
@@ -86,27 +70,26 @@ export class ChatService {
     //     }
     //     );
 
-    // }
+    public async findChats_User(id_user: number, id_chat : number): Promise<ChatUserEntity[]> {
+        return (await this.chatUserRepository.createQueryBuilder('chat_user'))
+            // .leftJoinAndSelect('chat_user.users', 'chat_user')
+            .where('chat_user.userId= :user_id', { 'user_id': id_user })
+            .andWhere('chat_user.chatId= :chat_id', { 'chat_id': id_chat })
+            // .orderBy({ 'chat_user.messageId': 'ASC' })
+            .getMany();
+    }
 
     public async post(id_user: number, id_friend: number): Promise<ChatEntity> {
         const chats: ChatEntity[] = await this.findChatsUsers(id_user, id_friend)
 
-        console.log("CHAT FIND --->", chats[0]['users']);
+        if (chats.length !== 0){
+            return chats[0];
+        }
+        const chat: ChatEntity = await this.chatRepository.save(new ChatEntity());
+        const { id } = chat;
 
-        // let chat_user = chats.filter((chat) => {
-        //     return chat.users[0].userId == friend.id
-        //         || chat.users[1].userId == friend.id
-        // })
-        // console.log("CHAT FIND --->", chat_user);
-
-        // if (chat_user.length !== 0)
-        //     return chat_user[0];
-        // const chat: ChatEntity = await this.chatRepository.save(new ChatEntity());
-        // const { id } = chat;
-
-        // await this.chatUserRepository.save({ userId: user1.id, chatId: id });
-        // await this.chatUserRepository.save({ userId: friend.id, chatI0});
-        /* check error control here */
-        return chats[0];
+        await this.chatUserRepository.save({ userId: id_user, chatId: id });
+        await this.chatUserRepository.save({ userId: id_friend, chatId: id});
+        return chat;
     }
 }
