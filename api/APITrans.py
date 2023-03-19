@@ -16,7 +16,7 @@ class APITrans():
         self.set_param('api_id', api_id)
         self.set_param('api_secret', api_secret)
         self.__get_creds('admin')
-        #self.__seed_db()
+        self.__seed_db()
 
     def set_param(self, key, value):
         self.__dict__[key] = value
@@ -58,7 +58,7 @@ class APITrans():
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
-            print(f'[ logging exception ] {e}', file=sys.stderr)
+            print(f'  [   ERROR: {r.text} ]')
             raise e
 
     def __request_post_wrapper(self, url, data):
@@ -66,6 +66,9 @@ class APITrans():
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f'  [   ERROR: {r.text} ]')
+            raise e
         except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
             raise e
@@ -137,6 +140,6 @@ class APITrans():
 
 
     def __seed_db(self):
-        self.set_param('users', [ self.post_user(u) for u in ['bob', 'tim', 'eric']])
-        self.set_param('rooms', [ self.post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
+        #self.set_param('users', [ self.post_user(u) for u in ['bob', 'tim', 'eric']])
+        #self.set_param('rooms', [ self.post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
         self.set_param('roles', [ self.post_role('administrator') ])

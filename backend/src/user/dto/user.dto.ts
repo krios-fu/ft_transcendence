@@ -6,12 +6,13 @@ import {
     IsNumber, 
     IsOptional, 
     IsString, 
-    Length 
+    Length
 } from "class-validator";
 import { Category } from "../enum/category.enum";
 
 export class CreateUserDto {
     @IsString()
+    @Length(3, 8)
     @IsNotEmpty()
     readonly username: string;
 

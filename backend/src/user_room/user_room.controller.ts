@@ -70,6 +70,20 @@ export class UserRoomController {
         return await this.userRoomService.getAllRoomsWithUser(userId);
     }
 
+    /* Get user in room by user and room id */
+    @Get('/users/:user_id/rooms/:room_id')
+    public async getUserRoomById(
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('room_id', ParseIntPipe) roomId: number
+    ): Promise<UserRoomEntity> {
+        if (await this.userService.findOne(userId) ||
+            await this.roomService.findOne(roomId)) {
+                this.userRoomLogger.error(`Resource not found in database`);
+                throw new NotFoundException('resource not found');
+            }
+        return await this.userRoomService.findUserRoomIds(userId, roomId);
+    }
+
     @Get('/me/rooms')
     public async getAllRoomsWithMe (@UserCreds() username: string): Promise<RoomEntity[]> {
         const user = await this.userService.findOneByUsername(username);

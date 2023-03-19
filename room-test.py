@@ -9,14 +9,14 @@ def pretty(json_obj):
 
 def del_user_as_owner(api):
     user = api.post_user('del-user')
-    rooms = [api.post_room(room_id, user['id']) for room_id in ['room-del-user-1', 'room-del-user-2', 'room-del-user-2']]
+    rooms = [api.post_room(room_id, user['id']) for room_id in ['rdel_user1', 'rdel_user2', 'rdel_user3']]
 
     print('[ Query room for users in first room (should be owner) ]')
     try: 
         url = f'http://localhost:3000/user_room/rooms/{rooms[0]["id"]}/users'
         r = requests.get(url, headers=api.get_param('auth_token'))
         r.raise_for_status()
-        print(f'[ Query results ] {r.text}')
+        print(f'[ Query results ] {pretty(r.text)}')
     except requests.exceptions.HTTPError as e:
         print(f'[ logging HTTP exception... ] {str(e)}', file=sys.stderr)
         raise e
@@ -40,7 +40,7 @@ def del_user_as_owner(api):
         
 
 def del_user_in_room_as_owner(api):
-    users = [ api.post_user(user_name) for user_name in ['new-user-1', 'new-user-2', 'new-user-3' ] ]
+    users = [ api.post_user(user_name) for user_name in ['nuser-1', 'nuser-2', 'nuser-3' ] ]
     room = api.post_room('room_test', users[0]['id'])
     users_room = [ api.post_user_room(room['id'], user_id) for user_id in 
         [ user['id'] for user in users ]
@@ -49,28 +49,41 @@ def del_user_in_room_as_owner(api):
     try:
         owner_id = users[0]['id']
         room_id = room['id']
-        role_id = self.roles[0]['id']
+        role_id = api.roles[0]['id']
         id = requests.get(
-            f'http://localhost:3000/user_room?filter[userId]={owner_id}&filter[roomId]={room_id}',
-            header=api.get_param('auth_token')
-        )
+            f'http://localhost:3000/user_room/users/{owner_id}/rooms/{room_id}',
+            headers=api.get_param('auth_token')
+        ).json()
+        print(f'id: ', id)
         del_url = f'http://localhost:3000/user_room/{id}'
         r = requests.delete(
             del_url,
-            headers=api.get_param('auth_header')
+            headers=api.get_param('auth_token')
         )
+        print(f'[ DEL: {del_url} ]')
         print(f'return: {pretty(r.json())}')
         assert r.status_code == 400, 'should not allow owner to leave'
-        api.post_user_room_role(room_id, users[0]['id'], role_id)
-        api.post_user_room_role(room_id, users[1]['id'], role_id)
+        user_room_1 = api.post_user_room_role(room_id, users[0]['id'], role_id)
+        user_room_2 = api.post_user_room_role(room_id, users[1]['id'], role_id)
         del_url = f'http://localhost:3000/user_room/{id}'
         r = requests.delete(
             del_url,
-            headers=api.get_param('auth_header')
+            headers=api.get_param('auth_token')
         )
+        print(f'[ DEL: {del_url} ]')
         print(f'return: {pretty(r.json())}')
         r = requests.get(f'http://localhost:3000/room/{room_id}', headers=api.get_param('auth_token'))
         print(f'new owner: {pretty(r.json())}')
+        r = requests.delete(f'http://localhost:3000/user_room/{user_room_2["id"]}', headers=api.get_param('auth_token'))
+        print(f'return: {pretty(r.json())}')
+        r = requests.get(f'http://localhost:3000/room/{room_id}', headers=api.get_param('auth_token'))
+        print(f'new owner: {pretty(r.json())}')
+        r = requests.delete(f'http://localhost:3000/user_room/{user_room_1["id"]}', headers=api.get_param('auth_token'))
+        print(f'return: {pretty(r.json())}')
+        r = requests.get(f'http://localhost:3000/room/{room_id}', headers=api.get_param('auth_token'))
+        print(f'return: {pretty(r.json())}')
+
+
 
     except requests.exceptions.ConnectionError:
         print('connection failure', file=sys.stderr)
@@ -88,10 +101,10 @@ def main():
 
     # api.put_new_owner()
     #api.del_room_cascade_test()
-    del_user_as_owner(api)
-    #print('[ DEL USER IN ROOM AS OWNER ]')
+    #print('[ ****************** DEL USER AS OWNER ****************** ]')
+    #del_user_as_owner(api)
+    print('[ ****************** DEL USERINROOM AS OWNER ****************** ]')
     del_user_in_room_as_owner(api)
-    #print('[ REMOVE ROOM IF NO USERS ARE PRESEENT ]')
 
 
 if __name__ == '__main__':

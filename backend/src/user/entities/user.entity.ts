@@ -130,7 +130,7 @@ export class UserEntity extends BaseEntity {
 		() => ChatUserEntity,
 		(chatUser: ChatUserEntity) => chatUser.user,
 		{ cascade: true }
-		 )
+	)
 	chats: ChatUserEntity[];
 
 	@OneToOne
