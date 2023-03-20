@@ -43,18 +43,24 @@ export class UserRoomService {
         });
     }
 
-    public async getAllUsersInRoom(roomId: number): Promise<UserRoomEntity[]> {
-        const userList = await this.userRoomRepository.find({
-        select: { userId: true },
-        relations: {
-            room: true,
-            user: true,
-        },
-        where: { roomId: roomId },
-        });
+    /* no entiendo la query del servicio de abajo, pero por si acaso no la toco y monto esta */
+    public async findByRoomId(roomId: number): Promise<UserRoomEntity[]> {
+        return await this.userRoomRepository.createQueryBuilder('user_room')
+            .leftJoinAndSelect('user_room.user', 'user')
+            .leftJoinAndSelect('user_room.room', 'room')
+            .where('user_room.roomId = :room_id', { 'room_id': roomId })
+            .getMany();
+    }
 
-        /* debug */
-        console.log('GET ALL USERS',userList);
+    public async getAllUsersInRoom(roomId: number): Promise<UserRoomEntity[]> {
+        const userList: UserRoomEntity[] = await this.userRoomRepository.find({
+            select: { userId: true },
+            relations: {
+                room: true,
+                user: true,
+            },
+            where: { roomId: roomId },
+        });
 
         // /* tmp */ //deleted for krios-fu
         // he modificado esta query para hacer uso.
@@ -69,13 +75,13 @@ export class UserRoomService {
     public async getAllRoomsWithUser(userId: number): Promise<RoomEntity[]>  {
         let rooms: RoomEntity[] = [];
 
-        const userRooms = await this.userRoomRepository.find({
+        const userRooms: UserRoomEntity[] = await this.userRoomRepository.find({
             relations: { room: true },
             where:     { userId: userId },
         });
 
         for (let userRoom of userRooms) {
-        rooms.push(userRoom.room);
+            rooms.push(userRoom.room);
         }
         return rooms;
     }
@@ -91,16 +97,16 @@ export class UserRoomService {
         const { id: room_id, ownerId: owner_id } = room;
         const users_len: number = (await this.getAllUsersInRoom(room_id)).length;
 
-        if (owner_id === user_id && users_len) {
+        if (owner_id === user_id && users_len > 1) {
             await this.roomService.updateRoomOwner(owner_id, room_id);
         }
-        await this.userRoomRepository.delete(id); /* delete or remove ?? */
+        await this.userRoomRepository.delete(id);
         if (await this.roomRolesService.isRole('official', room_id) === true) {
-            return ;
+            return null;
         }
-        if (!users_len) {
+        if (users_len == 1) {
             await this.roomService.removeRoom(room);
-            return ;
+            return null;
         }
     }
 }

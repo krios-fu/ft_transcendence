@@ -45,7 +45,7 @@ export class UserRoomController {
         const userRoom: UserRoomEntity = await this.userRoomService.findOne(id);
         if (userRoom === null) {
             this.userRoomLogger.error(`No user room relation with id ${id} found in database`);
-            throw new NotFoundException('resource not found');
+            throw new NotFoundException('resource not found in database');
         }
         return userRoom;
     }
@@ -55,9 +55,10 @@ export class UserRoomController {
     public async getAllUsersInRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<UserRoomEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
             this.userRoomLogger.error(`No room with id ${roomId} found in database`);
-            throw new NotFoundException('resource not found');
+            throw new NotFoundException('resource not found in database');
         }
-        return await this.userRoomService.getAllUsersInRoom(roomId);
+//        return await this.userRoomService.getAllUsersInRoom(roomId);
+        return await this.userRoomService.findByRoomId(roomId);
     }
 
     /* Get all rooms with a user */
@@ -65,7 +66,7 @@ export class UserRoomController {
     public async getAllRoomsWithUser(@Param('user_id', ParseIntPipe) userId: number): Promise<RoomEntity[]> {
         if (await this.userService.findOne(userId) === null) {
             this.userRoomLogger.error(`No user with id ${userId} found in database`);
-            throw new NotFoundException('resource not found');
+            throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomService.getAllRoomsWithUser(userId);
     }
@@ -79,7 +80,7 @@ export class UserRoomController {
         if (await this.userService.findOne(userId) === null ||
             await this.roomService.findOne(roomId) === null) {
                 this.userRoomLogger.error(`Resource not found in database`);
-                throw new NotFoundException('resource not found');
+                throw new NotFoundException('resource not found in database');
             }
         return await this.userRoomService.findUserRoomIds(userId, roomId);
     }
@@ -92,7 +93,7 @@ export class UserRoomController {
             throw new NotFoundException('resource not found in database');
         }
         if (await this.userService.findOne(user.id) === null) {
-            this.userRoomLogger.error('No user with id ' + user.id+ ' found in database');
+            this.userRoomLogger.error(`No user with id ${user.id} found in database`);
             throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomService.getAllRoomsWithUser(user.id);
@@ -119,7 +120,7 @@ export class UserRoomController {
         const userRoom: UserRoomEntity = await this.userRoomService.findOne(id);
 
         if (userRoom === null) {
-            this.userRoomLogger.error(`Entity ${id} not found in database`);
+            this.userRoomLogger.error(`Resource with id ${id} not found in database`);
             throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomService.remove(userRoom);

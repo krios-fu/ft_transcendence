@@ -262,7 +262,7 @@ export class UserController {
             this.userLogger.error(`User with id ${id} not found in database`);
             throw new NotFoundException('resource not found in database');
         }
-        return this.userService.deleteUser(user);
+        return await this.userService.deleteUser(user);
     }
 
     /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ **

@@ -117,7 +117,7 @@ class APITrans():
         return role
 
     def post_user_room(self, room_id, user_id):
-        url = 'http://localhost:3000/user_room/'
+        url = f'http://localhost:3000/user_room/'
         data = {
             'userId': user_id,
             'roomId': room_id
@@ -125,7 +125,7 @@ class APITrans():
         try:
             user_room = self.__request_post_wrapper(url, data)
         except requests.exceptions.HTTPError:
-            user_room = self.__request_get_wrapper(f'{url}?filter[userId]={user_id}&filter[roomId]={room_id}')
+            user_room = self.__request_get_wrapper(f'{url}users/{user_id}/rooms/{room_id}')
         return user_room
 
     def post_user_room_role(self, room_id, user_id, role_id):
