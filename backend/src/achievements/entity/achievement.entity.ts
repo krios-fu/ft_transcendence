@@ -33,8 +33,7 @@ export class AchievementEntity extends BaseEntity {
 		(achvmUsr: AchievementUserEntity) => achvmUsr.user,
 		{
 			cascade: true,
-			onDelete: 'CASCADE',
-			eager: true
+			onDelete: 'CASCADE'
 		}
 	)
 	achievementUser: AchievementUserEntity[];
