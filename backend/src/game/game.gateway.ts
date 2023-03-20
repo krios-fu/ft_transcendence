@@ -18,7 +18,7 @@ import {
 } from 'socket.io';
 import { IGameClientStart } from './elements/Game'
 import { IGameSelectionData } from './elements/GameSelection';
-import { GameQueueService } from './game.queueService';
+import { GameMatchmakingService } from './game.matchmaking.service';
 import { GameRecoveryService } from './game.recovery.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
@@ -45,7 +45,7 @@ export class    GameGateway implements OnGatewayInit,
 
     constructor(
         private readonly updateService: GameUpdateService,
-        private readonly queueService: GameQueueService,
+        private readonly matchMakingService: GameMatchmakingService,
         private readonly socketHelper: SocketHelper,
         private readonly recoveryService: GameRecoveryService,
         private readonly socketAuthService: GameSocketAuthService
@@ -99,7 +99,7 @@ export class    GameGateway implements OnGatewayInit,
                     this.updateService.getClientInitData(roomId);
     
         client.join(roomId);
-        this.queueService.clientInitQueuesLength(roomId, client.id);
+        this.matchMakingService.emitAllQueuesLength(roomId, client.id);
         if (initScene && initData)
             client.emit(initScene, initData);
         console.log(`${client.data.username} joined Game room ${roomId}`);
@@ -112,12 +112,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        await this.queueService.add(
+        await this.matchMakingService.addToQueue(
             roomId,
-            false,
+            "classic",
             client.data.mockUser //Provisional
         );
-        this.updateService.attemptGameInit(roomId);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -127,12 +126,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        await this.queueService.add(
+        await this.matchMakingService.addToQueue(
             roomId,
-            true,
+            "hero",
             client.data.mockUser // Provisional
         );
-        this.updateService.attemptGameInit(roomId);
     }
 
     @SubscribeMessage('leftSelection')

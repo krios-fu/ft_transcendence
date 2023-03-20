@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
-import { GameQueueService } from "./game.queueService";
+import { GameMatchmakingService } from "./game.matchmaking.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameUpdateService } from "./game.updateService";
 
@@ -12,8 +12,8 @@ export class    GameSocketAuthService {
 
     constructor(
         private readonly socketHelper: SocketHelper,
-        private readonly queueService: GameQueueService,
-        private readonly updateService: GameUpdateService
+        private readonly updateService: GameUpdateService,
+        private readonly matchMakingService: GameMatchmakingService
     ) {
         this._authTimeout = new Map<string, NodeJS.Timeout>;
     }
@@ -112,14 +112,13 @@ export class    GameSocketAuthService {
     async removeUser(client: Socket, username: string): Promise<void> {
         const   rooms: IterableIterator<string> = client.rooms.values();
     
+        this.matchMakingService.removeFromAllQueues(username);
         for (const room of rooms)
         {
             if (room === client.id)
                 continue ;
             else if (room.includes("Player"))
                 await this._removePlayer(room);
-            else if (!room.endsWith("-User"))
-                this.queueService.removeAll(room, username);
             client.leave(room);
         }
     }
