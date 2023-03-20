@@ -1,13 +1,4 @@
 import { Injectable } from "@nestjs/common";
-<<<<<<< HEAD
-import { LoserEntity } from "../match/loser/loser.entity";
-import { MatchDto } from "../match/match.dto";
-import { MatchEntity } from "../match/match.entity";
-import { MatchService } from "../match/match.service";
-import { WinnerEntity } from "../match/winner/winner.entity";
-import { UserEntity } from "../user/entities/user.entity";
-import { UserService } from "../user/services/user.service";
-=======
 import { LoserEntity } from "src/match/loser/loser.entity";
 import { MatchDto } from "src/match/match.dto";
 import { MatchEntity } from "src/match/match.entity";
@@ -16,7 +7,6 @@ import { WinnerEntity } from "src/match/winner/winner.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Category } from "../user/enum/category.enum";
 import { UserService } from "src/user/services/user.service";
->>>>>>> main
 import { UpdateResult } from "typeorm";
 import {
     GameType,
@@ -24,11 +14,7 @@ import {
 } from "./elements/Game";
 import { GameQueueService } from "./game.queueService";
 import { GameRankingService } from "./game.rankingService";
-<<<<<<< HEAD
-import { Category } from "../user/enums/user.enum";
-=======
 import { GameAchievementsService } from "./game.achievements.service";
->>>>>>> main
 
 @Injectable()
 export class    GameService {

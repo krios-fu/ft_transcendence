@@ -1,17 +1,9 @@
 import { Exclude } from "class-transformer";
-<<<<<<< HEAD
-import { RefreshTokenEntity } from "../../auth/entity/refresh-token.entity";
-import { ChatEntity } from "../../chat/entities/chat.entity";
-import { MessageEntity } from "../../chat/entities/message.entity";
-import { BaseEntity } from "../../common/classes/base.entity";
-import { DEFAULT_AVATAR_PATH } from "../../common/config/upload-avatar.config";
-=======
 import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
 import { ChatUserEntity } from "src/chat/entities/chat-user.entity";
 import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
->>>>>>> main
 import {
 	Column,
 	Entity,
@@ -20,26 +12,9 @@ import {
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
-<<<<<<< HEAD
-import { Category } from "../enums/user.enum";
-
-//export enum Category {
-//	Pending,
-//	Iron,
-//	Bronze,
-//	Silver,
-//	Gold,
-//	Platinum
-//}
-
-@Entity({
-	name: 'user'
-})
-=======
 import { Category } from "../enum/category.enum";
 
 @Entity({ name: 'user' })
->>>>>>> main
 export class UserEntity extends BaseEntity {
 	constructor(dto?: CreateUserDto) {
 		super();

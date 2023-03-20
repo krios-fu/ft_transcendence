@@ -14,14 +14,9 @@ import { ChatUserEntity } from './entities/chat-user.entity';
 @Module({
     imports: [
         TypeOrmModule.forFeature([
-<<<<<<< HEAD
-            MessageEntity,
-            ChatEntity,
-=======
             ChatEntity,
             ChatMessageEntity,
             ChatUserEntity
->>>>>>> main
         ]),
         UserModule,
     ],

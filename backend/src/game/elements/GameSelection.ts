@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Category } from "src/user/enums/user.enum";
-=======
 import { Category } from "../../user/enum/category.enum";
->>>>>>> main
 
 export enum HeroId {
     Aquaman,

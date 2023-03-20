@@ -4,12 +4,7 @@ import {
     OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
-<<<<<<< HEAD
-import {MessageEntity} from "./message.entity";
-import { UserEntity } from "../../user/entities/user.entity";
-=======
 import { ChatUserEntity } from "./chat-user.entity";
->>>>>>> main
 
 @Entity({
     name : 'chats'

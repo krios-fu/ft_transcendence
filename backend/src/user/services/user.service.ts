@@ -4,15 +4,9 @@ import {
     SettingsPayloadDto, 
     UpdateUserDto, 
     UserGameStats 
-<<<<<<< HEAD
 } from '../../user/dto/user.dto';
 import { UserRepository } from '../../user/repositories/user.repository';
 import { UserEntity } from '../../user/entities/user.entity';
-=======
-} from 'src/user/dto/user.dto';
-import { UserRepository } from 'src/user/repositories/user.repository';
-import { UserEntity } from 'src/user/entities/user.entity';
->>>>>>> main
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
@@ -20,11 +14,7 @@ import { UserQueryDto } from '../../user/dto/user.query.dto';
 import { QueryMapper } from '../../common/mappers/query.mapper';
 import { IRequestUser } from '../../common/interfaces/request-payload.interface';
 import * as fs from 'fs';
-<<<<<<< HEAD
 import { DEFAULT_AVATAR_PATH } from '../../common/config/upload-avatar.config';
-=======
-import { DEFAULT_AVATAR_PATH } from 'src/common/config/upload-avatar.config';
->>>>>>> main
 
 @Injectable()
 export class UserService {

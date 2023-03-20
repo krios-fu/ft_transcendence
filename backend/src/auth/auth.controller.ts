@@ -30,11 +30,7 @@ interface IRequestProfile extends Request {
 };
 
 class OtpPayload {
-<<<<<<< HEAD
-    @IsNumberString()
-=======
     @IsNumberString(/*{ length: 6 }*/)
->>>>>>> main
     @IsNotEmpty()
     token: string;
 }

@@ -6,12 +6,8 @@ import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-<<<<<<< HEAD
-import { IAuthPayload } from '../common/interfaces/request-payload.interface';
-=======
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
 import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
->>>>>>> main
 import { TokenError } from './enum/token-error.enum';
 import { UserEntity } from '../user/entities/user.entity';
 import { authenticator } from 'otplib';

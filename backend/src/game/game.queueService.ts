@@ -1,8 +1,4 @@
 import { Injectable } from "@nestjs/common";
-<<<<<<< HEAD
-import { Category } from "../user/enums/user.enum";
-=======
->>>>>>> main
 import { UserEntity } from "../user/entities/user.entity";
 import { UserService } from "../user/services/user.service";
 import { GameType } from "./elements/Game";

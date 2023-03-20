@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import {Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe} from '@nestjs/common';
-import {ChatService} from "./chat.service";
-import {Public} from "../common/decorators/public.decorator";
-import {ChatEntity} from "./entities/chat.entity";
-=======
 import { Controller, 
     Get, 
     NotFoundException, 
@@ -21,7 +15,6 @@ import { ChatEntity } from "./entities/chat.entity";
 import { UserService } from 'src/user/services/user.service';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import { chatPayload } from './dtos/chat.dto';
->>>>>>> main
 
 @Controller('chat')
 export class ChatController {
