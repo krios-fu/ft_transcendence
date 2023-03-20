@@ -10,6 +10,7 @@ import {
 import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
 import { UserEntity } from "../../user/entities/user.entity";
 import { BaseEntity } from "../../common/classes/base.entity";
+import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -48,13 +49,23 @@ export class RoomEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity, 
         { 
-            cascade: true,
-            eager: true
+            eager: true,
+            onDelete: 'CASCADE'
         }
     )
     @JoinColumn({ name: "owner_id" })
     owner!: UserEntity;
 
-    @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.roomId)
+    @OneToMany(
+        () => UserRoomEntity,
+        (userRoom: UserRoomEntity) => userRoom.room,
+        { cascade: true }
+    )
+    userRoom: UserRoomEntity[];
+
+    @OneToMany(
+        () => RoomRolesEntity,
+        (roomRole: RoomRolesEntity) => roomRole.roomId
+    )
     roomRole: RoomRolesEntity[];
 }

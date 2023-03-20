@@ -33,7 +33,10 @@ export class ChatMessageEntity extends BaseEntity {
     @ManyToOne(
         () => ChatUserEntity,
         (chatUser: ChatUserEntity) => chatUser.messages,
-        { eager: true }
+        { 
+            eager: true,
+            onDelete: 'CASCADE'
+        }
     )
     @JoinColumn({ name: 'chat_user_id' })
     chatUser: ChatUserEntity;

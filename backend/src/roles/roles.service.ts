@@ -21,10 +21,15 @@ export class RolesService {
     }
 
     public async findOne(roleId: number): Promise<RolesEntity> {
-        const role = await this.rolesRepository.findOne({
+        return await this.rolesRepository.findOne({
             where: { id: roleId },
         });
-        return role;
+    }
+
+    public async findByName(roleName: string): Promise<RolesEntity> {
+        return await this.rolesRepository.findOne({
+            where: { role: roleName }
+        });
     }
 
     public async create(dto: CreateRoleDto): Promise<RolesEntity>{

@@ -39,6 +39,7 @@ export class  FriendshipEntity extends BaseEntity {
     {
       cascade: true,
       eager: true,
+      onDelete: 'CASCADE'
     }
   )
   @JoinColumn({ name : 'sender_id' })
@@ -57,6 +58,7 @@ export class  FriendshipEntity extends BaseEntity {
     {
       cascade: true,
       eager: true,
+      onDelete: 'CASCADE'
     }
   )
   @JoinColumn({ name : 'receiver_id' })
@@ -67,8 +69,10 @@ export class  FriendshipEntity extends BaseEntity {
   })
   status: FriendshipStatus;
 
-  @OneToOne(() => BlockEntity, (block) => block.friendship, {
-    cascade: true
-  })
+  @OneToOne(
+    () => BlockEntity, 
+    (block: BlockEntity) => block.friendship, 
+    { cascade: true }
+  )
   block: BlockEntity
 }

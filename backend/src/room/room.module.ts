@@ -10,6 +10,7 @@ import { RoomMessageEntity } from './entity/room-message.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([ RoomEntity ]),
     TypeOrmModule.forFeature([
       RoomEntity,
       RoomMessageEntity,

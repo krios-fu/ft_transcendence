@@ -26,4 +26,11 @@ export class AchievementsService {
     public async deleteAchievement(id: number): Promise<void> {
         await this.achievementsRepository.softDelete(id);
     }
+
+    public async findAllAchievementsFromUser(id: number): Promise<AchievementEntity[]> {
+        return (await this.achievementsRepository.createQueryBuilder('achievements'))
+            .leftJoinAndSelect('achievements.achievementUser', 'achievement_user')
+            .where('achievement_user.userId = :userId', { 'userId': id })
+            .getMany();
+    }
 }

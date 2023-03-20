@@ -53,6 +53,7 @@ export class BanEntity extends BaseEntity {
         {
             cascade: true,
             eager: true,
+            onDelete: 'CASCADE'
         }
     )
     @JoinColumn({ name: 'room_id' })

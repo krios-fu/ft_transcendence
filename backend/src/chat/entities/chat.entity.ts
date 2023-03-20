@@ -25,7 +25,6 @@ export class ChatEntity {
         ()=> ChatUserEntity, 
         (chatUser: ChatUserEntity) => chatUser.chat,
         { 
-            onDelete: 'CASCADE',
             cascade: true,
             eager: true
         }

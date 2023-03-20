@@ -34,7 +34,10 @@ export class UserRolesEntity extends BaseEntity {
 
     @ManyToOne(
         () => UserEntity,
-        { cascade: true },
+        {
+            cascade: true,
+            onDelete: 'CASCADE'
+        },
     )
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;
@@ -47,7 +50,10 @@ export class UserRolesEntity extends BaseEntity {
 
     @ManyToOne(
         () => RolesEntity,
-        { cascade: true },
+        {
+            cascade: true,
+            onDelete: 'CASCADE'
+        },
     )
     @JoinColumn({ name: "role_id" })
     role: RolesEntity;

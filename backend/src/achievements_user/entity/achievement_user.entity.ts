@@ -30,9 +30,10 @@ export class AchievementUserEntity extends BaseEntity {
     })
     userId: number;
 
-    @ManyToOne(() => UserEntity, {
-        cascade: true
-    })
+    @ManyToOne(
+        () => UserEntity,
+        { onDelete: 'CASCADE' }
+        )
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;
 
@@ -42,10 +43,11 @@ export class AchievementUserEntity extends BaseEntity {
     })
     achievementId: number;
 
-    @ManyToOne(() => AchievementEntity, {
-        cascade: true,
-        eager: true
-    })
+    @ManyToOne(
+        () => AchievementEntity,
+        (achievement: AchievementEntity) => achievement.achievementUser,
+        { onDelete: 'CASCADE' }
+    )
     @JoinColumn({ name: 'achievement_id' })
     achievement: AchievementEntity;
 }

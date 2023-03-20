@@ -31,7 +31,10 @@ export class RoomMessageEntity extends BaseEntity {
     @ManyToOne(
         () => UserRoomEntity,
         (userRoom: UserRoomEntity) => userRoom.messages,
-        { eager: true }
+        {
+            eager: true,
+            onDelete: 'CASCADE'
+        }
     )
     @JoinColumn({ name: 'user_room_id' })
     userRoom: UserRoomEntity;
