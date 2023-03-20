@@ -5,7 +5,7 @@ import { Response } from 'express';
 import { NotValidatedException } from '../classes/not-validated.exception';
 
 @Catch(NotValidatedException)
-export class NotValidatedFilter implements ExceptionFilter {
+export class NotValidatedExceptionFilter implements ExceptionFilter {
     catch(e: NotValidatedException, host: ArgumentsHost) { 
         const ctx = host.switchToHttp();
         const resp: Response = ctx.getResponse<Response>();
