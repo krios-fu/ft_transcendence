@@ -26,6 +26,7 @@ import { uploadRoomAvatarSettings } from "../common/config/upload-avatar.config"
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from "../common/validators/filetype-validator.class";
 import * as fs from 'fs';
+import { Express } from 'express';
 
 @Controller('room')
 export class RoomController {

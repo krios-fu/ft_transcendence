@@ -1,10 +1,24 @@
+<<<<<<< HEAD
 import { BaseEntity } from "../../common/classes/base.entity";
 import { RoomEntity } from "../../room/entity/room.entity";
 import { UserEntity } from "../../user/entities/user.entity";
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+=======
+import { BaseEntity } from "src/common/classes/base.entity";
+import { RoomMessageEntity } from "src/room/entity/room-message.entity";
+import { RoomEntity } from "src/room/entity/room.entity";
+import { UserEntity } from "src/user/entities/user.entity";
+import { Column, 
+    Entity, 
+    Index, 
+    JoinColumn,
+    ManyToOne, 
+    OneToMany,
+    PrimaryGeneratedColumn } from "typeorm";
+>>>>>>> main
 import { CreateUserRoomDto } from "../dto/user_room.dto";
 
-@Entity({name: 'users_room'})
+@Entity({ name: 'users_room' })
 @Index(['userId', 'roomId'], {unique: true})
 export class UserRoomEntity extends BaseEntity {
     constructor (dto: CreateUserRoomDto) {
@@ -59,4 +73,14 @@ export class UserRoomEntity extends BaseEntity {
         update: false,
     })
     createdAt: Date
+
+    @OneToMany(
+        () => RoomMessageEntity,
+        (message: RoomMessageEntity) => message.userRoom,
+        { 
+            onDelete: 'CASCADE',
+            cascade: true
+        }
+    )
+    messages: RoomMessageEntity[];
 }

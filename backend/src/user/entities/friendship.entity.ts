@@ -11,6 +11,7 @@ import { UserEntity } from "../../user/entities/user.entity";
 import { CreateFriendDto } from "../../user/dto/friendship.dto";
 import { BaseEntity } from "../../common/classes/base.entity";
 import { BlockEntity } from "./block.entity";
+<<<<<<< HEAD
 import { FriendshipStatus } from "../enums/user.enum";
 
 //export enum FriendshipStatus {
@@ -19,6 +20,16 @@ import { FriendshipStatus } from "../enums/user.enum";
 //  REFUSED = "refused",
 //  BLOCKED = "blocked"
 //}
+=======
+import { FriendshipStatus } from "../enum/friendship-status.enum";
+
+/*export enum FriendshipStatus {
+	PENDING = "pending",
+	CONFIRMED = "confirmed",
+  REFUSED = "refused",
+  BLOCKED = "blocked"
+}*/
+>>>>>>> main
 
 @Entity({ name: 'friendship' })
 @Index(['senderId', 'receiverId'], { unique: true })

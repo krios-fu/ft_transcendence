@@ -39,6 +39,7 @@ import { UserRolesModule } from '../user_roles/user_roles.module';
     exports: [
         PassportModule,
         JwtModule,
+        AuthService
     ],
 })
 export class AuthModule { }

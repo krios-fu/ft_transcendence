@@ -10,12 +10,8 @@ export class ChatService{
 	){}
 
 	createChat(id_friend: number){
-		this.http.post('http://localhost:3000/users/me/chat', {
+		return this.http.post('http://localhost:3000/chat/me', {
 			friendId : id_friend
-		}).subscribe(
-			data => {
-				console.log('NEW CHAT', data);
-			}
-		)
+		})
 	}
 }

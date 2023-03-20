@@ -6,7 +6,7 @@ export const UserCreds = createParamDecorator(
     (data: unknown, ctx: ExecutionContext) => {
         const req: IRequestUser = ctx.switchToHttp().getRequest();
         const username: string | undefined = req.user?.data?.username;
-
+        console.log("USER CREDE", username)
         if (username === undefined) {
             throw new UnauthorizedException('Request user has not logged in');
         }

@@ -1,0 +1,51 @@
+.title {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // background-color: #17122d;
+}
+
+
+.notification {
+    background: repeating-linear-gradient(to bottom,
+            black,
+            black 2px,
+            // lighten(#050560, 3%) 2px,
+            lighten(#17122d, 3%) 4px,
+            lighten(#17122d, 3%) 4px);
+    width: 300px;
+    padding: 10px;
+    padding-left: 30px;
+}
+
+.badge {
+
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    overflow: initial;
+  
+    .avatar {
+      position: relative;
+      left: 5px;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      margin-top: 10px;
+      border: 3px solid rgb(255, 255, 255);
+  
+      img {
+        width: 100%;
+        height: auto;
+  
+      }
+    }
+  }

@@ -6,7 +6,12 @@ import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { CreateUserDto } from '../user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+<<<<<<< HEAD
 import { IAuthPayload } from '../common/interfaces/request-payload.interface';
+=======
+import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
+import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
+>>>>>>> main
 import { TokenError } from './enum/token-error.enum';
 import { UserEntity } from '../user/entities/user.entity';
 import { authenticator } from 'otplib';
@@ -156,7 +161,7 @@ export class AuthService {
         if (authenticator.verify({token, secret}) === false) {
             throw new BadRequestException('invalid token');
         }
-        await this.userService.updateUser(id, { doubleAuth: true });
+        return await this.userService.updateUser(id, { doubleAuth: true });
     }
 
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {
@@ -166,5 +171,20 @@ export class AuthService {
             throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);
+    }
+
+    public validateJWToken(token: string): IJwtPayload | undefined {
+        let result: IJwtPayload | undefined;
+    
+        try {
+            result = this.jwtService.verify<IJwtPayload>(token, {
+                secret: process.env.FORTYTWO_APP_SECRET
+            });
+        }
+        catch(err) {
+            console.error(err);
+            result = undefined;
+        }
+        return (result);
     }
 }

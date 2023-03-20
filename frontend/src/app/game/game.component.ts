@@ -1,13 +1,5 @@
+import { HttpClient } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core"
-import * as Phaser from 'phaser'
-import * as SockIO from 'socket.io-client'
-import { ClassicPlayerScene } from "./scenes/ClassicPlayerScene";
-import { EndScene } from "./scenes/EndScene";
-import { MenuHeroScene } from "./scenes/MenuHeroScene";
-import { MenuScene } from "./scenes/MenuScene";
-import { PlayerScene } from "./scenes/PlayerScene";
-import { SpectatorScene } from "./scenes/SpectatorScene";
-import { StartScene } from "./scenes/StartScene";
 
 @Component({
     selector: 'app-game',
@@ -16,72 +8,20 @@ import { StartScene } from "./scenes/StartScene";
 })
 export class    GameComponent implements OnInit {
 
-    private config: Phaser.Types.Core.GameConfig;
-    private socket: SockIO.Socket;
-    private game?: Phaser.Game;
-    private queueButtonClick: boolean;
-    private username?: string; //Provisional
-
-    constructor () {
-        this.config = {
-            type: Phaser.AUTO, //WEBGL if available. Canvas otherwise.
-            parent: 'game_zone',
-            width: 800,
-            height: 600,
-            scale: {
-                mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT ,
-                autoCenter: Phaser.Scale.CENTER_BOTH
-            },
-            scene: undefined // Will be assigned afterwards
-        };
-        this.socket = SockIO.io("ws://localhost:3001");
-        this.queueButtonClick = false;
-        this.socket.once("mockUser", (data: any) => {
-            this.username = data.mockUser;
-        }); //Provisional
+    ROOM_PUBLIC = []
+    private_room = true;
+    constructor (private http: HttpClient
+        
+    ) {
+        this.http.get(`http://localhost:3000/room`)
+        .subscribe((entity) => {
+            console.log('ROOM', entity)
+        })
     }
 
+    
     ngOnInit(): void {
-        const   startScene: StartScene =
-                    new StartScene(this.socket, "Game1");
-        const   menuScene: MenuScene =
-                    new MenuScene(this.socket, "Game1");
-        const   menuHeroScene: MenuHeroScene =
-                    new MenuHeroScene(this.socket, "Game1");
-        const   playerScene: PlayerScene =
-                    new PlayerScene(this.socket, "Game1");
-        const   classicPlayerScene: ClassicPlayerScene =
-                    new ClassicPlayerScene(this.socket, "Game1");
-        const   spectatorScene: SpectatorScene =
-                    new SpectatorScene(this.socket, "Game1");
-        const   endScene: EndScene =
-                    new EndScene(this.socket, "Game1");
-            
-        this.config.scene = [
-            startScene, menuScene, menuHeroScene, playerScene,
-            classicPlayerScene, spectatorScene, endScene
-        ];
-        this.game = new Phaser.Game(this.config);
-    }
-
-    addToQueue() {
-        /*if (this.queueButtonClick)
-            return ;*/
-        this.socket.emit("addToGameQueue", {
-            room: "Game1",
-            username: this.username
-        });
-        this.queueButtonClick = true;
-    }
-
-    addToHeroQueue() {
-        /*if (this.queueButtonClick)
-            return ;*/
-        this.socket.emit("addToGameHeroQueue", {
-            room: "Game1",
-            username: this.username
-        });
-        this.queueButtonClick = true;
+        // throw new Error("Method not implemented.");
     }
 
 }

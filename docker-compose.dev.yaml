@@ -1,0 +1,11 @@
+services:
+  backend:
+    container_name: backend_dev
+    build:
+      target: dev
+    ports:
+      - 9229:9229   # default debug port
+    volumes:
+      - ./backend/:/usr/src/app
+    entrypoint: ["npm", "run", "start:dev"]
+    restart: unless-stopped

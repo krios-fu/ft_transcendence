@@ -9,26 +9,35 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 @Injectable()
 export class    SocketHelper {
 
-    async addUserToRoom(server: Server, username: string,
+    private _server: Server;
+
+    constructor() {
+        this._server = undefined;
+    }
+
+    initServer(server: Server): void {
+        this._server = server;
+    }
+
+    async addUserToRoom(username: string,
                             roomId: string): Promise<void> {
         let userSockets: RemoteSocket<DefaultEventsMap, any>[];
 
-        userSockets = await server.in(username).fetchSockets();
+        userSockets = await this._server.in(username).fetchSockets();
         userSockets.forEach((sock) => {
             sock.join(roomId);
         });
     }
 
-    emitToRoom(server: Server, roomId: string,
-                eventId: string, data: any = null): void {
-        server.to(roomId).emit(eventId, data);
+    emitToRoom(roomId: string, eventId: string, data: any = null): void {
+        this._server.to(roomId).emit(eventId, data);
         return ;
     }
 
-    async clearRoom(server: Server, roomId: string): Promise<void> {
+    async clearRoom(roomId: string): Promise<void> {
         let roomSockets: RemoteSocket<DefaultEventsMap, any>[];
 
-        roomSockets = await server.in(roomId).fetchSockets();
+        roomSockets = await this._server.in(roomId).fetchSockets();
         roomSockets.forEach((sock) => {
             sock.leave(roomId);
         });
@@ -55,6 +64,12 @@ export class    SocketHelper {
             }
         }
         return ([room, player]);
+    }
+
+    async roomSocketLength(roomId: string): Promise<number> {
+        return (
+            (await this._server.in(roomId).fetchSockets()).length
+        );
     }
 
 }

@@ -1,0 +1,16 @@
+<div id="achievements-container">
+    <div id="card-container">
+        <mat-card *ngFor="let achievement of achievements">
+            <mat-card-header>
+                <div mat-card-avatar class="card-header-image"
+                    style="background-image: url({{achievement.photoUrl}});">
+                </div>
+                <mat-card-title>{{achievement.name.toUpperCase()}}</mat-card-title>
+                <mat-card-subtitle>{{achievement.description}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <span class="date-span">Date:</span> {{achievement.createdAt}}
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

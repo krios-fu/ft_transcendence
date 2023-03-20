@@ -8,8 +8,7 @@ import {
     IsString, 
     Length 
 } from "class-validator";
-import { Category } from "../enums/user.enum";
-//import { Category } from "../entities/user.entity";
+import { Category } from "../enum/category.enum";
 
 export class CreateUserDto {
     @IsString()

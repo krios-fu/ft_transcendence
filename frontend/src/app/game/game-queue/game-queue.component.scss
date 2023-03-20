@@ -1,0 +1,60 @@
+#container {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: auto;
+    padding: 1rem;
+}
+
+.button-queue {
+    width: 140px;
+    padding: 10px;
+    border-color: white;
+    border-radius: 22px;
+    border-style: solid;
+    background-color: transparent;
+    color: white;
+    margin: 10px;
+
+}
+
+.button-queue:disabled {
+    border-color: gray;
+}
+
+.button-queue:hover {
+    cursor: pointer;
+}
+
+.button-queue:hover:disabled {
+    cursor: not-allowed;
+}
+
+.button-queue-title {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.button-queue-number {
+    font-size: 0.5rem;
+}
+
+@media screen and (min-width: 800px) {
+
+    #container {
+        grid-template-columns: auto auto;
+    }
+
+    .button-queue {
+        width: 180px;
+        padding: 10px;
+    }
+
+    .button-queue-title {
+        font-size: 1rem;
+    }
+    
+    .button-queue-number {
+        font-size: 0.7rem;
+    }
+
+}

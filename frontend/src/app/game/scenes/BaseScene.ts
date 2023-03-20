@@ -1,8 +1,11 @@
 import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
+import { IMatchInitData } from '../elements/Match';
+import { IResultData } from '../elements/Result';
 import { Txt } from '../elements/Txt';
+import { IMenuInit } from './MenuScene';
 
-export class    BaseScene extends Phaser.Scene {
+export abstract class    BaseScene extends Phaser.Scene {
 
     socket: SocketIO.Socket;
     room: string;
@@ -17,7 +20,7 @@ export class    BaseScene extends Phaser.Scene {
         this.room = room;
     }
 
-    removeAllSocketListeners() {
+    private removeAllSocketListeners(): void {
         this.socket.off("leftSelection");
         this.socket.off("rightSelection");
         this.socket.off("confirmSelection");
@@ -25,7 +28,32 @@ export class    BaseScene extends Phaser.Scene {
         this.socket.off("startMatch");
         this.socket.off("end");
         this.socket.off("matchUpdate");
-        this.socket.off("served");
+        this.socket.off("recoverData");
     }
+
+    private removeAllGameListeners(): void {
+        this.game.events.off("focus");
+    }
+
+    removeAllListeners(): void {
+        this.removeAllSocketListeners();
+        this.removeAllGameListeners();
+    }
+
+    private emitRecover(): void {
+        this.socket.emit("recover", this.room);
+    }
+
+    setUpRecovery(): void {
+        this.game.events.on("focus", () => {
+            this.emitRecover();
+        });
+    }
+
+    abstract destroy(): void;
+
+    abstract recover(data?: IMenuInit
+                                | IMatchInitData
+                                | IResultData): void;
 
 }

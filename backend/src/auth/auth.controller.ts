@@ -30,7 +30,11 @@ interface IRequestProfile extends Request {
 };
 
 class OtpPayload {
+<<<<<<< HEAD
     @IsNumberString()
+=======
+    @IsNumberString(/*{ length: 6 }*/)
+>>>>>>> main
     @IsNotEmpty()
     token: string;
 }
@@ -72,7 +76,7 @@ export class AuthController {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
         }
-        return await this.authService.generateNew2FASecret(user.username, user.id);
+        return  { "qr": await this.authService.generateNew2FASecret(user.username, user.id) } ;
     }
 
     @Post('/2fa/confirm')
@@ -80,7 +84,7 @@ export class AuthController {
     (
         @UserCreds() username: string,
         @Body() otpPayload: OtpPayload 
-    ): Promise<void> {
+    ) {
         const user: UserEntity = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);

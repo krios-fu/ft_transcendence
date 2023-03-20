@@ -1,18 +1,17 @@
-import {
-    Body,
-    Controller,
-    Delete,
+import { Body, 
+    Controller, 
+    Delete, 
     Get,
-    HttpException,
-    HttpStatus,
-    Logger,
-    Param,
-    ParseIntPipe,
-    Post
-} from '@nestjs/common';
-import { AchievementsService } from '../achievements/achievements.service';
-import { UserService } from '../user/services/user.service';
+    BadRequestException,
+    Logger, 
+    Param, 
+    ParseIntPipe, 
+    Post, 
+    Query } from '@nestjs/common';
+import { AchievementsService } from 'src/achievements/achievements.service';
+import { UserService } from 'src/user/services/user.service';
 import { AchievementsUserService } from './achievements_user.service';
+import { AchievementsUserQueryDto } from './dto/achievements_user.query.dto';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';
 
@@ -28,8 +27,8 @@ export class AchievementsUserController {
     private readonly achievementsUserLogger: Logger;
 
     @Get()
-    public async getAllAchievementsUser(): Promise<AchievementUserEntity[]> {
-        return await this.achievementsUserService.getAllAchievementsUser();
+    public async getAllAchievementsUser(@Query() queryParams: AchievementsUserQueryDto): Promise<AchievementUserEntity[]> {
+        return await this.achievementsUserService.getAllAchievementsUser(queryParams);
     }
 
     @Get(':id')
@@ -37,7 +36,7 @@ export class AchievementsUserController {
         const achUsr = await this.achievementsUserService.getOneAchievementUser(id);
         if (achUsr === null) {
             this.achievementsUserLogger.error(`No achievement user with id ${id} present in database`);
-            throw new HttpException('no achievement user in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no achievement user in db');
         }
         return achUsr;
     }
@@ -47,11 +46,11 @@ export class AchievementsUserController {
         const { userId, achievementId } = dto;
         if (await this.achievementsService.getOneAchievement(achievementId) === null) {
             this.achievementsUserLogger.error(`Achievement with id ${achievementId} not found in database`);
-            throw new HttpException('no achievement in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no achievement in db');
         }
         if (await this.userService.findOne(userId) === null) {
             this.achievementsUserLogger.error(`User with id ${userId} not found in database`);
-            throw new HttpException('no user found in db', HttpStatus.BAD_REQUEST);
+            throw new BadRequestException('no user found in db');
         }
         return await this.createAchievementUser(dto);
     }

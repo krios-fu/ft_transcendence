@@ -1,18 +1,26 @@
 import { Exclude } from "class-transformer";
+<<<<<<< HEAD
 import { RefreshTokenEntity } from "../../auth/entity/refresh-token.entity";
 import { ChatEntity } from "../../chat/entities/chat.entity";
 import { MessageEntity } from "../../chat/entities/message.entity";
 import { BaseEntity } from "../../common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "../../common/config/upload-avatar.config";
+=======
+import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
+import { ChatUserEntity } from "src/chat/entities/chat-user.entity";
+import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
+import { BaseEntity } from "src/common/classes/base.entity";
+import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+>>>>>>> main
 import {
 	Column,
 	Entity,
-	ManyToMany,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
+<<<<<<< HEAD
 import { Category } from "../enums/user.enum";
 
 //export enum Category {
@@ -27,6 +35,11 @@ import { Category } from "../enums/user.enum";
 @Entity({
 	name: 'user'
 })
+=======
+import { Category } from "../enum/category.enum";
+
+@Entity({ name: 'user' })
+>>>>>>> main
 export class UserEntity extends BaseEntity {
 	constructor(dto?: CreateUserDto) {
 		super();
@@ -114,7 +127,6 @@ export class UserEntity extends BaseEntity {
 	acceptedTerms: boolean;
 
 	@Column({
-		type: 'bigint',
 		default: 1500
 	})
 	ranking: number;
@@ -124,17 +136,25 @@ export class UserEntity extends BaseEntity {
 	})
 	category : Category;
 
-	@OneToMany(() => MessageEntity, (message) => message.author )
-	messages : MessageEntity[];
-
-	@ManyToMany(()=> ChatEntity, (chat) => chat.users)
-	chats : ChatEntity[];
+	@OneToMany(
+		() => ChatUserEntity, 
+		(chatUser: ChatUserEntity) => chatUser.user,
+		{
+			onDelete: 'CASCADE',
+			cascade: true
+		}
+		 )
+	chats: ChatUserEntity[];
 
 	@OneToOne
 	(
 		() => RefreshTokenEntity,
-		(tokenEntity) => tokenEntity.authUser,
-		{ cascade: true }
+		(tokenEntity: RefreshTokenEntity) => tokenEntity.authUser,
+		{ 
+			cascade: true,
+			onDelete: 'CASCADE'
+		}
 	)
 	token: RefreshTokenEntity
+
 }

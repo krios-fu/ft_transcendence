@@ -1,26 +1,56 @@
-<div style="width: 100%; height: 80%;
-display: grid; justify-content: space-around;
-align-content : center;
-align-items: center;
-color: white; padding: 50px;">
-
-    <div style="align-items: center; justify-content: center; display: flex;">
-        <h1>ROOM </h1>
-        <h6 style="padding: 10px;"> ID: 42</h6>
-
+<div style="padding-bottom: 50px;">
+    
+    <div class="master">
+        <h1 style="color: rgb(242, 242, 242);">VIEW PANEL</h1>
     </div>
-    <button type="button" (click)="addToQueue()">
-        Join Classic Game Queue
-    </button>
-    <button style="border: outset 4px silver;" type="button" (click)="addToHeroQueue()">
-        Join Game Queue
-    </button>
-    <div id="game_zone"></div>
+    <!-- <mat-divider></mat-divider> -->
+    <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="warn" aria-label="primary">
+        <mat-tab label="PUBLIC {{ROOM_PUBLIC.length}}">
+            <section>
+                <cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="5">
+                    <mat-chip-list style="padding-top: 10px;" *ngFor="let room of ROOM_PUBLIC">
+                        <mat-chip class="tag">
+                            <span> lol </span>
+                        </mat-chip>
+                    </mat-chip-list>
+                </cdk-virtual-scroll-viewport>
+            </section>
+        </mat-tab>
+        <mat-tab label="PRIVATE {{ROOM_PUBLIC.length}}">
+            <div>
+                <cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="5">
+                    <mat-chip-list style="padding-top: 10px;" *ngFor="let room of ROOM_PUBLIC">
+                        <mat-chip class="tag">
+                            <span> lol </span>
+                        </mat-chip>
+                    </mat-chip-list>
+                </cdk-virtual-scroll-viewport>
+            </div>
+        </mat-tab>
 
+        <mat-tab label="NEW">
+
+        </mat-tab>
+        
+    </mat-tab-group>
+    
+  
 </div>
-<cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"
-    style=" height: 10vh; position: relative; color: white;" itemSize="5">
-    <section>
-        <app-online></app-online>
-    </section>
-</cdk-virtual-scroll-viewport>
+
+<!-- <div class="master">
+
+    <h1 style="color: rgba(230, 219, 240, 0.38);">ROOM</h1>
+ 
+<section style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
+    <mat-chip class="tag" [routerLink]="">
+        <span>PUBLIC</span>
+    </mat-chip >
+    <mat-chip class="tag" [routerLink]="">
+        <span>PRIVATE</span>
+    </mat-chip>
+</section>
+  </div> -->
+
+<div>
+    <router-outlet></router-outlet>
+</div>

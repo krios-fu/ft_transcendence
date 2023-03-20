@@ -1,11 +1,43 @@
-
-
-<div style="display: flex; align-items: center; justify-content: center; " >
-	<div *ngFor=" let friend of friends;" style="margin: 10px; display:grid; align-items: center; justify-content: center;" >
-		<figure class="avatar">
-			<img
-				src={{friend.photoUrl}} alt="krios-fu"/>
-			</figure>
-			<div style="font-size:5px; padding: 5px; ">{{friend.username}}</div>
-	</div>
+<div style="display: flex; align-items: center; justify-content: center; ">
+    <div *ngFor=" let player of players;"
+        style="margin: 10px; display:grid; align-items: center; justify-content: center;" [matMenuTriggerFor]="menu"
+        aria-label="options">
+        <div class="badge">
+            <figure class="avatar">
+                <img src={{player.photoUrl}} alt={{player.username}} />
+            </figure>
+            <mat-icon *ngIf="player.is_admin" [ngStyle]="{'color': 'yellow'}" class="icon-display"
+                style="position: absolute; bottom: -5px;">auto_awesome</mat-icon>
+        </div>
+        <div style="font-size:5px; padding: 5px; ">{{player.username}}</div>
+        <mat-menu  #menu="matMenu" >
+            <!--disabled option -->
+            <button mat-menu-item [routerLink]="['/home/profile/', player.username]">
+                <mat-icon>person</mat-icon>
+                <span>Profile</span>
+            </button>
+            <section *ngIf="this.me?.id != player.id">
+                <button mat-menu-item (click)="sendInvitationGame(player)">
+                    <mat-icon>videogame_asset</mat-icon>
+                    <span>Game</span>
+                </button>
+                <button mat-menu-item (click)="goTochat(player)">
+                    <mat-icon>chat</mat-icon>
+                    <span>Chat</span>
+                </button>
+                
+                <!--  view if admin  -->
+                <div *ngIf="is_admin && !player.is_admin">
+                    <button mat-menu-item>
+                        <mat-icon>block</mat-icon>
+                        <span>Block</span>
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon>exit_to_app</mat-icon>
+                        <span>Leave</span>
+                    </button>
+                </div>
+            </section>
+            </mat-menu>
+    </div>
 </div>

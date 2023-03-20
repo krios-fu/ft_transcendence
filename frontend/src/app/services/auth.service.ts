@@ -45,8 +45,33 @@ export class AuthService {
         return token$;
     }
 
+    directRefreshToken(): Observable<IAuthPayload | undefined> {
+        return (
+            new Observable((subscriber) => {
+                this.refreshToken().subscribe((data) => {
+                    console.log("Refresh data: ", data.body);
+                    if (!data.body)
+                        subscriber.next(undefined);
+                    else
+                    {
+                        this.setAuthInfo({
+                            accessToken: data.body.accessToken,
+                            username: data.body.username
+                        });
+                        subscriber.next(data.body);
+                    }
+                    subscriber.complete();
+                })
+            })
+        );
+    }
+
     redirectHome(): void {
         this.router.navigate(['/home/profile']);
+    }
+
+    redirecOtpSesion(): void {
+        this.router.navigate(['/otp_session']);
     }
 
     redirectLogin(): void {

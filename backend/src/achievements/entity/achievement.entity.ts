@@ -17,6 +17,9 @@ export class AchievementEntity extends BaseEntity {
     @Column({ name: 'achievement_name', type: 'varchar' })
     achievementName: string;
 
+    @Column({ name: 'description', type: 'varchar' })
+    description: string;
+
     @Column({ name: 'photo_url', type: 'varchar' })
     photoUrl: string;
 }

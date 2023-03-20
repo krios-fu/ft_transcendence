@@ -1,11 +1,29 @@
+@property --rotate {
+	syntax: "<angle>";
+	initial-value: 132deg;
+	inherits: false;
+}
+
+@keyframes spin {
+	0% {
+		--rotate: 0deg;
+	}
+
+	100% {
+		--rotate: 360deg;
+	}
+
+
+}
+
+
 .icon-display {
-  transform: scale(0.6) translateX(42px);
+  transform: scale(1) translateX(42px);
   color: greenyellow;
   box-shadow: inset 4px;
 }
 
 .badge {
-
 
   display: flex;
   position: relative;
@@ -16,21 +34,21 @@
   position: relative;
   overflow: initial;
 
-
   .avatar {
     position: relative;
     left: 5px;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     overflow: hidden;
     margin: 0;
     padding: 0;
-    border: 3px solid rgba(233, 233, 233, 0.24);
+    margin-top: 10px;
+    border: 3px solid rgb(255, 255, 255);
 
     img {
       width: 100%;
-      height: auto;
+      height: 100%;
 
     }
   }
@@ -39,6 +57,8 @@
 div {
   // border: 1px solid rgba(245, 245, 245, 0.29);
   border: outset 2px silver;
+  border-radius: 22px;
+
 
   //border-bottom: none;
   // &:last-child{

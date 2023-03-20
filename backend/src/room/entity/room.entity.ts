@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { CreateRoomDto } from "../../room/dto/room.dto";
 import {  
     Column, 
@@ -10,6 +11,21 @@ import {
 import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
 import { UserEntity } from "../../user/entities/user.entity";
 import { BaseEntity } from "../../common/classes/base.entity";
+=======
+import { CreateRoomDto } from "src/room/dto/room.dto";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany, OneToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
+import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
+import { UserEntity } from "src/user/entities/user.entity";
+import { BaseEntity } from "src/common/classes/base.entity";
+import {ChatEntity} from "../../chat/entities/chat.entity";
+>>>>>>> main
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -57,4 +73,17 @@ export class RoomEntity extends BaseEntity {
 
     @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.roomId)
     roomRole: RoomRolesEntity[];
+
+    @Column({ type: 'number', name: 'chat_id' })
+    chatId: number;
+    @OneToOne(
+        () => ChatEntity,
+        {
+            eager: true,
+            cascade: true,
+            onDelete: "CASCADE"
+        })
+    @JoinColumn({ name: 'chat_id' })
+    chat: ChatEntity;
+
 }

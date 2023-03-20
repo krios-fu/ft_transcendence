@@ -16,6 +16,8 @@ import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common
 import { throwError } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { SettingComponent } from './profile/setting/setting.component';
+import { AlertServices } from '../services/alert.service';
+import { SocketNotificationService } from '../services/socket-notification.service';
 
 
 
@@ -32,7 +34,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   lastName: string = "";
   hidden = false;
   friend_state = false;
-  friends = { } as UserDto [];
+  friends = {} as UserDto[];
 
   nPenddingFriends = 0;
   public subscriber: Subscription;
@@ -50,14 +52,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-  ) { 
+    private alertService: AlertServices,
+  ) {
     this.subscriber = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
-      ).subscribe((event) => {
-        if (this.authService.isAuthenticated() !== false) {
-          this.getPenddingFriends();
-        }
-        });
+    ).subscribe((event) => {
+      if (this.authService.isAuthenticated() === true) {
+        // this.ngOnInit();
+        this.getPenddingFriends();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -99,17 +103,30 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
             "accessToken": res.body.accessToken,
             "username": res.body.username,
           });
-          this.authService.redirectHome();
 
           // const username: string = this.authService.getAuthUser() as string;
           this.usersService.getUser('me')
             .subscribe({
-              next: (userDto : any ) => {
-                this.user = userDto.username;
-                this.firstName = userDto.firstName;
-                this.lastName = userDto.lastName;
+              next: (userDto: any) => {
+                console.log("OTP SESSION", userDto)
+                // this.user = userDto.username;
+                // this.firstName = userDto.firstName;
+                // this.lastName = userDto.lastName;
+                console.log(userDto.doubleAuth)
+                if (userDto[0].doubleAuth === true) {
+                  this.authService.redirecOtpSesion()
+                }
+                else
+                  this.authService.redirectHome();
+
                 // this.navHeader.profile = userDto;
-              }
+              },
+              // error: (err: HttpErrorResponse) => {
+              //   if (err.status === 401) {
+              //     this.authService.logout();
+              //   }
+              //   return throwError(() => err);
+              // }
             });
         },
         error: (err: HttpErrorResponse) => {
@@ -126,16 +143,17 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log(this.route);
   }
 
-
-  getPenddingFriends(){
-      this.usersService.getFriends('me')
-      .subscribe( (data : any) => {
-        this.nPenddingFriends = data.length;
-        console.log(this.nPenddingFriends);
+  getPenddingFriends() {
+    this.usersService.getUser('me')
+      .subscribe((user: UserDto[]) => {
+        this.usersService.getFriends('me')
+        .subscribe((data: any) => {
+          let friends_pending = Object.assign(data);
+          console.log("PENDING", user[0].username)
+            this.nPenddingFriends = (friends_pending.filter((friend: any) => friend['sender'] && friend['sender'].username != user[0].username)).length;
+          })
       })
   }
-
-
 
   send_chat_profile(e: any) {
     return e;
@@ -147,11 +165,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.hidden = !this.hidden;
   }
 
-  hello(){
+  hello() {
     this.friend_state = !this.friend_state;
-
-    console.log('HELLO WORLD');
+    this.alertService.openFriendPending();
   }
-
 
 }

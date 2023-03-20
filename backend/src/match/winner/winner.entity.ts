@@ -8,6 +8,7 @@ import {
     OneToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
+import { Category } from "src/user/enum/category.enum";
 
 @Entity({
     name: 'winner'
@@ -22,6 +23,12 @@ export class    WinnerEntity {
 
     @OneToOne(() => MatchEntity, (match) => match.winner)
     match: MatchEntity;
+
+    @Column()
+    ranking: number; // Before the match
+
+    @Column()
+    category: Category; // Before the match
 
     @Column()
     score: number;

@@ -44,7 +44,7 @@ export class    BlockService {
         if (friendship === null) {
             return ;
         }
-        const test = await this.blockRepository.softDelete(friendship.block);
+        const test = await this.blockRepository.softDelete(friendship.block.id);
         console.log(`testing: ${JSON.stringify(test)}`); /* remove this laterrrr */
         return await this.friendshipService.unblockFriend(friendship.id);
     }

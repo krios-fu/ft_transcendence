@@ -34,8 +34,8 @@ export class UserRoomService {
         });
     }
 
-    public async getAllUsersInRoom(roomId: number): Promise<UserEntity[]> {
-        const userList = this.userRoomRepository.find({
+    public async getAllUsersInRoom(roomId: number): Promise<UserRoomEntity[]> {
+        const userList = await this.userRoomRepository.find({
         select: { userId: true },
         relations: {
             room: true,
@@ -45,15 +45,16 @@ export class UserRoomService {
         });
 
         /* debug */
-        console.log(userList);
+        console.log('GET ALL USERS',userList);
 
-        /* tmp */
-        var usersInRoom: UserEntity[] = [];
-        for (var username in userList) {
-        const user = await this.userService.findOneByUsername(username);
-        usersInRoom.push(user);
-        }
-        return usersInRoom;
+        // /* tmp */ //deleted for krios-fu
+        // he modificado esta query para hacer uso.
+        // var usersInRoom: UserEntity[] = [];
+        // for (var username in userList) {
+        // const user = await this.userService.findOneByUsername(username);
+        // usersInRoom.push(user);
+        // }
+        return userList;
     }
 
     public async getAllRoomsWithUser(userId: number): Promise<RoomEntity[]>  {
