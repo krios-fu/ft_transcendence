@@ -9,7 +9,7 @@ def pretty(json_obj):
 
 def del_user_as_owner(api):
     user = api.post_user('del-user')
-    rooms = [api.post_room(room_id, user['id']) for room_id in ['rdel_user1', 'rdel_user2', 'rdel_user3']]
+    rooms = [api.post_room(room_id, user["id"]) for room_id in ['rdel_user1', 'rdel_user2', 'rdel_user3']]
 
     print('[ Query room for users in first room (should be owner) ]')
     try: 
@@ -25,7 +25,7 @@ def del_user_as_owner(api):
     try:
         r = requests.get('http://localhost:3000/room', headers=api.get_param('auth_token'))
         print(f'rooms before: {pretty(r.json())}')
-        user_id = user['id']
+        user_id = user["id"]
         url = f'http://localhost:3000/users/{user_id}'
         r = requests.delete(url, headers=api.get_param('auth_token'))
         r.raise_for_status()
@@ -41,19 +41,24 @@ def del_user_as_owner(api):
 
 def del_user_in_room_as_owner(api):
     users = [ api.post_user(user_name) for user_name in ['nuser-1', 'nuser-2', 'nuser-3' ] ]
-    room = api.post_room('room_test', users[0]['id'])
-    users_room = [ api.post_user_room(room['id'], user_id) for user_id in 
-        [ user['id'] for user in users ]
+    print(f'    [ posted three users with ids: {users[0]["id"]}, {users[1]["id"]}, {users[2]["id"]} ]')
+    room = api.post_room('room_test', users[0]["id"])
+    print(f'    [ posted room with id: {room["id"]}]')
+    users_room = [ api.post_user_room(room["id"], user_id) for user_id in 
+        [ user["id"] for user in users ]
     ]
+    print(f'    [ posted user room with ids: {users_room[0][0]["id"]}, {users_room[1][0]["id"]}, {users_room[2][0]["id"]} ]')
+    print(" ***************************************************************************** \n\n")
 
     try:
-        owner_id = users[0]['id']
-        room_id = room['id']
-        role_id = api.roles[0]['id']
+        owner_id = users[0]["id"]
+        room_id = room["id"]
+        role_id = api.roles[0]["id"]
+        print(f'  [ GET: http://localhost:3000/user_room/users/{owner_id}/rooms/{room_id} ]')
         id = requests.get(
             f'http://localhost:3000/user_room/users/{owner_id}/rooms/{room_id}',
             headers=api.get_param('auth_token')
-        ).json()
+        ).json()["id"]
         print(f'id: ', id)
         del_url = f'http://localhost:3000/user_room/{id}'
         r = requests.delete(
@@ -63,8 +68,9 @@ def del_user_in_room_as_owner(api):
         print(f'[ DEL: {del_url} ]')
         print(f'return: {pretty(r.json())}')
         assert r.status_code == 400, 'should not allow owner to leave'
-        user_room_1 = api.post_user_room_role(room_id, users[0]['id'], role_id)
-        user_room_2 = api.post_user_room_role(room_id, users[1]['id'], role_id)
+        print(f'  [ posting admin role to users {users[0]["id"]} and {users[1]["id"]} ]')
+        user_room_1 = api.post_user_room_role(room_id, users[0]["id"], role_id)
+        user_room_2 = api.post_user_room_role(room_id, users[1]["id"], role_id)
         del_url = f'http://localhost:3000/user_room/{id}'
         r = requests.delete(
             del_url,

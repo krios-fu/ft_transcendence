@@ -76,8 +76,8 @@ export class UserRoomController {
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('room_id', ParseIntPipe) roomId: number
     ): Promise<UserRoomEntity> {
-        if (await this.userService.findOne(userId) ||
-            await this.roomService.findOne(roomId)) {
+        if (await this.userService.findOne(userId) === null ||
+            await this.roomService.findOne(roomId) === null) {
                 this.userRoomLogger.error(`Resource not found in database`);
                 throw new NotFoundException('resource not found');
             }

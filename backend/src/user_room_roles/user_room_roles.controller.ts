@@ -89,10 +89,8 @@ export class UserRoomRolesController {
         @Param('role_id', ParseIntPipe) roleId: number
     ): Promise<UserRoomRolesEntity> {
         if(
-            await this.userService.findOne(userId) === null ||
-            await this.roomService.findOne(roomId) === null ||
             await this.rolesService.findOne(roleId) === null ||
-            await this.userRoomService.findUserRoomIds(userId, roomId)
+            await this.userRoomService.findUserRoomIds(userId, roomId) === null
         ) {
             this.userRoomRolesLogger.error('user role in room not found in database');
             throw new NotFoundException('resource not found in database');

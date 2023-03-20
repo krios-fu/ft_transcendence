@@ -13,7 +13,6 @@ const filterSetup = filter => {
     }
     return keyFilter;
 }
-//const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi) => [aci,cvi].flat())))
 const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi) => Object.assign({}, aci, cvi))))
 
 export class QueryMapper {
