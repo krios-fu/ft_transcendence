@@ -7,7 +7,9 @@ import { MatchModule } from 'src/match/match.module';
 import { WinnerModule } from 'src/match/winner/winner.module';
 import { UserModule } from 'src/user/user.module';
 import { GameAchievementsService } from './game.achievements.service';
+import { GameDataService } from './game.data.service';
 import { GameGateway } from './game.gateway';
+import { GameMatchmakingService } from './game.matchmaking.service';
 import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';
 import { GameReconciliationService } from './game.reconciliation.service';
@@ -37,7 +39,9 @@ import { GameUpdateService } from './game.updateService';
     SocketHelper,
     GameRecoveryService,
     GameSocketAuthService,
-    GameAchievementsService
+    GameAchievementsService,
+    GameDataService,
+    GameMatchmakingService
   ],
 })
 export class GameModule {}

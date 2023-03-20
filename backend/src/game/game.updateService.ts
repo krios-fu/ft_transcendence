@@ -22,8 +22,10 @@ import {
     Players,
     RunningGame
 } from "./game.data.service";
-import { GameMatchmakingService } from "./game.matchmaking.service";
-import { GameManagementService } from "./game.management.service";
+import {
+    EventEmitter2,
+    OnEvent
+} from '@nestjs/event-emitter';
 
 export interface    IGameResultData {
     aNick: string;
@@ -47,12 +49,21 @@ export class    GameUpdateService {
     constructor(
         private readonly gameService: GameService,
         private readonly gameDataService: GameDataService,
-        private readonly gameManagementService: GameManagementService,
-        private readonly matchMakingService: GameMatchmakingService,
         private readonly socketHelper: SocketHelper,
-        private readonly reconciliationService: GameReconciliationService
+        private readonly reconciliationService: GameReconciliationService,
+        private eventEmitter: EventEmitter2
     ) {
         this._updateInterval = undefined;
+    }
+
+    @OnEvent('game.start')
+    handleGameStartEvent(gameId: string) {
+        const   gameType: GameType | undefined =
+                        this.gameDataService.getType(gameId);
+        
+        if (!gameType)
+            return ;
+        this.startGame(gameId, gameType);
     }
 
     getGameSelectionData(roomId: string): IGameSelectionData {
@@ -174,9 +185,9 @@ export class    GameUpdateService {
 
     private gameTransition(gameId: string): void {
         setTimeout(() => {
-            this.gameManagementService.end(gameId);
+            this.gameDataService.removeGameData(gameId);
             this.manageUpdateInterval();
-            this.matchMakingService.attemptPlayerPairing(gameId);
+            this.eventEmitter.emit('game.ended', gameId);
         }, 10000);
     }
 
@@ -330,7 +341,7 @@ export class    GameUpdateService {
         this.sendSelectionData(gameHero, "Spectator", selectionData, gameId);
     }
 
-    async startGame(gameId: string, gameType: GameType): Promise<void> {
+    private async startGame(gameId: string, gameType: GameType): Promise<void> {
         let     gameSelection: GameSelection;
         let     selectionData: IGameSelectionData;
         const   players: Players = this.gameDataService.getPlayers(gameId);

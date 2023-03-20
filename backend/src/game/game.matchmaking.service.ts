@@ -1,11 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { GameType } from "./elements/Game";
-import { GameManagementService } from "./game.management.service";
 import {
     GameQueueService,
     NextPlayerPair
 } from "./game.queueService";
 import { SocketHelper } from "./game.socket.helper";
+import {
+    EventEmitter2,
+    OnEvent
+} from '@nestjs/event-emitter';
+import { GameDataService } from "./game.data.service";
 
 @Injectable()
 export class    GameMatchmakingService {
@@ -15,9 +19,15 @@ export class    GameMatchmakingService {
     constructor(
         private readonly queueService: GameQueueService,
         private readonly socketHelper: SocketHelper,
-        private readonly gameManagementService: GameManagementService
+        private readonly gameDataService: GameDataService,
+        private eventEmitter: EventEmitter2
     ) {
         this._pairingTimeouts = new Map<string, NodeJS.Timeout>;
+    }
+
+    @OnEvent('game.ended')
+    handleGameEndedEvent(gameId: string) {
+        this.attemptPlayerPairing(gameId);
     }
 
     private _emitQueueUpdate(roomId: string, gameType: GameType,
@@ -45,6 +55,12 @@ export class    GameMatchmakingService {
         );
     }
 
+    private _canStartGame(gameId: string): boolean {
+        return (
+            !this.gameDataService.getGameData(gameId)
+        );
+    }
+
     async addToQueue(gameId: string, gameType: GameType,
                         username: string): Promise<void> {
         const   lengthUpdate: number | undefined = await this.queueService.add(
@@ -61,7 +77,7 @@ export class    GameMatchmakingService {
             lengthUpdate
         );
         if (lengthUpdate > 1
-                && this.gameManagementService.canStart(gameId))
+                && this._canStartGame(gameId))
             this.attemptPlayerPairing(gameId);
 
     }
@@ -147,14 +163,18 @@ export class    GameMatchmakingService {
     }
 
     private _initGame(gameId: string, nextPlayers: NextPlayerPair): void {
-        this.gameManagementService.start(
+        this.gameDataService.setGameData(
+            gameId,
+            nextPlayers[0].gameType
+        );
+        this.gameDataService.setPlayers(
             gameId,
             {
                 a: nextPlayers[0].queueElement.user,
                 b: nextPlayers[1].queueElement.user
-            },
-            nextPlayers[0].gameType
+            }
         );
+        this.eventEmitter.emit('game.start', gameId);
     }
 
     private _confirmNextPlayers(gameId: string): boolean {

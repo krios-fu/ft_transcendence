@@ -21,6 +21,7 @@ import { LoserModule } from './match/loser/loser.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 @Module({
@@ -45,6 +46,7 @@ import { join } from 'path';
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),
         }),
+        EventEmitterModule.forRoot(),
         RolesModule,
         RoomModule,
         UserRoomModule,
