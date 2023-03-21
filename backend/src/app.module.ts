@@ -44,6 +44,7 @@ import { join } from 'path';
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),
+            serveRoot: 'public/'
         }),
         RolesModule,
         RoomModule,
