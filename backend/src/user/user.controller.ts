@@ -15,7 +15,6 @@ import {
     BadRequestException,
     NotFoundException,
     HttpCode,
-    BadRequestException, 
     UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
