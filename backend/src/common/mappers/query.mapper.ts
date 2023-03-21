@@ -1,6 +1,20 @@
 import { FindOperator, Like } from "typeorm";
 import { IQueryParams } from "../interfaces/queryparams.interface";
 
+const filterSetup = filter => { 
+    let keyFilter = [];
+    for (let key in filter) {
+        keyFilter.push(filter[key].map(value => {
+            return ['nickName', 'roomName'].includes(key) ?
+                { [key]: Like(`${value}%`) } :
+                { [key]: value };
+            })
+        );
+    }
+    return keyFilter;
+}
+const cartesian = (...f) => f.reduce((ac,cv) => ac.flatMap((aci) => cv.map((cvi) => Object.assign({}, aci, cvi))))
+
 export class QueryMapper {
     constructor(queryParams: IQueryParams) {
         const { limit, offset, order, orderDesc, filter } = queryParams; 
@@ -21,19 +35,9 @@ export class QueryMapper {
             });
         }
         if (filter !== undefined) {
-            this.where = [];
-            for (let key in filter) {
-                filter[key].forEach((value: string) => {
-                    if (key === 'nickName' || key === 'roomName') {
-                        this.where.push({ [key]: Like(`${value}%`) });
-                    }
-                    else {
-                        this.where.push({ [key]: value });
-                    }
-                });
-            }
+            this.where = cartesian(...filterSetup(filter));
         }
-    }
+    } 
     take?: number;
     skip?: number;
     order?: { [key: string]: string }

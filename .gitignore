@@ -1,8 +1,10 @@
 .env
 .idea
 .DS_Store
-venv
 
 .*
 !.gitignore
-venv/
+
+# ~~ python virtual environment ~~ #
+venv
+**/__pycache__

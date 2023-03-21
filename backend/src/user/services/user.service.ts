@@ -7,7 +7,7 @@ import {
 } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateResult } from 'typeorm';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
@@ -46,21 +46,21 @@ export class UserService {
     }
 
     public async findOneByUsername(username: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({ 
+        const user: UserEntity = await this.userRepository.findOne({
             where: { username: username },
         });
         return user;
     }
 
     public async findOneByNickName(nickName: string): Promise<UserEntity> {
-        const user = await this.userRepository.findOne({ 
+        const user: UserEntity = await this.userRepository.findOne({
             where: { nickName: nickName },
         });
         return user;
     }
 
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
-        const newEntity = new UserEntity(newUser);
+        const newEntity: UserEntity = new UserEntity(newUser);
 
         await this.userRepository.insert(newEntity);
         return newEntity;
@@ -95,7 +95,9 @@ export class UserService {
     }
 
     public async deleteUser(user: UserEntity): Promise<void> {
-        const { photoUrl } = user;
+        const { id, photoUrl } = user;
+
+        // if user was a room owner, call service that actualizes new owner
         if (photoUrl !== DEFAULT_AVATAR_PATH) {
             try {
                 fs.accessSync(photoUrl, fs.constants.W_OK);
@@ -103,6 +105,36 @@ export class UserService {
             } catch (err) { }
         }
         await this.userRepository.remove(user);
+    }
+
+    public async getUsersInRoom(roomId: number): Promise<UserEntity[]> {
+        return (await this.userRepository.createQueryBuilder('user'))
+            .leftJoinAndSelect(
+                'user.userRoom',
+                'user_room',
+                'user_room.room_id = :room_id',
+                { 'room_id': roomId }
+            )
+            .orderBy('user_room.createdAt', 'ASC')
+            .getMany();
+    }
+
+    public async getAdminsInRoom(roomId: number): Promise<UserEntity[]> {
+        return await this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.userRoom', 'user_room')
+            .leftJoinAndSelect('user_room.userRoomRole', 'user_room_roles')
+            .leftJoinAndSelect('user_room_roles.role', 'roles')
+            .where('user_room.room_id = :room_id', {'room_id': roomId})
+            .andWhere('roles.role = :role', {'role': 'administrator'})
+            .orderBy('user_room_roles.createdAt', 'ASC')
+            .getMany();
+    }
+
+    public async findAllUsersWithAchievement(id: number): Promise<UserEntity[]> {
+        return await this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.achievementUser', 'achievement_user')
+            .where('achievement_user.achievementId = :achvId', { 'achvId': id })
+            .getMany();
     }
 
     /*

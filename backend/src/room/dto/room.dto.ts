@@ -1,9 +1,9 @@
-import { PartialType } from "@nestjs/mapped-types";
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
 
 export class CreateRoomDto {
-    @IsString()       
+    @IsString()
+    @Length(1, 15)
     @IsNotEmpty()
     roomName: string;
 
@@ -13,10 +13,21 @@ export class CreateRoomDto {
     ownerId: number;
 }
 
-export class UpdateRoomDto extends PartialType(CreateRoomDto) { 
+export class UpdateRoomDto {
+    @IsString()       
+    @IsNotEmpty()
+    roomName?: string;
+
     @IsString()
     @IsNotEmpty()
     photoUrl?: string;
+}
+
+export class UpdateRoomOwnerDto {
+    @IsNumber()
+    @Type(() => Number)
+    @IsNotEmpty()
+    ownerId: number;
 }
 
 export class RoomMsgDto {

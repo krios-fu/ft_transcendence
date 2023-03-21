@@ -15,7 +15,7 @@ export class RefreshTokenEntity extends BaseEntity {
     @OneToOne
     (
         () => UserEntity,
-        (user) => user.token,
+        (user: UserEntity) => user.token,
 		{ onDelete: 'CASCADE' }
     )
     @JoinColumn({ name: 'token_user' })
