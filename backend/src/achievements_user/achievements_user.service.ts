@@ -16,7 +16,7 @@ export class AchievementsUserService {
     /*
     ** Service: get all achievement user entities.
     */
-    public async getAllAchievementsUser(queryParams: AchievementsUserQueryDto): Promise<AchievementUserEntity[]> { 
+    public async getAllAchievementsUser(queryParams: AchievementsUserQueryDto): Promise<AchievementUserEntity[]> {
         return await this.achievementsUserRepository.find(new QueryMapper(queryParams));
     }
 
@@ -46,7 +46,7 @@ export class AchievementsUserService {
     */
     public async removeAchievementUser(id: number): Promise<void> {
         /* a testear */
-        const tal = this.achievementsUserRepository.softDelete(id);
-        console.log('testing testings...' + tal);
+        const tal = this.achievementsUserRepository.delete(id);
+        console.log('[ TEST | TO REMOVE ] testing testings...' + tal);
     }
 }

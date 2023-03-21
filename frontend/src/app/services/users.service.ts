@@ -31,6 +31,6 @@ export class UsersService {
     }
 
     getFriends(user: string){
-      return this.http.get(`http://localhost:3000/users/${user}/friends/as_pendding`)
+      return this.http.get(`http://localhost:3000/users/${user}/friends/as_pending`)
     }
 }

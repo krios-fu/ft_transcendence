@@ -1,12 +1,15 @@
 import { Exclude } from "class-transformer";
+import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
 import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
 import { ChatUserEntity } from "src/chat/entities/chat-user.entity";
-import { ChatMessageEntity } from "src/chat/entities/chat-message.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+import { RoomEntity } from "src/room/entity/room.entity";
+import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import {
 	Column,
 	Entity,
+	ManyToMany,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -75,6 +78,11 @@ export class UserEntity extends BaseEntity {
 	})
 	nickName : string;
 
+	@OneToMany(
+		() => RoomEntity,
+		(room: RoomEntity) => room.owner,
+	)
+
 	@Column({
 		type: 'boolean',
 		default: false
@@ -112,24 +120,34 @@ export class UserEntity extends BaseEntity {
 	category : Category;
 
 	@OneToMany(
-		() => ChatUserEntity, 
+		() => UserRoomEntity,
+		(userRoom: UserRoomEntity) => userRoom.user,
+		{ cascade: true }
+	)
+	userRoom: UserRoomEntity[];
+
+	@OneToMany(
+		() => ChatUserEntity,
 		(chatUser: ChatUserEntity) => chatUser.user,
-		{
-			onDelete: 'CASCADE',
-			cascade: true
-		}
-		 )
+		{ cascade: true }
+	)
 	chats: ChatUserEntity[];
 
 	@OneToOne
 	(
 		() => RefreshTokenEntity,
 		(tokenEntity: RefreshTokenEntity) => tokenEntity.authUser,
-		{ 
+		{ cascade: true }
+	)
+	token: RefreshTokenEntity;
+
+	@OneToMany(
+		() => AchievementUserEntity,
+		(achvmUsr: AchievementUserEntity) => achvmUsr.user,
+		{
 			cascade: true,
-			onDelete: 'CASCADE'
+			eager: true
 		}
 	)
-	token: RefreshTokenEntity
-
+	achievementUser: AchievementUserEntity[];
 }

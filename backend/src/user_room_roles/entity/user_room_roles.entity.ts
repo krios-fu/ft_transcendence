@@ -1,10 +1,15 @@
 import { BaseEntity } from "src/common/classes/base.entity";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, 
+   Entity, 
+   Index, 
+   JoinColumn, 
+   ManyToOne, 
+   PrimaryGeneratedColumn } from "typeorm";
 import { UserRoomRolesDto } from "../dto/user_room_roles.dto";
 
-@Entity({ name: 'roles_room' })
+@Entity({ name: 'user_room_roles' })
 @Index(['userRoomId', 'roleId'], { unique: true })
 export class UserRoomRolesEntity extends BaseEntity {
    constructor(dto: UserRoomRolesDto) {
@@ -27,8 +32,8 @@ export class UserRoomRolesEntity extends BaseEntity {
    @ManyToOne(
       () => UserRoomEntity,
       {
-         cascade: true,
          eager: true,
+         onDelete: 'CASCADE'
       }
    )
    @JoinColumn( {name: 'user_room_id'})
@@ -44,8 +49,8 @@ export class UserRoomRolesEntity extends BaseEntity {
    @ManyToOne(
       () => RolesEntity,
       {
-         cascade: true,
          eager: true,
+         onDelete: 'CASCADE'
       }
    )
    @JoinColumn({ name: 'role_id' })

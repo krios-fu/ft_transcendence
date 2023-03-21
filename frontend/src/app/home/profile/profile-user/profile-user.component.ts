@@ -116,7 +116,7 @@ export class ProfileUserComponent implements OnInit {
           this.FRIENDS_USERS = [];
           // change de icone visible add o remove 
 
-          this.http.get<any>(this.urlApi + `users/me/friends/as_pendding?filter[nickName]=${id}`)
+          this.http.get<any>(this.urlApi + `users/me/friends/as_pending?filter[nickName]=${id}`)
             .subscribe((friend: any) => {
               if (friend.length > 0) {
                 const { receiver } = friend[0];

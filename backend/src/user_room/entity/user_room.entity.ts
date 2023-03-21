@@ -2,13 +2,14 @@ import { BaseEntity } from "src/common/classes/base.entity";
 import { RoomMessageEntity } from "src/room/entity/room-message.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/entities/user.entity";
-import { Column, 
-    Entity, 
-    Index, 
+import { Column,
+    Entity,
+    Index,
     JoinColumn,
-    ManyToOne, 
+    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn } from "typeorm";
+import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
 import { CreateUserRoomDto } from "../dto/user_room.dto";
 
 @Entity({ name: 'users_room' })
@@ -34,7 +35,6 @@ export class UserRoomEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         {
-            cascade: true,
             eager: true,
             onDelete: 'CASCADE'
         }
@@ -52,7 +52,6 @@ export class UserRoomEntity extends BaseEntity {
     @ManyToOne(
         () => RoomEntity,
         {
-            cascade: true,
             eager: true,
             onDelete: 'CASCADE'
         }
@@ -68,12 +67,16 @@ export class UserRoomEntity extends BaseEntity {
     createdAt: Date
 
     @OneToMany(
+        () => UserRoomRolesEntity,
+        (userRoomRole: UserRoomRolesEntity) => userRoomRole.userRoom,
+        { cascade: true }
+    )
+    userRoomRole: UserRoomRolesEntity[];
+
+    @OneToMany(
         () => RoomMessageEntity,
         (message: RoomMessageEntity) => message.userRoom,
-        { 
-            onDelete: 'CASCADE',
-            cascade: true
-        }
+        { cascade: true }
     )
     messages: RoomMessageEntity[];
 }

@@ -39,7 +39,7 @@ export class RoomRolesService {
             }
         });
         if (!roomRoles.length) {
-            return null;
+            return [];
         }
         roomRoles.forEach((roomRole: RoomRolesEntity) => {
             roles.push(roomRole.role);
