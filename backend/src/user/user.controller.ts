@@ -189,7 +189,7 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar}`;
+        const photoUrl = `http://localhost:3000/${avatar.path}`;
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
@@ -212,7 +212,7 @@ export class UserController {
             this.userLogger.error(`User with id ${userId} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar}`;
+        const photoUrl = `http://localhost:3000/${avatar.path}`;
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 

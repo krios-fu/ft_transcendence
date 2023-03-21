@@ -42,8 +42,11 @@ import { join } from 'path';
             synchronize: true, // should be managed in dev only
         }),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..'),
-            serveRoot: 'static/'
+            rootPath: join(__dirname, '..', 'static'),
+            serveRoot: '/static',
+            serveStaticOptions: {
+                index: false
+            }
         }),
         RolesModule,
         RoomModule,
