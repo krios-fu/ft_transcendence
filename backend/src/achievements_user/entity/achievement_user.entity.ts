@@ -46,7 +46,10 @@ export class AchievementUserEntity extends BaseEntity {
     @ManyToOne(
         () => AchievementEntity,
         (achievement: AchievementEntity) => achievement.achievementUser,
-        { onDelete: 'CASCADE' }
+        {
+            onDelete: 'CASCADE',
+            eager: true
+        }
     )
     @JoinColumn({ name: 'achievement_id' })
     achievement: AchievementEntity;

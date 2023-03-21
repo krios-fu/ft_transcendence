@@ -27,7 +27,8 @@ constructor (
     private jwtLogger: Logger;
 
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        const username = jwtPayload.data?.username;
+        const username: string | undefined = jwtPayload.data?.username;
+
         if (username === undefined) {
             this.jwtLogger.error('JWT auth. service unexpected failure');
             throw new InternalServerErrorException()

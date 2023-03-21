@@ -20,6 +20,7 @@ import { WinnerModule } from './match/winner/winner.module';
 import { LoserModule } from './match/loser/loser.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
 
 
@@ -29,7 +30,10 @@ import { join } from 'path';
         AuthModule,
         ChatModule,
         MulterModule.register({
-            dest: './public',
+            dest: './static',
+        }),
+        ThrottlerModule.forRoot({
+            ttl: 10, limit: 5
         }),
         TypeOrmModule.forRoot({
             type: 'postgres',
@@ -42,7 +46,11 @@ import { join } from 'path';
             synchronize: true, // should be managed in dev only
         }),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', 'public'),
+            rootPath: join(__dirname, '..', 'static'),
+            serveRoot: '/static',
+            serveStaticOptions: {
+                index: false
+            }
         }),
         RolesModule,
         RoomModule,
@@ -60,6 +68,10 @@ import { join } from 'path';
     ],
     controllers: [],
     providers: [
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard
+        },
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,

@@ -6,6 +6,7 @@ import {
 import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
 import { UserService } from '../../user/services/user.service';
+import { NotValidatedException } from '../../common/classes/not-validated.exception';
 import { UserRolesService } from '../../user_roles/user_roles.service';
 
 @Injectable()
@@ -27,7 +28,8 @@ constructor (
     private jwtLogger: Logger;
 
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        const username = jwtPayload.data?.username;
+        const username: string | undefined = jwtPayload.data?.username;
+
         if (username === undefined) {
             this.jwtLogger.error('JWT auth. service unexpected failure');
             throw new InternalServerErrorException()
@@ -43,7 +45,7 @@ constructor (
             throw new UnauthorizedException();
         }
         if (jwtPayload.data?.validated !== true) {
-            throw new UnauthorizedException('User needs validation for 2fa strategy');
+            throw new NotValidatedException('User needs validation for 2fa strategy');
         }
         return jwtPayload;
     }

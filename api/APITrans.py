@@ -5,7 +5,7 @@ import os
 import requests
 
 class APITrans():
-    def __init__(self, *args, **kwargs):
+    def __init__(self, seed=False, *args, **kwargs):
         load_dotenv()
         for key, value in kwargs.items():
             self.set_param(key, value)
@@ -16,7 +16,8 @@ class APITrans():
         self.set_param('api_id', api_id)
         self.set_param('api_secret', api_secret)
         self.__get_creds('admin')
-        self.__seed_db()
+        if seed is not False:
+            self.__seed_db()
 
     def set_param(self, key, value):
         self.__dict__[key] = value
@@ -45,7 +46,7 @@ class APITrans():
             print('Error trying to establish a connection to API', file=sys.stderr)
             raise Exception('FATAL')
         except requests.exceptions.HTTPError as e:
-            print(f'Caught exception: {str(e)}')
+            print(f'HTTP error: {r.status_code}, {r.reason}, {r.text}')
             raise e
         token = r.json()['accessToken']
         self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
@@ -140,6 +141,6 @@ class APITrans():
 
 
     def __seed_db(self):
-        #self.set_param('users', [ self.post_user(u) for u in ['bob', 'tim', 'eric']])
-        #self.set_param('rooms', [ self.post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
+        self.set_param('users', [ self.post_user(u) for u in ['bob', 'tim', 'eric']])
+        self.set_param('rooms', [ self.post_room(r, self.users[0]['id']) for r in ['room_1', 'room_2', 'room_3']])
         self.set_param('roles', [ self.post_role('administrator') ])
