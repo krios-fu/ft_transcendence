@@ -29,7 +29,7 @@ import { join } from 'path';
         AuthModule,
         ChatModule,
         MulterModule.register({
-            dest: './public',
+            dest: './static',
         }),
         TypeOrmModule.forRoot({
             type: 'postgres',
@@ -42,8 +42,8 @@ import { join } from 'path';
             synchronize: true, // should be managed in dev only
         }),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', 'public'),
-            serveRoot: 'public/'
+            rootPath: join(__dirname, '..'),
+            serveRoot: 'static/'
         }),
         RolesModule,
         RoomModule,

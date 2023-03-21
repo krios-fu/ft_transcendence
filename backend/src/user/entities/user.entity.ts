@@ -9,7 +9,6 @@ import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 import {
 	Column,
 	Entity,
-	ManyToMany,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,

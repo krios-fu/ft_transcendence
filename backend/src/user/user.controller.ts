@@ -156,7 +156,7 @@ export class UserController {
     public async updateSettings(
         @Body() settingsDto: SettingsPayloadDto,
         @UserCreds() username: string
-    ): Promise<UpdateResult> {
+    ): Promise<UserEntity> {
         const user = await this.userService.findOneByUsername(username);
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
@@ -182,14 +182,14 @@ export class UserController {
         @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File,
         @UserCreds() username: string,
         @Req() req: Request
-    ) {
+    ): Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOneByUsername(username);
 
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        const photoUrl = `http://localhost:3000/${avatar}`;
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
@@ -205,14 +205,14 @@ export class UserController {
     public async uploadUserAvatar(
         @Param('id', ParseIntPipe) userId: number,
         @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
-    ):Promise<UpdateResult> {
+    ):Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOne(userId);
 
         if (user === null) {
             this.userLogger.error(`User with id ${userId} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path.replace('public/', '')}`;
+        const photoUrl = `http://localhost:3000/${avatar}`;
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
