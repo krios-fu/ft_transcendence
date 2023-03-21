@@ -24,7 +24,7 @@ function filterFileByType
 export const uploadUserAvatarSettings: MulterOptions = {
     storage: diskStorage({
         destination: (req, file, cb) => {
-            const dir = 'public/users/';
+            const dir = 'static/users/';
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             } else {
@@ -47,7 +47,7 @@ export const uploadUserAvatarSettings: MulterOptions = {
 export const uploadRoomAvatarSettings: MulterOptions = {
     storage: diskStorage({
         destination: (req, file, cb) => {
-            const dir = 'public/room/';
+            const dir = 'static/room/';
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             }

@@ -68,8 +68,8 @@ export class    GameService {
     */
     private async saveRankings(playerA: UserEntity,
                                 playerB: UserEntity): Promise<boolean> {
-        let resultA: Promise<UpdateResult>;
-        let resultB: Promise<UpdateResult>;
+        let resultA: Promise<UserEntity>;
+        let resultB: Promise<UserEntity>;
     
         try {
             resultA = this.userService.updateUser(playerA.id, {

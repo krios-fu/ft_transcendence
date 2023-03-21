@@ -30,7 +30,7 @@ import { join } from 'path';
         AuthModule,
         ChatModule,
         MulterModule.register({
-            dest: './public',
+            dest: './static',
         }),
         ThrottlerModule.forRoot({
             ttl: 10, limit: 5
@@ -46,7 +46,11 @@ import { join } from 'path';
             synchronize: true, // should be managed in dev only
         }),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', 'public'),
+            rootPath: join(__dirname, '..', 'static'),
+            serveRoot: '/static',
+            serveStaticOptions: {
+                index: false
+            }
         }),
         RolesModule,
         RoomModule,
