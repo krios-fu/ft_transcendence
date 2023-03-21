@@ -69,6 +69,9 @@ if __name__ == '__main__':
         )
         print(f'returned with status code {r.status_code}')
         print(r.json())
+    elif args.PETITION == 'test':
+        r = requests.get('http://localhost:3000/users/me', headers=headers)
+        print(f'returned with status code {r.status_code}')
     else:
         print('please provide a valid petition', file=sys.stderr)
         sys.exit(1)

@@ -4,8 +4,6 @@ import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { RoomEntity } from 'src/room/entity/room.entity';
 import { RoomService } from 'src/room/room.service';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/services/user.service';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
@@ -18,7 +16,6 @@ export class UserRoomService {
         private readonly userRoomRepository: UserRoomRepository,
         private readonly roomRolesService: RoomRolesService,
         private readonly roomService: RoomService,
-        private readonly userService: UserService,
     ) { }
 
     public async findAll(queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
