@@ -42,7 +42,4 @@ export class IsPrivate implements CanActivate {
         
 
     }
-
-    private 
-
 }

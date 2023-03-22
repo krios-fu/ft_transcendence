@@ -117,8 +117,18 @@ class APITrans():
             role = self.__request_get_wrapper(f'{url}{role_name}')
         return role
 
+    def post_room_role(self, room_id, role_id):
+        """" Post a new role for a room using room and role ids. """
+
+        url = 'http://localhost:3000/room_roles'
+        try:
+            room_role = self.__request_post_wrapper(url, { 'roomId': room_id, 'roleId': role_id })
+        except requests.exceptions.HTTPError:
+            room_role = self.__request_get_wrapper(f'{url}/rooms/{room_id}/roles/{role_id}')
+        return room_role
+
     def post_user_room(self, room_id, user_id):
-        url = f'http://localhost:3000/user_room/'
+        url = 'http://localhost:3000/user_room/'
         data = {
             'userId': user_id,
             'roomId': room_id
@@ -128,6 +138,18 @@ class APITrans():
         except requests.exceptions.HTTPError:
             user_room = self.__request_get_wrapper(f'{url}users/{user_id}/rooms/{room_id}')
         return user_room
+
+    def post_user_role(self, user_id, role_id):
+        url = 'http://localhost:3000/user_roles'
+        data = {
+            'userId': user_id,
+            'roleId': role_id
+        }
+        try:
+            user_role = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError:
+            user_role = self.__request_get_wrapper(f'{url}/users/{user_id}/roles/{role_id}')
+        return user_role
 
     def post_user_room_role(self, room_id, user_id, role_id):
         url = 'http://localhost:3000/user_room_roles/'

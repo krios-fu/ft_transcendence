@@ -40,15 +40,6 @@ export class RoomRolesService {
             .where('room_roles.room_id = :id', { id: roomId })
             .getMany();
         
-        //const roomRoles = await this.roomRolesRepository.find({
-        //    relations: { 
-        //        room: true,
-        //        role: true,
-        //    },
-        //    where: { 
-        //        room: { id: roomId }
-        //    }
-        //});
         if (!roomRoles.length) {
             return [];
         }
@@ -56,6 +47,15 @@ export class RoomRolesService {
             roles.push(roomRole.role);
         })
         return roles;
+    }
+
+    public async findRoomRoleByIds(roomId: number, roleId: number): Promise<RoomRolesEntity> {
+        return await this.roomRolesRepository.createQueryBuilder('room_roles')
+            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.room', 'room')
+            .where('room_roles.roomId = :room_id', { 'room_id': roomId })
+            .andWhere('room_roles.roleId = "role_id', { 'role_id': roleId })
+            .getOne();
     }
 
     public async findPrivateRoleInRoom(roomId: number): Promise<RoomRolesEntity> {
@@ -68,17 +68,27 @@ export class RoomRolesService {
     }
 
     public async create(dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
-        const newRoomRole = new RoomRolesEntity(dto);
-        return await this.roomRolesRepository.save(newRoomRole);
+        return await this.roomRolesRepository.save(new RoomRolesEntity(dto));
     }
 
     public async updatePassword(id: number, savedPwd: string, dto: UpdatePasswordDto): Promise<RoomRolesEntity> {
         const { oldPassword: oldPwd, newPassword: newPwd } = dto;
+
         if (await bcrypt.compare(savedPwd, oldPwd) === false) {
             return null;
         }
         await this.roomRolesRepository.update(id, { password: newPwd });
         return await this.findOne(id);
+    }
+
+    public async validatePassword(toValidate: string, roomId: number): Promise<boolean> {
+        const roomRole: RoomRolesEntity = await this.findOne(roomId);
+        const { password } = roomRole;
+
+        if (password === undefined) {
+            return false;
+        }
+        return await bcrypt.compare(password, toValidate);
     }
 
     public async delete(id: number): Promise<void> {

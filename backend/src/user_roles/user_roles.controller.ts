@@ -1,5 +1,16 @@
-import { Body, Delete, Get, HttpException, HttpStatus, Logger, NotFoundException, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, 
+    Delete, 
+    Get, 
+    BadRequestException, 
+    Logger, 
+    NotFoundException, 
+    Param, 
+    ParseIntPipe, 
+    Post, 
+    Query, 
+    UseGuards } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
+import { RolesService } from 'src/roles/roles.service';
 import { UserService } from '../user/services/user.service';
 import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesQueryDto } from './dto/user_roles.query.dto';
@@ -12,6 +23,7 @@ export class UserRolesController {
     constructor(
         private readonly userRolesService: UserRolesService,
         private readonly userService: UserService,
+        private readonly rolesService: RolesService
     ) { }
 
     private readonly userRolesLogger: Logger;
@@ -23,7 +35,8 @@ export class UserRolesController {
     /* Get an user with a role */
     @Get(':id')
     public async getUserRole(@Param('id', ParseIntPipe) id: number): Promise<UserRolesEntity> {
-        const userRole = await this.userRolesService.findOne(id);
+        const userRole: UserRolesEntity = await this.userRolesService.findOne(id);
+
         if (userRole === null) {
             this.userRolesLogger.error(`No user role with id ${id} found in database`);
             throw new NotFoundException('resource not found in database');
@@ -38,17 +51,31 @@ export class UserRolesController {
             this.userRolesLogger.error(`User with id ${userId} not found in database`);
             throw new NotFoundException('resource not found in database');
         }
-        return this.userRolesService.getAllRolesFromUser(userId);
+        return await this.userRolesService.getAllRolesFromUser(userId);
     }
 
     /* Get all users with a role */
     @Get('/roles/:role_id')
     public async getUsersWithRole(@Param('role_id', ParseIntPipe) roleId: number): Promise<UserRolesEntity[]> {
-        if (await this.userService.findOne(roleId) === null) {
+        if (await this.rolesService.findOne(roleId) === null) {
             this.userRolesLogger.error(`Role with id ${roleId} not found in database`);
             throw new NotFoundException('resource not found in database');
         }
-        return this.userRolesService.getUsersWithRole(roleId);
+        return await this.userRolesService.getUsersWithRole(roleId);
+    }
+
+    /* Get a role from user using user and role ids */
+    @getSelection('/users/:user_id/roles/:role_id')
+    public async getUserRoleByIds(
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('role_id', ParseIntPipe) roleId: number
+    ): Promise<UserRolesEntity> {
+        if (await this.userService.findOne(userId) === null ||
+            await this.rolesService.findOne(roleId) === null) {
+                this.userRolesLogger.error(`Resource not found in database`);
+                throw new NotFoundException('resource not found in database');
+            }
+        return await this.getUserRoleByIds(userId, roleId);
     }
 
     /* Create a new role for a user */
@@ -56,9 +83,10 @@ export class UserRolesController {
     @UseGuards(SiteAdminGuard)
     public async assignRoleToUser(@Body() dto: CreateUserRolesDto): Promise<UserRolesEntity> {
         const { userId, roleId } = dto;
+
         if (await this.userRolesService.findByUserRoleIds(userId, roleId) !== null) {
-            this.userRolesLogger.error('User ' + userId + ' with role ' + roleId + ' already present in database');
-            throw new HttpException('user role already in db', HttpStatus.BAD_REQUEST);
+            this.userRolesLogger.error(`User ${userId} with role ${roleId} + already present in database`);
+            throw new BadRequestException('user role already in db');
         }
         return this.userRolesService.assignRoleToUser(dto);
     }
@@ -67,6 +95,10 @@ export class UserRolesController {
     @UseGuards(SiteAdminGuard)
     @Delete(':id')
     public async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> { 
+        if (await this.userRolesService.findOne(id) === null) {
+            this.userRolesLogger.error(`No user role with id ${id} found in database`);
+            throw new BadRequestException('resource not found in database');
+        }
         await this.userRolesService.deleteRoleFromUser(id);
     }
 }

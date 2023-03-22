@@ -45,6 +45,16 @@ export class UserRolesService {
         });
     }
 
+    /* get user role with id :user_id and :room_id */
+    public async getUserRoleByIds(userId: number, roleId: number): Promise<UserRolesEntity[]> {
+        return await this.userRolesRepository.createQueryBuilder('user_roles')
+            .leftJoinAndSelect('user_roles.user', 'user')
+            .leftJoinAndSelect('user_roles.role', 'roles')
+            .where('user_role.userId = :user_id', { 'user_id': userId })
+            .andWhere('user_role.roleId = :role_id', { 'role_id': roleId })
+            .getOne();
+    }
+
     /* Create a new role entity provided RoleUserDto { userId, roleId } */
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {
         const newUserRole = new UserRolesEntity(dto);

@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ForbiddenWsException } from 'src/game/exceptions/forbidden.wsException';
 import { QueryMapper } from '../common/mappers/query.mapper';
 import { RoomEntity } from '../room/entity/room.entity';
 import { RoomService } from '../room/room.service';
 import { RoomRolesService } from '../room_roles/room_roles.service';
-import { CreateUserRoomDto } from './dto/user_room.dto';
+import { CreatePrivateUserRoomDto, CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { UserRoomRepository } from './repository/user_room.repository';
@@ -83,10 +84,8 @@ export class UserRoomService {
         return rooms;
     }
 
-    public async create(newDto: CreateUserRoomDto) {
-        const userInRoom = new UserRoomEntity(newDto);
-
-        return await this.userRoomRepository.save(userInRoom);
+    public async create(dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {        
+        return await this.userRoomRepository.save(new UserRoomEntity(dto));
     }
 
     public async remove(userRoom: UserRoomEntity): Promise<void> {
@@ -104,6 +103,22 @@ export class UserRoomService {
         if (users_len == 1) {
             await this.roomService.removeRoom(room);
             return null;
+        }
+    }
+
+    public async validateUserPassword(dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Prommise<boolean> {
+        const { roomId: room_id } = dto; 
+
+        if ((await this.roomRolesService.isRole('private', room_id)) === true) {
+            if (dto instanceof CreatePrivateUserRoomDto) {
+                const { password } = dto;
+                
+                return await this.roomRolesService.validatePassword(password, room_id);
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 }
