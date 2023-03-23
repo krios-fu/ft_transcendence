@@ -29,8 +29,10 @@ import {
 import { GameAuthGuard } from './guards/game.auth.guard';
 import { GameRoomGuard } from './guards/game.room.guard';
 import { IMenuInit } from './interfaces/msg.interfaces';
+import { MatchInviteResponseDto } from './dtos/matchInviteResponse.dto';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
+import { GameRoomService } from './game.room.service';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -48,7 +50,8 @@ export class    GameGateway implements OnGatewayInit,
         private readonly matchMakingService: GameMatchmakingService,
         private readonly socketHelper: SocketHelper,
         private readonly recoveryService: GameRecoveryService,
-        private readonly socketAuthService: GameSocketAuthService
+        private readonly socketAuthService: GameSocketAuthService,
+        private readonly roomService: GameRoomService
     ) {}
   
     afterInit() {
@@ -98,11 +101,38 @@ export class    GameGateway implements OnGatewayInit,
                                         undefined] =
                     this.updateService.getClientInitData(roomId);
     
-        client.join(roomId);
+        this.roomService.join(
+            client.data.mockUser, //Provisional
+            roomId
+        );
         this.matchMakingService.emitAllQueuesLength(roomId, client.id);
         if (initScene && initData)
             client.emit(initScene, initData);
+        await this.matchMakingService.updateNextPlayerRoom(
+            client.data.mockUser, //Provisional
+            roomId,
+            true
+        );
         console.log(`${client.data.username} joined Game room ${roomId}`);
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage("leaveRoom")
+    async leaveRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {    
+        this.roomService.leave(
+            client.data.mockUser, //Provisional
+            roomId
+        );
+        await this.matchMakingService.updateNextPlayerRoom(
+            client.data.mockUser,
+            roomId,
+            false
+        );
+        console.log(`${client.data.username} left Game room ${roomId}`);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -130,6 +160,20 @@ export class    GameGateway implements OnGatewayInit,
             roomId,
             "hero",
             client.data.mockUser // Provisional
+        );
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(MatchInviteResponseDto)
+    @SubscribeMessage('matchInviteResponse')
+    async matchInviteResponse(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() invite: MatchInviteResponseDto
+    ) {
+        await this.matchMakingService.updateNextPlayerInvite(
+            client.data.mockUser, // Provisional
+            invite.roomId,
+            invite.accept
         );
     }
 

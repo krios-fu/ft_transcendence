@@ -14,6 +14,7 @@ import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';
 import { GameReconciliationService } from './game.reconciliation.service';
 import { GameRecoveryService } from './game.recovery.service';
+import { GameRoomService } from './game.room.service';
 import { GameService } from './game.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
@@ -41,7 +42,8 @@ import { GameUpdateService } from './game.updateService';
     GameSocketAuthService,
     GameAchievementsService,
     GameDataService,
-    GameMatchmakingService
+    GameMatchmakingService,
+    GameRoomService
   ],
 })
 export class GameModule {}

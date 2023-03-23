@@ -26,8 +26,8 @@ export class    GameMatchmakingService {
     }
 
     @OnEvent('game.ended')
-    handleGameEndedEvent(gameId: string) {
-        this.attemptPlayerPairing(gameId);
+    async handleGameEndedEvent(gameId: string) {
+        await this.attemptPlayerPairing(gameId);
     }
 
     private _emitQueueUpdate(roomId: string, gameType: GameType,
@@ -55,6 +55,33 @@ export class    GameMatchmakingService {
         );
     }
 
+    isNextPlayer(username: string, roomId: string): boolean {
+        const   nextPlayers: NextPlayerPair | undefined =
+                            this.queueService.getNextPlayers(roomId);
+    
+        if (!nextPlayers
+                || !nextPlayers[0]
+                || !nextPlayers[1])
+            return (false);
+        for (const nxtPlayer of nextPlayers)
+        {
+            if (nxtPlayer.queueElement.user.username === username)
+                return (true);
+        }
+        return (false);
+    }
+
+    private _canAttemptPairing(gameId: string): boolean {
+        const   nextPlayers: NextPlayerPair =
+                            this.queueService.getNextPlayers(gameId);
+    
+        return (
+            !nextPlayers
+                || (!nextPlayers[0]
+                    && !nextPlayers[1])
+        );
+    }
+
     private _canStartGame(gameId: string): boolean {
         return (
             !this.gameDataService.getGameData(gameId)
@@ -77,9 +104,9 @@ export class    GameMatchmakingService {
             lengthUpdate
         );
         if (lengthUpdate > 1
+                && this._canAttemptPairing(gameId)
                 && this._canStartGame(gameId))
-            this.attemptPlayerPairing(gameId);
-
+            await this.attemptPlayerPairing(gameId);
     }
 
     removeFromQueue(gameId: string, gameType: GameType,
@@ -118,38 +145,91 @@ export class    GameMatchmakingService {
         this.updateNextPlayerInvite(username, gameId, false);
     }
 
+    private async _initInRoom(gameId: string,
+                                nextPlayers: Readonly<NextPlayerPair>)
+                                            : Promise<void> {
+        let inRoom: boolean;
+        let username: string;
+    
+        for (const player of nextPlayers)
+        {
+            username = player.queueElement.user.username
+            inRoom = await this.socketHelper.checkUserInRoom(
+                username,
+                gameId
+            );
+            if (inRoom)
+                await this.updateNextPlayerRoom(username, gameId, inRoom);
+        }
+    }
+
+    private _sendInvites(gameId: string,
+                            nextPlayers: Readonly<NextPlayerPair>): void {
+        for (const nextPlayer of nextPlayers)
+        {
+            if (nextPlayer.accepted)
+                continue ;
+            this.socketHelper.emitToRoom(
+                SocketHelper.getUserRoomName(
+                    nextPlayer.queueElement.user.username
+                ),
+                "matchInvite",
+                gameId
+            );
+        }
+    }
+
+    private _removeInvalidNextPlayers(gameId: string): void {
+        const   removedUsernames: [string, string] =
+                                this.queueService.removeInvalidNextPlayers(
+                                                        gameId);
+    
+        for (const username of removedUsernames)
+        {
+            if (username)
+            {
+                this.socketHelper.emitToRoom(
+                    SocketHelper.getUserRoomName(username),
+                    "unqueue"
+                );
+            }
+        }
+    }
+
     private _setPairingTimeout(gameId: string): void {
         let pairingTimeout: NodeJS.Timeout;
     
         pairingTimeout = this._pairingTimeouts.get(gameId);
         if (pairingTimeout)
             clearTimeout(pairingTimeout);
-        pairingTimeout = setTimeout(() => {
-            this.queueService.removeInvalidNextPlayers(gameId);
-            clearTimeout(this._pairingTimeouts.get(gameId));
-            this._pairingTimeouts.delete(gameId);
-            this.attemptPlayerPairing(gameId);
+        pairingTimeout = setTimeout(async () => {
+            this._removeInvalidNextPlayers(gameId);
+            this._removePairingTimeout(gameId);
+            await this.attemptPlayerPairing(gameId);
         },
-        10 * 1000);
+        15 * 1000);
         this._pairingTimeouts.set(gameId, pairingTimeout);
     }
 
-    attemptPlayerPairing(gameId: string): void {
+    async attemptPlayerPairing(gameId: string): Promise<void> {
         let nextPlayers: Readonly<NextPlayerPair> | undefined =
                     this.queueService.getNextPlayers(gameId);
-        
+    
         if (nextPlayers
                 && nextPlayers[0]
                 && nextPlayers[1])
             return ;
         nextPlayers = this.queueService.selectNextPlayers(gameId);
-        if (!nextPlayers)
+        if (!nextPlayers
+                || !nextPlayers[0]
+                || !nextPlayers[1])
         {
             this.emitAllQueuesLength(gameId, gameId); 
             return ;
         }
         this._setPairingTimeout(gameId);
-        //EMIT NEXT PLAYER NOTIFICATIONS
+        this._sendInvites(gameId, nextPlayers);
+        await this._initInRoom(gameId, nextPlayers);
     }
 
     private _removePairingTimeout(gameId: string): void {
@@ -200,8 +280,8 @@ export class    GameMatchmakingService {
     **  the other has not taken a decision yet, wait until the other's
     **  decision or until pairing timeout.
     */
-    updateNextPlayerInvite(username: string, gameId: string,
-                            accept: boolean): void {
+    async updateNextPlayerInvite(username: string, gameId: string,
+                            accept: boolean): Promise<void> {
         const   nextPlayers: NextPlayerPair | undefined =
                             this.queueService.updateNextPlayerInvite(
                                                     username,
@@ -217,28 +297,33 @@ export class    GameMatchmakingService {
                 || (nextPlayers[1].declined
                     && (nextPlayers[0].accepted || nextPlayers[0].declined)))
         {
-            this.queueService.removeInvalidNextPlayers(gameId);
-            this.attemptPlayerPairing(gameId);
+            this._removePairingTimeout(gameId);
+            this._removeInvalidNextPlayers(gameId);
+            await this.attemptPlayerPairing(gameId);
         }
         else if ((nextPlayers[0].accepted && nextPlayers[0].inRoom)
                     && (nextPlayers[1].accepted && nextPlayers[1].inRoom))
         {
             if (!this._confirmNextPlayers(gameId))
-                this.attemptPlayerPairing(gameId);
+                await this.attemptPlayerPairing(gameId);
             else
                 this._initGame(gameId, nextPlayers);
         }
     }
 
     // Called when a player joins or leaves a game room.
-    updateNextPlayerRoom(username: string, gameId: string,
-                            join: boolean): void {
+    async updateNextPlayerRoom(username: string, gameId: string,
+                            join: boolean): Promise<void> {
         const   nextPlayers: NextPlayerPair | undefined =
                             this.queueService.updateNextPlayerRoom(
                                                 username,
                                                 gameId,
                                                 join);
+        const   registeredRoom: string = await this.queueService.findUser(
+                                                                    username);
 
+        if (registeredRoom != gameId && join)
+            await this.updateNextPlayerRoom(username, registeredRoom, false);
         if (!nextPlayers
                 || !nextPlayers[0]
                 || !nextPlayers[1])
@@ -247,7 +332,7 @@ export class    GameMatchmakingService {
                 && (nextPlayers[1].accepted && nextPlayers[1].inRoom))
         {
             if (!this._confirmNextPlayers(gameId))
-                this.attemptPlayerPairing(gameId);
+                await this.attemptPlayerPairing(gameId);
             else
                 this._initGame(gameId, nextPlayers);
         }

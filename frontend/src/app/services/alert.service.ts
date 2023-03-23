@@ -5,6 +5,7 @@ import { DialogNotification } from "./dialog/dialog.notification";
 import { FriendNotificationComponent } from "./dialog/notification/friend-notification/friend-notification.component";
 import { GameNotificationComponent } from "./dialog/notification/game-notification/game-notification.component";
 import { UserDto } from "../dtos/user.dto";
+import { MatchNotificationComponent } from "./dialog/notification/match-notification/match-notification.component";
 
 @Injectable({
     providedIn: 'root'
@@ -49,4 +50,16 @@ export class AlertServices{
             right: '1vw'
           }});
     }
+
+    openMatchInvite(roomId: string ) {
+      this._dialog.open(MatchNotificationComponent,{
+          minWidth: '300px',
+          maxWidth: '450px',
+          data: roomId,
+          position: {
+            bottom: '0',
+            left: '0'
+          }
+      });
+  }
 }

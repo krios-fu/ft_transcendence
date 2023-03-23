@@ -36,6 +36,12 @@ interface   GameQueues {
     nextPlayers: NextPlayerPair;
 }
 
+type    NextPlayerQueueType = [
+            INextPlayer | undefined,
+            IQueueElement[],
+            GameType
+];
+
 type    PlayerQueueType = [
             IQueueElement | undefined,
             IQueueElement[],
@@ -110,7 +116,9 @@ export class    GameQueueService {
         queues.nextPlayers = pair;
     }
 
-    private _pruneGameQueues(gameQueues: GameQueues, gameId: string): void {
+    private _pruneGameQueues(gameId: string): void {
+        const   gameQueues = this._gameQueues.get(gameId);
+    
         if (!gameQueues.classicQueue.length
                 && !gameQueues.heroQueue.length
                 && !gameQueues.nextPlayers[0]
@@ -181,8 +189,11 @@ export class    GameQueueService {
     /*
     **  Sets existing valid nextPlayer as playerA if there are other users
     **  in the queue. Otherwise, it gets reinserted into the queue.
+    **
+    **  There should only be one nextPlayer or any,
+    **  because removeInvalidNextPlayers should have been called previously.
     */
-    private _existingNextPlayer(gameId: string): PlayerQueueType {
+    private _existingNextPlayer(gameId: string): NextPlayerQueueType {
         const   players: NextPlayerPair | undefined =
                         this.getNextPlayers(gameId);
         let     queue: IQueueElement[];
@@ -193,38 +204,43 @@ export class    GameQueueService {
         {
             if (!player)
                 continue ;
-            if (player
-                && (player.accepted
-                        || !player.declined))
+            queue = this._getQueue(gameId, player.gameType);
+            if (!queue.length)
             {
-                queue = this._getQueue(gameId, player.gameType);
-                if (!queue.length)
-                {
-                    this._reInsertToQueue(queue, player.queueElement);
-                    break ;
-                }
-                return ([player.queueElement, queue, player.gameType]);
+                this._reInsertToQueue(queue, player.queueElement);
+                this._setNextPlayers(
+                    gameId,
+                    [undefined, undefined]
+                );
+                break ;
             }
+            return ([player, queue, player.gameType]);
         }
         return ([undefined, [], "classic"]);
     }
 
     // Places 2 prospect players in the NextPlayers map
     selectNextPlayers(gameId: string): Readonly<NextPlayerPair> {
+        let nextPlayerA: INextPlayer = undefined;
         let playerA: IQueueElement = undefined;
         let playerB: IQueueElement = undefined;
         let nextPlayers: NextPlayerPair;
         let queue: IQueueElement[];
         let gameType: GameType;
 
-        [playerA, queue, gameType] = this._existingNextPlayer(gameId);
-        if (!playerA)
+        [nextPlayerA, queue, gameType] = this._existingNextPlayer(gameId);
+        if (!nextPlayerA)
             [playerA, queue, gameType] = this._selectPlayerA(gameId);
-        if (!playerA)
+        if (!nextPlayerA
+                && !playerA)
             return ([undefined, undefined]);
-        playerB = this._selectPlayerB(playerA.user, queue);
+        playerB = this._selectPlayerB(
+            nextPlayerA ? nextPlayerA.queueElement.user : playerA.user,
+            queue
+        );
         nextPlayers = [
-            this._generateNextPlayer(playerA, gameType),
+            nextPlayerA ? nextPlayerA
+                        : this._generateNextPlayer(playerA, gameType),
             this._generateNextPlayer(playerB, gameType)
         ];
         this._setNextPlayers(gameId, nextPlayers);
@@ -246,21 +262,24 @@ export class    GameQueueService {
                             this.getNextPlayers(gameId);
         let     target: INextPlayer | undefined = undefined;
     
-        if (!nextPlayers)
+        if (!nextPlayers
+                || !nextPlayers[0]
+                || !nextPlayers[1])
             return (undefined);
         for (const nextPlayer of nextPlayers)
         {
             if (!nextPlayer
-                    || nextPlayers[0].queueElement.user.username != username)
+                    || nextPlayer.queueElement.user.username != username)
                 continue ;
-            target = nextPlayer;
+            if (!nextPlayer.accepted && !nextPlayer.declined)
+                target = nextPlayer;
             break ;
         }
         if (!target)
             return (undefined);
         if (!accept)
             target.declined = true;
-        if (accept)
+        else
             target.accepted = true;
         return (nextPlayers);
     }
@@ -276,7 +295,7 @@ export class    GameQueueService {
         for (const nextPlayer of nextPlayers)
         {
             if (!nextPlayer
-                    || nextPlayers[0].queueElement.user.username != username)
+                    || nextPlayer.queueElement.user.username != username)
                 continue ;
             target = nextPlayer;
             break ;
@@ -290,6 +309,7 @@ export class    GameQueueService {
     // Called when the caller is sure there are 2 valid INextPlayers
     confirmNextPlayers(gameId: string): [number, GameType] | undefined {
         const   gameQueues = this._gameQueues.get(gameId);
+        let     gameType: GameType;
         let     targetQueue: IQueueElement[];
         let     lengthUpdate: number;
     
@@ -297,27 +317,39 @@ export class    GameQueueService {
                 || !gameQueues.nextPlayers[0]
                 || !gameQueues.nextPlayers[1])
             return (undefined);
-        targetQueue = gameQueues.nextPlayers[0].gameType === "hero"
+        gameType = gameQueues.nextPlayers[0].gameType;
+        targetQueue = gameType === "hero"
                         ? gameQueues.heroQueue
                         : gameQueues.classicQueue;
         lengthUpdate = targetQueue.length;
         gameQueues.nextPlayers = [undefined, undefined];
-        this._pruneGameQueues(gameQueues, gameId);
+        this._pruneGameQueues(gameId);
         return ([
             lengthUpdate,
-            gameQueues.nextPlayers[0].gameType
+            gameType
         ]);
     }
 
-    removeInvalidNextPlayers(gameId: string): void {
-        let [playerA, playerB]: NextPlayerPair = this.getNextPlayers(gameId);
+    removeInvalidNextPlayers(gameId: string): [string, string] {
+        const   gameQueues: GameQueues = this._gameQueues.get(gameId);
+        let nextPlayers: NextPlayerPair = gameQueues.nextPlayers;
+        let removedUsernames: [string, string];
+        let i: number;
     
-        if (playerA.declined
-                || (!playerA.inRoom))
-            playerA = undefined;
-        if (playerB.declined
-                || (!playerB.inRoom))
-            playerB = undefined;
+        i = 0;
+        removedUsernames = ["", ""];
+        for (const nextPlayer of nextPlayers)
+        {
+            if (!nextPlayer.accepted
+                    || (!nextPlayer.inRoom))
+            {
+                removedUsernames[i] = nextPlayer.queueElement.user.username;
+                gameQueues.nextPlayers[i] = undefined;
+            }
+            ++i;
+        }
+        this._pruneGameQueues(gameId);
+        return (removedUsernames);
     }
 
     private _findByUsername(username: string, queue: IQueueElement[]): number {
@@ -410,7 +442,7 @@ export class    GameQueueService {
                     : queues.classicQueue;
         this._removeFromQueue(queue, username);
         queueLength = queue.length;
-        this._pruneGameQueues(queues, gameId);
+        this._pruneGameQueues(gameId);
         return (queueLength);
     }
 

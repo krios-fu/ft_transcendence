@@ -1,0 +1,14 @@
+<h3 mat-dialog-title>
+    Play in <span id="room-name">{{roomId}}</span> room?
+</h3>
+<mat-progress-bar
+    mode="determinate"
+    [value]="progressbarValue">
+</mat-progress-bar>
+<section style="color: rgb(84, 16, 230)" mat-dialog-actions>
+    <button mat-button mat-dialog-close>Decline</button>
+    <button mat-button mat-dialog-close
+            [mat-dialog-close]="true" cdkFocusInitial>
+        Accept
+    </button>
+</section>

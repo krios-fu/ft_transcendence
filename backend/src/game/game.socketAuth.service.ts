@@ -53,19 +53,14 @@ export class    GameSocketAuthService {
 
     private _getCurrentUser(client: Socket): string {
         const   rooms: IterableIterator<string> = client.rooms.keys();
-        const   userRoomSpecifier: string = "-User";
         let     username: string = "";
 
         for (const room of rooms)
         {
-            if (room.endsWith(userRoomSpecifier))
-            {
-                username = room.slice(
-                    0,
-                    room.length - userRoomSpecifier.length
-                );
+            username = SocketHelper.getUserNameFromRoomName(room);
+            if (username
+                && !username.includes("user-")) //Remove this second check in production. It skips test users.
                 break ;
-            }
         }
         return (username);
     }
@@ -84,10 +79,10 @@ export class    GameSocketAuthService {
             mockUser: `user-${this._mockUserNum}`
         }); //Provisional
         client.data.mockUser = `user-${this._mockUserNum}`; //Provisional
-        client.join(`user-${this._mockUserNum}`); //Provisional
-        client.join(`${username}-User`);
+        client.join(SocketHelper.getUserRoomName(`user-${this._mockUserNum}`)); //Provisional
+        client.join(SocketHelper.getUserRoomName(username));
         console.log(
-            `With id: ${client.id}, username ${username}-User`
+            `With id: ${client.id}, username: ${username}`
             +
             `, and testing-username user-${this._mockUserNum}`
         );

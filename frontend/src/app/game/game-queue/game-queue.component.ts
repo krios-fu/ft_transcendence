@@ -1,5 +1,6 @@
 import {
     Component,
+    Input,
     OnDestroy,
     OnInit
 } from '@angular/core';
@@ -23,6 +24,8 @@ export class GameQueueComponent implements OnInit, OnDestroy {
     private _classicSubscription: Subscription | undefined;
     private _heroSubscription: Subscription | undefined;
     private _unqueueSubscription: Subscription | undefined;
+
+    @Input('roomId') roomId: string = '';
 
     constructor(
         private readonly queueService: QueueService
@@ -85,14 +88,14 @@ export class GameQueueComponent implements OnInit, OnDestroy {
     addToQueue() {
         if (this.queued)
             return ;
-        if (this.queueService.addToQueue())
+        if (this.queueService.addToQueue(this.roomId))
             this.queued = true;
     }
 
     addToHeroQueue() {
         if (this.queued)
             return ;
-        if (this.queueService.addToHeroQueue())
+        if (this.queueService.addToHeroQueue(this.roomId))
             this.queued = true;
     }
 
