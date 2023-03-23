@@ -54,6 +54,14 @@ export class    GameMatchmakingService {
         );
     }
 
+    private _emitCancelNotification(username: string, gameId: string): void {
+        this.socketHelper.emitToRoom(
+            SocketHelper.getUserRoomName(username),
+            "gameCancel",
+            gameId
+        );
+    }
+
     emitAllQueuesLength(gameId: string, emitTo: string): void {
         const   [classicLength, heroLength]: [number, number] =
                                 this.queueService.getAllQueuesLength(gameId);
@@ -232,20 +240,42 @@ export class    GameMatchmakingService {
         this._pairingTimeouts.set(gameId, pairingTimeout);
     }
 
+    private _extractRemainingNextPlayerUsername(
+                nextPlayers: Readonly<NextPlayerPair>): string {
+        if (!nextPlayers)
+            return ("");
+        for (const nextPlayer of nextPlayers)
+        {
+            if (nextPlayer)
+                return (nextPlayer.queueElement.user.username);
+        }
+        return ("");
+    }
+
     async attemptPlayerPairing(gameId: string): Promise<void> {
         let nextPlayers: Readonly<NextPlayerPair> | undefined =
                     this.queueService.getNextPlayers(gameId);
+        let cancelNotificationUsername: string = "";
     
         if (nextPlayers
                 && nextPlayers[0]
                 && nextPlayers[1])
             return ;
+        cancelNotificationUsername =
+            this._extractRemainingNextPlayerUsername(nextPlayers);
         nextPlayers = this.queueService.selectNextPlayers(gameId);
         if (!nextPlayers
                 || !nextPlayers[0]
                 || !nextPlayers[1])
         {
-            this.emitAllQueuesLength(gameId, gameId); 
+            this.emitAllQueuesLength(gameId, gameId);
+            if (cancelNotificationUsername)
+            {
+                this._emitCancelNotification(
+                    cancelNotificationUsername,
+                    gameId
+                );
+            }
             return ;
         }
         this._setPairingTimeout(gameId);

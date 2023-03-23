@@ -14,6 +14,7 @@ export class    QueueService {
     private _unqueue: Observable<void>;
     private _userQueue: Observable<UserQueueData>;
     private _invite: Observable<string>;
+    private _gameCancel: Observable<string>;
 
     constructor(
         private readonly socketService: SocketService,
@@ -24,20 +25,32 @@ export class    QueueService {
         this._unqueue = this._setObservable<void>("unqueue");
         this._userQueue = this._setObservable<UserQueueData>("userQueue");
         this._invite = this._setObservable<string>("matchInvite");
-        this._setMatchInviteNotification();
+        this._gameCancel = this._setObservable<string>("gameCancel");
+        this._setSubscriptions();
     }
 
     private _setObservable<T>(event: string): Observable<T> {
         return (this.socketService.getObservable<T>(event));
     }
 
-    private _setMatchInviteNotification(): void {
+    private _setSubscriptions(): void {
         this._invite.subscribe({
             next: (roomId: string) => {
                 this.alertService.openMatchInvite(roomId);
             },
             error: (err: any) => {
                 console.log(`Error in Match Invite Notification. ${err}`);
+            }
+        });
+        this._gameCancel.subscribe({
+            next: (roomId: string) => {
+                this.alertService.openSnackBar(
+                    `Sorry, Game in room ${roomId} was canceled.`,
+                    "OK"
+                );
+            },
+            error: (err: any) => {
+                console.log(`Error in Game Cancel Notification. ${err}`);
             }
         });
     }
