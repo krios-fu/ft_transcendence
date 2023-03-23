@@ -164,6 +164,34 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage('removeFromGameQueue')
+    async removeFromGameQueue(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        await this.matchMakingService.removeFromQueue(
+            roomId,
+            "classic",
+            client.data.mockUser //Provisional
+        );
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage('removeFromGameHeroQueue')
+    async removeFromGameHeroQueue(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        await this.matchMakingService.removeFromQueue(
+            roomId,
+            "hero",
+            client.data.mockUser // Provisional
+        );
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
     @UsePipes(MatchInviteResponseDto)
     @SubscribeMessage('matchInviteResponse')
     async matchInviteResponse(

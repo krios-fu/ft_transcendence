@@ -11,6 +11,12 @@ import {
 } from '@nestjs/event-emitter';
 import { GameDataService } from "./game.data.service";
 
+export interface    UserQueueUpdate {
+    queued: boolean,
+    roomId?: string;
+    type?: GameType;
+}
+
 @Injectable()
 export class    GameMatchmakingService {
 
@@ -36,6 +42,15 @@ export class    GameMatchmakingService {
             roomId,
             gameType === "classic" ? "queueClassicLength" : "queueHeroLength",
             length
+        );
+    }
+
+    private _emitUserQueueUpdate(username: string,
+                                    data: UserQueueUpdate): void {
+        this.socketHelper.emitToRoom(
+            SocketHelper.getUserRoomName(username),
+            "userQueue",
+            data
         );
     }
 
@@ -103,6 +118,11 @@ export class    GameMatchmakingService {
             gameType,
             lengthUpdate
         );
+        this._emitUserQueueUpdate(username, {
+            queued: true,
+            roomId: gameId,
+            type: gameType
+        });
         if (lengthUpdate > 1
                 && this._canAttemptPairing(gameId)
                 && this._canStartGame(gameId))
@@ -125,6 +145,7 @@ export class    GameMatchmakingService {
             gameType,
             lengthUpdate
         );
+        this._emitUserQueueUpdate(username, { queued: false });
     }
 
     removeFromAllQueues(username: string): void {

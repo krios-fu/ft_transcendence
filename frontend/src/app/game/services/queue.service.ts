@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { AlertServices } from "src/app/services/alert.service";
+import { UserQueueData } from "../game-queue/game-queue.component";
 import { SocketService } from "./socket.service";
 
 @Injectable({
@@ -11,6 +12,7 @@ export class    QueueService {
     private _queueClassic: Observable<number>;
     private _queueHero: Observable<number>;
     private _unqueue: Observable<void>;
+    private _userQueue: Observable<UserQueueData>;
     private _invite: Observable<string>;
 
     constructor(
@@ -20,6 +22,7 @@ export class    QueueService {
         this._queueClassic = this._setObservable<number>("queueClassicLength");
         this._queueHero = this._setObservable<number>("queueHeroLength");
         this._unqueue = this._setObservable<void>("unqueue");
+        this._userQueue = this._setObservable<UserQueueData>("userQueue");
         this._invite = this._setObservable<string>("matchInvite");
         this._setMatchInviteNotification();
     }
@@ -51,20 +54,36 @@ export class    QueueService {
         return (this._unqueue);
     }
 
-    addToQueue(roomId: string): boolean {
-        this.socketService.emit<any>(
+    userQueueSubscription(): Observable<UserQueueData> {
+        return (this._userQueue);
+    }
+
+    addToQueue(roomId: string): void {
+        this.socketService.emit<string>(
             "addToGameQueue",
             roomId
         );
-        return (true);
     }
 
-    addToHeroQueue(roomId: string) {
-        this.socketService.emit<any>(
+    addToHeroQueue(roomId: string): void {
+        this.socketService.emit<string>(
             "addToGameHeroQueue",
             roomId
         );
-        return (true);
+    }
+
+    removeFromQueue(roomId: string): void {
+        this.socketService.emit<string>(
+            "removeFromGameQueue",
+            roomId
+        );
+    }
+
+    removeFromHeroQueue(roomId: string): void {
+        this.socketService.emit<string>(
+            "removeFromGameHeroQueue",
+            roomId
+        );
     }
 
 }
