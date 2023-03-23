@@ -24,7 +24,9 @@ export class UserRolesController {
         private readonly userRolesService: UserRolesService,
         private readonly userService: UserService,
         private readonly rolesService: RolesService
-    ) { }
+    ) { 
+        this.userRolesLogger = new Logger(UserRolesController.name);
+    }
 
     private readonly userRolesLogger: Logger;
     /* Get all users with roles */
@@ -65,7 +67,7 @@ export class UserRolesController {
     }
 
     /* Get a role from user using user and role ids */
-    @getSelection('/users/:user_id/roles/:role_id')
+    @Get('/users/:user_id/roles/:role_id')
     public async getUserRoleByIds(
         @Param('user_id', ParseIntPipe) userId: number,
         @Param('role_id', ParseIntPipe) roleId: number
@@ -75,17 +77,17 @@ export class UserRolesController {
                 this.userRolesLogger.error(`Resource not found in database`);
                 throw new NotFoundException('resource not found in database');
             }
-        return await this.getUserRoleByIds(userId, roleId);
+        return await this.userRolesService.getUserRoleByIds(userId, roleId);
     }
 
     /* Create a new role for a user */
     @Post()
-    @UseGuards(SiteAdminGuard)
+    //@UseGuards(SiteAdminGuard)
     public async assignRoleToUser(@Body() dto: CreateUserRolesDto): Promise<UserRolesEntity> {
         const { userId, roleId } = dto;
 
-        if (await this.userRolesService.findByUserRoleIds(userId, roleId) !== null) {
-            this.userRolesLogger.error(`User ${userId} with role ${roleId} + already present in database`);
+        if (await this.userRolesService. getUserRoleByIds(userId, roleId) !== null) {
+            this.userRolesLogger.error(`User ${userId} with role ${roleId} already present in database`);
             throw new BadRequestException('user role already in db');
         }
         return this.userRolesService.assignRoleToUser(dto);

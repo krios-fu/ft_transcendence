@@ -106,7 +106,7 @@ export class UserRoomService {
         }
     }
 
-    public async validateUserPassword(dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Prommise<boolean> {
+    public async validateUserPassword(dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<boolean> {
         const { roomId: room_id } = dto; 
 
         if ((await this.roomRolesService.isRole('private', room_id)) === true) {

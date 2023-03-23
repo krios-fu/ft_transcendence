@@ -69,7 +69,7 @@ export class RoomRolesController {
     ): Promise<RoomRolesEntity> {
         if (await this.roomService.findOne(roomId) === null ||
             await this.rolesService.findOne(roleId) === null) {
-                this.roomRoleLogger('resource not found in database');
+                this.roomRoleLogger.error('resource not found in database');
                 throw new BadRequestException('resource not found in database');
             }
         return await this.roomRolesService.findRoomRoleByIds(roomId, roleId);

@@ -46,6 +46,7 @@ services:
       - webapp-network
     ports:
       - 5050:80
+      
   frontend:
     container_name: frontend
     image: node:18-alpine

@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 
-@Entity({ name: 'roles_user' })
+@Entity({ name: 'user_roles' })
 @Index(['roleId', 'userId'], { unique: true })
 export class UserRolesEntity extends BaseEntity {
     constructor (dto: CreateUserRolesDto) {

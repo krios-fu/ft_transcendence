@@ -32,7 +32,10 @@ export class UserRolesService {
     /* Returns all roles entities associated with user */
     public async getAllRolesFromUser(userId: number): Promise<UserRolesEntity[]> { 
         return await this.userRolesRepository.find({
-            relations: { user: true },
+            relations: { 
+                user: true, 
+                role: true 
+            },
             where: { userId: userId },
         });
     }
@@ -46,12 +49,12 @@ export class UserRolesService {
     }
 
     /* get user role with id :user_id and :room_id */
-    public async getUserRoleByIds(userId: number, roleId: number): Promise<UserRolesEntity[]> {
-        return await this.userRolesRepository.createQueryBuilder('user_roles')
+    public async getUserRoleByIds(userId: number, roleId: number): Promise<UserRolesEntity> {
+        return (await this.userRolesRepository.createQueryBuilder('user_roles'))
             .leftJoinAndSelect('user_roles.user', 'user')
             .leftJoinAndSelect('user_roles.role', 'roles')
-            .where('user_role.userId = :user_id', { 'user_id': userId })
-            .andWhere('user_role.roleId = :role_id', { 'role_id': roleId })
+            .where('user_roles.userId = :user_id', { 'user_id': userId })
+            .andWhere('user_roles.roleId = :role_id', { 'role_id': roleId })
             .getOne();
     }
 
@@ -63,17 +66,7 @@ export class UserRolesService {
 
     /* Remove role entity by id */
     public async deleteRoleFromUser(id: number) { 
-        await this.userRolesRepository.softDelete(id);
-    }
-    /* Test if delete removes from non-primary key column */
-
-    public async findByUserRoleIds(userId: number, roleId: number) {
-        return await this.userRolesRepository.find({
-            where: {
-                userId: userId,
-                roleId: roleId
-            }
-        });
+        await this.userRolesRepository.delete(id);
     }
 
     /* 

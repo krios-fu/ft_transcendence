@@ -51,6 +51,15 @@ class APITrans():
         token = r.json()['accessToken']
         self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
 
+    def set_user_creds(self, username):
+        try:
+            r = self.__request_get_wrapper(f'http://localhost:3000/users/{username}')
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print(f'user {username} not found in database', file=sys.stderr)
+            return
+        self.__get_creds(username)
+
     def __request_get_wrapper(self, url):
         """ Requests entity detail view via ID. """
         print(f'  [ GET: {url} ]') 

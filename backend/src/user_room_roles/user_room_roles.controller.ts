@@ -95,8 +95,12 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error('user role in room not found in database');
             throw new NotFoundException('resource not found in database');
         }
-        /* resource NOT found */
-        return await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
+        const role: UserRoomRolesEntity = await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
+        if (role === null) {
+            this.userRoomRolesLogger.error('user role in room not found in database');
+            throw new NotFoundException('resource not found in database');
+        }
+        return role;
     }
 
     /* Create a new user with a role in a room */
