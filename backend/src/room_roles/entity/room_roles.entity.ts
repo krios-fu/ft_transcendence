@@ -7,7 +7,7 @@ import * as bcrypt from "bcrypt";
 import { BaseEntity } from "../../common/classes/base.entity";
 import { InternalServerErrorException } from "@nestjs/common";
 
-@Entity({ name: 'room_role' })
+@Entity({ name: 'room_roles' })
 @Index(['roomId', 'roleId'], { unique: true })
 export class RoomRolesEntity extends BaseEntity {
     constructor(dto: CreateRoomRolesDto) {

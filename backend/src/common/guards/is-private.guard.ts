@@ -11,7 +11,7 @@ export class IsPrivate implements CanActivate {
     ) { }
     canActivate(ctx: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const req = ctx.switchToHttp().getRequest();
-        const username = req.username;
+        const username = req.user?.data?.username;
         const roomId = (req.method === 'POST') ?
             Number(req.body['roomId']) :
             Number(req.param['room_id']);
@@ -29,6 +29,7 @@ export class IsPrivate implements CanActivate {
         password: string,
     ): Promise<boolean> {
         var hasAccess: boolean = false;
+        console.log('desde validate private');
         const privateRole = (await this.roomRolesService.findRolesRoom(roomId))
             .filter((role: RolesEntity) => role.role === 'private');
         

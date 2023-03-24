@@ -113,7 +113,7 @@ export class UserRoomRolesController {
         });
 
         if (!userRoom.length) {
-            this.userRoomRolesLogger.error(`No user ${userId} in room ${roomId} present in database`);
+            this.userRoomRolesLogger.error(`User ${userId} is not registered in room ${roomId}`);
             throw new BadRequestException('resource not found in database');
         }
         const userRoomId: number = userRoom[0].id;

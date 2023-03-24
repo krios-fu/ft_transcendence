@@ -106,12 +106,16 @@ export class UserRoomController {
     }
 
     /* Create a new user in a room */
-    //@UseGuards(Banned)
+    //@UseGuarhds(Banned)
     @UseGuards(IsPrivate) /*???*/
     @Post()
     public async create(@Body() dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;
-
+        if (await this.userService.findOne(userId) === null ||
+            await this.roomService.findOne(roomId) === null) {
+            this.userRoomLogger.error('Invalid creation payload received from request (no user or room present in database)');
+            throw new BadRequestException('resource not found in database')
+        }
         if (await this.userRoomService.findUserRoomIds(userId, roomId) !== null) {
             this.userRoomLogger.error(`User ${userId} already registered in room ${roomId}`);
             throw new BadRequestException('resource already in database');

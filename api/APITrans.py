@@ -136,7 +136,7 @@ class APITrans():
             room_role = self.__request_get_wrapper(f'{url}/rooms/{room_id}/roles/{role_id}')
         return room_role
 
-    def post_user_room(self, room_id, user_id):
+    def post_user_room(self, user_id, room_id):
         url = 'http://localhost:3000/user_room/'
         data = {
             'userId': user_id,

@@ -35,9 +35,9 @@ export class RoomRolesService {
     public async findRolesRoom(roomId: number): Promise<RolesEntity[]> {
         let roles: RolesEntity[];
         const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
-            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.role', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
-            .where('room_roles.room_id = :id', { id: roomId })
+            .where('room_roles.roomId = :id', { id: roomId })
             .getMany();
         
         if (!roomRoles.length) {
@@ -51,7 +51,7 @@ export class RoomRolesService {
 
     public async findRoomRoleByIds(roomId: number, roleId: number): Promise<RoomRolesEntity> {
         return await this.roomRolesRepository.createQueryBuilder('room_roles')
-            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.role', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
             .where('room_roles.roomId = :room_id', { 'room_id': roomId })
             .andWhere('room_roles.roleId = "role_id', { 'role_id': roleId })
@@ -60,7 +60,7 @@ export class RoomRolesService {
 
     public async findPrivateRoleInRoom(roomId: number): Promise<RoomRolesEntity> {
         return await this.roomRolesRepository.createQueryBuilder('room_roles')
-            .leftJoinAndSelect('room_roles.roles', 'roles')
+            .leftJoinAndSelect('room_roles.role', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
             .where('room_roles.room_id = :id', { id: roomId })
             .andWhere('roles.role = "private"')
