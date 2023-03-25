@@ -32,9 +32,9 @@ import { join } from 'path';
         MulterModule.register({
             dest: './static',
         }),
-        ThrottlerModule.forRoot({
-            ttl: 10, limit: 5
-        }),
+        //ThrottlerModule.forRoot({
+        //    ttl: 10, limit: 5
+        //}),
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
@@ -68,10 +68,10 @@ import { join } from 'path';
     ],
     controllers: [],
     providers: [
-        {
-            provide: APP_GUARD,
-            useClass: ThrottlerGuard
-        },
+        //{
+        //    provide: APP_GUARD,
+        //    useClass: ThrottlerGuard
+        //},
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,

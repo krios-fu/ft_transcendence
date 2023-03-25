@@ -13,6 +13,16 @@ def pretty(json_e):
     return json.dumps(json_e, indent=2)
 
 
+def clean_role(api, data):
+    url = f'http://localhost:3000/room_roles/room/{data["roomId"]}/roles/{data["roleId"]}'
+    print(f'[ CLEAN room_role {url} ]')
+    r = requests.get(url, headers=api.get_param('auth_token'))
+    if r.status_code >= 400:
+        print('[ OOPS ]')
+        return
+    r = requests.delete(f'http://localhost:3000/room_roles/{r.json["id"]}', headers=api.get_param('auth_token'))
+    print(f'[ CLEAN {r.status_code}')
+
 if __name__ == "__main__":
     api = Api()
 
@@ -42,11 +52,15 @@ if __name__ == "__main__":
             data = { 'roomId': rooms[2]['id'], 'roleId': role['id'] }
             api.set_user_creds(user['username'])
             print(f'[ ************************ petition from user {user["username"]} to make room {role["role"]} ************************ ]')
+            clean_role(api, data)
+            print(f'[ POST {url} / {data}]')
             r = requests.post(url, data=data, headers=api.get_param('auth_token'))
             print(f'  -> results in {r.status_code}, {r.reason}')
             if r.status_code < 400:
                 id = r.json()['id']
                 r = requests.delete(f'{url}{id}', headers=api.get_param('auth_token'))
+                print(f'  -> remove room role... {r.status_code}')
+            print('[ ******************************************************************************************** ]')
 
     # *** DEL room_roles
     #     *** PRIVATE ***

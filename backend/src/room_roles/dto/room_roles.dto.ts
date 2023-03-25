@@ -1,12 +1,18 @@
-import {IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
+import {IsNotEmpty, 
+    IsNumber, 
+    IsOptional, 
+    IsString} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateRoomRolesDto {
     @IsNotEmpty()
-    @IsNumber() 
+    @IsNumber()
+    @Type(() => Number)
     readonly roomId: number;
 
     @IsNotEmpty()
-    @IsNumber() 
+    @IsNumber()
+    @Type(() => Number)
     readonly roleId: number;
 
     @IsOptional()

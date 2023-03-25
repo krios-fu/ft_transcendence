@@ -53,8 +53,7 @@ class APITrans():
 
     def set_user_creds(self, username):
         try:
-            r = self.__request_get_wrapper(f'http://localhost:3000/users/{username}')
-            r.raise_for_status()
+            self.__request_get_wrapper(f'http://localhost:3000/users/{username}')
         except requests.exceptions.HTTPError:
             print(f'user {username} not found in database', file=sys.stderr)
             return
@@ -83,6 +82,21 @@ class APITrans():
             print('Error trying to establish a connection to API', file=sys.stderr)
             raise e
         return r.json()
+
+    def get_user(self, username):
+        url = f'http://localhost:3000/users/{username}'
+        return self.__request_get_wrapper(url)
+
+    def get_room(self, id):
+        url = f'http://localhost:3000/room/{id}'
+        return self.__request_get_wrapper(url)
+    
+
+    def get_role(self, role):
+        url = f'http://localhost:3000/roles/{role}';
+        return self.__request_get_wrapper(url)
+    
+
 
     def post_user(self, username):
         url = 'http://localhost:3000/users/'

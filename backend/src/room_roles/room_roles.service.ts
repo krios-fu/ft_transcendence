@@ -33,7 +33,7 @@ export class RoomRolesService {
     }
 
     public async findRolesRoom(roomId: number): Promise<RolesEntity[]> {
-        let roles: RolesEntity[];
+        let roles: RolesEntity[] = [];
         const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
             .leftJoinAndSelect('room_roles.role', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
@@ -54,7 +54,7 @@ export class RoomRolesService {
             .leftJoinAndSelect('room_roles.role', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
             .where('room_roles.roomId = :room_id', { 'room_id': roomId })
-            .andWhere('room_roles.roleId = "role_id', { 'role_id': roleId })
+            .andWhere('room_roles.roleId = :role_id', { 'role_id': roleId })
             .getOne();
     }
 
