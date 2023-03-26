@@ -79,7 +79,8 @@ export class    GameUpdateService {
     getGameClientStartData(roomId: string): IGameClientStart {
         const   game: Game = this.gameDataService.getGame(roomId);
     
-        if (game)
+        if (game
+                && game.state === GameState.Running)
             return (game.clientStartData());
         return (undefined);
     }
