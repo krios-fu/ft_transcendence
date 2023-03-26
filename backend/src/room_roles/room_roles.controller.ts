@@ -21,7 +21,6 @@ import { RoomService } from '../room/room.service';
 import { RolesService } from '../roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { UserCreds } from '../common/decorators/user-cred.decorator';
-import { RoomEntity } from '../room/entity/room.entity';
 
 @Controller('room_roles')
 export class RoomRolesController {
@@ -42,7 +41,7 @@ export class RoomRolesController {
 
     @Get(':id')
     public async findOne(@Param('id', ParseIntPipe) id: number): Promise<RoomRolesEntity> {
-        const roomRole = await this.roomRolesService.findOne(id);
+        const roomRole: RoomRolesEntity = await this.roomRolesService.findOne(id);
 
         if (roomRole === null) {
             this.roomRoleLogger.error(`Room role with id ${id} not found in database`);
@@ -59,7 +58,7 @@ export class RoomRolesController {
             this.roomRoleLogger.error(`Room with id ${roomId} not found in database`);
             throw new NotFoundException('resource not found in database');
         }
-        return await this.roomRolesService.findRolesRoom(roomId);
+        return await this.roomRolesService.findRolesInRoom(roomId);
     }
 
     @Get('/rooms/:room_id/roles/:role_id')
@@ -72,7 +71,12 @@ export class RoomRolesController {
                 this.roomRoleLogger.error('resource not found in database');
                 throw new BadRequestException('resource not found in database');
             }
-        return await this.roomRolesService.findRoomRoleByIds(roomId, roleId);
+        const role: RoomRolesEntity = await this.roomRolesService.findRoomRoleByIds(roomId, roleId);
+        if (role === null) {
+            this.roomRoleLogger.error('role not found in database');
+            throw new NotFoundException('resource not found in database');
+        }
+        return role;
     }
 
     @Post()
@@ -81,25 +85,29 @@ export class RoomRolesController {
         @UserCreds() username: string,
         @Body() dto: CreateRoomRolesDto
     ): Promise<RoomRolesEntity> {
+        console.log('[     *** POST room_role ***     ]');
         const { roomId, roleId } = dto;
-        if (await this.roomRolesService.findRoomRoleByIds(roomId, roleId) !== null) {
-            this.roomRoleLogger.error(`Resource already exists in database`);
-            throw new BadRequestException('resource already exists in database');
-        }
         const roleEntity: RolesEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
             this.roomRoleLogger.error(`No role with id ${roomId} found in database`);
             throw new BadRequestException('resource not found in database');
         }
         if (await this.roomService.findOne(roomId) === null) {
-            this.roomRoleLogger.error( `No room with id ${roomId} found in database`);
-            throw new NotFoundException('no room in db');
+            this.roomRoleLogger.error(`No room with id ${roomId} found in database`);
+            throw new NotFoundException('resource not found in database');
         }
         const { role } = roleEntity;
-        if (await this.roomRolesService.validateRoomRole(role, username, roomId) === null) {
+        const validated: Object | null = await this.roomRolesService.checkRolesConstraints(roomId, role);
+        if (validated !== null) {
+            console.log('hola???');
+            this.roomRoleLogger.error(validated['logMessage']);
+            throw validated['error'];
+        }
+        if (await this.roomRolesService.validateRoomRole(role, username, roomId) === false) {
             this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
             throw new ForbiddenException('user not authorized for this action');
         }
+        console.log('[ ***               *** ]')
         return await this.roomRolesService.create(dto);
     }
 
@@ -113,7 +121,7 @@ export class RoomRolesController {
         const roomRole: RoomRolesEntity | null = await this.roomRolesService.findPrivateRoleInRoom(id);
         if (roomRole === null) {
             this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
-            throw new NotFoundException('no role room in db');
+            throw new NotFoundException('resource not found in database');
         }
         const { roomId, password } = roomRole;
         if (await this.roomRolesService.validateRoomRole('private', username, roomId) === false) {
@@ -121,7 +129,6 @@ export class RoomRolesController {
             throw new ForbiddenException('User not allowed to do this action');
         }
         const newRoomRole: RoomRolesEntity | null = await this.roomRolesService.updatePassword(id, password, dto);
-
         if (newRoomRole === null) {
             this.roomRoleLogger.error(`Invalid password`);
             throw new ForbiddenException('Invalid password');
@@ -138,7 +145,7 @@ export class RoomRolesController {
         const roomRole: RoomRolesEntity = await this.roomRolesService.findOne(id);
         if (roomRole === null) {
             this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
-            throw new NotFoundException('No role room in db');
+            throw new NotFoundException('resource not found in database');
         }
         const { roomId, role } = roomRole
         if (await this.roomRolesService.validateRoomRole(role.role, username, roomId) === false) {

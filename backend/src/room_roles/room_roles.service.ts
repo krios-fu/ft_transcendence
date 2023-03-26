@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from '../common/mappers/query.mapper';
 import { RolesEntity } from '../roles/entity/roles.entity';
@@ -32,7 +32,7 @@ export class RoomRolesService {
         });
     }
 
-    public async findRolesRoom(roomId: number): Promise<RolesEntity[]> {
+    public async findRolesInRoom(roomId: number): Promise<RolesEntity[]> {
         let roles: RolesEntity[] = [];
         const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
             .leftJoinAndSelect('room_roles.role', 'roles')
@@ -98,18 +98,47 @@ export class RoomRolesService {
     /* ~~ role identifying service ~~ */
 
     public async isRole(roleToCheck: string, roomId: number): Promise<boolean> {
-        return ((await this.findRolesRoom(roomId))
+        return ((await this.findRolesInRoom(roomId))
             .filter(role => role.role === roleToCheck)).length > 0;
     }
 
     public async validateRoomRole(role: string, username: string, roomId: number): Promise<boolean> {
+        console.log('role: ', role)
         if (role === 'official') {
-            return this.userRolesService.validateGlobalRole(username, ['admin']);
+            return this.userRolesService.validateGlobalRole(username, ['owner', 'admin']);
         } else if (role === 'private') {
-            return this.userRolesService.validateGlobalRole(username, ['admin']) ||
-                (await this.roomService.findOne(roomId))
-                    .owner.username === 'username';
+            const owner_test = await this.roomService.findOne(roomId);
+            console.log('[ IN VALIDATE ROOM ROLE ]')
+            console.log('   -> username provided: ', username)
+            console.log('   -> owner received: ', owner_test.owner)
+            console.log('   -> name in owner entity: ', owner_test.owner.username)
+            console.log('   -> validation: ', (await this.roomService.findOne(roomId)).owner.username === username)
+            const tal =  (await this.userRolesService.validateGlobalRole(username, ['owner', 'admin'])) ||
+                (await this.roomService.findOne(roomId)).owner.username === username;
+            console.log('   -> WHAT WE ARE GOING TO SEND TO CONTROLLER: ', tal)
+            return tal;
         }
         return true;
+    }
+
+    private inverseRoomRole = (role: string) => (role === 'official') ? 'private' : 'official';
+
+    public async checkRolesConstraints(roomId: number, role: string): Promise<Object | null> {
+        console.log('hola???');
+        const rolesInRoom: string[] = (await this.findRolesInRoom(roomId))
+            .map((role: RolesEntity) => role.role);
+        if (rolesInRoom.indexOf(role) !== -1) {
+            return { 
+                'error': new BadRequestException('resource already found in database'),
+                'logMessage': 'role is already set in room configuration'
+            }
+        }
+        if (['official', 'private'].indexOf(role) !== -1 && rolesInRoom.indexOf(this.inverseRoomRole(role)) !== -1) {
+            return {
+                'error': new ForbiddenException(''),
+                'logMessage': 'room cannot contains these two roles simultaneously: private, official'
+            }
+        }
+        return null;
     }
 }

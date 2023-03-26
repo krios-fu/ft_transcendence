@@ -107,7 +107,7 @@ export class UserRoomController {
 
     /* Create a new user in a room */
     //@UseGuarhds(Banned)
-    @UseGuards(IsPrivate) /*???*/
+    //@UseGuards(IsPrivate) /*???*/
     @Post()
     public async create(@Body() dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;

@@ -80,7 +80,6 @@ export class UserController {
     @Get(':id([0-9]+)')
     async findOneUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOne(id);
-
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);
             throw new NotFoundException('resource not found in database');
@@ -96,7 +95,6 @@ export class UserController {
     @Get(':id([a-z][a-z0-9-]{2,})')
     public async findOneUserByUsername(@Param('id') id: string): Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOneByUsername(id);
-
         if (user === null) {
             this.userLogger.error(`User with login ${id} not found in database`);
             throw new NotFoundException('resource not found exists in database');

@@ -29,7 +29,7 @@ export class IsPrivate implements CanActivate {
         password: string,
     ): Promise<boolean> {
         var hasAccess: boolean = false;
-        const privateRole = (await this.roomRolesService.findRolesRoom(roomId))
+        const privateRole = (await this.roomRolesService.findRolesInRoom(roomId))
             .filter((role: RolesEntity) => role.role === 'private');
         
         if (!privateRole.length) {
