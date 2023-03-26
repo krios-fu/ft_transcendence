@@ -25,7 +25,6 @@ export class    SocketService {
     private _authAttempts: number;
     private _authenticating: boolean;
     private _failedEvents: SocketExceptionData[];
-    private _room: string;
     private _username?: string; //Provisional
 
     constructor(
@@ -36,7 +35,6 @@ export class    SocketService {
         this._authAttempts = 0;
         this._authenticating = false;
         this._failedEvents = [];
-        this._room = "Game1"; //Provisional
         this._socket.once("mockUser", (data: any) => {
             this._username = data.mockUser;
         }); //Provisional
@@ -46,10 +44,6 @@ export class    SocketService {
 
     get socket(): SockIO.Socket {
         return (this._socket);
-    }
-
-    get room(): string {
-        return (this._room);
     }
 
     get username(): string | undefined {

@@ -8,52 +8,21 @@ import { UserEntity } from "src/user/entities/user.entity";
 import { Category } from "../user/enum/category.enum";
 import { UserService } from "src/user/services/user.service";
 import { UpdateResult } from "typeorm";
-import {
-    GameType,
-    IGameResult
-} from "./elements/Game";
-import { GameQueueService } from "./game.queueService";
+import { IGameResult } from "./elements/Game";
 import { GameRankingService } from "./game.rankingService";
 import { GameAchievementsService } from "./game.achievements.service";
+import { GameDataService, Players } from "./game.data.service";
 
 @Injectable()
 export class    GameService {
-    private gamePlayers: Map<string, [UserEntity, UserEntity]>;
 
     constructor(
         private readonly userService: UserService,
+        private readonly gameDataService: GameDataService,
         private readonly rankingService: GameRankingService,
-        private readonly queueService: GameQueueService,
         private readonly matchService: MatchService,
         private readonly achievementsService: GameAchievementsService
-    ) {
-        this.gamePlayers = new Map<string, [UserEntity, UserEntity]>;
-    }
-
-    getPlayers(gameId: string): [UserEntity, UserEntity] {
-        return (this.gamePlayers.get(gameId));
-    }
-
-    startGame(gameId: string): [[UserEntity, UserEntity], GameType] {
-        let nextPlayers: [UserEntity, UserEntity] = [undefined, undefined];
-        let gameType: GameType;
-        let currentPlayers: [UserEntity, UserEntity];
-    
-        [nextPlayers[0], nextPlayers[1], gameType] =
-                                    this.queueService.getNextPlayers(gameId);
-        if (nextPlayers[0] === undefined)
-            return ([nextPlayers, gameType]);
-        currentPlayers = this.gamePlayers.get(gameId);
-        if (currentPlayers === undefined)
-        {
-            currentPlayers = this.gamePlayers.set(
-                gameId, [undefined, undefined]
-            ).get(gameId);
-        }
-        currentPlayers[0] = nextPlayers[0];
-        currentPlayers[1] = nextPlayers[1];
-        return ([nextPlayers, gameType]);
-    }
+    ) {}
 
     private isOfficial(gameId: string): boolean {
         // Pending ...
@@ -108,37 +77,37 @@ export class    GameService {
         return (this.rankingService.getCategory(ranking));
     }
 
-    private async updatePlayerRankings(players: [UserEntity, UserEntity],
+    private async updatePlayerRankings(players: Players,
                                             winner: number): Promise<boolean> {
-        [ players[0].ranking, players[1].ranking ] =
+        [ players.a.ranking, players.b.ranking ] =
             this.rankingService.updateRanking(
-                {ranking: players[0].ranking, category: players[0].category},
-                {ranking: players[1].ranking, category: players[1].category},
+                {ranking: players.a.ranking, category: players.a.category},
+                {ranking: players.b.ranking, category: players.b.category},
                 winner
+            );
+        players.a.category = await this.updateCategory(
+            players.a.username,
+            players.a.ranking,
+            players.a.category
         );
-        players[0].category = await this.updateCategory(
-            players[0].username,
-            players[0].ranking,
-            players[0].category
+        players.b.category = await this.updateCategory(
+            players.b.username,
+            players.b.ranking,
+            players.b.category
         );
-        players[1].category = await this.updateCategory(
-            players[1].username,
-            players[1].ranking,
-            players[1].category
-        );
-        return (await this.saveRankings(players[0], players[1]));
+        return (await this.saveRankings(players.a, players.b));
     }
 
-    private createPlayerEntities(players: [UserEntity, UserEntity],
+    private createPlayerEntities(players: Players,
                                     gameResult: IGameResult)
                                         : [WinnerEntity, LoserEntity] {
         let     winnerEntity: WinnerEntity = new WinnerEntity;
         let     loserEntity: LoserEntity = new LoserEntity;
         const   winnerNick: string = gameResult.winnerNick;
         const   [winnerUser, loserUser]: [UserEntity, UserEntity]
-                    = players[0].nickName === winnerNick
-                        ? [players[0], players[1]]
-                        : [players[1], players[0]];
+                                    = players.a.nickName === winnerNick
+                                        ? [players.a, players.b]
+                                        : [players.b, players.a];
 
         winnerEntity.user = winnerUser;
         winnerEntity.ranking = winnerUser.ranking;
@@ -151,7 +120,7 @@ export class    GameService {
         return ([winnerEntity, loserEntity]);
     }
 
-    private async saveMatch(players: [UserEntity, UserEntity],
+    private async saveMatch(players: Players,
                                 gameResult: IGameResult, isOfficial: boolean)
                                 : Promise<MatchEntity> {
         let matchDto: MatchDto = new MatchDto;
@@ -173,7 +142,7 @@ export class    GameService {
     **  Determine failure handling.
     */
     async endGame(gameId: string, gameResult: IGameResult): Promise<void> {
-        const   players: [UserEntity, UserEntity] = this.gamePlayers.get(gameId);
+        const   players: Players = this.gameDataService.getPlayers(gameId);
         let     isOfficial: boolean;
         let     winner: number;
 
@@ -181,16 +150,15 @@ export class    GameService {
         if (gameResult.winnerScore === gameResult.loserScore)
             return ;
         isOfficial = this.isOfficial(gameId);
-        winner = this.getWinner(players[0], gameResult);
+        winner = this.getWinner(players.a, gameResult);
         if (!(await this.saveMatch(players, gameResult, isOfficial)))
             console.error(`Failed database insertion for match: ${gameId}`);
         if (!isOfficial)
             return ;
         if (!(await this.updatePlayerRankings(players, winner)))
             return ;
-        for (const player of players) {
-            await this.achievementsService.updateAchievements(player);
-        };
+        await this.achievementsService.updateAchievements(players.a);
+        await this.achievementsService.updateAchievements(players.b);
     }
 
 }

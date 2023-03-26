@@ -5,7 +5,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { GameQueueComponent } from './game-queue/game-queue.component';
-import { SocketService } from './services/socket.service';
 import { QueueService } from './services/queue.service';
 import { GameRoutingModule } from './game-routing.module';
 import { RoomGameIdComponent } from './room-game-id/room-game-id.component';
@@ -47,7 +46,6 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     // MatLabel
   ],
   providers: [
-    SocketService,
     QueueService,
     {
       provide: HTTP_INTERCEPTORS,
