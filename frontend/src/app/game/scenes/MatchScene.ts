@@ -125,26 +125,26 @@ export class    MatchScene extends BaseScene {
         this.soundService.destroy();
     }
 
-    recover(data: IMatchInitData): void {
+    recover(data: IMatchRecoveryData): void {
         if (!this.match)
             return ;
         this.match.stopPointTitle();
-        if (data.playerA.nick != this.match.nickA
-            || data.playerB.nick != this.match.nickB
-            || data.stage != this.match.stage
-            || data.playerA.hero?.name != this.match.heroA
-            || data.playerB.hero?.name != this.match.heroB)
+        if (data.gameData.playerA.nick != this.match.nickA
+            || data.gameData.playerB.nick != this.match.nickB
+            || data.gameData.stage != this.match.stage
+            || data.gameData.playerA.hero?.name != this.match.heroA
+            || data.gameData.playerB.hero?.name != this.match.heroB)
         {
             this.destroy();
             this.init({
-                role: "Spectator", //Improve!!! It could have a different role
-                matchData: data
+                role: data.role,
+                matchData: data.gameData
             });
             this.preload();
             this.create();
             return ;
         }
-        this.match.update(Match.initToData(data));
+        this.match.update(Match.initToData(data.gameData));
         this.queue = [];
         this.buffer?.empty();
     }
