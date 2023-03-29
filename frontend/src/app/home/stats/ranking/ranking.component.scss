@@ -38,9 +38,14 @@ table {
 
 .ranking-photo {
     display:inline;
-    font-size: 50px; //Change to img width and height
     vertical-align: middle;
     padding-right: 10px;
+}
+
+.ranking-photo img {
+    display: inherit;
+    height: 50px;
+    width: auto;
 }
 
 .ranking-nickname {
