@@ -1,8 +1,8 @@
 import * as Phaser from 'phaser'
 import * as SocketIO from 'socket.io-client'
-import { IMatchInitData } from '../elements/Match';
 import { IResultData } from '../elements/Result';
 import { Txt } from '../elements/Txt';
+import { IMatchRecoveryData } from '../services/recovery.service';
 import { IMenuInit } from './MenuScene';
 
 export abstract class    BaseScene extends Phaser.Scene {
@@ -53,7 +53,7 @@ export abstract class    BaseScene extends Phaser.Scene {
     abstract destroy(): void;
 
     abstract recover(data?: IMenuInit
-                                | IMatchInitData
+                                | IMatchRecoveryData
                                 | IResultData): void;
 
 }

@@ -80,7 +80,9 @@ export class    GameUpdateService {
         const   game: Game = this.gameDataService.getGame(roomId);
     
         if (game
-                && game.state === GameState.Running)
+                && (game.state === GameState.Running
+                        || (game.state === GameState.Finished
+                                && !this.getGameResult(roomId))))
             return (game.clientStartData());
         return (undefined);
     }

@@ -9,6 +9,7 @@ import {
 } from "./game.updateService";
 import {
     GameRole,
+    IMatchRecoverData,
     IMenuInit
 } from "./interfaces/msg.interfaces";
 
@@ -37,7 +38,7 @@ export class    GameRecoveryService {
     ) {}
 
     private _isSelection(
-                data: IMenuInit | IGameClientStart
+                data: IMenuInit | IMatchRecoverData
                         | IGameResultData | undefined): boolean {
         return (
             (data as IMenuInit).selection !== undefined
@@ -45,14 +46,14 @@ export class    GameRecoveryService {
     }
 
     private _isMatch(
-                data: IMenuInit | IGameClientStart
+                data: IMenuInit | IMatchRecoverData
                         | IGameResultData | undefined): boolean {
         return (
-            (data as IGameClientStart).ball !== undefined
+            (data as IMatchRecoverData).gameData !== undefined
         );
     }
 
-    private _getScene(data: IMenuInit | IGameClientStart
+    private _getScene(data: IMenuInit | IMatchRecoverData
                                 | IGameResultData | undefined): SceneId {
         if (data === undefined)
             return ("start");
@@ -78,7 +79,7 @@ export class    GameRecoveryService {
     }
 
     private _getData(client: Socket, roomId: string): IMenuInit |
-                                                        IGameClientStart |
+                                                        IMatchRecoverData |
                                                         IGameResultData |
                                                         undefined {
         let data: IGameSelectionData | IGameClientStart | IGameResultData;
@@ -94,7 +95,10 @@ export class    GameRecoveryService {
         data = this.updateService.getGameClientStartData(roomId);
         if (data)
         {
-            return (data);
+            return ({
+                role: this._getRole(client),
+                gameData: data
+            });
         }
         data = this.updateService.getGameResult(roomId);
         if (data)
@@ -105,8 +109,8 @@ export class    GameRecoveryService {
     }
 
     recover(client: Socket, roomId: string): void {
-        const   data: IMenuInit | IGameClientStart
-                        | IGameResultData | undefined =
+        const   data: IMenuInit | IMatchRecoverData |
+                        IGameResultData | undefined =
                     this._getData(client, roomId);
         const   scene: SceneId = this._getScene(data);
         
