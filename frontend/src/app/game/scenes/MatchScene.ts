@@ -7,7 +7,10 @@ import {
 import { SnapshotBuffer } from '../elements/SnapshotBuffer';
 import { LagCompensationService } from '../services/lag-compensation.service';
 import { LoadService } from '../services/load.service';
-import { GameRecoveryService } from '../services/recovery.service';
+import {
+    GameRecoveryService,
+    IMatchRecoveryData
+} from '../services/recovery.service';
 import {
     MatchSoundKeys,
     SoundService
