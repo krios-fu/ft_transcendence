@@ -16,6 +16,7 @@ export interface   ISelectionData {
     heroAConfirmed: boolean;
     heroBConfirmed: boolean;
     stage: number;
+    timeoutDate: number;
     status: number;
 }
 

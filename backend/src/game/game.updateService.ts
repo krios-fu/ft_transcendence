@@ -140,6 +140,9 @@ export class    GameUpdateService {
         if (gameSelection
             && gameSelection.finished)
         {
+            //It does't matter if it was already cleared
+            if (gameSelection.heroMenuTimeoutDate)
+                gameSelection.clearHeroMenuTimeout();
             setTimeout(() => {
                 //Checks for canceled gameSelection
                 if (!gameSelection
@@ -303,6 +306,23 @@ export class    GameUpdateService {
         }
     }
 
+    /*
+    **  gameSelection.heroMenuTimeoutDate is higher than Date.now(), as it
+    **  represents a future date.
+    */
+    private scheduleHeroMatchStart(gameId: string): void {
+        const   gameSelection: GameSelection =
+                            this.gameDataService.getSelection(gameId);
+        
+        gameSelection.heroMenuTimeout = setTimeout(() => {
+            if (!gameSelection
+                    || gameSelection.status === SelectionStatus.Canceled)
+                return ;
+            gameSelection.forceConfirm();
+            this.attemptSelectionFinish(gameId);
+        }, gameSelection.heroMenuTimeoutDate - Date.now());
+    }
+
     private scheduleClassicMatchStart(gameId: string): void {
         const   gameSelection: GameSelection =
                             this.gameDataService.getSelection(gameId);
@@ -364,6 +384,8 @@ export class    GameUpdateService {
         await this.prepareClients(gameId, gameType, players, selectionData);
         if (gameType === "classic")
             this.scheduleClassicMatchStart(gameId);
+        else
+            this.scheduleHeroMatchStart(gameId);
     }
 
     private startMatch(gameId: string,
@@ -402,6 +424,9 @@ export class    GameUpdateService {
             return ;
         }
         gameSelection.status = SelectionStatus.Canceled;
+        //It does't matter if it was already cleared
+        if (gameSelection.heroMenuTimeoutDate)
+                gameSelection.clearHeroMenuTimeout();
         await this.gameEnd(roomId, {
             winnerNick: winner === 0 ? gameSelection.data.nickPlayerA
                                         : gameSelection.data.nickPlayerB,

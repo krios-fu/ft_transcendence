@@ -9,6 +9,7 @@ import {
 import { MenuArrows } from "./MenuArrows";
 import { MenuRenderer } from "./MenuRenderer";
 import { SelectionStatus } from "./MenuSelector";
+import { Timer } from "./Timer";
 
 export class    MenuHeroRenderer extends MenuRenderer {
 
@@ -22,6 +23,7 @@ export class    MenuHeroRenderer extends MenuRenderer {
     private _sounds: SelectionSoundKeys;
     private _aArrows: MenuArrows;
     private _bArrows: MenuArrows;
+    private _timer: Timer;
 
     constructor(scene: MenuScene, initData: ISelectionData,
                     private readonly soundService: SoundService) {
@@ -55,6 +57,7 @@ export class    MenuHeroRenderer extends MenuRenderer {
             { x: 450, y: 220 },
             { x: 750, y: 220 }
         )).visible = false;
+        this._timer = new Timer(scene, 400, 50, initData.timeoutDate);
         (this._heroAImage = scene.add.image(
             200, 220,
             this.initImage(initData.heroA, this._heroImages,
@@ -190,6 +193,7 @@ export class    MenuHeroRenderer extends MenuRenderer {
         this._stageImage.destroy();
         this._aArrows.destroy();
         this._bArrows.destroy();
+        this._timer.destroy();
     }
 
 }
