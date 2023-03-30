@@ -400,7 +400,9 @@ export class    GameUpdateService {
             gameId, "startMatch",
             game.clientStartData()
         );
-        this.pointTransition(game, gameId);
+        setTimeout(() => {
+            this.pointTransition(game, gameId);
+        }, 5000);
         this.manageUpdateInterval();
     }
 
