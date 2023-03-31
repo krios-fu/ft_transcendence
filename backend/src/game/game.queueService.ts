@@ -425,15 +425,20 @@ export class    GameQueueService {
         queue.splice(insertIndex, 0, player);
     }
 
-    private _removeFromQueue(queue: IQueueElement[], username: string): void {
+    private _removeFromQueue(queue: IQueueElement[],
+                                username: string): boolean {
         let targetIndex: number;
     
         if (queue)
         {
             targetIndex = this._findByUsername(username, queue);
             if (targetIndex !== -1)
+            {
                 queue.splice(targetIndex, 1);
+                return (true);
+            }
         }
+        return (false);
     }
 
     removeFromQueue(gameId: string, gameType: GameType,
@@ -448,7 +453,8 @@ export class    GameQueueService {
         queue = gameType === "hero"
                     ? queues.heroQueue
                     : queues.classicQueue;
-        this._removeFromQueue(queue, username);
+        if (!this._removeFromQueue(queue, username))
+            return (undefined);
         queueLength = queue.length;
         this._pruneGameQueues(gameId);
         return (queueLength);
