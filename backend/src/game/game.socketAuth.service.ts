@@ -107,7 +107,7 @@ export class    GameSocketAuthService {
     async removeUser(client: Socket, username: string): Promise<void> {
         const   rooms: IterableIterator<string> = client.rooms.values();
     
-        this.matchMakingService.removeFromAllQueues(username);
+        await this.matchMakingService.removeFromAllQueues(username);
         for (const room of rooms)
         {
             if (room === client.id)

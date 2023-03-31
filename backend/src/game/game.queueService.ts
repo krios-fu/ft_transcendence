@@ -356,16 +356,17 @@ export class    GameQueueService {
         return (queue.findIndex((elem) => elem.user.username === username));
     }
 
-    // IMPORTANT!!! Partition this for loop to avoid blocking the event loop!!!!!
     /*
     **  Find user in any game queue.
     **  Returns the game id where it was found.
     */
-    findUser(username: string): string {
+    async findUser(username: string): Promise<string> {
         let gameId: string;
+        let queuesPartition: number = 0;
     
         for (const queues of this._gameQueues)
         {
+            ++queuesPartition;
             gameId = queues[0];
             if (this._findByUsername(username, queues[1].classicQueue) != -1)
                 return (gameId);
@@ -377,6 +378,13 @@ export class    GameQueueService {
                     continue ;
                 if (nextPlayer.queueElement.user.username === username)
                     return (gameId);
+            }
+            if (queuesPartition === 30)
+            {
+                await new Promise((resolve) => {
+                    setImmediate(resolve);
+                });
+                queuesPartition = 0;
             }
         }
         return ("");
@@ -395,7 +403,7 @@ export class    GameQueueService {
             this._setQueues(gameId);
             queue = this._getQueue(gameId, gameType);
         }
-        if (!this.findUser(username))
+        if (!(await this.findUser(username)))
         {
             queue.push({
                 user: userEntity,
