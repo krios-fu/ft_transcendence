@@ -281,19 +281,42 @@ export class    GameUpdateService {
         this.socketHelper.emitToRoom(room, 'matchUpdate', game.data());
     }
 
+    /*
+    **  The game update loop is managed here.
+    **
+    **  The ideal design would have been creating update services decoupled from
+    **  the Game class instances in order to calculate snapshot updates
+    **  for each game in separate threads using a job queue.
+    **  But for the current implementation, the fastest way we could think of
+    **  to update the games in the main thread without blocking the NodeJS event
+    **  loop for too long is partitioning game updates by setting an amount
+    **  of games to process before scheduling the following updates for the next
+    **  iteration of the event loop with setImmediate.
+    */
     private manageUpdateInterval(): void {
         const   runningGames: RunningGame[] =
                             this.gameDataService.getRunningGames();
     
         if (this._updateInterval === undefined
                 && runningGames.length === 1) {
-            this._updateInterval = setInterval(() => {
-                    runningGames.forEach(
-                        (elem) => {
-                            if (elem.game.state === GameState.Running)
-                                this.gameUpdate(elem.game, elem.id);
+            this._updateInterval = setInterval(async () => {
+                    let gamesPartition: number = 0;
+                
+                    for (const elem of runningGames)
+                    {
+                        if (elem.game.state === GameState.Running)
+                        {
+                            this.gameUpdate(elem.game, elem.id);
+                            if (gamesPartition === 2)
+                            {
+                                await new Promise((resolve) => {
+                                    setImmediate(resolve);
+                                });
+                                gamesPartition = 0;
+                            }
                         }
-                    );
+                        ++gamesPartition;
+                    }
                 },
                 GameUpdateService.updateTimeInterval
             );
