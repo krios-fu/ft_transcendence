@@ -156,8 +156,8 @@ export class    GameMatchmakingService {
         this._emitUserQueueUpdate(username, { queued: false });
     }
 
-    removeFromAllQueues(username: string): void {
-        const   gameId: string = this.queueService.findUser(username);
+    async removeFromAllQueues(username: string): Promise<void> {
+        const   gameId: string = await this.queueService.findUser(username);
         let     lengthUpdate: [number, GameType] | undefined;
     
         if (!gameId)
