@@ -304,6 +304,7 @@ export class    GameUpdateService {
                 
                     for (const elem of runningGames)
                     {
+                        ++gamesPartition;
                         if (elem.game.state === GameState.Running)
                         {
                             this.gameUpdate(elem.game, elem.id);
@@ -315,7 +316,6 @@ export class    GameUpdateService {
                                 gamesPartition = 0;
                             }
                         }
-                        ++gamesPartition;
                     }
                 },
                 GameUpdateService.updateTimeInterval
