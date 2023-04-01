@@ -57,8 +57,8 @@ export class AlertServices{
           maxWidth: '450px',
           data: roomId,
           position: {
-            bottom: '0',
-            left: '0'
+            bottom: '20px',
+            left: '20px'
           }
       });
   }
