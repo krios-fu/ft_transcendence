@@ -5,6 +5,7 @@ import { AchievementsUserQueryDto } from './dto/achievements_user.query.dto';
 import { CreateAchievementUserDto } from './dto/achievement_user.dto';
 import { AchievementUserEntity } from './entity/achievement_user.entity';
 import { AchievementsUserRepository } from './repository/achievements_user.repository';
+import { QueryRunner } from 'typeorm';
 
 @Injectable()
 export class AchievementsUserService {
@@ -37,7 +38,15 @@ export class AchievementsUserService {
     /*
     ** Service: create a new achievement for a user.
     */
-    public async createAchievementUser(dto: CreateAchievementUserDto): Promise<AchievementUserEntity> {
+    public async createAchievementUser(dto: CreateAchievementUserDto,
+                                        qR?: QueryRunner)
+                                        : Promise<AchievementUserEntity> {
+        if (qR)
+        { // For transactions
+            return (
+                await qR.manager.getRepository(AchievementUserEntity).save(dto)
+            );
+        }
         return await this.achievementsUserRepository.save(dto);
     }
 

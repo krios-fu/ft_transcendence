@@ -4,8 +4,10 @@ import { LoserEntity } from "./loser.entity";
 
 @Injectable()
 export class    LoserMapper {
-    toEntity(winnerDto: LoserDto, winnerEntity: LoserEntity) {
-        winnerEntity.user = winnerDto.user;
-        winnerEntity.score = winnerDto.score;
+    toEntity(loserDto: LoserDto, loserEntity: LoserEntity) {
+        loserEntity.user = loserDto.user;
+        loserEntity.ranking = loserDto.ranking;
+        loserEntity.category = loserDto.category;
+        loserEntity.score = loserDto.score;
     }
 }
