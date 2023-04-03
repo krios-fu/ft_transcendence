@@ -49,17 +49,20 @@ export class    GameService {
 
     private async saveRankings(playerA: UserEntity, playerB: UserEntity,
                                 qR: QueryRunner): Promise<void> {
-        let resultA: Promise<UserEntity>;
-        let resultB: Promise<UserEntity>;
+        let     resultA: Promise<UserEntity>;
+        let     resultB: Promise<UserEntity>;
+        const   results: [Promise<UserEntity>, Promise<UserEntity>] = [
+            resultA,
+            resultB
+        ];
     
-        resultA = this.userService.updateUser(playerA.id, {
-            ranking: playerA.ranking,
-            category: playerA.category
-        }, qR);
-        resultB = this.userService.updateUser(playerB.id, {
-            ranking: playerB.ranking,
-            category: playerB.category
-        }, qR);
+        for (const [index, player] of [playerA, playerB].entries())
+        {
+            results[index] = this.userService.updateUser(player.id, {
+                ranking: player.ranking,
+                category: player.category
+            }, qR);
+        }
         await resultA;
         await resultB;
     }
