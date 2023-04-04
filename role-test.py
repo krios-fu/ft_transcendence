@@ -9,6 +9,10 @@ from time import sleep
 # comprobamos roles en sala: { room owner, room admin }
 # y comprobamos la interacción entre estos roles
 
+users = []
+roles = []
+rooms = []
+
 
 def pretty(json_e):
     return json.dumps(json_e, indent=2)
@@ -26,6 +30,8 @@ def clean_role(api, data):
     r_2 = requests.delete(f'http://localhost:3000/room_roles/{r.json()["id"]}', headers=api.get_param('auth_token'))
     print(f'[ CLEAN {r_2.status_code}, {r_2.reason}')
 
+
+
 if __name__ == "__main__":
     api = Api()
 
@@ -40,6 +46,7 @@ if __name__ == "__main__":
     api.post_user_room(users[4]['id'], rooms[0]['id'])
     room_admin = api.post_user_room_role(rooms[0]['id'], users[4]['id'], roles[3]['id'])
 
+    api.set_user_creds('admin')
     private_room = api.post_room_role(rooms[0]['id'], roles[0]['id'])
     api.set_user_creds('admin')
     official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
