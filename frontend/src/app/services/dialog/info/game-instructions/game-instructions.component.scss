@@ -1,0 +1,35 @@
+.content-title {
+    font-weight: bold;
+}
+
+ul {
+    list-style: square outside;
+}
+
+.version-title {
+    font-weight: bold;
+}
+
+#controls-container {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.controls-child {
+    text-align: center;
+}
+
+.control-title {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.control-key {
+    height: 60px;
+    width: auto;
+}
+
+.control-text {
+    font-weight: bold;
+}
