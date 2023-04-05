@@ -2,8 +2,8 @@ import {
     Injectable,
     HttpException,
     HttpStatus,
-    NotAcceptableException,
-    NotFoundException
+    NotFoundException,
+    BadRequestException
 } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -62,12 +62,18 @@ export class FriendshipService {
             friendship.senderId = friendship.sender.id;
             friendship.receiverId = friendship.receiver.id;
             if ((await queryRunner.manager.find(FriendshipEntity, {
-                where: {
-                    senderId: receiverId,
-                    receiverId: senderId
-                }
+                where: [
+                    {
+                        senderId: receiverId,
+                        receiverId: senderId
+                    },
+                    {
+                        senderId: senderId,
+                        receiverId: receiverId
+                    }
+                ]
             })).length != 0)
-                throw new NotAcceptableException("Friendship exists already");
+                throw new BadRequestException("Friendship exists already");
             await queryRunner.manager.insert(FriendshipEntity, friendship);
             await queryRunner.commitTransaction();
         } catch (err) {
