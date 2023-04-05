@@ -6,6 +6,7 @@ import { FriendNotificationComponent } from "./dialog/notification/friend-notifi
 import { GameNotificationComponent } from "./dialog/notification/game-notification/game-notification.component";
 import { UserDto } from "../dtos/user.dto";
 import { MatchNotificationComponent } from "./dialog/notification/match-notification/match-notification.component";
+import { GameInstructionsComponent } from "./dialog/info/game-instructions/game-instructions.component";
 
 @Injectable({
     providedIn: 'root'
@@ -61,5 +62,13 @@ export class AlertServices{
             left: '20px'
           }
       });
-  }
+    }
+
+    openGameInstructions(): void {
+      this._dialog.open(GameInstructionsComponent, {
+        minWidth: '300px',
+        maxWidth: '450px',
+      });
+    }
+
 }
