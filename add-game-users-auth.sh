@@ -25,7 +25,7 @@ function launchRequest {
 }
 
 function handleRequestFailure {
-    if [[ $HTTP_STATUS_CODE -gt 400 ]]
+    if [[ $HTTP_STATUS_CODE -ge 400 ]]
     then
         if [[ $RETRY_COUNTER -lt 3 ]]
         then
