@@ -1,0 +1,33 @@
+#header {
+    text-align: center
+};
+#file_upload { 
+    display: none;
+};
+#upper_body {
+    margin: auto;
+    height: 40%;
+    border:  5px;
+    background-color: powderblue;
+    display: flex;
+    //position: relative;
+}
+#btn_edit_span, #btn_remove_span {
+    width: 30%;
+    //position: absolute;
+}
+#btn_edit_span {
+    //bottom: 0;
+}
+#room_avatar_span {
+    width: 40%;
+    position: absolute;
+}
+#lower_body {
+    height: 60%;
+    border: 5px;
+    background-color: yellowgreen;
+}
+#body {
+    height: 100%;
+}

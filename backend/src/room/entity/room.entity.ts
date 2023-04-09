@@ -11,6 +11,7 @@ import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { BaseEntity } from "src/common/classes/base.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
+import { DEFAULT_ROOM_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -42,7 +43,7 @@ export class RoomEntity extends BaseEntity {
         //length: 
         nullable: true,
         unique: true,
-        default: null
+        default: DEFAULT_ROOM_AVATAR_PATH
     })
     photoUrl: string;
 

@@ -20,6 +20,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
+import { GameAdminComponent } from './game-admin/game-admin.component';
+import { MatButtonModule } from '@angular/material/button';
+import { AvatarDialogComponent } from './game-admin/avatar-dialog/avatar-dialog.component';
+import { PasswordDialogComponent } from './game-admin/password-dialog/password-dialog.component';
+import { PrivateDialogComponent } from './game-admin/private-dialog/private-dialog.component';
+import { DeleteDialogComponent } from './game-admin/delete-dialog/delete-dialog.component';
+import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-admin-detail.component';
 // import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
@@ -27,7 +34,13 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     GameComponent,
     OnlineComponent,
     GameQueueComponent,
-    RoomGameIdComponent
+    RoomGameIdComponent,
+    GameAdminComponent,
+    AvatarDialogComponent,
+    PasswordDialogComponent,
+    PrivateDialogComponent,
+    DeleteDialogComponent,
+    GameAdminDetailComponent
   ],
   imports: [
     ScrollingModule,
@@ -43,6 +56,7 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     FormsModule,
     MatIconModule,
     MatMenuModule,
+    MatButtonModule
     
     // MatLabel
   ],

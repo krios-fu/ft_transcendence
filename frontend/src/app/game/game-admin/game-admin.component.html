@@ -1,0 +1,23 @@
+<div style="background-color: white; height: 100%">
+    <div id="header">Temp header</div>
+    <div id="body">
+        <div id="upper_body">
+            <div id="btn_edit_span">
+                <div><button mat-raised-button id="avatar_upload_btn" (click)="openAvatarModal()">select avatar.</button></div>
+                <div><button mat-raised-button color="primary" id="change_visibility">change name.</button></div>
+            </div>
+            <div id="room_avatar_span">
+                <img [src]="this.avatarUrl">
+                room avatar
+            </div>
+            <span id="btn_remove_span">
+                <button mat-raised-button color="warning" id="delete_room" (click)="deleteRoomModal()">delete room.</button>
+                delete room button
+            </span>
+        </div>
+        <div id="lower_body">
+            <span>list</span>
+            <span>detail</span>
+        </div>
+    </div>
+</div>

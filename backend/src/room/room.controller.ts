@@ -1,7 +1,7 @@
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
 import { UserEntity } from "src/user/entities/user.entity";
-import { CreateRoomDto } from "./dto/room.dto";
+import { CreateRoomDto, UpdateRoomDto } from "./dto/room.dto";
 import { UserService } from "src/user/services/user.service";
 import { BadRequestException, Body, 
     Controller, 
@@ -72,6 +72,21 @@ export class RoomController {
         return user;
     }
 
+
+    // guard of at least room owner
+    @Put(':room_id')
+    public async updateRoom(
+        @Param('room_id', ParseIntPipe) id: number,
+        @Body() dto: UpdateRoomDto
+    ): Promise<RoomEntity> {
+        if (await this.roomService.findOne(id) === null) {
+            this.roomLogger.error(`No room with id ${id} present in database`);
+            throw new BadRequestException('resource not found in database');
+        }
+        return await this.roomService.updateRoom(id, dto);
+    }
+
+
     @Put(':room_id/owner/:owner_id')
     public async updateRoomOwner(
         @Param('room_id', ParseIntPipe) id: number,
@@ -99,10 +114,10 @@ export class RoomController {
         const { roomName, ownerId } = dto;
 
         if (await this.userService.findOne(ownerId) === null) {
-            throw new BadRequestException('no user in db');
+            throw new BadRequestException('Resource not found');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
-            this.roomLogger.error('room with name ' + roomName + ' already in database');
+            this.roomLogger.error(`Resource with name ${roomName} already exists`);
             throw new BadRequestException('room already in db');
         }
         return await this.roomService.createRoom(dto);
@@ -115,7 +130,7 @@ export class RoomController {
 
         if (room === null) {
             this.roomLogger.error(`No room with id ${id} present in database`);
-            throw new NotFoundException('no resource to delete');
+            throw new NotFoundException('Resource not found');
         }
         return await this.roomService.removeRoom(room);
     }
@@ -132,7 +147,8 @@ export class RoomController {
         ): Promise<RoomEntity> {
         if (await this.roomService.findOne(id) === null) {
             fs.unlinkSync(avatar.path);
-            throw new BadRequestException('no room in db');
+            this.roomLogger.error(`No room with id ${id} present in database`);
+            throw new BadRequestException(`Resource with id ${id} not found`);
         }
         const photoUrl: string = `http://localhost:3000/${avatar.path}`;
 

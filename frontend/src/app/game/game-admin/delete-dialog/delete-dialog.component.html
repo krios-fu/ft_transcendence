@@ -1,0 +1,12 @@
+<h1>delete room.</h1>
+<div mat-dialog-content>
+    <p>please, enter room name</p>
+    <div>
+        <input [(ngModel)]="this.validateRoomName" type="text" placeholder="enter room name.">
+    </div>
+
+    <div>
+        <button mat-raised-button color="primary" (click)="closeModalBtn()">Close</button>
+        <button mat-raised-button color="warning"  [disabled]="this.validateRoomName != this.data.roomName" (click)="deleteRoomBtn()">Delete</button>
+    </div>
+</div>
