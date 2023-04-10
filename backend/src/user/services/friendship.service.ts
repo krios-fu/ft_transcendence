@@ -1,7 +1,9 @@
 import {
     Injectable,
     HttpException,
-    HttpStatus
+    HttpStatus,
+    NotFoundException,
+    BadRequestException
 } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -11,6 +13,7 @@ import { FriendshipStatus } from "../enum/friendship-status.enum";
 import { CreateFriendDto } from 'src/user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 import { BlockEntity } from "../entities/block.entity";
+import { NotFoundError } from "rxjs";
 
 @Injectable()
 export class FriendshipService {
@@ -39,8 +42,8 @@ export class FriendshipService {
         const friendship = new FriendshipEntity();
         const queryRunner = this.datasource.createQueryRunner();
         let users: UserEntity[];
+        let transactionError: any;
 
-        //Start transaction
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
@@ -51,7 +54,7 @@ export class FriendshipService {
                 ]
             });
             if (users.length != 2)
-                throw new HttpException("Not Found", HttpStatus.NOT_FOUND);
+                throw new NotFoundException("Friend user not found");
             friendship.sender = users[0].id === senderId
                 ? users[0] : users[1];
             friendship.receiver = users[0].id === receiverId
@@ -59,21 +62,29 @@ export class FriendshipService {
             friendship.senderId = friendship.sender.id;
             friendship.receiverId = friendship.receiver.id;
             if ((await queryRunner.manager.find(FriendshipEntity, {
-                where: {
-                    senderId: receiverId,
-                    receiverId: senderId
-                }
+                where: [
+                    {
+                        senderId: receiverId,
+                        receiverId: senderId
+                    },
+                    {
+                        senderId: senderId,
+                        receiverId: receiverId
+                    }
+                ]
             })).length != 0)
-                throw new HttpException("Conflict", HttpStatus.CONFLICT);
+                throw new BadRequestException("Friendship exists already");
             await queryRunner.manager.insert(FriendshipEntity, friendship);
             await queryRunner.commitTransaction();
         } catch (err) {
-            console.log(err);
-            throw new HttpException("Internal Server Error",
-                HttpStatus.INTERNAL_SERVER_ERROR);
+            console.error(err);
+            transactionError = err;
+            await queryRunner.rollbackTransaction();
         } finally {
             await queryRunner.release();
         }
+        if (transactionError)
+            throw transactionError;
         return friendship;
     }
 
