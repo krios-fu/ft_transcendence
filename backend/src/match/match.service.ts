@@ -5,6 +5,7 @@ import { MatchDto } from "./match.dto";
 import { MatchEntity } from "./match.entity";
 import { MatchMapper } from "./match.mapper";
 import { MatchRepository } from "./match.repository";
+import { QueryRunner } from "typeorm";
 
 @Injectable()
 export class    MatchService {
@@ -77,16 +78,14 @@ export class    MatchService {
     /*
     **  It is only used by game gateway. Do not expose to clients.
     */
-    async addMatch(matchDto: MatchDto): Promise<MatchEntity> {
+    async addMatch(matchDto: MatchDto, qR?: QueryRunner): Promise<MatchEntity> {
         const   matchEntity: MatchEntity = this.matchMapper.toEntity(matchDto);
-        
-        try {
-            await this.matchRepository.save(matchEntity);
-        } catch (err) {
-            console.log(err);
-            return (null);
+    
+        if (qR)
+        { // For transactions
+            return (await qR.manager.save(matchEntity));
         }
-        return (matchEntity);
+        return (await this.matchRepository.save(matchEntity));
     }
 
     async countUserMatches(userId: string): Promise<number> {

@@ -13,16 +13,10 @@ export class    WinnerService {
         private winnerMapper: WinnerMapper
     ) {}
 
-    async AddWinner(winnerDto: WinnerDto): Promise<WinnerEntity> {
+    async addWinner(winnerDto: WinnerDto): Promise<WinnerEntity> {
         const   winnerEntity: WinnerEntity = new WinnerEntity;
 
         this.winnerMapper.toEntity(winnerDto, winnerEntity);
-        try {
-            this.winnerRepository.insert(winnerEntity);
-        } catch(err) {
-            console.log(err);
-            return (null);
-        }
-        return (winnerEntity);
+        return (this.winnerRepository.save(winnerEntity));
     }
 }
