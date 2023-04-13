@@ -19,6 +19,8 @@ import { GameService } from './game.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
 import { GameUpdateService } from './game.updateService';
+import { UserRoomModule } from 'src/user_room/user_room.module';
+import { RoomModule } from 'src/room/room.module';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { GameUpdateService } from './game.updateService';
     LoserModule,
     AuthModule,
     AchievementsModule,
-    AchievementsUserModule
+    AchievementsUserModule,
+    RoomModule,
+    UserRoomModule
   ],
   providers: [
     GameGateway,
