@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameAdminDetailComponent implements OnInit {
 
+  user ???
+
   constructor() { }
 
   ngOnInit(): void {

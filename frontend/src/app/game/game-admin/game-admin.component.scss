@@ -23,13 +23,12 @@
     background-color: azure;
     margin: auto;
     border: 5px;
-    border-radius: 30%;
-    //box-shadow: ;
-    //box-shadow: 3px 3px red, -1em 0 0.4em olive;
-
-    height: 100vw;
+    height: 100%;
     display: grid;
     grid-template-rows: 1fr 3fr 1fr;
     grid-template-columns: none;
 }
-
+.avatar_block>img {
+    border-radius: 50%;
+    object-fit: cover;
+}

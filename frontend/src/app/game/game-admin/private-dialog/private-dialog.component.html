@@ -1,1 +1,12 @@
-<p>private-dialog works!</p>
+<h1>change visibility.</h1>
+<div mat-dialog-content>
+    <div class="public_input" *ngIf="this.visibility; else #private_input">
+        cambiar a privado (pide contraseña)
+        input contrasena
+        repite contrasena
+        boton tal
+    </div>
+    <ng-template #private_input>
+        cambiar a publico
+    </ng-template>
+</div>

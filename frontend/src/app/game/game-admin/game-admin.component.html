@@ -5,8 +5,9 @@
             <div><button mat-raised-button color="primary" id="change_visibility">change name.</button></div>
         </div>
         <div class="avatar_block">
-            <img [src]="this.avatarUrl">
             <h1>{{ this.room?.roomName || "undefined" }}</h1>
+            <img [src]="this.avatarUrl">
+            <h1>placeholder</h1>
         </div>
         <span class="btn_block">
             <button mat-raised-button color="warning" id="delete_room" (click)="deleteRoomModal()">delete room.</button>
@@ -15,6 +16,6 @@
     </div>
     <div id="lower_body">
         <span>list</span>
-        <span>detail</span>
+        <app-game-admin-detail *ngIf="selectedUser" ></app-game-admin-detail>
     </div>
 </div>
