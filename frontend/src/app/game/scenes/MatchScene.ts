@@ -28,6 +28,9 @@ export class    MatchScene extends BaseScene {
     initData?: IMatchSceneInit;
     match?: Match;
     buffer?: SnapshotBuffer;
+    queue: IMatchData[];
+    lastServerUpdate: number;
+    
     private _showInitCount: boolean = true;
 
     static readonly serverUpdateInterval = 50;
@@ -40,6 +43,8 @@ export class    MatchScene extends BaseScene {
         readonly recoveryService: GameRecoveryService
     ) {
         super(role, socket);
+        this.queue = [];
+        this.lastServerUpdate = Date.now();
     }
 
     /*  Called when a scene starts
