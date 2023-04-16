@@ -4,19 +4,26 @@ import {
     Injectable
 } from "@nestjs/common";
 import { WsArgumentsHost } from "@nestjs/common/interfaces";
-import { Observable } from "rxjs";
 import { Socket } from "socket.io";
 import { BadRequestWsException } from "../exceptions/badRequest.wsException";
 import { ForbiddenWsException } from "../exceptions/forbidden.wsException";
 import { GameMatchmakingService } from "../game.matchmaking.service";
 import { SocketHelper } from "../game.socket.helper";
+import { UserRoomService } from "src/user_room/user_room.service";
+import { UserService } from "src/user/services/user.service";
+import { UserEntity } from "src/user/entities/user.entity";
+import { RoomEntity } from "src/room/entity/room.entity";
+import { RoomService } from "src/room/room.service";
 
 @Injectable()
 export class    GameRoomGuard implements CanActivate {
 
     constructor(
         private readonly socketHelper: SocketHelper,
-        private readonly matchMakingService: GameMatchmakingService
+        private readonly matchMakingService: GameMatchmakingService,
+        private readonly userService: UserService,
+        private readonly roomService: RoomService,
+        private readonly userRoomService: UserRoomService
     ) {}
 
     private _checkClientInRoom(roomId: string, client: Socket): boolean {
@@ -26,18 +33,34 @@ export class    GameRoomGuard implements CanActivate {
         return (true);
     }
 
-    private _checkRoomJoin(roomId: string, username: string): boolean {
-        //Get room from DB
-        //Check user allowed in room from DB
+    private async _checkRoomJoin(roomId: string,
+                                    username: string): Promise<boolean> {    
+        try {
+            const   userEntity: Promise<UserEntity> =
+                            this.userService.findOneByUsername(username);
+            const   roomEntity: Promise<RoomEntity> =
+                            this.roomService.findByName(roomId);
+        
+            if (!await userEntity
+                    || !await roomEntity
+                    || !await this.userRoomService.findUserRoomIds(
+                                                        (await userEntity).id,
+                                                        (await roomEntity).id)
+            )
+                return (false);
+        } catch (err: any) {
+            console.error("Game room guard db error: ", err);
+            return (false);
+        }
         return (true);
     }
 
-    private _validateRoom(client: Socket, handlerName: string,
-                            data: any): boolean {
+    private async _validateRoom(client: Socket, handlerName: string,
+                            data: any): Promise<boolean> {
         const   username: string = client.data.username;
     
         if (handlerName === "joinRoom")
-            return (this._checkRoomJoin(data, username));
+            return (await this._checkRoomJoin(data, username));
         else if (handlerName === "matchInviteResponse")
         {
             return (
@@ -66,8 +89,7 @@ export class    GameRoomGuard implements CanActivate {
         return (true);
     }
 
-    canActivate(context: ExecutionContext)
-                    : boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
         const   wsContext: WsArgumentsHost = context.switchToWs();
         const   client: Socket = wsContext.getClient<Socket>();
         const   data: any = wsContext.getData<any>();
@@ -80,7 +102,7 @@ export class    GameRoomGuard implements CanActivate {
                 data
             )
         }
-        if (!this._validateRoom(client, handlerName, data))
+        if (!await this._validateRoom(client, handlerName, data))
         {
             throw new ForbiddenWsException(
                 handlerName, //Handlers must have same name as event
