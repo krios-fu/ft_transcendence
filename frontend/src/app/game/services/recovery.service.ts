@@ -3,7 +3,10 @@ import { IMatchInitData } from "../elements/Match";
 import { IResultData } from "../elements/Result";
 import { BaseScene } from "../scenes/BaseScene";
 import { EndScene } from "../scenes/EndScene";
-import { MatchScene } from "../scenes/MatchScene";
+import {
+    IMatchSceneInit,
+    MatchScene
+} from "../scenes/MatchScene";
 import { MenuHeroScene } from "../scenes/MenuHeroScene";
 import {
     IMenuInit,
@@ -61,8 +64,9 @@ export class    GameRecoveryService {
             {
                 scene.scene.start("Spectator", {
                     role: data.role,
-                    matchData: data.gameData
-                });
+                    matchData: data.gameData,
+                    recover: true
+                } as IMatchSceneInit);
             }
             else
             {
@@ -70,15 +74,17 @@ export class    GameRecoveryService {
                 {
                     scene.scene.start("Player", {
                         role: data.role,
-                        matchData: data.gameData
-                    });
+                        matchData: data.gameData,
+                        recover: true
+                    } as IMatchSceneInit);
                 }
                 else
                 {
                     scene.scene.start("ClassicPlayer", {
                         role: data.role,
-                        matchData: data.gameData
-                    });
+                        matchData: data.gameData,
+                        recover: true
+                    } as IMatchSceneInit);
                 }
             }
         }
@@ -87,8 +93,7 @@ export class    GameRecoveryService {
     setUp(scene: StartScene
                     | EndScene | MenuScene
                     | MenuHeroScene | MatchScene): void {
-        scene.setUpRecovery();
-        scene.socket.on("recoverData", (recData: IRecoverData) => {        
+        scene.socket.on("recoverData", (recData: IRecoverData) => {
             if (recData.scene === "start" && scene instanceof StartScene)
             {
                 scene.recover(undefined);
