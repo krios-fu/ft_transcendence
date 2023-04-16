@@ -14,6 +14,22 @@ def pretty(json_e):
     return json.dumps(json_e, indent=2)
 
 
+def reset_state(api):
+    users = requests.get('http://localhost:3000/users', headers=api.get_param('auth_token')).json()
+    print(f'users: {users}')
+    rooms = requests.get('http://localhost:3000/room', headers=api.get_param('auth_token')).json()
+    print(f'rooms: {rooms}')
+    roles = requests.get('http://localhost:3000/roles', headers=api.get_param('auth_token')).json()
+    print(f'roles: {roles}')
+    for user in users:
+        if user['username'] == api.get_param('api_user'):
+            continue
+        requests.delete(f'http://localhost:3000/users/{user["id"]}', headers=api.get_param('auth_token'))
+    for room in rooms:
+        requests.delete(f'http://localhost:3000/room/{room["id"]}', headers=api.get_param('auth_token'))
+    for role in roles:
+        requests.delete(f'http://localhost:3000/roles/{role["id"]}', headers=api.get_param('auth_token'))
+
 def clean_role(api, data):
     api.set_user_creds('admin')
     url = f'http://localhost:3000/room_roles/rooms/{data["roomId"]}/roles/{data["roleId"]}'
@@ -29,6 +45,9 @@ def clean_role(api, data):
 if __name__ == "__main__":
     api = Api()
 
+    print('... clean state ...')
+    reset_state(api)
+    #sys.exit(1)
     print('[ ******************************************************************************************** ]\n\n')
     users = [ api.post_user(uname) for uname in ['user', 'owner', 'admin', 'ro-owner', 'ro-admn'] ]
     roles = [ api.post_role(role) for role in ['private', 'official', 'owner', 'admin'] ]

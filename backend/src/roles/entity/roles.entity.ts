@@ -24,6 +24,7 @@ export class RolesEntity extends BaseEntity {
     @Column({ 
         type:  'varchar',
         unique: true,
+        length: 15
      })
     role!: string
 

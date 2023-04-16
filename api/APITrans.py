@@ -26,6 +26,7 @@ class APITrans():
         return self.__dict__[key]
 
     def __get_creds(self, user):
+        self.set_param('api_user', user)
         token_creds = {
                 'userProfile': {
                 'username': user,
@@ -183,7 +184,6 @@ class APITrans():
             url = f'{url}users/{user_id}/rooms/{room_id}/roles/{role_id}'
             user_room_role = self.__request_get_wrapper(url)
         return user_room_role
-
 
     def __seed_db(self):
         self.set_param('users', [ self.post_user(u) for u in ['bob', 'tim', 'eric']])
