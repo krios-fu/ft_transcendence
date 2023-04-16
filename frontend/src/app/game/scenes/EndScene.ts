@@ -14,10 +14,10 @@ export class    EndScene extends BaseScene {
     startTimeout: number | undefined;
 
     constructor(
-        sock: SocketIO.Socket,
+        sock: SocketIO.Socket, room: string,
         private readonly recoveryService: GameRecoveryService
     ) {
-        super("End", sock);
+        super("End", sock, room);
         this.startTimeout = undefined;
     }
 

@@ -11,13 +11,13 @@ export class    ClassicPlayerScene extends MatchScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor(
-        socket: SocketIO.Socket,
+        socket: SocketIO.Socket, room: string,
         override readonly lagCompensator: LagCompensationService,
         override readonly loadService: LoadService,
         override readonly soundService: SoundService,
         override readonly recoveryService: GameRecoveryService
     ) {
-        super("ClassicPlayer", socket,
+        super("ClassicPlayer", socket, room,
                 lagCompensator, loadService, soundService, recoveryService);
     }
 

@@ -11,10 +11,10 @@ export class    StartScene extends BaseScene {
     startTitles?: StartTitles;
 
     constructor(
-        sock: SocketIO.Socket,
+        sock: SocketIO.Socket, room: string,
         private readonly recoveryService: GameRecoveryService
     ) {
-        super("Start", sock);
+        super("Start", sock, room);
     }
 
     init() {

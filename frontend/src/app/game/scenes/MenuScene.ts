@@ -33,10 +33,10 @@ export class    MenuScene extends BaseScene {
 
     private _menuRenderer?: MenuRenderer;
 
-    constructor(sock: Socket,
+    constructor(sock: Socket, room: string,
                     readonly recoveryService: GameRecoveryService,
                     sceneName: string = "Menu") {
-        super(sceneName, sock);
+        super(sceneName, sock, room);
         this.role = "";
     }
 
@@ -90,7 +90,6 @@ export class    MenuScene extends BaseScene {
         this.removeAllListeners();
         if (this._menuRenderer)
             this._menuRenderer.destroy();
-        this.initData = undefined;
     }
 
     recover(data: IMenuInit): void {

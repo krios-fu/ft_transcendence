@@ -12,13 +12,13 @@ export class    PlayerScene extends MatchScene {
     powerKeys: any;
 
     constructor(
-        socket: SocketIO.Socket,
+        socket: SocketIO.Socket, room: string,
         override readonly lagCompensator: LagCompensationService,
         override readonly loadService: LoadService,
         override readonly soundService: SoundService,
         override readonly recoveryService: GameRecoveryService
     ) {
-        super("Player", socket,
+        super("Player", socket, room,
                 lagCompensator, loadService, soundService, recoveryService);
     }
 

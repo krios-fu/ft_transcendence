@@ -20,7 +20,6 @@ import { BaseScene } from './BaseScene';
 export interface    IMatchSceneInit {
     role: string;
     matchData: IMatchInitData;
-    recover?: boolean;
 }
 
 export class    MatchScene extends BaseScene {
@@ -28,18 +27,21 @@ export class    MatchScene extends BaseScene {
     initData?: IMatchSceneInit;
     match?: Match;
     buffer?: SnapshotBuffer;
-    private _showInitCount: boolean = true;
+    queue: IMatchData[];
+    lastServerUpdate: number;
 
     static readonly serverUpdateInterval = 50;
 
     constructor(
-        role: string, socket: SocketIO.Socket,
+        role: string, socket: SocketIO.Socket, room: string,
         readonly lagCompensator: LagCompensationService,
         readonly loadService: LoadService,
         readonly soundService: SoundService,
         readonly recoveryService: GameRecoveryService
     ) {
-        super(role, socket);
+        super(role, socket, room);
+        this.queue = [];
+        this.lastServerUpdate = Date.now();
     }
 
     /*  Called when a scene starts
@@ -69,8 +71,6 @@ export class    MatchScene extends BaseScene {
     create() {
         if (!this.initData)
             return ;
-        if (this.initData.recover)
-            this._showInitCount = false;
         if (this.initData.matchData.stage != undefined
              && this.initData.matchData.playerA.hero
              && this.initData.matchData.playerB.hero)
@@ -89,12 +89,10 @@ export class    MatchScene extends BaseScene {
                 point: SoundService.matchOtherSoundKeys.point
             } as MatchSoundKeys);
             this.match = new Match(this, this.initData.matchData,
-                                    this._showInitCount,
                                     this.soundService);
         }
         else
-            this.match = new Match(this, this.initData.matchData,
-                                    this._showInitCount);
+            this.match = new Match(this, this.initData.matchData);
         this.buffer = new SnapshotBuffer(
             {
                 gameWidth: Number(this.game.config.width),
@@ -132,14 +130,7 @@ export class    MatchScene extends BaseScene {
 
     recover(data: IMatchRecoveryData): void {
         if (!this.match)
-        {
-            this.initData = {
-                role: data.role,
-                matchData: data.gameData,
-                recover: true
-            }
             return ;
-        }
         this.match.stopPointTitle();
         if (data.gameData.playerA.nick != this.match.nickA
             || data.gameData.playerB.nick != this.match.nickB

@@ -47,7 +47,6 @@ export class    Match {
     private _when: number;
 
     constructor(scene: MatchScene, initData: IMatchInitData,
-                    showInitCount: boolean,
                     private readonly soundService?: SoundService) {
         this._playerA = new Player(scene, initData.playerA, soundService);
         this._playerB = new Player(scene, initData.playerB, soundService);
@@ -75,11 +74,7 @@ export class    Match {
         });
         this._when = initData.when;
         this._pointTitle = new PointTitle(scene);
-        if (this._ball.data.xVel === 0
-                && this._playerA.score === 0
-                && this._playerB.score === 0
-                && showInitCount)
-            this._pointTitle.display();
+        this._pointTitle.display();
     }
 
     // Returns a Deep Copy of IPlayerData

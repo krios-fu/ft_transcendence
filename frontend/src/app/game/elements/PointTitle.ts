@@ -9,7 +9,7 @@ export class    PointTitle {
     private _scene: MatchScene;
 
     constructor(scene: MatchScene) {
-        (this._title = new Txt(scene, {
+        this._title = new Txt(scene, {
             xPos: Number(scene.game.config.width) / 2,
             yPos: Number(scene.game.config.height) / 2,
             content: '3',
@@ -23,7 +23,7 @@ export class    PointTitle {
             xOrigin: 0.5,
             yOrigin: 0.5,
             depth: 0
-        })).visible = false;
+        });
         this._tween = undefined;
         this._scene = scene;
     }
@@ -35,7 +35,6 @@ export class    PointTitle {
             this._tween.restart();
             return ;
         }
-        this._title.visible = true;
         this._tween = this._scene.tweens.add({
             targets: this._title.element,
             scale: 0.1,

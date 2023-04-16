@@ -8,17 +8,19 @@ import { IMenuInit } from './MenuScene';
 export abstract class    BaseScene extends Phaser.Scene {
 
     socket: SocketIO.Socket;
+    room: string;
     initTxt?: Txt;
 
     constructor(
-        role: string, socket: SocketIO.Socket
+        role: string, socket: SocketIO.Socket, room: string
     ) {
         super(role);
 
         this.socket = socket;
+        this.room = room;
     }
 
-    removeAllListeners(): void {
+    private removeAllSocketListeners(): void {
         this.socket.off("leftSelection");
         this.socket.off("rightSelection");
         this.socket.off("confirmSelection");
@@ -27,6 +29,25 @@ export abstract class    BaseScene extends Phaser.Scene {
         this.socket.off("end");
         this.socket.off("matchUpdate");
         this.socket.off("recoverData");
+    }
+
+    private removeAllGameListeners(): void {
+        this.game.events.off("focus");
+    }
+
+    removeAllListeners(): void {
+        this.removeAllSocketListeners();
+        this.removeAllGameListeners();
+    }
+
+    private emitRecover(): void {
+        this.socket.emit("recover", this.room);
+    }
+
+    setUpRecovery(): void {
+        this.game.events.on("focus", () => {
+            this.emitRecover();
+        });
     }
 
     abstract destroy(): void;

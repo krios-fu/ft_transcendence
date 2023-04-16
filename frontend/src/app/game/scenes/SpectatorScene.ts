@@ -8,13 +8,13 @@ import { MatchScene } from './MatchScene';
 export class    SpectatorScene extends MatchScene {
 
     constructor(
-        sock: SocketIO.Socket,
+        sock: SocketIO.Socket, room: string,
         override readonly lagCompensator: LagCompensationService,
         override readonly loadService: LoadService,
         override readonly soundService: SoundService,
         override readonly recoveryService: GameRecoveryService
     ) {
-        super("Spectator", sock,
+        super("Spectator", sock, room,
                 lagCompensator, loadService, soundService, recoveryService);
     }
 
