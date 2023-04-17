@@ -10,6 +10,7 @@ import { AvatarDialogComponent } from './avatar-dialog/avatar-dialog.component';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 import { PrivateDialogComponent } from './private-dialog/private-dialog.component';
 import { RoleDto } from 'src/app/dtos/role.dto';
+import { Input } from 'phaser';
 
 // en que parte
 
@@ -55,7 +56,7 @@ export class GameAdminComponent implements OnInit {
   avatarUrl: string | null = null;
 
   isPrivate?: boolean;
-  selectedUser?: UserDto;
+  @Input() selectedUser?: UserDto;
 
   openAvatarModal() {
     const dialogRef = this._dialog.open(AvatarDialogComponent, {
@@ -81,7 +82,7 @@ export class GameAdminComponent implements OnInit {
 
   changeVisibilityModal() {
     const dialogRef = this._dialog.open(PrivateDialogComponent, {
-      data: { visibility: this.isPrivate, roomId: this.roomId },
+      data: { isPrivate: this.isPrivate, roomId: this.roomId },
       height: '500px',
       autoFocus: true,
       disableClose: true

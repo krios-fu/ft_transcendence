@@ -10,16 +10,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class PrivateDialogComponent implements OnInit {
 
-  visibility: boolean | null = null;
+  isPrivate: boolean | null = null;
 
   constructor( 
     private _http: HttpClient,
     private _snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { visibility: boolean }
+    @Inject(MAT_DIALOG_DATA) public data: { isPrivate: boolean }
   ) { 
-    this.visibility = this.data.visibility;
+    this.isPrivate = this.data.isPrivate;
   }
-
   ngOnInit(): void { }
-
 }

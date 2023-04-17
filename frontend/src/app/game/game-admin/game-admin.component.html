@@ -3,6 +3,12 @@
         <div class="btn_block">
             <div><button mat-raised-button id="avatar_upload_btn" (click)="openAvatarModal()">select avatar.</button></div>
             <div><button mat-raised-button color="primary" id="change_name">change name.</button></div>
+            <div>
+                <mat-form-field>
+                    tag tag
+                    <input placeholder="name">
+                </mat-form-field>
+            </div>
             <div><button mat-raised-button color="primary" >change visibility.</button></div>
         </div>
         <div class="avatar_block">
@@ -16,7 +22,17 @@
         </span>
     </div>
     <div id="lower_body">
-        <span>list</span>
+        <div>
+            <h2> list of registered users. </h2>
+            <div class="users-table">
+                    <tr *ngFor="let user of registeredUsers">
+                        <td>{{user.username}}</td>
+                        <td>
+                            <button>see profile</button>
+                        </td>
+                    </tr>
+            </div>
+        </div>
         <app-game-admin-detail *ngIf="selectedUser" ></app-game-admin-detail>
     </div>
 </div>

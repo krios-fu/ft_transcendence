@@ -1,12 +1,27 @@
 <h1>change visibility.</h1>
 <div mat-dialog-content>
-    <div class="public_input" *ngIf="!this.visibility; else private_input">
-        <h2> introduce new password</h2>
-        input contrasena
-        repite contrasena
-        boton tal
+    <div class="modal_make_private" *ngIf="!this.isPrivate; else private_input">
+        <h2> make room private. </h2>
+        <mat-form-field> input password. </mat-form-field>
+        <mat-form-field> repeat password. </mat-form-field>
+        <mat-form-field> test
+            <input placeholder="test 1">
+            <input placeholder="test 2">
+        </mat-form-field>
+        <div>
+            <button id="btn_close_modal">Close</button>
+            <button id="btn_private_room">Make private</button>
+        </div>
     </div>
     <ng-template #private_input>
-        cambiar a publico
+        <h2> make room public. </h2>
+        <mat-form-field>
+            <input placeholder="confirm with password">
+            <input placeholder="repeat password">
+        </mat-form-field>
+        <div>
+            <button id="btn_close_modal">Close</button>
+            <button id="btn_private_room">Make private</button>
+        </div>
     </ng-template>
 </div>
