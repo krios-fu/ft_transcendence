@@ -80,7 +80,6 @@ export class    GameGateway implements OnGatewayInit,
         await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
         client.on("disconnecting", async () => {
-            await this.socketAuthService.removeUser(client, client.data.mockUser); //Provisional
             await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
@@ -102,14 +101,14 @@ export class    GameGateway implements OnGatewayInit,
                     this.updateService.getClientInitData(roomId);
     
         this.roomService.join(
-            client.data.mockUser, //Provisional
+            client.data.username,
             roomId
         );
         this.matchMakingService.emitAllQueuesLength(roomId, client.id);
         if (initScene && initData)
             client.emit(initScene, initData);
         await this.matchMakingService.updateNextPlayerRoom(
-            client.data.mockUser, //Provisional
+            client.data.username,
             roomId,
             true
         );
@@ -124,11 +123,11 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() roomId: string
     ) {    
         this.roomService.leave(
-            client.data.mockUser, //Provisional
+            client.data.username,
             roomId
         );
         await this.matchMakingService.updateNextPlayerRoom(
-            client.data.mockUser,
+            client.data.username,
             roomId,
             false
         );
@@ -145,7 +144,7 @@ export class    GameGateway implements OnGatewayInit,
         await this.matchMakingService.addToQueue(
             roomId,
             "classic",
-            client.data.mockUser //Provisional
+            client.data.username
         );
     }
 
@@ -159,7 +158,7 @@ export class    GameGateway implements OnGatewayInit,
         await this.matchMakingService.addToQueue(
             roomId,
             "hero",
-            client.data.mockUser // Provisional
+            client.data.username
         );
     }
 
@@ -173,7 +172,7 @@ export class    GameGateway implements OnGatewayInit,
         await this.matchMakingService.removeFromQueue(
             roomId,
             "classic",
-            client.data.mockUser //Provisional
+            client.data.username
         );
     }
 
@@ -187,7 +186,7 @@ export class    GameGateway implements OnGatewayInit,
         await this.matchMakingService.removeFromQueue(
             roomId,
             "hero",
-            client.data.mockUser // Provisional
+            client.data.username
         );
     }
 
@@ -199,7 +198,7 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() invite: MatchInviteResponseDto
     ) {
         await this.matchMakingService.updateNextPlayerInvite(
-            client.data.mockUser, // Provisional
+            client.data.username,
             invite.roomId,
             invite.accept
         );

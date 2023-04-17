@@ -70,6 +70,10 @@ export class    MenuScene extends BaseScene {
     preload() {
         if (!this.initData)
             return ;
+        if (!this.initData.avatarA)
+            this.initData.avatarA = "noUrl";
+        if (!this.initData.avatarB)
+            this.initData.avatarB = "noUrl";
         this.load.image('playerA', this.initData.avatarA);
         this.load.image('playerB', this.initData.avatarB);
         this.initData.avatarA = 'playerA';

@@ -8,7 +8,6 @@ import { GameUpdateService } from "./game.updateService";
 export class    GameSocketAuthService {
 
     private _authTimeout: Map<string, NodeJS.Timeout>;
-    private _mockUserNum: number = 1; //Provisional
 
     constructor(
         private readonly socketHelper: SocketHelper,
@@ -58,8 +57,7 @@ export class    GameSocketAuthService {
         for (const room of rooms)
         {
             username = SocketHelper.getUserNameFromRoomName(room);
-            if (username
-                && !username.includes("user-")) //Remove this second check in production. It skips test users.
+            if (username)
                 break ;
         }
         return (username);
@@ -75,18 +73,8 @@ export class    GameSocketAuthService {
             else
                 await this.removeUser(client, username);
         }
-        client.emit("mockUser", {
-            mockUser: `user-${this._mockUserNum}`
-        }); //Provisional
-        client.data.mockUser = `user-${this._mockUserNum}`; //Provisional
-        client.join(SocketHelper.getUserRoomName(`user-${this._mockUserNum}`)); //Provisional
         client.join(SocketHelper.getUserRoomName(username));
-        console.log(
-            `With id: ${client.id}, username: ${username}`
-            +
-            `, and testing-username user-${this._mockUserNum}`
-        );
-        ++this._mockUserNum; //Provisional
+        console.log(`Registered client with id: ${client.id}, username: ${username}`);
     }
 
     private async _removePlayer(playerRoom: string): Promise<void> {
