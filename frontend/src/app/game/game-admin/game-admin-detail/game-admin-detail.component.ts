@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 
 @Component({
@@ -8,7 +8,7 @@ import { UserDto } from 'src/app/dtos/user.dto';
 })
 export class GameAdminDetailComponent implements OnInit {
 
-  selectedUser?: UserDto;
+  @Input() userDetail: UserDto | null = null;
 
   constructor() { }
 

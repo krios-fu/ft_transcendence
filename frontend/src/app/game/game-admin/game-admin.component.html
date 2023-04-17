@@ -26,13 +26,13 @@
             <h2> list of registered users. </h2>
             <div class="users-table">
                     <tr *ngFor="let user of registeredUsers">
-                        <td>{{user.username}}</td>
+                        <td>{{user.user.username}}</td>
                         <td>
                             <button>see profile</button>
                         </td>
                     </tr>
             </div>
         </div>
-        <app-game-admin-detail *ngIf="selectedUser" ></app-game-admin-detail>
+        <app-game-admin-detail *ngIf="selectedUser" [userDetail]="selectedUser" ></app-game-admin-detail>
     </div>
 </div>

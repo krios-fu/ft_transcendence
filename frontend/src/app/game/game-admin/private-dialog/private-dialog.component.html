@@ -2,9 +2,16 @@
 <div mat-dialog-content>
     <div class="modal_make_private" *ngIf="!this.isPrivate; else private_input">
         <h2> make room private. </h2>
-        <mat-form-field> input password. </mat-form-field>
-        <mat-form-field> repeat password. </mat-form-field>
+        <mat-form-field>
+            <mat-label></mat-label> 
+            input password. 
+        </mat-form-field>
+        <mat-form-field> 
+            repeat password.
+            <mat-label></mat-label>
+        </mat-form-field>
         <mat-form-field> test
+            <mat-label>test label</mat-label>
             <input placeholder="test 1">
             <input placeholder="test 2">
         </mat-form-field>

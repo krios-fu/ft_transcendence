@@ -30,6 +30,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
 import { GameNotificationComponent } from './services/dialog/notification/game-notification/game-notification.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {} }
 
@@ -71,8 +73,9 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         MatDialogModule,
         ScrollingModule,
         MatDividerModule,
-        MatProgressBarModule
-
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatInputModule
     ],
     entryComponents: [
         DialogNotification,

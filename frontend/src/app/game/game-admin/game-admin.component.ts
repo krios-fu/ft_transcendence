@@ -56,7 +56,7 @@ export class GameAdminComponent implements OnInit {
   avatarUrl: string | null = null;
 
   isPrivate?: boolean;
-  @Input() selectedUser?: UserDto;
+  selectedUser?: UserDto;
 
   openAvatarModal() {
     const dialogRef = this._dialog.open(AvatarDialogComponent, {
