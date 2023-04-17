@@ -65,7 +65,7 @@ export class    GameRoomGuard implements CanActivate {
         {
             return (
                 this.matchMakingService.isNextPlayer(
-                    client.data.mockUser/*username*/, //Provisional
+                    client.data.username,
                     data.roomId
                 )
             );
