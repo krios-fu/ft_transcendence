@@ -16,10 +16,10 @@ export class PrivateDialogComponent implements OnInit {
     private _http: HttpClient,
     private _snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { visibility: boolean }
-  ) { }
-
-  ngOnInit(): void {
-      this.visibility = this.data.visibility;
+  ) { 
+    this.visibility = this.data.visibility;
   }
+
+  ngOnInit(): void { }
 
 }

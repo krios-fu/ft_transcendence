@@ -1,7 +1,7 @@
 <h1>change visibility.</h1>
 <div mat-dialog-content>
-    <div class="public_input" *ngIf="this.visibility; else #private_input">
-        cambiar a privado (pide contraseña)
+    <div class="public_input" *ngIf="!this.visibility; else private_input">
+        <h2> introduce new password</h2>
         input contrasena
         repite contrasena
         boton tal

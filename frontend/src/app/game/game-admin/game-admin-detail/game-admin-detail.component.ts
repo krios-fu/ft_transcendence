@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserDto } from 'src/app/dtos/user.dto';
 
 @Component({
   selector: 'app-game-admin-detail',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameAdminDetailComponent implements OnInit {
 
-  user ???
+  selectedUser?: UserDto;
 
   constructor() { }
 
