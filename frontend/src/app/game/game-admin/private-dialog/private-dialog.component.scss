@@ -1,0 +1,8 @@
+.modal_private, .modal_public {
+    display: grid;
+    grid-template-rows: repeat(1fr, 5);
+}
+.modal_private_footer {
+    display: flex;
+    flex-direction: column;
+}

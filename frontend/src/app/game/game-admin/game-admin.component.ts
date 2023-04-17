@@ -10,7 +10,6 @@ import { AvatarDialogComponent } from './avatar-dialog/avatar-dialog.component';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 import { PrivateDialogComponent } from './private-dialog/private-dialog.component';
 import { RoleDto } from 'src/app/dtos/role.dto';
-import { Input } from 'phaser';
 
 // en que parte
 

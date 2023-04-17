@@ -27,6 +27,7 @@ import { PasswordDialogComponent } from './game-admin/password-dialog/password-d
 import { PrivateDialogComponent } from './game-admin/private-dialog/private-dialog.component';
 import { DeleteDialogComponent } from './game-admin/delete-dialog/delete-dialog.component';
 import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-admin-detail.component';
+import { MatInputModule } from '@angular/material/input';
 // import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
@@ -56,9 +57,9 @@ import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-ad
     FormsModule,
     MatIconModule,
     MatMenuModule,
-    MatButtonModule
-    
-    // MatLabel
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [
     SocketService,

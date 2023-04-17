@@ -1,15 +1,15 @@
 <div id="main">
     <div id="upper_body">
         <div class="btn_block">
-            <div><button mat-raised-button id="avatar_upload_btn" (click)="openAvatarModal()">select avatar.</button></div>
-            <div><button mat-raised-button color="primary" id="change_name">change name.</button></div>
+            <button mat-raised-button id="avatar_upload_btn" (click)="openAvatarModal()">select avatar.</button>
+            <button mat-raised-button color="primary" id="change_name">change name.</button>
             <div>
                 <mat-form-field>
                     tag tag
-                    <input placeholder="name">
+                    <input matInput placeholder="name">
                 </mat-form-field>
             </div>
-            <div><button mat-raised-button color="primary" >change visibility.</button></div>
+            <div><button mat-raised-button color="primary" (click)="changeVisibilityModal()" >change visibility.</button></div>
         </div>
         <div class="avatar_block">
             <h1>{{ this.room?.roomName || "undefined" }}</h1>

@@ -11,6 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PrivateDialogComponent implements OnInit {
 
   isPrivate: boolean | null = null;
+  password: string | null = null;
+  validatePassword: string | null = null;
 
   constructor( 
     private _http: HttpClient,
@@ -20,4 +22,8 @@ export class PrivateDialogComponent implements OnInit {
     this.isPrivate = this.data.isPrivate;
   }
   ngOnInit(): void { }
+
+  postPrivateRoom() {
+        
+  }
 }

@@ -74,8 +74,6 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         ScrollingModule,
         MatDividerModule,
         MatProgressBarModule,
-        MatFormFieldModule,
-        MatInputModule
     ],
     entryComponents: [
         DialogNotification,

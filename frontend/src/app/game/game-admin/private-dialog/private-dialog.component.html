@@ -1,34 +1,28 @@
-<h1>change visibility.</h1>
 <div mat-dialog-content>
-    <div class="modal_make_private" *ngIf="!this.isPrivate; else private_input">
+    <div class="modal_private" *ngIf="!this.isPrivate; else private_input">
         <h2> make room private. </h2>
         <mat-form-field>
-            <mat-label></mat-label> 
-            input password. 
+            <mat-label>introduce new password.</mat-label>
+            <input matInput placeholder="password" [(ngModel)]="this.password">
         </mat-form-field>
         <mat-form-field> 
-            repeat password.
-            <mat-label></mat-label>
+            <mat-label>repeat new password</mat-label>
+            <input matInput placeholder="password" [(ngModel)]="this.validatePassword">
         </mat-form-field>
-        <mat-form-field> test
-            <mat-label>test label</mat-label>
-            <input placeholder="test 1">
-            <input placeholder="test 2">
-        </mat-form-field>
-        <div>
-            <button id="btn_close_modal">Close</button>
-            <button id="btn_private_room">Make private</button>
+        <div class="modal_private_footer">
+            <mat-raised-button id="btn_close_modal">Close</mat-raised-button>
+            <mat-raised-button id="btn_private_room">Make private</mat-raised-button>
         </div>
     </div>
-    <ng-template #private_input>
+    <ng-template #private_input class="modal_public">
         <h2> make room public. </h2>
         <mat-form-field>
-            <input placeholder="confirm with password">
-            <input placeholder="repeat password">
+            <input matInput placeholder="confirm with password">
+            <input matInput placeholder="repeat password">
         </mat-form-field>
         <div>
-            <button id="btn_close_modal">Close</button>
-            <button id="btn_private_room">Make private</button>
+            <mat-raised-button id="btn_close_modal">Close</mat-raised-button>
+            <mat-raised-button id="btn_private_room">Make private</mat-raised-button>
         </div>
     </ng-template>
 </div>
