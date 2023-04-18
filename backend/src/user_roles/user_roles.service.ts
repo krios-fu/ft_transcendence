@@ -31,13 +31,15 @@ export class UserRolesService {
 
     /* Returns all roles entities associated with user */
     public async getAllRolesFromUser(userId: number): Promise<UserRolesEntity[]> { 
-        return await this.userRolesRepository.find({
+        const TMP = await this.userRolesRepository.find({
             relations: { 
                 user: true, 
                 role: true 
             },
             where: { userId: userId },
         });
+        console.log(`[ getAllRolesFromUser ] ${JSON.stringify(TMP)}`);
+        return TMP;
     }
     
     /* from role id, return all users with this id */
@@ -60,7 +62,14 @@ export class UserRolesService {
 
     /* Create a new role entity provided RoleUserDto { userId, roleId } */
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {
-        return await this.userRolesRepository.save(new UserRolesEntity(dto));
+        console.log('[ assignRoleToUser ] Test de inserción de roles y usuarios erróneos');
+        //const BAD_USER = await this.userRolesRepository.save(new UserRolesEntity({'userId': 234, 'roleId': 1}));
+        //console.log(`->    [ BAD USER ] ${JSON.stringify(BAD_USER)}`);
+        const BAD_ROLE = await this.userRolesRepository.save(new UserRolesEntity({'userId': 1, 'roleId': 234}));
+        console.log(`->    [ BAD ROLE ] ${JSON.stringify(BAD_ROLE)}`);
+        const RET =  await this.userRolesRepository.save(new UserRolesEntity(dto));
+        console.log(`->    [ RETURN ] ${JSON.stringify(RET)}`);
+        return RET;
     }
 
     /* Remove role entity by id */

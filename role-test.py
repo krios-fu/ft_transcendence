@@ -16,11 +16,9 @@ def pretty(json_e):
 
 def reset_state(api):
     users = requests.get('http://localhost:3000/users', headers=api.get_param('auth_token')).json()
-    print(f'users: {users}')
+    print(pretty(users))
     rooms = requests.get('http://localhost:3000/room', headers=api.get_param('auth_token')).json()
-    print(f'rooms: {rooms}')
     roles = requests.get('http://localhost:3000/roles', headers=api.get_param('auth_token')).json()
-    print(f'roles: {roles}')
     for user in users:
         if user['username'] == api.get_param('api_user'):
             continue
@@ -42,29 +40,9 @@ def clean_role(api, data):
     r_2 = requests.delete(f'http://localhost:3000/room_roles/{r.json()["id"]}', headers=api.get_param('auth_token'))
     print(f'[ CLEAN {r_2.status_code}, {r_2.reason}')
 
-if __name__ == "__main__":
-    api = Api()
 
-    print('... clean state ...')
-    reset_state(api)
-    #sys.exit(1)
-    print('[ ******************************************************************************************** ]\n\n')
-    users = [ api.post_user(uname) for uname in ['user', 'owner', 'admin', 'ro-owner', 'ro-admn'] ]
-    roles = [ api.post_role(role) for role in ['private', 'official', 'owner', 'admin'] ]
-    rooms = [ api.post_room(room, users[3]['id']) for room in ['private_room', 'official_room', 'room'] ]
-
-    owner = api.post_user_role(users[1]['id'], roles[2]['id'])
-    admin = api.post_user_role(users[2]['id'], roles[3]['id'])
-    # post admin in room
-    api.post_user_room(users[4]['id'], rooms[0]['id'])
-    room_admin = api.post_user_room_role(rooms[0]['id'], users[4]['id'], roles[3]['id'])
-
-    private_room = api.post_room_role(rooms[0]['id'], roles[0]['id'])
-    api.set_user_creds('admin')
-    official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
-    print('[ ******************************************************************************************** ]')
-
-    # *** POST room_roles == private *** 
+    # *** POST room_roles == private ***
+def post_testing_battery(api):
     url = f'http://localhost:3000/room_roles/'
     clean_role(api, { 'roomId': rooms[2]['id'], 'roleId': roles[0]['id'] })
     clean_role(api, { 'roomId': rooms[2]['id'], 'roleId': roles[1]['id'] })
@@ -93,6 +71,7 @@ if __name__ == "__main__":
     # *** DEL room_roles
     #     *** PRIVATE ***
 
+def delete_testing_battery(api):
     for user in users:
         for role in roles[:2]:
             print(f'\n\n[ ************************ Trying to delete a {role["role"]} room role... user: {user["username"]} ************************ ]')
@@ -119,11 +98,29 @@ if __name__ == "__main__":
             print('[ ******************************************************************************************** ]\n\n')
 
 
+
+def password_testing_battery(api):
+    pass
+
+    role = api.post_role('private')
     # *** PASSWORD TEST ***
     # make a private room
     #  check that private room accepts a password
     #       create a public room with password payload -> ???
+    # password payload goes into room role creation logic, a room does not have a
+    # (public/private) password context
+    #test_user = api.post_user('test_user')
+    #test_room = api.post_room('test_room', test_user['id'])
     #       create a private room without password payload -> 400
+    def TEST_create_private_room_role_without_password():
+        pass
+    #    test_user = api.post_user('test_user')
+    #    test_room = api.post_room('test_room', test_user['id'])
+    #    pvt_data = { 'roomId': test_room['id'], 'roleId': role['id']}
+    #    role_pvt = requests.post('http://localhost:3000/room_roles', data=pvt_data)
+#
+    def TEST_create_private_room_role_with_password():
+        pass
     #       create a room with password payload -> 201
     #  try next cases:
     #       user joins without password       -> 403
@@ -138,3 +135,31 @@ if __name__ == "__main__":
     #       [ bad_passwd, good_passwd ]_rowner = { 403, 201 }    
     #       [ bad_passwd, good_passwd ]_radmin = { 403, 403 }    
 
+
+if __name__ == "__main__":
+    api = Api()
+
+    print('... clean state ...')
+    reset_state(api)
+    print('...      OK     ...')
+    #sys.exit(1)
+    print('[ ********** setting up context *********** ]\n\n')
+    print('[   -> roles ]')
+    roles = [api.post_role(role) for role in ['private', 'official', 'owner', 'admin']]
+    print('[   -> users ]')
+    users = [ api.post_user(uname) for uname in ['user', 'owner', 'admin', 'ro-owner', 'ro-admn'] ]
+    print('[   -> rooms ]')
+    rooms = [ api.post_room(room, users[3]['id']) for room in ['private_room', 'official_room', 'room'] ]
+
+    print('[   -> roles for users ]')
+    owner = api.post_user_role(users[1]['id'], roles[2]['id'])
+    admin = api.post_user_role(users[2]['id'], roles[3]['id'])
+    # post admin in room
+    api.post_user_room(users[4]['id'], rooms[0]['id'])
+    room_admin = api.post_user_room_role(rooms[0]['id'], users[4]['id'], roles[3]['id'])
+
+    private_room = api.post_room_role(rooms[0]['id'], roles[0]['id'])
+    api.set_user_creds('admin')
+    official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
+    print('[ **********         OK          ********** ]')
+    post_testing_battery(api)

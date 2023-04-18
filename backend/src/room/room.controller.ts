@@ -97,13 +97,12 @@ export class RoomController {
     @Post()
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
-        
         if (await this.userService.findOne(ownerId) === null) {
-            throw new BadRequestException('no user in db');
+            throw new BadRequestException('user not found in database');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
-            this.roomLogger.error('room with name ' + roomName + ' already in database');
-            throw new BadRequestException('room already in db');
+            this.roomLogger.error(`room with name ${roomName} already in database`);
+            throw new BadRequestException('room already exists');
         }
         return await this.roomService.createRoom(dto);
     }

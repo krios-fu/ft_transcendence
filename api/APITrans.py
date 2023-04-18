@@ -62,7 +62,7 @@ class APITrans():
 
     def __request_get_wrapper(self, url):
         """ Requests entity detail view via ID. """
-        print(f'  [ GET: {url} ]') 
+        #print(f'  [ GET: {url} ]')
         try:
             r = requests.get(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
@@ -72,7 +72,7 @@ class APITrans():
             raise e
 
     def __request_post_wrapper(self, url, data):
-        print(f'  [ POST: {url} $ data {data}]')
+        #print(f'  [ POST: {url} $ data {data}]')
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
@@ -91,13 +91,10 @@ class APITrans():
     def get_room(self, id):
         url = f'http://localhost:3000/room/{id}'
         return self.__request_get_wrapper(url)
-    
 
     def get_role(self, role):
         url = f'http://localhost:3000/roles/{role}';
         return self.__request_get_wrapper(url)
-    
-
 
     def post_user(self, username):
         url = 'http://localhost:3000/users/'

@@ -96,6 +96,9 @@ export class RoomRolesController {
             this.roomRoleLogger.error(`No room with id ${roomId} found in database`);
             throw new NotFoundException('resource not found in database');
         }
+        // if role.role === 'private' && role.password === 'undefined {
+        // throw a tu casa
+        // }
         const { role } = roleEntity;
         const validated: Object | null = await this.roomRolesService.checkRolesConstraints(roomId, role);
         if (validated !== null) {
@@ -150,7 +153,7 @@ export class RoomRolesController {
         const { roomId, role } = roomRole
         if (await this.roomRolesService.validateRoomRole(role.role, username, roomId) === false) {
             this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
-            throw new ForbiddenException('not authorized')
+            throw new ForbiddenException('user not authorized for this action')
         }
         await this.roomRolesService.delete(id);
     }
