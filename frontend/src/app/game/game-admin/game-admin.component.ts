@@ -10,6 +10,7 @@ import { AvatarDialogComponent } from './avatar-dialog/avatar-dialog.component';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 import { PrivateDialogComponent } from './private-dialog/private-dialog.component';
 import { RoleDto } from 'src/app/dtos/role.dto';
+import { RoomRoleDto } from 'src/app/dtos/roomrole.dto';
 
 // en que parte
 
@@ -48,7 +49,8 @@ export class GameAdminComponent implements OnInit {
     }
 
   registeredUsers: UserRoomDto[] = [];
-  roomId?: number | null = null;
+  roomId: number | null = null;
+  privateRoleId: number | null = null;
   room?: RoomDto; // heredamos el json de configuracion de la sala de la ruta 
   
   uploadAvatar: File | null = null;
@@ -81,11 +83,18 @@ export class GameAdminComponent implements OnInit {
 
   changeVisibilityModal() {
     const dialogRef = this._dialog.open(PrivateDialogComponent, {
-      data: { isPrivate: this.isPrivate, roomId: this.roomId },
+      data: { 
+        isPrivate: this.isPrivate, 
+        roomId: this.roomId,
+        roleId: this.privateRoleId
+      },
       height: '500px',
       autoFocus: true,
       disableClose: true
-    })
+    });
+
+    dialogRef.afterClosed()
+      .subscribe((data: { isPrivate: boolean }) => {})
   }
 
 
@@ -103,7 +112,16 @@ export class GameAdminComponent implements OnInit {
           this._snackBar.open(error.error.message, 'dismiss');
           this._router.navigate(['/']); // a donde deberia redirigir esto
         },
-    })
+    });
+    this._http.get<RoleDto[]>(`http://localhost:3000/roles`)
+      .subscribe({
+        next: (roles) => {
+          const privateRole: RoleDto[] = roles.filter((role) => role.role === 'private');
+          if (privateRole.length) {
+            this.privateRoleId = privateRole[0]['id'];
+          }
+        }
+      })
     // aqui a lo mejor una redireccion si no existe la sala
     const url: string = `http://localhost:3000/user_room/room/${this.room?.id}`
     console.log('calling user room init');

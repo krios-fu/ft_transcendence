@@ -27,12 +27,12 @@ export class AvatarDialogComponent implements OnInit {
 
   public selectNewAvatar($event: Event) {
     const target: HTMLInputElement = $event.target as HTMLInputElement;
-
+    
     this.avatar = (target.files as FileList)[0];
   }
 
   public uploadAvatar() {
-    let form = new FormData();
+    let form: FormData = new FormData();
     const url: string = `http://localhost:3000/room/${this.data.roomId}/avatar`;
 
     if (this.avatar === null) {
@@ -48,7 +48,6 @@ export class AvatarDialogComponent implements OnInit {
       },
       error: (err) => {
         this._snackBar.open(err.error.message, 'Dismiss');
-        this.avatarUrl = null;
         this.avatar = null;
       }
     });

@@ -58,22 +58,6 @@ export class RoomRolesController {
         return this.roomRolesService.findRolesRoom(roomId);
     }
 
-    /* get rooms with an specific role */
-    @Get('/roles/:role_id')
-    public async findRoomsByRole(@Param('role_id', ParseIntPipe) roleId: number): Promise<RoomEntity[]> {
-        if (await this.rolesService.findOne(roleId) === null) {
-            this.roomRoleLogger.error(`Role with id ${roleId} not found in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        
-    }
-
-    /* get a room role entity by its ids */
-    @Get('/rooms/:room_id/roles/"role_id') 
-    public async findRoomRoleByIds() {
-
-    }
-
     @Post()
     public async create(@Body() dto: CreateRoomRolesDto): Promise<RoomRolesEntity> {
         const { roomId, roleId } = dto;

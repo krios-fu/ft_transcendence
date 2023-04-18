@@ -10,8 +10,10 @@
             <input matInput placeholder="password" [(ngModel)]="this.validatePassword">
         </mat-form-field>
         <div class="modal_private_footer">
-            <button mat-raised-button id="btn_close_modal">Close</button>
-            <button mat-raised-button id="btn_private_room">Make private</button>
+            <button mat-raised-button 
+                (click)="this.closeModal()" id="btn_close_modal">Close</button>
+            <button mat-raised-button [disabled]="!this.activatePostBtn()" 
+                (click)="this.postPrivateRoom()" id="btn_private_room">Make private</button>
         </div>
     </div>
     <ng-template #private_input class="modal_public">
