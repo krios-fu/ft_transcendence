@@ -24,6 +24,12 @@ export class PrivateDialogComponent implements OnInit {
   ngOnInit(): void { }
 
   postPrivateRoom() {
-        
+        this._http.post() {
+          
+        }
+  }
+
+  closeModal() {
+
   }
 }

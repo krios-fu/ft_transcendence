@@ -139,6 +139,15 @@ class APITrans():
             user_room_role = self.__request_get_wrapper(url)
         return user_room_role
 
+    def post_room_role(self, room_id, role_id):
+        url = 'http://localhost:3000/room_roles/'
+        data = { 'roomId': room_id, 'roleId': role_id }
+        try:
+            room_role = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError:
+            url = f'{url}room/{room_id}/role/{role_id}'
+            room_role = self.__request_get_wrapper(url)
+        return room_role
 
     def __seed_db(self):
         self.set_param('users', [ self.post_user(u) for u in ['bob', 'tim', 'eric']])

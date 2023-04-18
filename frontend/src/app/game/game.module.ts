@@ -28,7 +28,6 @@ import { PrivateDialogComponent } from './game-admin/private-dialog/private-dial
 import { DeleteDialogComponent } from './game-admin/delete-dialog/delete-dialog.component';
 import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-admin-detail.component';
 import { MatInputModule } from '@angular/material/input';
-// import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [

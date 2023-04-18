@@ -14,7 +14,8 @@ import {
   HttpException,
   HttpStatus,
   Put,
-  Query
+  Query,
+  BadRequestException
 } from '@nestjs/common';
 import { RoomService } from 'src/room/room.service';
 import { RolesService } from 'src/roles/roles.service';
@@ -51,10 +52,26 @@ export class RoomRolesController {
     @Get('/rooms/:room_id')
     public async findRolesOfRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<RolesEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
-            this.roomRoleLogger.error('Room with id ' + roomId + ' not found in database');
+            this.roomRoleLogger.error(`Room with id ${roomId} not found in database`);
             throw new HttpException('no room in db', HttpStatus.NOT_FOUND);
         }
         return this.roomRolesService.findRolesRoom(roomId);
+    }
+
+    /* get rooms with an specific role */
+    @Get('/roles/:role_id')
+    public async findRoomsByRole(@Param('role_id', ParseIntPipe) roleId: number): Promise<RoomEntity[]> {
+        if (await this.rolesService.findOne(roleId) === null) {
+            this.roomRoleLogger.error(`Role with id ${roleId} not found in database`);
+            throw new BadRequestException('resource not found in database');
+        }
+        
+    }
+
+    /* get a room role entity by its ids */
+    @Get('/rooms/:room_id/roles/"role_id') 
+    public async findRoomRoleByIds() {
+
     }
 
     @Post()

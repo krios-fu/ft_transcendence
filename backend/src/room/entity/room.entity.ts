@@ -42,7 +42,6 @@ export class RoomEntity extends BaseEntity {
         type: 'varchar',
         //length: 
         nullable: true,
-        unique: true,
         default: DEFAULT_ROOM_AVATAR_PATH
     })
     photoUrl: string;
