@@ -10,9 +10,10 @@ import { AvatarDialogComponent } from './avatar-dialog/avatar-dialog.component';
 import { DeleteDialogComponent } from './delete-dialog/delete-dialog.component';
 import { PrivateDialogComponent } from './private-dialog/private-dialog.component';
 import { RoleDto } from 'src/app/dtos/role.dto';
-import { RoomRoleDto } from 'src/app/dtos/roomrole.dto';
 
-// en que parte
+export interface IUpdateRoomDto {
+  'roomName': string;
+}
 
 @Component({
   selector: 'app-game-admin',
@@ -59,6 +60,8 @@ export class GameAdminComponent implements OnInit {
   isPrivate?: boolean;
   selectedUser?: UserDto;
 
+  newRoomName: string | null = null;
+
   openAvatarModal() {
     const dialogRef = this._dialog.open(AvatarDialogComponent, {
       data: { avatarUrl: this.avatarUrl, roomId: this.roomId },
@@ -95,6 +98,28 @@ export class GameAdminComponent implements OnInit {
 
     dialogRef.afterClosed()
       .subscribe((data: { isPrivate: boolean }) => {})
+  }
+
+  validateRoomName() {
+    return this.newRoomName && 
+        this.newRoomName.length > 0 &&
+        this.newRoomName.length < 16 &&
+        this.newRoomName.match(/^\w+$/);
+  }
+
+  postRoomName() { // mejor trabajar con un boton!
+    console.log('pressing tal');
+    if (this.newRoomName === null) {
+      return ;
+    }
+    const url: string = `http://localhost:3000/room/${this.roomId}/`;
+    const roomDto: IUpdateRoomDto = { 'roomName': this.newRoomName };
+    this._http.post<RoomDto>(url, roomDto)
+      .subscribe({
+        next: (room) => this.room = room,
+        error: (err) => this._snackBar.open(err.error.message, 'dismiss'),
+        complete: () => this.newRoomName = null
+      });
   }
 
 

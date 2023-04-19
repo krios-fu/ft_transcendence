@@ -40,7 +40,7 @@ export class RoomEntity extends BaseEntity {
 
     @Column({
         type: 'varchar',
-        //length: 
+        //length:
         nullable: true,
         default: DEFAULT_ROOM_AVATAR_PATH
     })

@@ -5,7 +5,9 @@
             <div>
                 <mat-form-field>
                     <mat-label>change name.</mat-label>
-                    <input matInput placeholder="name">
+                    <input matInput placeholder="name"
+                        [(ngModel)]="newRoomName" (keydown.enter)="postRoomName()"
+                        [disabled]="!validateRoomName()">
                 </mat-form-field>
             </div>
             <div><button mat-raised-button color="primary" (click)="changeVisibilityModal()" >change visibility.</button></div>
@@ -32,5 +34,6 @@
             </div>
         </div>
         <app-game-admin-detail *ngIf="selectedUser" [userDetail]="selectedUser" ></app-game-admin-detail>
+
     </div>
 </div>
