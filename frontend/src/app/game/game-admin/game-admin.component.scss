@@ -22,16 +22,19 @@
     background-color: cyan;
     display: flex;
     flex-direction: column;
-
+    border: 10px;
+    border-radius: 5px;
+    justify-content: center;
 }
 .avatar_block {
     background-color: azure;
     margin: auto;
     border: 5px;
+    width: 100%;
     height: 100%;
-    display: grid;
-    grid-template-rows: 1fr 3fr 1fr;
-    grid-template-columns: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .avatar_block>img {
     border-radius: 50%;

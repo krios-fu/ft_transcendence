@@ -9,6 +9,8 @@
                         [(ngModel)]="newRoomName" (keydown.enter)="postRoomName()"
                         [disabled]="!validateRoomName()">
                 </mat-form-field>
+                <mat-icon>mode_edit</mat-icon>
+                <button style="display: none">new name</button>
             </div>
             <div><button mat-raised-button color="primary" (click)="changeVisibilityModal()" >change visibility.</button></div>
         </div>
