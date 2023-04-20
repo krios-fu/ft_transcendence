@@ -1,6 +1,6 @@
-<div id="main">
-    <div id="upper_body">
-        <div class="btn_block">
+<div class="main_container">
+    <div class="room_container">
+        <div class="room_container_btn">
             <button mat-raised-button id="avatar_upload_btn" (click)="openAvatarModal()">select avatar.</button>
             <div>
                 <mat-form-field>
@@ -14,16 +14,16 @@
             </div>
             <div><button mat-raised-button color="primary" (click)="changeVisibilityModal()" >change visibility.</button></div>
         </div>
-        <div class="avatar_block">
+        <div class="room_container_info">
             <h1>{{ this.room?.roomName || "undefined" }}</h1>
-            <img [src]="this.avatarUrl">
+            <figure class="avatar"><img [src]="this.avatarUrl"></figure>
             <h1>placeholder</h1>
         </div>
-        <div class="btn_block">
+        <div class="room_container_btn">
             <button mat-raised-button color="warning" id="delete_room" (click)="deleteRoomModal()">delete room.</button>    
         </div>
     </div>
-    <div id="lower_body">
+    <div class="panel_container">
         <div>
             <h2> list of registered users. </h2>
             <div class="users-table">
