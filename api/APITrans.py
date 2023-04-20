@@ -131,17 +131,21 @@ class APITrans():
     def post_role(self, role_name):
         """ Post a new role via role name """
 
-        url = 'http://localhost:3000/roles/';
+        url = 'http://localhost:3000/roles/'
         try:
             role = self.__request_post_wrapper(url, { 'role': role_name })
         except requests.exceptions.HTTPError:
             role = self.__request_get_wrapper(f'{url}{role_name}')
         return role
 
-    def post_room_role(self, room_id, role_id):
+    def post_room_role(self, room_id, role_id, password=None):
         """" Post a new role for a room using room and role ids. """
 
         url = 'http://localhost:3000/room_roles'
+        if password is not None
+          payload = { 'roomId': roomId, 'roleId': roleId, 'password': password }
+         else
+          payload = { 'roomId': roomId, 'roleId': roleId }
         try:
             room_role = self.__request_post_wrapper(url, { 'roomId': room_id, 'roleId': role_id })
         except requests.exceptions.HTTPError:

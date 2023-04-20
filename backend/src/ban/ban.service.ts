@@ -57,7 +57,7 @@ export class BanService {
     }
 
     public async deleteBan(ban_id: number): Promise<void> {
-        this.banRepository.softDelete(ban_id);
+        this.banRepository.delete(ban_id);
     }
 
     public async findOneByUserRoomIds(userId: number, roomId: number) {

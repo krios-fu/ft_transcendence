@@ -82,6 +82,10 @@ def post_testing_battery(api):
     #     *** PRIVATE ***
 
 def delete_testing_battery(api):
+    private_room = api.post_room_role(rooms[0]['id'], roles[0]['id'])
+    api.set_user_creds('admin')
+    official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
+
     for user in users:
         for role in roles[:2]:
             print(f'\n\n[ ************************ Trying to delete a {role["role"]} room role... user: {user["username"]} ************************ ]')
@@ -97,7 +101,7 @@ def delete_testing_battery(api):
                 if role["role"] == 'private':
                     private_room = api.post_room_role(rooms[0]['id'], roles[0]['id'])
                 else:
-                    official_room = api.post_room_role(rooms[1]['id'], roles[0]['id'])
+                    official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
             if user['username'] == 'ro-owner' and role['role'] == 'official':
                 assert r.status_code >= 400, 'Owner must be site owner, won\'t validate in guard tho'
                 continue
@@ -110,9 +114,7 @@ def delete_testing_battery(api):
 
 
 def password_testing_battery(api):
-    pass
-
-    role = api.post_role('private')
+    private_role = api.post_role('private')
     # *** PASSWORD TEST ***
     # make a private room
     #  check that private room accepts a password
@@ -123,11 +125,12 @@ def password_testing_battery(api):
     #test_room = api.post_room('test_room', test_user['id'])
     #       create a private room without password payload -> 400
     def TEST_create_private_room_role_without_password():
-        pass
-    #    test_user = api.post_user('test_user')
-    #    test_room = api.post_room('test_room', test_user['id'])
-    #    pvt_data = { 'roomId': test_room['id'], 'roleId': role['id']}
-    #    role_pvt = requests.post('http://localhost:3000/room_roles', data=pvt_data)
+        print('[ TRYING to create a private room without a pw ]')
+        test_user = api.post_user('test_user')
+        test_room = api.post_room('test_room', test_user['id'])
+        pvt_data = { 'roomId': test_room['id'], 'roleId': role['id']}
+        role_pvt = requests.post('http://localhost:3000/room_roles', data=pvt_data)
+        print(f'->    RESULT: {r.status_code}, {r.reason}')
 #
     def TEST_create_private_room_role_with_password():
         pass
@@ -138,6 +141,32 @@ def password_testing_battery(api):
     #       user joins with correct password  -> 201
     #
     #   [ update password ]
+    # PUT /room_roles/room:id/passwrd -> y aqui se valida si hay rol y si es privado y los permisos
+    # posting a private role without a password ??? deberia estar capado
+    def TEST_update_password(api):
+      password = 'validpass1234'
+      public_room = api.post_room('public_room')
+      private_room = api.post_room('private_room')
+      private_room_role = api.post_room_role(
+        private_room['id'], private_role['id'], password)
+      # where to post password??
+
+      print('[ TRY TO update a password of a public room ]')
+      url = f'http://localhost:3000/room_roles/room/{public_room["id"]}/password'
+      data = {'oldPassword': "si", 'newPassword': "tambien"}
+      r = requests.put(url, headers=api.get_param('auth_token'), data=data)
+      assert r.status_code === 400, 'why'
+
+      for user in users:
+        print(f'[ TRYING password update for {user['username']} ]')
+        api.set_user_creds(user['username'])
+        for pwd in ['bad-password', password]:
+          payload = { 'password': pwd }
+          r = requests.put(url, headers=api.get_param('auth_token'), data=payload)
+          print(f'->    RESULT: {r.status_code}, {r.reason}')
+        api.set_user_creds('admin')
+        requests.put(url, headers=api.get_param('auth_token'), data={ 'password': password })
+      # update a no private room
     #   try [ user, owner, admin, rowner, radmin ]
     #       [ bad_passwd, good_passwd ]_user = { 403, 403 }
     #       [ bad_passwd, good_passwd ]_owner = { 403, 201 }
@@ -169,6 +198,6 @@ if __name__ == "__main__":
     api.set_user_creds('admin')
     official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
     print('[ **********         OK          ********** ]')
+
     #post_testing_battery(api)
     #delete_testing_battery(api)
-    hipertest(api)

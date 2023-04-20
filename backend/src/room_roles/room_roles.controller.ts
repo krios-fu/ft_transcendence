@@ -114,7 +114,7 @@ export class RoomRolesController {
         return await this.roomRolesService.create(dto);
     }
 
-    @Put('room/:id/update')
+    @Put('room/:id/password')
     public async updatePassword
     (
         @Param('id', ParseIntPipe) id: number,
