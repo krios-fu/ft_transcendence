@@ -85,8 +85,7 @@ export class RoomRolesController {
         @UserCreds() username: string,
         @Body() dto: CreateRoomRolesDto
     ): Promise<RoomRolesEntity> {
-        console.log('[     *** POST room_role ***     ]');
-        const { roomId, roleId } = dto;
+        const { roomId, roleId, password } = dto;
         const roleEntity: RolesEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
             this.roomRoleLogger.error(`No role with id ${roomId} found in database`);
@@ -96,13 +95,13 @@ export class RoomRolesController {
             this.roomRoleLogger.error(`No room with id ${roomId} found in database`);
             throw new NotFoundException('resource not found in database');
         }
-        // if role.role === 'private' && role.password === 'undefined {
-        // throw a tu casa
-        // }
         const { role } = roleEntity;
+        if (role === 'private' && password === undefined) {
+            this.roomRoleLogger.error('Cannot create a private room without a password');
+            throw new BadRequestException('Cannot create a private room without a password');
+        }
         const validated: Object | null = await this.roomRolesService.checkRolesConstraints(roomId, role);
         if (validated !== null) {
-            console.log('hola???');
             this.roomRoleLogger.error(validated['logMessage']);
             throw validated['error'];
         }
@@ -110,7 +109,6 @@ export class RoomRolesController {
             this.roomRoleLogger.error(`User ${username} is not authorized for this action`);
             throw new ForbiddenException('user not authorized for this action');
         }
-        console.log('[ ***               *** ]')
         return await this.roomRolesService.create(dto);
     }
 

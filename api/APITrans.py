@@ -142,10 +142,10 @@ class APITrans():
         """" Post a new role for a room using room and role ids. """
 
         url = 'http://localhost:3000/room_roles'
-        if password is not None
-          payload = { 'roomId': roomId, 'roleId': roleId, 'password': password }
-         else
-          payload = { 'roomId': roomId, 'roleId': roleId }
+        if password is not None:
+            payload = { 'roomId': room_id, 'roleId': role_id, 'password': password }
+        else:
+            payload = { 'roomId': room_id, 'roleId': role_id }
         try:
             room_role = self.__request_post_wrapper(url, { 'roomId': room_id, 'roleId': role_id })
         except requests.exceptions.HTTPError:

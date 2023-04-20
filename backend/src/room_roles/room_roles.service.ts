@@ -88,6 +88,7 @@ export class RoomRolesService {
         if (password === undefined) {
             return false;
         }
+        console.log('end of the line')
         return await bcrypt.compare(password, toValidate);
     }
 
@@ -103,20 +104,11 @@ export class RoomRolesService {
     }
 
     public async validateRoomRole(role: string, username: string, roomId: number): Promise<boolean> {
-        console.log('role: ', role)
         if (role === 'official') {
             return this.userRolesService.validateGlobalRole(username, ['owner', 'admin']);
         } else if (role === 'private') {
-            const owner_test = await this.roomService.findOne(roomId);
-            console.log('[ IN VALIDATE ROOM ROLE ]')
-            console.log('   -> username provided: ', username)
-            console.log('   -> owner received: ', owner_test.owner)
-            console.log('   -> name in owner entity: ', owner_test.owner.username)
-            console.log('   -> validation: ', (await this.roomService.findOne(roomId)).owner.username === username)
-            const tal =  (await this.userRolesService.validateGlobalRole(username, ['owner', 'admin'])) ||
+            return (await this.userRolesService.validateGlobalRole(username, ['owner', 'admin'])) ||
                 (await this.roomService.findOne(roomId)).owner.username === username;
-            console.log('   -> WHAT WE ARE GOING TO SEND TO CONTROLLER: ', tal)
-            return tal;
         }
         return true;
     }

@@ -31,15 +31,13 @@ export class UserRolesService {
 
     /* Returns all roles entities associated with user */
     public async getAllRolesFromUser(userId: number): Promise<UserRolesEntity[]> { 
-        const TMP = await this.userRolesRepository.find({
+        return await this.userRolesRepository.find({
             relations: { 
                 user: true, 
                 role: true 
             },
             where: { userId: userId },
         });
-        console.log(`[ getAllRolesFromUser ] ${JSON.stringify(TMP)}`);
-        return TMP;
     }
     
     /* from role id, return all users with this id */
@@ -62,10 +60,7 @@ export class UserRolesService {
 
     /* Create a new role entity provided RoleUserDto { userId, roleId } */
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {
-        console.log('[ assignRoleToUser ] Test de inserción de roles y usuarios erróneos');
-        const RET =  await this.userRolesRepository.save(new UserRolesEntity(dto));
-        console.log(`->    [ RETURN ] ${JSON.stringify(RET)}`);
-        return RET;
+        return await this.userRolesRepository.save(new UserRolesEntity(dto));
     }
 
     /* Remove role entity by id */
@@ -80,24 +75,9 @@ export class UserRolesService {
     */
 
     public async validateGlobalRole(username: string, roles: string[]): Promise<boolean> {
-        const user: UserEntity = await this.userService.findOneByUsername(username);
-
-        console.log('[ validateGlobalRole ]')
-        const roles_from_user = await this.getAllRolesFromUser(user.id);
-        console.log('    -> roles_from_user: ', roles_from_user);
-        const roles_array = roles_from_user.map(ur => ur.role);
-        console.log('    -> username : ', username);
-        console.log('    -> roles : ', roles_array);
-        console.log();
-//        console.log(`[ validateGlobalRole ] for user ${username}, these are the roles available in db: ${JSON.stringify(roles_from_user)}, and these are the roles we are checking user against: ${roles}}`);
-
-        const tal = (await this.getAllRolesFromUser(user.id))
+        const user: UserEntity = await this.userService.findOneByUsername(username)
+        return (await this.getAllRolesFromUser(user.id))
             .map(userRole => userRole.role.role)
             .some(role => roles.includes(role));
-
-        console.log('roles: ', roles);
-        console.log('mapped: ', roles_from_user.map(ur => ur.role.role));
-        console.log('result: ', tal);
-        return tal;
     }
 }
