@@ -1,18 +1,20 @@
 import {
-    IsBoolean, 
-    IsEmail, 
-    IsEnum, 
-    IsNotEmpty, 
-    IsNumber, 
-    IsOptional, 
-    IsString, 
-    Length
+    IsBoolean,
+    IsEmail,
+    IsEnum,
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsString,
+    Length, Matches
 } from "class-validator";
 import { Category } from "../enum/category.enum";
 
 export class CreateUserDto {
     @IsString()
-    @Length(3, 8)
+    /*@Length(3, 8)*/
+    @Matches(/^[a-z][a-z0-9-]{2,10}$/,
+        { message: 'bad username format'})
     @IsNotEmpty()
     readonly username: string;
 
@@ -59,7 +61,7 @@ export class UpdateUserDto {
 
     @IsBoolean()
     @IsNotEmpty()
-    deaultOffline?: boolean;
+    defaultOffline?: boolean;
 
     @IsOptional()
     @IsNumber()

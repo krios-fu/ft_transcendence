@@ -31,7 +31,11 @@ export class RolesEntity extends BaseEntity {
     @OneToMany(() => UserRoomRolesEntity, (userRoomRoles) => userRoomRoles.role)
     userRoomRole: UserRoomRolesEntity;
 
-    @OneToMany(() => UserRolesEntity, (userRole) => userRole.role)
+    @OneToMany(
+        () => UserRolesEntity,
+        (userRole) => userRole.role,
+        { cascade: true }
+    )
     userRole: UserRolesEntity[];
 
     @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.role)

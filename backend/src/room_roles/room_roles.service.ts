@@ -124,7 +124,6 @@ export class RoomRolesService {
     private inverseRoomRole = (role: string) => (role === 'official') ? 'private' : 'official';
 
     public async checkRolesConstraints(roomId: number, role: string): Promise<Object | null> {
-        console.log('hola???');
         const rolesInRoom: string[] = (await this.findRolesInRoom(roomId))
             .map((role: RolesEntity) => role.role);
         if (rolesInRoom.indexOf(role) !== -1) {

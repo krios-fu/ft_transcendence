@@ -15,11 +15,17 @@ def pretty(json_e):
 
 
 def reset_state(api):
+    print('[ TESTEO URGENTE ]')
+    print('-----> before cleanup')
+    user_roles = requests.get('http://localhost:3000/user_roles', headers=api.get_param('auth_token')).json()
+    print(f'{user_roles}')
+    print('... clean state ...')
     users = requests.get('http://localhost:3000/users', headers=api.get_param('auth_token')).json()
-    print(pretty(users))
     rooms = requests.get('http://localhost:3000/room', headers=api.get_param('auth_token')).json()
     roles = requests.get('http://localhost:3000/roles', headers=api.get_param('auth_token')).json()
     for user in users:
+        print('asdasd')
+        print(f'user: {users}')
         if user['username'] == api.get_param('api_user'):
             continue
         requests.delete(f'http://localhost:3000/users/{user["id"]}', headers=api.get_param('auth_token'))
@@ -27,6 +33,10 @@ def reset_state(api):
         requests.delete(f'http://localhost:3000/room/{room["id"]}', headers=api.get_param('auth_token'))
     for role in roles:
         requests.delete(f'http://localhost:3000/roles/{role["id"]}', headers=api.get_param('auth_token'))
+    print('-----> after cleanup')
+    user_roles = requests.get('http://localhost:3000/user_roles', headers=api.get_param('auth_token')).json()
+    print(f'{user_roles}')
+    print('...      OK     ...')
 
 def clean_role(api, data):
     api.set_user_creds('admin')
@@ -133,15 +143,12 @@ def password_testing_battery(api):
     #       [ bad_passwd, good_passwd ]_owner = { 403, 201 }
     #       [ bad_passwd, good_passwd ]_admin = { 403, 201 }
     #       [ bad_passwd, good_passwd ]_rowner = { 403, 201 }    
-    #       [ bad_passwd, good_passwd ]_radmin = { 403, 403 }    
-
+    #       [ bad_passwd, good_passwd ]_radmin = { 403, 403 }
 
 if __name__ == "__main__":
     api = Api()
 
-    print('... clean state ...')
     reset_state(api)
-    print('...      OK     ...')
     #sys.exit(1)
     print('[ ********** setting up context *********** ]\n\n')
     print('[   -> roles ]')
@@ -162,4 +169,6 @@ if __name__ == "__main__":
     api.set_user_creds('admin')
     official_room = api.post_room_role(rooms[1]['id'], roles[1]['id'])
     print('[ **********         OK          ********** ]')
-    post_testing_battery(api)
+    #post_testing_battery(api)
+    #delete_testing_battery(api)
+    hipertest(api)
