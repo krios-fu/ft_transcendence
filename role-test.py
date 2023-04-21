@@ -215,7 +215,35 @@ def TEST_update_password(api):
             print(f'->    RESULT: {r.status_code}, {r.json()}')
         api.set_user_creds('admin')
         requests.put(url, headers=api.get_param('auth_token'), data={ 'password': password })
-    #   try [ user, owner, admin, rowner, radmin ]
+
+
+def TEST_update_password(api):
+    password = 'validpasswd-123'
+    newPassword = 'pepito'
+    users = [ api.post_user(name) for name in ['user', 'owner', 'admin', 'ro-owner', 'ro-admin'] ]
+    guest = api.post_user('guest')
+    roles = [api.post_role(role) for role in ['private', 'official', 'owner', 'admin']]
+    private_room = api.post_room('private_room', users[3]['id'])
+    owner = api.post_user_role(users[1]['id'], roles[2]['id'])
+    admin = api.post_user_role(users[2]['id'], roles[3]['id'])
+    private_room_role = api.post_room_role(private_room['id'])
+
+    # post bad password
+    # post good password, guest tries to access with it
+
+    put_rr_url = f'http://localhost:3000/room_roles/{private_room["id"]}/password'
+#    del_ur_url = f'http://localhost:3000/user_room'
+    for user in users:
+        for pw in [ 'bad-password', password ]:
+            payload = {'oldPassword': pw, 'newPassword': newPassword}
+            api.set_user_creds(user['username'])
+            r = requests.put(put_rr_url, headers=api.get_param('auth_token'), data=payload)
+
+            if pw == password and user['username'] in ['owner', 'admin', 'ro-owner']:
+                assert r.status_code == 201, f'{user["username"]} should have been able to change password'
+                
+                # check here guest user, with old an new password  
+
     #       [ bad_passwd, good_passwd ]_user = { 403, 403 }
     #       [ bad_passwd, good_passwd ]_owner = { 403, 201 }
     #       [ bad_passwd, good_passwd ]_admin = { 403, 201 }

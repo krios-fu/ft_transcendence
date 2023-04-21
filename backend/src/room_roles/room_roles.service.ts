@@ -89,7 +89,7 @@ export class RoomRolesService {
             return false;
         }
         console.log('end of the line')
-        return await bcrypt.compare(password, toValidate);
+        return await bcrypt.compare(toValidate, password);
     }
 
     public async delete(id: number): Promise<void> {
