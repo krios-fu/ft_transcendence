@@ -85,7 +85,11 @@ export class UserRolesController {
     //@UseGuards(SiteAdminGuard)
     public async assignRoleToUser(@Body() dto: CreateUserRolesDto): Promise<UserRolesEntity> {
         const { userId, roleId } = dto;
-
+        if (await this.userService.findOne(userId) === null ||
+            await this.rolesService.findOne(roleId) === null) {
+                this.userRolesLogger.error(`Resource not found in database`);
+                throw new NotFoundException('resource not found in database');
+            }
         if (await this.userRolesService. getUserRoleByIds(userId, roleId) !== null) {
             this.userRolesLogger.error(`User ${userId} with role ${roleId} already present in database`);
             throw new BadRequestException('user role already in db');

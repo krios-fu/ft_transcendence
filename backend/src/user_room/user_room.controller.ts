@@ -108,6 +108,7 @@ export class UserRoomController {
     /* Create a new user in a room */
     //@UseGuarhds(Banned)
     //@UseGuards(IsPrivate) /*???*/
+    //@UseGuards(userisme)
     @Post()
     public async create(@Body() dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;
@@ -123,7 +124,7 @@ export class UserRoomController {
         if ((await this.roomRolesService.isRole('private', roomId)) === true &&
              await this.userRoomService.validateUserPassword(dto) === false) {
                 this.userRoomLogger.error(`User with id ${userId} introduced wrong credentials`);
-                throw new ForbiddenException();
+                throw new ForbiddenException('invalid credentials');
         }
         return await this.userRoomService.create(dto);
     }

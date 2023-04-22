@@ -92,7 +92,7 @@ export class UserController {
     ** (regex: param must be only ascii characters).
     */
 
-    @Get(':id([a-z][a-z0-9-]{2,})')
+    @Get(':id([a-z][a-z0-9-]{2,10})')
     public async findOneUserByUsername(@Param('id') id: string): Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOneByUsername(id);
         if (user === null) {

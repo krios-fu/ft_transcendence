@@ -35,9 +35,8 @@ constructor (
             throw new InternalServerErrorException()
         }
         const user = await this.userService.findOneByUsername(username);
-
-        if (user === undefined) {
-            this.jwtLogger.error(`User ${username} validated by jwt not found in database`);
+        if (user === null) {
+            this.jwtLogger.error(`Authentication token not assigned to a registered user`);
             throw new UnauthorizedException();
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {

@@ -46,7 +46,7 @@ export class RolesService {
     }
 
     public async remove(roleId: number): Promise<void> {
-        await this.rolesRepository.softDelete(roleId)
+        await this.rolesRepository.delete(roleId)
     }
 
     public async findRoleByName(role: string): Promise<RolesEntity> {

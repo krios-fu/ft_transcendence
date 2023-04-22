@@ -75,23 +75,9 @@ export class UserRolesService {
     */
 
     public async validateGlobalRole(username: string, roles: string[]): Promise<boolean> {
-        const user: UserEntity = await this.userService.findOneByUsername(username);
-
-        const roles_from_user = await this.getAllRolesFromUser(user.id);
-        const roles_array = roles_from_user.map(ur => ur.role);
-        console.log('[ validateGlobalRole ]')
-        console.log('    -> username : ', username);
-        console.log('    -> roles : ', roles_array);
-        console.log();
-//        console.log(`[ validateGlobalRole ] for user ${username}, these are the roles available in db: ${JSON.stringify(roles_from_user)}, and these are the roles we are checking user against: ${roles}}`);
-
-        const tal = (await this.getAllRolesFromUser(user.id))
+        const user: UserEntity = await this.userService.findOneByUsername(username)
+        return (await this.getAllRolesFromUser(user.id))
             .map(userRole => userRole.role.role)
             .some(role => roles.includes(role));
-
-        console.log('roles: ', roles);
-        console.log('mapped: ', roles_from_user.map(ur => ur.role.role));
-        console.log('result: ', tal);
-        return tal;
     }
 }
