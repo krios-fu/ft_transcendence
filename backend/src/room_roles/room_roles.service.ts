@@ -32,6 +32,22 @@ export class RoomRolesService {
         });
     }
 
+    public async findByRoomId(id: number): Promise<RoomRolesEntity[]> {
+        return await this.roomRolesRepository.createQueryBuilder('room_roles')
+            .leftJoinAndSelect('room_roles.role', 'role')
+            .leftJoinAndSelect('room_roles.room', 'room')
+            .where('room_roles.roomId = :room_id', {room_id: id})
+            .getMany();
+    }
+
+    public async findByRoleId(id: number): Promise<RoomRolesEntity[]> {
+        return await this.roomRolesRepository.createQueryBuilder('room_roles')
+            .leftJoinAndSelect('room_roles.role', 'role')
+            .leftJoinAndSelect('room_roles.room', 'room')
+            .where('room_roles.rolesId = :role_id', {role_id: id})
+            .getMany();
+    }
+
     public async findRolesInRoom(roomId: number): Promise<RolesEntity[]> {
         let roles: RolesEntity[] = [];
         const roomRoles: RoomRolesEntity[] = await this.roomRolesRepository.createQueryBuilder('room_roles')
@@ -62,8 +78,8 @@ export class RoomRolesService {
         return await this.roomRolesRepository.createQueryBuilder('room_roles')
             .leftJoinAndSelect('room_roles.role', 'roles')
             .leftJoinAndSelect('room_roles.room', 'room')
-            .where('room_roles.room_id = :id', { id: roomId })
-            .andWhere('roles.role = "private"')
+            .where('room_roles.room_id = :room_id', { 'room_id': roomId })
+            .andWhere('roles.role = :private_role', { 'private_role': "private" })
             .getOne();
     }
 
@@ -82,10 +98,15 @@ export class RoomRolesService {
     }
 
     public async validatePassword(toValidate: string, roomId: number): Promise<boolean> {
-        const roomRole: RoomRolesEntity = await this.findOne(roomId);
-        const { password } = roomRole;
-
-        if (password === undefined) {
+        const privateRole: RoomRolesEntity[] = (await this.findByRoomId(roomId))
+            .filter(role => role.role.role === 'private');
+        if (privateRole.length === 0) {
+            return false;
+        }
+        console.log(`role returned: ${privateRole}`);
+        const { password } = privateRole[0];
+        console.log(`password returns: ${password}`);
+        if (password === undefined || password === null) {
             return false;
         }
         console.log('end of the line')

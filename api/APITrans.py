@@ -147,7 +147,7 @@ class APITrans():
         else:
             payload = { 'roomId': room_id, 'roleId': role_id }
         try:
-            room_role = self.__request_post_wrapper(url, { 'roomId': room_id, 'roleId': role_id })
+            room_role = self.__request_post_wrapper(url, payload)
         except requests.exceptions.HTTPError:
             room_role = self.__request_get_wrapper(f'{url}/rooms/{room_id}/roles/{role_id}')
         return room_role

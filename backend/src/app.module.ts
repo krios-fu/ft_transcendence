@@ -43,7 +43,7 @@ import { join } from 'path';
             password: process.env.DB_PASSWD,
             database: process.env.DB_NAME,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true, // should be managed in dev only
+            synchronize: true, // should be managed in dev only,
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'static'),
