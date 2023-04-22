@@ -29,6 +29,7 @@ export interface    UserRanking {
 export interface   RankingData {
     rank: number; // Generating it when transforming response data
     nickName: string;
+    photoUrl: string;
     rating: number;
     category: string;
 }
@@ -75,6 +76,7 @@ export class    RankingService {
             return ({
                 rank: initRank++,
                 nickName: user.nickName,
+                photoUrl: user.photoUrl,
                 rating: user.ranking,
                 category: Category[user.category] //Provisional Hack
             });

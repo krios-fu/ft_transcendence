@@ -1,7 +1,10 @@
 <div id="container" style="padding: 15px; margin: 0;">
     <div style="padding: 0; margin: 0;">
         <button class="button-queue" type="button"
-                [disabled]="queued" (click)="addToQueue()">
+                [disabled]="userQueueData.queued
+                                && (userQueueData.type != 'classic'
+                                        || userQueueData.roomId != roomId)"
+                (click)="addToQueue()">
             <span class="button-queue-title">Join Classic Queue</span>
             <br>
             <span class="button-queue-number">Waiting Players: {{classicLength}}</span>
@@ -9,7 +12,10 @@
     </div>
     <div style="padding: 0; margin: 0;">
         <button class="button-queue" type="button"
-                [disabled]="queued" (click)="addToHeroQueue()">
+                [disabled]="userQueueData.queued
+                                && (userQueueData.type !== 'hero'
+                                        || userQueueData.roomId != roomId)"
+                (click)="addToHeroQueue()">
             <span class="button-queue-title">Join Hero Queue</span>
             <br>
             <span class="button-queue-number">Waiting Players: {{heroLength}}</span>

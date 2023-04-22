@@ -22,6 +22,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 @Module({
@@ -52,6 +53,7 @@ import { join } from 'path';
                 index: false
             }
         }),
+        EventEmitterModule.forRoot(),
         RolesModule,
         RoomModule,
         UserRoomModule,

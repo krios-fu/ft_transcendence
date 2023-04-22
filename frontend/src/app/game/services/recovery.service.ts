@@ -3,7 +3,10 @@ import { IMatchInitData } from "../elements/Match";
 import { IResultData } from "../elements/Result";
 import { BaseScene } from "../scenes/BaseScene";
 import { EndScene } from "../scenes/EndScene";
-import { MatchScene } from "../scenes/MatchScene";
+import {
+    IMatchSceneInit,
+    MatchScene
+} from "../scenes/MatchScene";
 import { MenuHeroScene } from "../scenes/MenuHeroScene";
 import {
     IMenuInit,
@@ -19,7 +22,12 @@ export type SceneId = "start"
 
 export interface    IRecoverData {
     readonly scene: SceneId;
-    readonly data: Readonly<IResultData | IMenuInit | IMatchInitData>
+    readonly data: Readonly<IResultData | IMenuInit | IMatchRecoveryData>
+}
+
+export interface   IMatchRecoveryData {
+    role: string;
+    gameData: IMatchInitData;
 }
 
 @Injectable({
@@ -30,7 +38,7 @@ export class    GameRecoveryService {
     constructor() {}
 
     private _sceneTransition(scene: BaseScene, recData: IRecoverData): void {
-        let data: IResultData | IMenuInit | IMatchInitData;
+        let data: IResultData | IMenuInit | IMatchRecoveryData;
 
         if (recData.scene === "start")
         {
@@ -50,20 +58,42 @@ export class    GameRecoveryService {
                 scene.scene.start("Menu", data);
         }
         else if (recData.scene === "match")
-        { // Improve!! There might be a case where role is not "Spectator"
-            data = recData.data as IMatchInitData;
-            scene.scene.start("Spectator", {
-                role: "Spectator",
-                matchData: data
-            });
+        {
+            data = recData.data as IMatchRecoveryData;
+            if (data.role === "Spectator")
+            {
+                scene.scene.start("Spectator", {
+                    role: data.role,
+                    matchData: data.gameData,
+                    recover: true
+                } as IMatchSceneInit);
+            }
+            else
+            {
+                if (data.gameData.playerA.hero)
+                {
+                    scene.scene.start("Player", {
+                        role: data.role,
+                        matchData: data.gameData,
+                        recover: true
+                    } as IMatchSceneInit);
+                }
+                else
+                {
+                    scene.scene.start("ClassicPlayer", {
+                        role: data.role,
+                        matchData: data.gameData,
+                        recover: true
+                    } as IMatchSceneInit);
+                }
+            }
         }
     }
 
     setUp(scene: StartScene
                     | EndScene | MenuScene
                     | MenuHeroScene | MatchScene): void {
-        scene.setUpRecovery();
-        scene.socket.on("recoverData", (recData: IRecoverData) => {        
+        scene.socket.on("recoverData", (recData: IRecoverData) => {
             if (recData.scene === "start" && scene instanceof StartScene)
             {
                 scene.recover(undefined);
@@ -85,7 +115,7 @@ export class    GameRecoveryService {
             }
             else if (recData.scene === "match" && scene instanceof MatchScene)
             {
-                scene.recover(recData.data as IMatchInitData);
+                scene.recover(recData.data as IMatchRecoveryData);
                 return ;
             }
             scene.destroy();

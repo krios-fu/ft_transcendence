@@ -30,6 +30,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
 import { GameNotificationComponent } from './services/dialog/notification/game-notification/game-notification.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatchNotificationComponent } from './services/dialog/notification/match-notification/match-notification.component';
+import { GameInstructionsComponent } from './services/dialog/info/game-instructions/game-instructions.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {} }
 
@@ -42,8 +44,9 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         PagenotfoundComponent,
         DialogNotification,
         FriendNotificationComponent,
-        GameNotificationComponent
-
+        GameNotificationComponent,
+        MatchNotificationComponent,
+        GameInstructionsComponent
     ],
     providers: [{
         provide: HTTP_INTERCEPTORS,
@@ -77,8 +80,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
     entryComponents: [
         DialogNotification,
         FriendNotificationComponent,
-        GameNotificationComponent
-
+        GameNotificationComponent,
+        MatchNotificationComponent
       ]
 })
 export class AppModule {

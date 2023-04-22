@@ -3,8 +3,10 @@ import { AchievementControlService } from "src/achievements/achievement.control.
 import { AchievementsService } from "src/achievements/achievements.service";
 import { AchievementEntity } from "src/achievements/entity/achievement.entity";
 import { AchievementsUserService } from "src/achievements_user/achievements_user.service";
+import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
 import { MatchService } from "src/match/match.service";
 import { UserEntity } from "src/user/entities/user.entity";
+import { QueryRunner } from "typeorm";
 
 @Injectable()
 export class    GameAchievementsService {
@@ -16,12 +18,18 @@ export class    GameAchievementsService {
         private readonly matchService: MatchService
     ) {}
 
-    private async _addUserAchievement(userId: number,
-                                        achievementId: number): Promise<void> {
-        await this.achievementsUserService.createAchievementUser({
-            userId: userId,
-            achievementId: achievementId
-        });
+    private async _addUserAchievement(userId: number, achievementId: number,
+                                        qR?: QueryRunner)
+                                        : Promise<AchievementUserEntity> {
+        return (
+            await this.achievementsUserService.createAchievementUser(
+                {
+                    userId: userId,
+                    achievementId: achievementId
+                },
+                qR
+            )
+        );
     }
 
     private async _getPendingAchievements(userId: number)
@@ -41,7 +49,8 @@ export class    GameAchievementsService {
         );
     }
 
-    async updateAchievements(userEntity: UserEntity): Promise<void> {
+    async updateAchievements(userEntity: UserEntity,
+                                qR: QueryRunner): Promise<void> {
         const   pendingAchievements =
                     await this._getPendingAchievements(userEntity.id);
         const   [matches,] = await this.matchService.findUserMatches({
@@ -59,7 +68,8 @@ export class    GameAchievementsService {
             {
                 await this._addUserAchievement(
                     userEntity.id,
-                    achievement.id
+                    achievement.id,
+                    qR
                 );
             }
         });
