@@ -61,6 +61,7 @@ export class RoomRolesEntity extends BaseEntity {
     @Column({
         type: "varchar",
         nullable: true,
+        length: 60
     })
     password?: string;
     
@@ -70,7 +71,9 @@ export class RoomRolesEntity extends BaseEntity {
         if (this.password != undefined) {
             const salt = await bcrypt.genSalt();
             try {
+                const tmpPwd = this.password;
                 this.password = await bcrypt.hash(this.password, salt);
+                console.log(`[SAVE] old password: ${tmpPwd}, hashed: ${this.password}`);
             } catch (e) {
                 throw new InternalServerErrorException('kernel panic');
             }

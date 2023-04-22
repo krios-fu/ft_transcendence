@@ -87,14 +87,15 @@ export class RoomRolesService {
         return await this.roomRolesRepository.save(new RoomRolesEntity(dto));
     }
 
-    public async updatePassword(id: number, savedPwd: string, dto: UpdatePasswordDto): Promise<RoomRolesEntity> {
+    public async updatePassword(role: RoomRolesEntity, savedPwd: string, dto: UpdatePasswordDto): Promise<RoomRolesEntity> {
         const { oldPassword: oldPwd, newPassword: newPwd } = dto;
 
         if (await bcrypt.compare(oldPwd, savedPwd) === false) {
             return null;
         }
-        await this.roomRolesRepository.update(id, { password: newPwd });
-        return await this.findOne(id);
+        role.password = newPwd;
+        await this.roomRolesRepository.save(role);
+        return await this.findOne(role.id);
     }
 
     public async validatePassword(toValidate: string, roomId: number): Promise<boolean> {
@@ -103,13 +104,10 @@ export class RoomRolesService {
         if (privateRole.length === 0) {
             return false;
         }
-        console.log(`role returned: ${privateRole}`);
         const { password } = privateRole[0];
-        console.log(`password returns: ${password}`);
         if (password === undefined || password === null) {
             return false;
         }
-        console.log('end of the line')
         return await bcrypt.compare(toValidate, password);
     }
 

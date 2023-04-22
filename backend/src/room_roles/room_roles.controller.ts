@@ -129,7 +129,8 @@ export class RoomRolesController {
             this.roomRoleLogger.error(`User ${username} is not allowed to do this action`);
             throw new ForbiddenException('User not allowed to do this action');
         }
-        const newRoomRole: RoomRolesEntity | null = await this.roomRolesService.updatePassword(id, password, dto);
+        const newRoomRole: RoomRolesEntity | null = 
+            await this.roomRolesService.updatePassword(roomRole, password, dto);
         if (newRoomRole === null) {
             this.roomRoleLogger.error(`Invalid password`);
             throw new ForbiddenException('Invalid password');

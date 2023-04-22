@@ -219,21 +219,35 @@ def TEST_update_password(api):
             r = requests.put(put_rr_url, headers=api.get_param('auth_token'), data=payload)
             print(f'[ RESULT ] {r.status_code}, {r.json()}')
 
+            # users allowed to update a password from a room
             if pw == password and user['username'] in ['owner', 'admin', 'ro-owner']:
-                assert r.status_code == 201, f'{user["username"]} should have been able to change password'
+                assert r.status_code == 200, f'{user["username"]} should have been able to change password'
+
+                # guest tries to log with old password, fails
                 payload = {'userId': guest['id'], 'roomId': private_room['id'], 'password': password}
                 api.set_user_creds(guest['username'])
+                print(' { guest bad pwd }')                
                 r = requests.post(post_ur_url, headers=api.get_param('auth_token'), data=payload)
                 print(f'[ RESULT ] {r.status_code}, {r.json()}')
-
                 assert r.status_code == 403, 'user should not be able to login with old password'
-                payload = {'userId': guest['id'], 'roomId': private_room['id'], 'password': newPassword}                
+
+                # guest tries to log in with new password, succedes
+                payload = {'userId': guest['id'], 'roomId': private_room['id'], 'password': newPassword}
+                print(' { guest cool pwd }')                
                 r = requests.post(post_ur_url, headers=api.get_param('auth_token'), data=payload)
-                assert r.status_code == 403, 'user should be able to login with new password'
+                print(f'[ RESULT ] {r.status_code}, {r.json()}')
+                assert r.status_code == 201, 'user should be able to login with new password'
+
+                # guest exists room
                 del_ur_url = f'http://localhost:3000/user_room/{r.json()["id"]}'
                 r = requests.delete(del_ur_url, headers=api.get_param('auth_token'))
                 assert r.status_code < 400, 'error trying to remove user from room'
+
+                # restoring password to original one
                 api.set_user_creds('admin')
+                payload={'oldPassword': newPassword, 'newPassword': password }
+                r = requests.put(put_rr_url, headers=api.get_param('auth_token'), data=payload)
+                print(f'[ RESULT RESTORE PWD ] {r.status_code}, {r.json()}')                
 
             else:
                 assert r.status_code == 403, f'user {user["username"]} should not have been able to change password'
