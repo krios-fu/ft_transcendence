@@ -16,6 +16,7 @@ export interface   ISelectionData {
     heroAConfirmed: boolean;
     heroBConfirmed: boolean;
     stage: number;
+    timeoutDate: number;
     status: number;
 }
 
@@ -32,10 +33,10 @@ export class    MenuScene extends BaseScene {
 
     private _menuRenderer?: MenuRenderer;
 
-    constructor(sock: Socket, room: string,
+    constructor(sock: Socket,
                     readonly recoveryService: GameRecoveryService,
                     sceneName: string = "Menu") {
-        super(sceneName, sock, room);
+        super(sceneName, sock);
         this.role = "";
     }
 
@@ -69,6 +70,10 @@ export class    MenuScene extends BaseScene {
     preload() {
         if (!this.initData)
             return ;
+        if (!this.initData.avatarA)
+            this.initData.avatarA = "noUrl";
+        if (!this.initData.avatarB)
+            this.initData.avatarB = "noUrl";
         this.load.image('playerA', this.initData.avatarA);
         this.load.image('playerB', this.initData.avatarB);
         this.initData.avatarA = 'playerA';
@@ -89,6 +94,7 @@ export class    MenuScene extends BaseScene {
         this.removeAllListeners();
         if (this._menuRenderer)
             this._menuRenderer.destroy();
+        this.initData = undefined;
     }
 
     recover(data: IMenuInit): void {

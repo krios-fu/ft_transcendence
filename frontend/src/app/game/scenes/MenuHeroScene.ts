@@ -21,15 +21,22 @@ export class    MenuHeroScene extends MenuScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     enter?: any; //Enter key
 
-    constructor(sock: Socket, room: string,
+    constructor(sock: Socket,
                     private readonly soundService: SoundService,
                     override readonly recoveryService: GameRecoveryService) {
-        super(sock, room, recoveryService, "MenuHero");
+        super(sock, recoveryService, "MenuHero");
     }
 
+    /*
+    **  If this.initData is not undefined means service recovery assigned
+    **  an updated value to this.initData first, and must not be reassigned.
+    */
     override init(initData: IMenuInit) {
-        this.role = initData.role;
-        this.initData = initData.selection;
+        if (!this.initData)
+        {
+            this.role = initData.role;
+            this.initData = initData.selection;
+        }
         this.socket.once("startMatch", (gameData: IMatchInitData) => {
             this.destroy();
             if (this.role != "Spectator")
@@ -134,18 +141,24 @@ export class    MenuHeroScene extends MenuScene {
     override destroy(): void {
         super.destroy();
         if (this._menuHeroRenderer)
+        {
             this._menuHeroRenderer.destroy();
+            delete this._menuHeroRenderer;
+        }
         this.soundService.destroy();
+        this.initData = undefined;
     }
 
     override recover(data: IMenuInit): void {
+        this.role = data.role;
+        this.initData = data.selection;
         /*
         **  This can be improved checking if it is necessary
         **  to reset the scene, update some values, or do nothing.
         */
-       this._menuHeroRenderer?.destroy();
-       this.role = data.role;
-       this.initData = data.selection;
+        if (!this._menuHeroRenderer)
+            return ;
+        this._menuHeroRenderer.destroy();
         this._menuHeroRenderer = new MenuHeroRenderer(
             this,
             this.initData,

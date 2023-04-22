@@ -9,10 +9,10 @@ import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Injectable,NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateResult } from 'typeorm';
-import { UserQueryDto } from '../../user/dto/user.query.dto';
-import { QueryMapper } from '../../common/mappers/query.mapper';
-import { IRequestUser } from '../../common/interfaces/request-payload.interface';
+import { QueryRunner, UpdateResult } from 'typeorm';
+import { UserQueryDto } from 'src/user/dto/user.query.dto';
+import { QueryMapper } from 'src/common/mappers/query.mapper';
+import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import * as fs from 'fs';
 import { DEFAULT_AVATAR_PATH } from '../../common/config/upload-avatar.config';
 
@@ -70,9 +70,13 @@ export class UserService {
 
     public async updateUser(
         id: number, 
-        userInfo: UpdateUserDto | UserGameStats | SettingsPayloadDto | DoubleAuthPayload
+        userInfo: UpdateUserDto | UserGameStats | SettingsPayloadDto | DoubleAuthPayload,
+        qR?: QueryRunner
     ): Promise<UserEntity> {
-        await this.userRepository.update(id, userInfo);
+        if (qR)
+            await qR.manager.getRepository(UserEntity).update(id, userInfo);
+        else
+            await this.userRepository.update(id, userInfo);
         return await this.findOne(id);
     }
 

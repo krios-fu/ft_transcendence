@@ -10,7 +10,9 @@
         <ng-container matColumnDef="player">
             <th mat-header-cell *matHeaderCellDef> Player </th>
             <td mat-cell *matCellDef="let element">
-                <span class="ranking-photo">&#9786;</span>
+                <div class="ranking-photo">
+                    <img src="{{element.photoUrl}}">
+                </div>
                 <p class="ranking-nickname">{{element.nickName}}</p>
             </td>
         </ng-container>

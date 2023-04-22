@@ -13,16 +13,10 @@ export class    LoserService {
         private loserMapper: LoserMapper
     ) {}
 
-    async AddLoser(loserDto: LoserDto): Promise<LoserEntity> {
+    async addLoser(loserDto: LoserDto): Promise<LoserEntity> {
         const   loserEntity: LoserEntity = new LoserEntity;
 
         this.loserMapper.toEntity(loserDto, loserEntity);
-        try {
-            this.loserRepository.insert(loserEntity);
-        } catch(err) {
-            console.log(err);
-            return (null);
-        }
-        return (loserEntity);
+        return (this.loserRepository.save(loserEntity));
     }
 }

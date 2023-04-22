@@ -1,10 +1,11 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Length, Matches } from "class-validator";
 
 export class CreateRoomDto {
     @IsString()
     @Length(1, 15)
     @IsNotEmpty()
+    @Matches(/^\w+$/)
     roomName: string;
 
     @IsNumber()
