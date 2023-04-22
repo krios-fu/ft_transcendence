@@ -129,7 +129,7 @@ def delete_testing_battery(api):
 def password_testing_battery(api):
     #TEST_create_private_room_role_without_password(api)
     TEST_create_private_room_role_with_password(api)
-#    TEST_update_password(api)
+    TEST_update_password(api)
 
 
 def TEST_create_private_room_role_without_password(api):
@@ -218,6 +218,8 @@ def TEST_update_password(api):
 
 
 def TEST_update_password(api):
+    # setting new context for test
+    reset_state(api)
     password = 'validpasswd-123'
     newPassword = 'pepito'
     users = [ api.post_user(name) for name in ['user', 'owner', 'admin', 'ro-owner', 'ro-admin'] ]
@@ -226,24 +228,39 @@ def TEST_update_password(api):
     private_room = api.post_room('private_room', users[3]['id'])
     owner = api.post_user_role(users[1]['id'], roles[2]['id'])
     admin = api.post_user_role(users[2]['id'], roles[3]['id'])
-    private_room_role = api.post_room_role(private_room['id'])
+    private_room_role = api.post_room_role(private_room['id'], password)
 
     # post bad password
     # post good password, guest tries to access with it
 
     put_rr_url = f'http://localhost:3000/room_roles/{private_room["id"]}/password'
-#    del_ur_url = f'http://localhost:3000/user_room'
+    post_ur_url = 'http://localhost:3000/user_room/'
+
     for user in users:
         for pw in [ 'bad-password', password ]:
             payload = {'oldPassword': pw, 'newPassword': newPassword}
             api.set_user_creds(user['username'])
             r = requests.put(put_rr_url, headers=api.get_param('auth_token'), data=payload)
+            print(f'[ RESULT ] {r.status_code}, {r.json()}')
 
             if pw == password and user['username'] in ['owner', 'admin', 'ro-owner']:
                 assert r.status_code == 201, f'{user["username"]} should have been able to change password'
-                
-                # check here guest user, with old an new password  
+                payload = {'userId': guest['id'], 'roomId': prvate_room['id'], 'password': pasword}
+                api.set_user_creds(guest['username'])
+                r = requests.post(post_ur_url, headers=api.get_param('auth_token'), data=payload)
+                print(f'[ RESULT ] {r.status_code}, {r.json()}')
 
+                assert r.status_code == 403, 'user should not be able to login with old password'
+                payload = {'userId': guest['id'], 'roomId': prvate_room['id'], 'password': newPasword}                
+                r = requests.post(post_ur_url, headers=api.get_param('auth_token'), data=payload)
+                assert r.status_code == 403, 'user should be able to login with new password'
+                del_ur_url = f'http://localhost:3000/user_room/{r.json()["id"]}'
+                r = requests.delete(del_ur_url, headers=api.get_param('auth_token'))
+                assert r.status_code < 400, 'error trying to remove user from room'
+                api.set_user_creds('admin')
+
+            else:
+                assert r.status_code == 403, f'user {user["username"]} should not have been able to change password'
     #       [ bad_passwd, good_passwd ]_user = { 403, 403 }
     #       [ bad_passwd, good_passwd ]_owner = { 403, 201 }
     #       [ bad_passwd, good_passwd ]_admin = { 403, 201 }
