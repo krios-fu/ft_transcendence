@@ -90,7 +90,7 @@ export class RoomRolesService {
     public async updatePassword(id: number, savedPwd: string, dto: UpdatePasswordDto): Promise<RoomRolesEntity> {
         const { oldPassword: oldPwd, newPassword: newPwd } = dto;
 
-        if (await bcrypt.compare(savedPwd, oldPwd) === false) {
+        if (await bcrypt.compare(oldPwd, savedPwd) === false) {
             return null;
         }
         await this.roomRolesRepository.update(id, { password: newPwd });
