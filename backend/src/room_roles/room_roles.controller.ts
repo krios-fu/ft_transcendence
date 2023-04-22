@@ -85,13 +85,7 @@ export class RoomRolesController {
         @UserCreds() username: string,
         @Body() dto: CreateRoomRolesDto
     ): Promise<RoomRolesEntity> {
-<<<<<<< HEAD
-        console.log('[     *** POST room_role ***     ]');
-        const { roomId, roleId } = dto;
-        console.log(' received: [ ROOM ', roomId, ' ], [ ROLE ', roleId, ' ]')
-=======
         const { roomId, roleId, password } = dto;
->>>>>>> 0925132eaa5a120649c5abe1ec06f401da1fb82e
         const roleEntity: RolesEntity = await this.rolesService.findOne(roleId);
         if (roleEntity === null) {
             this.roomRoleLogger.error(`No role with id ${roomId} found in database`);
