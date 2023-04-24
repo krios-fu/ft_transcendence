@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
-import { CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
+import { CreatePrivateRoomDto, CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { RoomQueryDto } from "./dto/room.query.dto";
@@ -10,6 +10,8 @@ import * as fs from 'fs';
 import { UserService } from "src/user/services/user.service";
 import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+import { DataSource } from "typeorm";
+import { RolesService } from "src/roles/roles.service";
 
 
 @Injectable()
@@ -17,7 +19,8 @@ export class RoomService {
     constructor(
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly dataSource: DataSource
     ) { }
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
@@ -64,6 +67,27 @@ export class RoomService {
         const userRoom: UserRoomEntity = new UserRoomEntity({ userId: ownerId, roomId: id });
 
         room.userRoom = [userRoom];
+        return await this.roomRepository.save(room);
+    }
+
+    public async createPrivateRoom(dto: CreatePrivateRoomDto): Promise<RoomEntity> {
+        const { roomName, ownerId, password } = dto;
+        const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+        const room: RoomEntity = new RoomEntity({roomName, ownerId});
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        // create room
+        // find private role id (could not exist!)
+        // create room role
+        
+//        try {
+//            await queryRunner.manager
+//                .createQueryBuilder()
+//                .insert
+//        }
+
+
+        // dentro del finally: await this.dataSource.release();
         return await this.roomRepository.save(room);
     }
 
