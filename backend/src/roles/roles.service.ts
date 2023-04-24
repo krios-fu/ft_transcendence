@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
+import { QueryMapper } from '../common/mappers/query.mapper';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { RoleQueryDto } from './dto/role.query.dto';
 import { RolesEntity } from './entity/roles.entity';
@@ -46,7 +46,7 @@ export class RolesService {
     }
 
     public async remove(roleId: number): Promise<void> {
-        await this.rolesRepository.softDelete(roleId)
+        await this.rolesRepository.delete(roleId)
     }
 
     public async findRoleByName(role: string): Promise<RolesEntity> {

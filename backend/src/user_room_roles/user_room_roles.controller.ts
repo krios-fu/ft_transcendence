@@ -76,7 +76,7 @@ export class UserRoomRolesController {
             throw new NotFoundException('resource not found in database');
         }
         if (await this.rolesService.findOne(roleId) === null) {
-            this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
+            this.userRoomRolesLogger.error(`No role with id ${roleId} present in database`);
             throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
@@ -95,8 +95,12 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error('user role in room not found in database');
             throw new NotFoundException('resource not found in database');
         }
-        /* resource NOT found */
-        return await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
+        const role: UserRoomRolesEntity = await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
+        if (role === null) {
+            this.userRoomRolesLogger.error('user role in room not found in database');
+            throw new NotFoundException('resource not found in database');
+        }
+        return role;
     }
 
     /* Create a new user with a role in a room */
@@ -109,7 +113,7 @@ export class UserRoomRolesController {
         });
 
         if (!userRoom.length) {
-            this.userRoomRolesLogger.error(`No user ${userId} in room ${roomId} present in database`);
+            this.userRoomRolesLogger.error(`User ${userId} is not registered in room ${roomId}`);
             throw new BadRequestException('resource not found in database');
         }
         const userRoomId: number = userRoom[0].id;

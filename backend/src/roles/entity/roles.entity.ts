@@ -24,13 +24,18 @@ export class RolesEntity extends BaseEntity {
     @Column({ 
         type:  'varchar',
         unique: true,
+        length: 15
      })
     role!: string
 
     @OneToMany(() => UserRoomRolesEntity, (userRoomRoles) => userRoomRoles.role)
     userRoomRole: UserRoomRolesEntity;
 
-    @OneToMany(() => UserRolesEntity, (userRole) => userRole.role)
+    @OneToMany(
+        () => UserRolesEntity,
+        (userRole) => userRole.role,
+        { cascade: true }
+    )
     userRole: UserRolesEntity[];
 
     @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.role)

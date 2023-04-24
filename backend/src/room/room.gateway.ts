@@ -10,8 +10,8 @@ import {
     WebSocketServer
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { RoomMsgDto } from 'src/room/dto/room.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { RoomMsgDto } from '../room/dto/room.dto';
 
 @UseGuards(JwtAuthGuard)
 @WebSocketGateway({

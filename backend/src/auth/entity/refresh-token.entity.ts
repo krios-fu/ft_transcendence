@@ -1,5 +1,5 @@
-import { BaseEntity } from "src/common/classes/base.entity";
-import { UserEntity } from "src/user/entities/user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { UserEntity } from "../../user/entities/user.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export interface RefreshTokenOptions {

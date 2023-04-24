@@ -1,5 +1,5 @@
-import { WinnerEntity } from "src/match/winner/winner.entity";
-import { LoserEntity } from "src/match/loser/loser.entity";
+import { WinnerEntity } from "../match/winner/winner.entity";
+import { LoserEntity } from "../match/loser/loser.entity";
 import {
     Column,
     CreateDateColumn,

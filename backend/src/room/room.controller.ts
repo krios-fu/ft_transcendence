@@ -1,6 +1,6 @@
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
-import { UserEntity } from "src/user/entities/user.entity";
+import { UserEntity } from "../user/entities/user.entity";
 import { CreateRoomDto } from "./dto/room.dto";
 import { UserService } from "src/user/services/user.service";
 import { BadRequestException, Body, 
@@ -18,9 +18,9 @@ import { BadRequestException, Body,
     UseInterceptors
 } from "@nestjs/common";
 import { RoomQueryDto } from "./dto/room.query.dto";
-import { uploadRoomAvatarSettings } from "src/common/config/upload-avatar.config";
+import { uploadRoomAvatarSettings } from "../common/config/upload-avatar.config";
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
+import { FileTypeValidatorPipe } from "../common/validators/filetype-validator.class";
 import * as fs from 'fs';
 import { Express } from 'express';
 
@@ -97,13 +97,12 @@ export class RoomController {
     @Post()
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
-
         if (await this.userService.findOne(ownerId) === null) {
-            throw new BadRequestException('no user in db');
+            throw new BadRequestException('user not found in database');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
-            this.roomLogger.error('room with name ' + roomName + ' already in database');
-            throw new BadRequestException('room already in db');
+            this.roomLogger.error(`room with name ${roomName} already in database`);
+            throw new BadRequestException('room already exists');
         }
         return await this.roomService.createRoom(dto);
     }

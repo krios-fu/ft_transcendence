@@ -1,10 +1,18 @@
-
-import { RolesEntity } from 'src/roles/entity/roles.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { BaseEntity, Column, Entity, Generated, Index, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { RolesEntity } from '../../roles/entity/roles.entity';
+import { UserEntity } from '../../user/entities/user.entity';
+import { 
+    BaseEntity, 
+    Column, 
+    Entity, 
+    Generated, 
+    Index, 
+    JoinColumn, 
+    ManyToOne, 
+    PrimaryGeneratedColumn 
+} from 'typeorm';
 import { CreateUserRolesDto } from '../dto/user_roles.dto';
 
-@Entity({ name: 'roles_user' })
+@Entity({ name: 'user_roles' })
 @Index(['roleId', 'userId'], { unique: true })
 export class UserRolesEntity extends BaseEntity {
     constructor (dto: CreateUserRolesDto) {
@@ -27,7 +35,7 @@ export class UserRolesEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         {
-            cascade: true,
+            /*cascade: true,*/
             onDelete: 'CASCADE'
         },
     )
@@ -43,7 +51,7 @@ export class UserRolesEntity extends BaseEntity {
     @ManyToOne(
         () => RolesEntity,
         {
-            cascade: true,
+            /*cascade: true,*/
             onDelete: 'CASCADE'
         },
     )

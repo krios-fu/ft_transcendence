@@ -1,12 +1,13 @@
 import { Exclude } from "class-transformer";
-import { RolesEntity } from "src/roles/entity/roles.entity";
-import { RoomEntity } from "src/room/entity/room.entity";
-import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { RolesEntity } from "../../roles/entity/roles.entity";
+import { RoomEntity } from "../../room/entity/room.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { CreateRoomRolesDto } from "../dto/room_roles.dto";
 import * as bcrypt from "bcrypt";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { InternalServerErrorException } from "@nestjs/common";
 
-@Entity({ name: 'room_role' })
+@Entity({ name: 'room_roles' })
 @Index(['roomId', 'roleId'], { unique: true })
 export class RoomRolesEntity extends BaseEntity {
     constructor(dto: CreateRoomRolesDto) {
@@ -60,14 +61,22 @@ export class RoomRolesEntity extends BaseEntity {
     @Column({
         type: "varchar",
         nullable: true,
+        length: 60
     })
     password?: string;
     
     @BeforeInsert()
+    @BeforeUpdate()
     async encryptPassword(): Promise<void> {
         if (this.password != undefined) {
             const salt = await bcrypt.genSalt();
-            this.password = await bcrypt.hash(this.password, salt);
+            try {
+                const tmpPwd = this.password;
+                this.password = await bcrypt.hash(this.password, salt);
+                console.log(`[SAVE] old password: ${tmpPwd}, hashed: ${this.password}`);
+            } catch (e) {
+                throw new InternalServerErrorException('kernel panic');
+            }
         }
     }
 }

@@ -33,9 +33,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         MulterModule.register({
             dest: './static',
         }),
-        ThrottlerModule.forRoot({
-            ttl: 10, limit: 5
-        }),
+        //ThrottlerModule.forRoot({
+        //    ttl: 10, limit: 5
+        //}),
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
@@ -44,7 +44,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
             password: process.env.DB_PASSWD,
             database: process.env.DB_NAME,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true, // should be managed in dev only
+            synchronize: true, // should be managed in dev only,
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'static'),
@@ -70,10 +70,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ],
     controllers: [],
     providers: [
-        {
-            provide: APP_GUARD,
-            useClass: ThrottlerGuard
-        },
+        //{
+        //    provide: APP_GUARD,
+        //    useClass: ThrottlerGuard
+        //},
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,

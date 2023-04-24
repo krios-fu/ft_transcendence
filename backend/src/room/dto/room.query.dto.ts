@@ -1,8 +1,8 @@
 import { Transform, Type } from "class-transformer";
 import { IsArray, IsNumberString, IsOptional, ValidateNested } from "class-validator";
-import { HasValidFields, ValidateOrder } from "src/common/decorators/order.decorator";
-import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
-import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
+import { HasValidFields, ValidateOrder } from "../../common/decorators/order.decorator";
+import { BaseQueryDto, BaseQueryFilterDto } from "../../common/dtos/base.query.dto";
+import { intoArrayOfParams } from "../../common/validators/fields-validator.class";
 
 class RoomQueryFilterDto extends BaseQueryFilterDto { 
     @IsOptional()

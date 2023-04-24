@@ -1,13 +1,18 @@
-import { PartialType } from "@nestjs/mapped-types";
-import {IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
+import {IsNotEmpty, 
+    IsNumber, 
+    IsOptional, 
+    IsString} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateRoomRolesDto {
     @IsNotEmpty()
-    @IsNumber() 
+    @IsNumber()
+    @Type(() => Number)
     readonly roomId: number;
 
     @IsNotEmpty()
-    @IsNumber() 
+    @IsNumber()
+    @Type(() => Number)
     readonly roleId: number;
 
     @IsOptional()
@@ -15,4 +20,12 @@ export class CreateRoomRolesDto {
     password?: string;
 }
 
-export class UpdateRoomRolesDto extends PartialType(CreateRoomRolesDto) { }
+export class UpdatePasswordDto {
+    @IsString()
+    @IsNotEmpty()
+    oldPassword: string;
+
+    @IsString()
+    @IsNotEmpty()
+    newPassword: string;
+}

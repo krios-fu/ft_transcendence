@@ -1,15 +1,15 @@
-import { CreateRoomDto } from "src/room/dto/room.dto";
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
+import { CreateRoomDto } from "../../room/dto/room.dto";
+import {  
+    Column, 
+    Entity, 
+    JoinColumn, 
+    ManyToOne, 
+    OneToMany, 
     PrimaryGeneratedColumn
 } from "typeorm";
-import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
-import { UserEntity } from "src/user/entities/user.entity";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
+import { UserEntity } from "../../user/entities/user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
 import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 
 @Entity({ name: "room" })

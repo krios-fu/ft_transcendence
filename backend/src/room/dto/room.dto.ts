@@ -11,7 +11,7 @@ export class CreateRoomDto {
     @IsNumber()
     @Type(() => Number)
     @IsNotEmpty()
-    ownerId: number;
+    ownerId: number; // bad
 }
 
 export class UpdateRoomDto {

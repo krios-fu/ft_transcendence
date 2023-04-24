@@ -7,10 +7,10 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { FriendshipRepository } from 'src/user/repositories/friendship.repository';
-import { FriendshipEntity } from 'src/user/entities/friendship.entity';
+import { FriendshipRepository } from '../../user/repositories/friendship.repository';
+import { FriendshipEntity } from '../../user/entities/friendship.entity';
 import { FriendshipStatus } from "../enum/friendship-status.enum";
-import { CreateFriendDto } from 'src/user/dto/friendship.dto';
+import { CreateFriendDto } from '../../user/dto/friendship.dto';
 import { UpdateResult, DataSource } from 'typeorm';
 import { BlockEntity } from "../entities/block.entity";
 import { NotFoundError } from "rxjs";

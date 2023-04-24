@@ -9,23 +9,28 @@ import {
     Query,
     Logger,
     NotFoundException,
+    ForbiddenException,
     BadRequestException,
     UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
-import { CreateUserRoomDto } from './dto/user_room.dto';
+import { CreatePrivateUserRoomDto, CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
-import { RoomEntity } from 'src/room/entity/room.entity';
-import { UserService } from 'src/user/services/user.service';
-import { RoomService } from 'src/room/room.service';
+import { RoomEntity } from '../room/entity/room.entity';
+import { UserService } from '../user/services/user.service';
+import { RoomService } from '../room/room.service';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
-import { IsPrivate } from 'src/common/guards/is-private.guard';
+import { IsPrivate } from '../common/guards/is-private.guard';
 import { Banned } from './guards/banned.guard';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { RoomRolesService } from 'src/room_roles/room_roles.service';
+import { ForbiddenWsException } from 'src/game/exceptions/forbidden.wsException';
 
 @Controller('user_room')
 export class UserRoomController {
     constructor (
         private readonly userRoomService: UserRoomService,
+        private readonly roomRolesService: RoomRolesService,
         private readonly userService: UserService,
         private readonly roomService: RoomService,
     ) {
@@ -87,7 +92,8 @@ export class UserRoomController {
 
     @Get('/me/rooms')
     public async getAllRoomsWithMe (@UserCreds() username: string): Promise<RoomEntity[]> {
-        const user = await this.userService.findOneByUsername(username);
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+        
         if (user === null) {
             this.userRoomLogger.error(`User with login ${username} not present in database`);
             throw new NotFoundException('resource not found in database');
@@ -100,15 +106,25 @@ export class UserRoomController {
     }
 
     /* Create a new user in a room */
-    //@UseGuards(Banned)
-    //@UseGuards(IsPrivate)
+    //@UseGuarhds(Banned)
+    //@UseGuards(IsPrivate) /*???*/
+    //@UseGuards(userisme)
     @Post()
-    public async create(@Body() dto: CreateUserRoomDto): Promise<UserRoomEntity> {
+    public async create(@Body() dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {
         const { userId, roomId } = dto;
-
+        if (await this.userService.findOne(userId) === null ||
+            await this.roomService.findOne(roomId) === null) {
+            this.userRoomLogger.error('Invalid creation payload received from request (no user or room present in database)');
+            throw new BadRequestException('resource not found in database')
+        }
         if (await this.userRoomService.findUserRoomIds(userId, roomId) !== null) {
             this.userRoomLogger.error(`User ${userId} already registered in room ${roomId}`);
             throw new BadRequestException('resource already in database');
+        }
+        if ((await this.roomRolesService.isRole('private', roomId)) === true &&
+             await this.userRoomService.validateUserPassword(dto) === false) {
+                this.userRoomLogger.error(`User with id ${userId} introduced wrong credentials`);
+                throw new ForbiddenException('invalid credentials');
         }
         return await this.userRoomService.create(dto);
     }
