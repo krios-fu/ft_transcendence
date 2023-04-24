@@ -109,7 +109,7 @@ export class RoomController {
     }
 
     @Post('private')
-    public async(@Body() dto: CreatePrivateRoomDto): Promise<RoomEntity> {
+    public async createPrivateRoom(@Body() dto: CreatePrivateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
         if (await this.userService.findOne(ownerId) === null) {
             this.roomLogger.error(`No user with id ${ownerId} found in database`);

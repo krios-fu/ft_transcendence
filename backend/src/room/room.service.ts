@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, BadRequestException, HttpException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
 import { CreatePrivateRoomDto, CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -10,8 +10,10 @@ import * as fs from 'fs';
 import { UserService } from "src/user/services/user.service";
 import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
-import { DataSource } from "typeorm";
+import { DataSource, InsertResult, QueryRunner } from "typeorm";
 import { RolesService } from "src/roles/roles.service";
+import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
+import { RolesEntity } from "src/roles/entity/roles.entity";
 
 
 @Injectable()
@@ -73,22 +75,44 @@ export class RoomService {
     public async createPrivateRoom(dto: CreatePrivateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId, password } = dto;
         const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
-        const room: RoomEntity = new RoomEntity({roomName, ownerId});
         await queryRunner.connect();
         await queryRunner.startTransaction();
-        // create room
-        // find private role id (could not exist!)
-        // create room role
-        
-//        try {
-//            await queryRunner.manager
-//                .createQueryBuilder()
-//                .insert
-//        }
-
-
-        // dentro del finally: await this.dataSource.release();
-        return await this.roomRepository.save(room);
+    
+        let roomId: number;
+        try {
+            const room: InsertResult = (await queryRunner.manager
+                .createQueryBuilder()
+                .insert()
+                .into(RoomEntity)
+                .values([
+                    { roomName: roomName, ownerId: ownerId }
+                ])
+                .execute());
+            roomId = room['identifiers'][0]['id'];
+            const privateRoleId: number = (await queryRunner.manager
+                .createQueryBuilder(RolesEntity, 'roles')
+                .where('roles.role = :role_name', { role_name: 'private' })
+                .getOne())
+            ['id'];
+            await queryRunner.manager
+                .createQueryBuilder()
+                .insert()
+                .into(RoomRolesEntity)
+                .values([
+                    { 
+                        roomId: roomId, 
+                        roleId: privateRoleId, 
+                        password: password 
+                    }
+                ])
+                .execute();
+        } catch(err) {
+            await queryRunner.rollbackTransaction();
+            throw new BadRequestException();
+        } finally {
+            await queryRunner.release();
+        }
+        return await this.findOne(roomId);
     }
 
     public async removeRoom(room: RoomEntity): Promise<void> {

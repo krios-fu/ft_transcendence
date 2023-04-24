@@ -21,7 +21,6 @@ export class CreatePrivateRoomDto extends CreateRoomDto {
     //@Matches(room password regex)
     password: string;
 }
-}
 
 export class UpdateRoomDto {
     @IsString()       
