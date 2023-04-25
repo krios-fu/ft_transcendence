@@ -7,6 +7,7 @@ import { ForbiddenException, Injectable, InternalServerErrorException, Logger, U
 import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
 import { UserService } from '../../user/services/user.service';
 import { UserRolesService } from '../../user_roles/user_roles.service';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class TwoFactorStrategy extends PassportStrategy(Strategy, 'two-factor') {
@@ -28,13 +29,17 @@ constructor (
 
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
         const username: string | undefined = jwtPayload.data?.username;
+        const id: number | undefined = jwtPayload.data?.id;
 
         if (username === undefined) {
             this.jwtLogger.error('JWT auth. service unexpected failure');
             throw new InternalServerErrorException()
         }
-        const user = await this.userService.findOneByUsername(username);
-
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+        if (user.id !== id) {
+            this.jwtLogger.error('Unauthorized login');
+            throw new UnauthorizedException;
+        }
         if (user === undefined) {
             this.jwtLogger.error(`User ${username} validated by jwt not found in database`);
             throw new ForbiddenException();

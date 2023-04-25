@@ -23,6 +23,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from "../common/validators/filetype-validator.class";
 import * as fs from 'fs';
 import { Express } from 'express';
+import { UserCreds } from "src/common/decorators/user-cred.decorator";
+import { UserCredsDto } from "src/common/dtos/user.creds.dto";
 
 @Controller('room')
 export class RoomController {
@@ -95,16 +97,17 @@ export class RoomController {
     }
 
     @Post()
-    public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
-        const { roomName, ownerId } = dto;
-        if (await this.userService.findOne(ownerId) === null) {
-            throw new BadRequestException('user not found in database');
-        }
+    public async createRoom(
+        @Body() dto: CreateRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<RoomEntity> {
+        const { roomName } = dto;
+        
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
             this.roomLogger.error(`room with name ${roomName} already in database`);
             throw new BadRequestException('room already exists');
         }
-        return await this.roomService.createRoom(dto);
+        return await this.roomService.createRoom({ 'ownerId': userCreds.id, 'roomName': roomName });
     }
 
     /* required room owner || web admin */

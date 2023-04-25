@@ -12,6 +12,11 @@ import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 
 
+export class RoomDto {
+    roomName: string;
+    ownerId: number;
+}
+
 @Injectable()
 export class RoomService {
     constructor(
@@ -53,7 +58,7 @@ export class RoomService {
         return await this.findOne(roomId);
     }
 
-    public async createRoom(dto: CreateRoomDto): Promise<RoomEntity> {
+    public async createRoom(dto: RoomDto): Promise<RoomEntity> {
         const roomEntity: RoomEntity = new RoomEntity(dto);
         const room: RoomEntity | null = await this.roomRepository.save(roomEntity);
 
@@ -106,7 +111,6 @@ export class RoomService {
             throw new BadRequestException('owner must chose and administrator first');
         }
         const newOwnerId: number = users[0].id;
-
         await this.updateRoom(roomId, { ownerId: newOwnerId });
         return await this.findOne(roomId);
     }

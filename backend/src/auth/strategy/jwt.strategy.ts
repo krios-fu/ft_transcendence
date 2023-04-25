@@ -8,6 +8,7 @@ import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
 import { UserService } from '../../user/services/user.service';
 import { NotValidatedException } from '../../common/classes/not-validated.exception';
 import { UserRolesService } from '../../user_roles/user_roles.service';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -29,15 +30,20 @@ constructor (
 
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
         const username: string | undefined = jwtPayload.data?.username;
+        const id: number | undefined = jwtPayload.data?.id;
 
-        if (username === undefined) {
+        if (username === undefined || id === undefined) {
             this.jwtLogger.error('JWT auth. service unexpected failure');
             throw new InternalServerErrorException()
         }
-        const user = await this.userService.findOneByUsername(username);
+        const user: UserEntity= await this.userService.findOneByUsername(username);
         if (user === null) {
             this.jwtLogger.error(`Authentication token not assigned to a registered user`);
             throw new UnauthorizedException();
+        }
+        if (user.id !== id) {
+            this.jwtLogger.error('Unauthorized login');
+            throw new UnauthorizedException;
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.jwtLogger.error(`User ${username} is banned from the server`);

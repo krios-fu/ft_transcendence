@@ -80,7 +80,8 @@ export class AuthInterceptor implements HttpInterceptor {
                     }
                     this.authService.setAuthInfo({
                         'accessToken': res.body.accessToken,
-                        'username': res.body.username
+                        'username': res.body.username,
+                        'id': res.body.id
                     });
                     return next.handle(this.setAuthHeaders(req));
                 }),
@@ -88,6 +89,7 @@ export class AuthInterceptor implements HttpInterceptor {
                     if (err.status === 401) {
                         window.localStorage.removeItem('access_token');;
                         window.localStorage.removeItem('username');
+                        window.localStorage.removeItem('id');
                         this.authService.redirectLogin();
                     }
                     return throwError(() => err);

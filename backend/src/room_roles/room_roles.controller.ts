@@ -21,6 +21,7 @@ import { RoomService } from '../room/room.service';
 import { RolesService } from '../roles/roles.service';
 import { RoomRolesQueryDto } from './dto/room_roles.query.dto';
 import { UserCreds } from '../common/decorators/user-cred.decorator';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 @Controller('room_roles')
 export class RoomRolesController {
@@ -82,11 +83,13 @@ export class RoomRolesController {
     @Post()
     public async create
     (
-        @UserCreds() username: string,
+        @UserCreds() userCreds: UserCredsDto,
         @Body() dto: CreateRoomRolesDto
     ): Promise<RoomRolesEntity> {
+        const { username } = userCreds;
         const { roomId, roleId, password } = dto;
         const roleEntity: RolesEntity = await this.rolesService.findOne(roleId);
+
         if (roleEntity === null) {
             this.roomRoleLogger.error(`No role with id ${roomId} found in database`);
             throw new BadRequestException('resource not found in database');
@@ -116,10 +119,12 @@ export class RoomRolesController {
     public async updatePassword
     (
         @Param('id', ParseIntPipe) id: number,
-        @UserCreds() username: string,
+        @UserCreds() userCreds: UserCredsDto,
         @Body() dto: UpdatePasswordDto,
     ): Promise<RoomRolesEntity> {
+        const { username } = userCreds;
         const roomRole: RoomRolesEntity | null = await this.roomRolesService.findPrivateRoleInRoom(id);
+
         if (roomRole === null) {
             this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
             throw new NotFoundException('resource not found in database');
@@ -142,9 +147,11 @@ export class RoomRolesController {
     public async remove
     (
         @Param('id', ParseIntPipe) id: number,
-        @UserCreds() username: string
+        @UserCreds() userCreds: UserCredsDto
     ): Promise<void> {
+        const { username } = userCreds;
         const roomRole: RoomRolesEntity = await this.roomRolesService.findOne(id);
+
         if (roomRole === null) {
             this.roomRoleLogger.error(`No role for room with id ${id} found in database`);
             throw new NotFoundException('resource not found in database');

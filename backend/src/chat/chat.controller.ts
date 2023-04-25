@@ -14,6 +14,7 @@ import { UserService } from 'src/user/services/user.service';
 import { chatPayload } from './dtos/chat.dto';
 import { UserCreds } from "../common/decorators/user-cred.decorator";
 import { UserEntity } from "../user/entities/user.entity";
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -43,8 +44,10 @@ export class ChatController {
     }
 
     @Get('me')
-    public async findChats(@UserCreds() username: string) {
+    public async findChats(@UserCreds() userCreds: UserCredsDto) {
+        const { username } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.chatLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
@@ -57,9 +60,9 @@ export class ChatController {
 
     @Get('me/:nick_friend')
     async findChatWithFriend(
-        @UserCreds() username: string,
-        @Param('nick_friend'
-        ) nick_friend: string) {
+        @UserCreds() userCreds: UserCredsDto,
+        @Param('nick_friend') nick_friend: string) {
+        const { username } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
 
         if (user === null) {
@@ -77,8 +80,9 @@ export class ChatController {
 
     @Post('me')
     async postChat(
-        @UserCreds() username: string,
+        @UserCreds() userCreds: UserCredsDto,
         @Body() payload: chatPayload) {
+        const { username } = userCreds;
         const user1: UserEntity = await this.userService.findOneByUsername(username);
 
         console.log(user1); /* to remove */

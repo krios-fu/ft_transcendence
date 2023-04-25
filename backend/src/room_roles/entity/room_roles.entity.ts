@@ -73,7 +73,6 @@ export class RoomRolesEntity extends BaseEntity {
             try {
                 const tmpPwd = this.password;
                 this.password = await bcrypt.hash(this.password, salt);
-                console.log(`[SAVE] old password: ${tmpPwd}, hashed: ${this.password}`);
             } catch (e) {
                 throw new InternalServerErrorException('kernel panic');
             }

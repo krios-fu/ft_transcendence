@@ -62,22 +62,20 @@ class APITrans():
 
     def __request_get_wrapper(self, url):
         """ Requests entity detail view via ID. """
-        #print(f'  [ GET: {url} ]')
         try:
             r = requests.get(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
-            print(f'  [   ERROR: {r.text} ]')
+            print(f'  [ GET  ERROR: {r.text} ]')
             raise e
 
     def __request_post_wrapper(self, url, data):
-        #print(f'  [ POST: {url} $ data {data}]')
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            print(f'  [   ERROR: {r.text} ]')
+            print(f'  [ POST  ERROR: {r.text} ]')
             raise e
         except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
@@ -113,13 +111,12 @@ class APITrans():
             user = self.__request_get_wrapper(f'{url}{data["username"]}')
         return user
 
-    def post_room(self, room_name, owner_id):
+    def post_room(self, room_name):
         """ Post a new room via room name and owner id """
 
         url = 'http://localhost:3000/room/'
         data = {
             'roomName': room_name,
-            'ownerId': owner_id
         }
         room = []
         try:

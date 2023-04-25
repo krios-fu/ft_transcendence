@@ -25,7 +25,8 @@ def set_context(api):
     print('[   -> users ]')
     users = [ api.post_user(uname) for uname in ['user', 'owner', 'admin', 'ro-owner', 'ro-admn'] ]
     print('[   -> rooms ]')
-    rooms = [ api.post_room(room, users[3]['id']) for room in ['private_room', 'official_room', 'room'] ]
+    api.set_user_creds('owner')
+    rooms = [ api.post_room(room) for room in ['private_room', 'official_room', 'room'] ]
 
     print('[   -> roles for users ]')
     owner = api.post_user_role(users[1]['id'], roles[2]['id'])
@@ -60,7 +61,6 @@ def clean_role(api, data):
     url = f'http://localhost:3000/room_roles/rooms/{data["roomId"]}/roles/{data["roleId"]}'
     print(f'[ CLEAN room_role {url} ]')
     r = requests.get(url, headers=api.get_param('auth_token'))
-    print(f'[ mierda con el json: {r.text} ]')
     if r.status_code >= 400:
         print(f'->     [ FAILURE TO REQUEST URL {url} ] {r.status_code}, {r.json()}')
         return
@@ -73,12 +73,12 @@ def post_testing_battery(api):
     url = f'http://localhost:3000/room_roles/'
     clean_role(api, { 'roomId': rooms[2]['id'], 'roleId': roles[0]['id'] })
     clean_role(api, { 'roomId': rooms[2]['id'], 'roleId': roles[1]['id'] })
+
     for user in users:
         for role in roles[:2]:
-            sleep(1)
             data = { 'roomId': rooms[2]['id'], 'roleId': role['id'] }
             api.set_user_creds(user['username'])
-            print(f'\n[ ************************ petition from user || {user["username"]} || to make room {role["role"]} ************************ ]')
+            print(f'[ petition from user || {user["username"]} || to make room {role["role"]} ]')
             print(f'[ POST {url} / {data}]')
             r = requests.post(url, data=data, headers=api.get_param('auth_token'))
             print(f'  -> results in {r.status_code}, {r.json()}, {r.text}')
@@ -93,11 +93,9 @@ def post_testing_battery(api):
                 assert r.status_code < 400, 'User should had been able to perform this action'
             if user['username'] in ['user', 'ro-admin' ]:
                 assert r.status_code >= 400, 'User should not be able to perform this action'
-            print('[ ******************************************************************************************** ]\n\n')
+            
 
-    # *** DEL room_roles
-    #     *** PRIVATE ***
-
+# delete a private room role
 def delete_testing_battery(api):
     private_room = api.post_room_role(rooms[0]['id'], roles[0]['id'])
     api.set_user_creds('admin')
@@ -139,7 +137,7 @@ def TEST_create_private_room_role_without_password(api):
     pvt_role = api.post_role('private') 
     user = api.post_user('user')
     api.set_user_creds('user')
-    room = api.post_room('room', user['id'])
+    room = api.post_room('room')
     pvt_data = { 'roomId': room['id'], 'roleId': pvt_role['id']}
     r = requests.post(url, data=pvt_data, headers=api.get_param('auth_token'))
     print(f'->    RESULT: {r.status_code}, {r.json()}')
@@ -159,7 +157,7 @@ def TEST_create_private_room_role_with_password(api):
     api.set_user_creds('user')
     #TEST_create_private_room_role_without_password(api)
 
-    private_room = api.post_room('private_room', user['id'])
+    private_room = api.post_room('private_room')
     payload = { 'roomId': private_room['id'], 'roleId': pvt_role['id'], 'password': password }
     r = requests.post(rr_url, headers=api.get_param('auth_token'), data=payload)
     print(f'[ RESULT ] {r.status_code}, {r.json()}')
@@ -198,7 +196,8 @@ def TEST_update_password(api):
     users = [ api.post_user(name) for name in ['user', 'owner', 'admin', 'ro-owner', 'ro-admin'] ]
     guest = api.post_user('guest')
     roles = [api.post_role(role) for role in ['private', 'official', 'owner', 'admin']]
-    private_room = api.post_room('private_room', users[3]['id'])
+    api.set_user_creds('ro-owner')
+    private_room = api.post_room('private_room')
     owner = api.post_user_role(users[1]['id'], roles[2]['id'])
     admin = api.post_user_role(users[2]['id'], roles[3]['id'])
     api.set_user_creds('admin')

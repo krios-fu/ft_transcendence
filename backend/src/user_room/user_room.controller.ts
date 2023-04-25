@@ -25,6 +25,7 @@ import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
 import { ForbiddenWsException } from 'src/game/exceptions/forbidden.wsException';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 @Controller('user_room')
 export class UserRoomController {
@@ -91,18 +92,19 @@ export class UserRoomController {
     }
 
     @Get('/me/rooms')
-    public async getAllRoomsWithMe (@UserCreds() username: string): Promise<RoomEntity[]> {
+    public async getAllRoomsWithMe (@UserCreds() userCreds: UserCredsDto): Promise<RoomEntity[]> {
+        const { username, id } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
         
         if (user === null) {
             this.userRoomLogger.error(`User with login ${username} not present in database`);
             throw new NotFoundException('resource not found in database');
         }
-        if (await this.userService.findOne(user.id) === null) {
-            this.userRoomLogger.error(`No user with id ${user.id} found in database`);
+        if (await this.userService.findOne(id) === null) {
+            this.userRoomLogger.error(`No user with id ${id} found in database`);
             throw new NotFoundException('resource not found in database');
         }
-        return await this.userRoomService.getAllRoomsWithUser(user.id);
+        return await this.userRoomService.getAllRoomsWithUser(id);
     }
 
     /* Create a new user in a room */

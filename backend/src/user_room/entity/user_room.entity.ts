@@ -1,5 +1,4 @@
 import { BaseEntity } from "src/common/classes/base.entity";
-import { RoomMessageEntity } from "src/room/entity/room-message.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Column,
@@ -72,11 +71,4 @@ export class UserRoomEntity extends BaseEntity {
         { cascade: true }
     )
     userRoomRole: UserRoomRolesEntity[];
-
-    @OneToMany(
-        () => RoomMessageEntity,
-        (message: RoomMessageEntity) => message.userRoom,
-        { cascade: true }
-    )
-    messages: RoomMessageEntity[];
 }
