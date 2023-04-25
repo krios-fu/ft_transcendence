@@ -1,7 +1,7 @@
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
 import { UserEntity } from "../user/entities/user.entity";
-import { CreateRoomDto } from "./dto/room.dto";
+import { CreatePrivateRoomDto, CreateRoomDto } from "./dto/room.dto";
 import { UserService } from "src/user/services/user.service";
 import { BadRequestException, Body, 
     Controller, 
@@ -98,14 +98,30 @@ export class RoomController {
     public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId } = dto;
         if (await this.userService.findOne(ownerId) === null) {
+            this.roomLogger.error(`No user with id ${ownerId} found in database`);
             throw new BadRequestException('user not found in database');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
             this.roomLogger.error(`room with name ${roomName} already in database`);
-            throw new BadRequestException('room already exists');
+            throw new BadRequestException('room cannot contain duplicate name');
         }
         return await this.roomService.createRoom(dto);
     }
+
+    @Post('private')
+    public async createPrivateRoom(@Body() dto: CreatePrivateRoomDto): Promise<RoomEntity> {
+        const { roomName, ownerId } = dto;
+        if (await this.userService.findOne(ownerId) === null) {
+            this.roomLogger.error(`No user with id ${ownerId} found in database`);
+            throw new BadRequestException('user not found in database');
+        }
+        if (await this.roomService.findOneRoomByName(roomName) !== null) {
+            this.roomLogger.error(`Room with name ${roomName} already exists in database`);
+            throw new BadRequestException('room cannot contain duplicate name');
+        }
+        return await this.roomService.createPrivateRoom(dto);
+    }
+
 
     /* required room owner || web admin */
     @Delete(':room_id')

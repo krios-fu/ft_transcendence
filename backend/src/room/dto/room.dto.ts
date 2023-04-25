@@ -14,6 +14,14 @@ export class CreateRoomDto {
     ownerId: number; // bad
 }
 
+export class CreatePrivateRoomDto extends CreateRoomDto {
+    @IsString()
+    @Length(8, 15)
+    @IsNotEmpty()
+    //@Matches(room password regex)
+    password: string;
+}
+
 export class UpdateRoomDto {
     @IsString()       
     @IsNotEmpty()

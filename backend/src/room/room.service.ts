@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, BadRequestException, HttpException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
-import { CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
+import { CreatePrivateRoomDto, CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { RoomQueryDto } from "./dto/room.query.dto";
@@ -10,6 +10,10 @@ import * as fs from 'fs';
 import { UserService } from "src/user/services/user.service";
 import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
+import { DataSource, InsertResult, QueryRunner } from "typeorm";
+import { RolesService } from "src/roles/roles.service";
+import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
+import { RolesEntity } from "src/roles/entity/roles.entity";
 
 
 @Injectable()
@@ -17,7 +21,8 @@ export class RoomService {
     constructor(
         @InjectRepository(RoomEntity)
         private readonly roomRepository: RoomRepository,
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly dataSource: DataSource
     ) { }
 
     public async findAllRooms(queryParams: RoomQueryDto): Promise<RoomEntity[]> {
@@ -65,6 +70,49 @@ export class RoomService {
 
         room.userRoom = [userRoom];
         return await this.roomRepository.save(room);
+    }
+
+    public async createPrivateRoom(dto: CreatePrivateRoomDto): Promise<RoomEntity> {
+        const { roomName, ownerId, password } = dto;
+        const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+    
+        let roomId: number;
+        try {
+            const room: InsertResult = (await queryRunner.manager
+                .createQueryBuilder()
+                .insert()
+                .into(RoomEntity)
+                .values([
+                    { roomName: roomName, ownerId: ownerId }
+                ])
+                .execute());
+            roomId = room['identifiers'][0]['id'];
+            const privateRoleId: number = (await queryRunner.manager
+                .createQueryBuilder(RolesEntity, 'roles')
+                .where('roles.role = :role_name', { role_name: 'private' })
+                .getOne())
+            ['id'];
+            await queryRunner.manager
+                .createQueryBuilder()
+                .insert()
+                .into(RoomRolesEntity)
+                .values([
+                    { 
+                        roomId: roomId, 
+                        roleId: privateRoleId, 
+                        password: password 
+                    }
+                ])
+                .execute();
+        } catch(err) {
+            await queryRunner.rollbackTransaction();
+            throw new BadRequestException();
+        } finally {
+            await queryRunner.release();
+        }
+        return await this.findOne(roomId);
     }
 
     public async removeRoom(room: RoomEntity): Promise<void> {
