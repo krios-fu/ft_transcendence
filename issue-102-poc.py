@@ -25,7 +25,6 @@ if __name__ == '__main__':
     api.set_user_creds('user')
     payload = { 
         'roomName': 'room',
-        'ownerId': user['id'],
         'password': '1234567890123'
     }
     r = requests.post('http://localhost:3000/room/private', data=payload, headers=api.get_param('auth_token'))

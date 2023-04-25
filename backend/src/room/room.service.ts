@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException, HttpException } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
-import { CreatePrivateRoomDto, CreateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
+import { CreatePrivateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { RoomQueryDto } from "./dto/room.query.dto";
@@ -11,14 +11,17 @@ import { UserService } from "src/user/services/user.service";
 import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
 import { DataSource, InsertResult, QueryRunner } from "typeorm";
-import { RolesService } from "src/roles/roles.service";
 import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 
 
-export class RoomDto {
+class RoomDto {
     roomName: string;
     ownerId: number;
+}
+
+class PrivateRoomDto extends RoomDto {
+    password: string;
 }
 
 @Injectable()
@@ -77,7 +80,7 @@ export class RoomService {
         return await this.roomRepository.save(room);
     }
 
-    public async createPrivateRoom(dto: CreatePrivateRoomDto): Promise<RoomEntity> {
+    public async createPrivateRoom(dto: PrivateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId, password } = dto;
         const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
@@ -111,6 +114,7 @@ export class RoomService {
                     }
                 ])
                 .execute();
+            await queryRunner.commitTransaction();
         } catch(err) {
             await queryRunner.rollbackTransaction();
             throw new BadRequestException();

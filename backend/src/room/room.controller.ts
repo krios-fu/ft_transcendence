@@ -111,8 +111,13 @@ export class RoomController {
     }
 
     @Post('private')
-    public async createPrivateRoom(@Body() dto: CreatePrivateRoomDto): Promise<RoomEntity> {
-        const { roomName, ownerId } = dto;
+    public async createPrivateRoom(
+        @Body() dto: CreatePrivateRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<RoomEntity> {
+        const { roomName, password } = dto;
+        const { id: ownerId } = userCreds;
+
         if (await this.userService.findOne(ownerId) === null) {
             this.roomLogger.error(`No user with id ${ownerId} found in database`);
             throw new BadRequestException('user not found in database');
@@ -121,7 +126,11 @@ export class RoomController {
             this.roomLogger.error(`Room with name ${roomName} already exists in database`);
             throw new BadRequestException('room cannot contain duplicate name');
         }
-        return await this.roomService.createPrivateRoom(dto);
+        return await this.roomService.createPrivateRoom({ 
+            'ownerId': ownerId,
+            'roomName': roomName,
+            'password': password
+        });
     }
 
 
