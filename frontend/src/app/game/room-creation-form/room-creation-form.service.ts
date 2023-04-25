@@ -29,6 +29,8 @@ export class   RoomCreationFormService {
 
     private readonly _urlAuthority: string = "http://localhost:3000";
     private readonly _path: string = "/room";
+    private readonly _pathPrivate: string = this._path + '/private';
+
 
     constructor(
         private readonly httpService: HttpClient
@@ -61,9 +63,12 @@ export class   RoomCreationFormService {
     }
 
     _postRoom(roomData: ICreateRoom): Observable<IRoomData> {
+        const   path: string = roomData.password ? this._pathPrivate
+                                                    : this._path;
+    
         return (
             this.httpService.post<IRoomData>(
-                this._urlAuthority + this._path,
+                this._urlAuthority + path,
                 roomData
             )
             .pipe(
