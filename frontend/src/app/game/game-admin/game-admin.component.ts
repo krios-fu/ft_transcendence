@@ -91,7 +91,7 @@ export class GameAdminComponent implements OnInit {
         roomId: this.roomId,
         roleId: this.privateRoleId
       },
-      height: '500px',
+      // height: '500px',
       autoFocus: true,
       disableClose: true
     });

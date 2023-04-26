@@ -1,54 +1,60 @@
-<!-- <div mat-dialog-content>
-    <div class="modal_private" *ngIf="!this.isPrivate; else private_input">
-        <h2> make room private. </h2>
-        <mat-form-field>
-            <mat-label>introduce new password.</mat-label>
-            <input matInput placeholder="password" [(ngModel)]="this.password">
-        </mat-form-field>
-        <mat-form-field> 
-            <mat-label>repeat new password</mat-label>
-            <input matInput placeholder="password" [(ngModel)]="this.validatePassword">
-        </mat-form-field>
-        <div class="modal_private_footer">
-            <button mat-raised-button 
-                (click)="this.closeModal()" id="btn_close_modal">Close</button>
-            <button mat-raised-button [disabled]="!this.activatePostBtn()" 
-                (click)="this.postPrivateRoom()" id="btn_private_room">Make private</button>
-        </div>
-    </div>
-    <ng-template #private_input class="modal_public">
-        <h2> make room public. </h2>
-        <mat-form-field>
-            <input matInput placeholder="confirm with password">
-            <input matInput placeholder="repeat password">
-        </mat-form-field>
-        <div>
-            <button mat-raised-button id="btn_close_modal">Close</button>
-            <button mat-raised-button id="btn_private_room">Make private</button>
-        </div>
-    </ng-template>
-</div> -->
-
-
-<mat-card style="height: 100%">
-    <mat-card-header>this is a test</mat-card-header>
-    <mat-card-content>
-        <tr>
+<mat-card class="modal">
+<ng-container *ngIf="!this.isPrivate;else modal_private">
+    <mat-card-title class="row modal-title">make this room private</mat-card-title>
+    <mat-card-content class="row">
+        <table>
+        <tr class="modal-input-row">
             <mat-form-field>
                 <mat-label> new password </mat-label>
-                <input matInput>
+                <input matInput type="password" 
+                    [(ngModel)]="this.password" placeholder="password">
             </mat-form-field>
         </tr>
-        <mat-form-field>
-            <mat-label> repeat new password </mat-label>
-            <input matInput>
-        </mat-form-field>
+        <tr>
+            <mat-form-field>
+                <mat-label> repeat new password </mat-label>
+                <input matInput type="password" 
+                    [(ngModel)]="this.validatePassword" placeholder="password">
+            </mat-form-field>
+        </tr>
+        </table>
     </mat-card-content>
-    <mat-card-footer>
-        <mat-card-actions>
-            aqui van los botones
-            <button mat-raised-button>Close</button>
-            <button mat-raised-button>Post</button>
-        </mat-card-actions>
-    </mat-card-footer>  
+    <mat-card-actions class="row">
+        <span>
+            <button mat-raised-button (click)="this.closeModal()">Close</button>
+        </span>
+        <span>
+            <button mat-raised-button (click)="this.postPrivateRoom()">Post</button>
+        </span>
+    </mat-card-actions>
+</ng-container>
+<ng-template #modal_private>
+    <mat-card-title class="row">make this room public</mat-card-title>
+    <mat-card-content class="row">
+        <table>
+            <tr>
+                <mat-form-field>
+                    <mat-label> enter password </mat-label>
+                    <input matInput type="password"
+                        [(ngModel)]="this.password" placeholder="password">
+                </mat-form-field>                            
+            </tr>
+            <tr>
+                <mat-form-field>
+                    <mat-label> confirm password </mat-label>
+                    <input matInput type="password" 
+                        [(ngModel)]="this.validatePassword" placeholder="password">
+                </mat-form-field>
+            </tr>
+        </table>
+    </mat-card-content>
+    <mat-card-actions class="row">
+        <span>
+            <button mat-raised-button (click)="this.closeModal()">Close</button>
+        </span>
+        <span>
+            <button mat-raised-button (click)="this.postPrivateRoom()">Post</button>
+        </span>
+    </mat-card-actions>
+</ng-template>
 </mat-card>
