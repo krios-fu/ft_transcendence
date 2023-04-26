@@ -109,4 +109,8 @@ export class AuthService {
     getAuthUser(): string | null {
         return localStorage.getItem('username');
     }
+
+    getAuthId(): string | null {
+        return localStorage.getItem('user_id');
+    }
 }
