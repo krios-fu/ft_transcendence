@@ -2,6 +2,10 @@ from api.APITrans import APITrans as Api
 from requests.exceptions import HTTPError
 import sys
 
+def TEST_list_registered_users(api):
+    users = ['user1', 'user2', 'user3', 'user4'].map(lambda u: api.post_user(u))
+    user_rooms = [ api.post_user_room(user['id'], room['id']) for user in users ] 
+
 if __name__ == "__main__":
     api = Api()
     try:
@@ -14,8 +18,3 @@ if __name__ == "__main__":
 
     except HTTPError as e:
         print(f'{e.status}, {e.reason}', file=sys.stderr)
-
-
-def TEST_list_registered_users(api):
-    users = ['user1', 'user2', 'user3', 'user4'].map(lambda u: api.post_user(u))
-    user_rooms = [ api.post_user_room(user['id'], room['id']) for user in users ] 

@@ -28,6 +28,7 @@ import { PrivateDialogComponent } from './game-admin/private-dialog/private-dial
 import { DeleteDialogComponent } from './game-admin/delete-dialog/delete-dialog.component';
 import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-admin-detail.component';
 import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { MatInputModule } from '@angular/material/input';
     MatMenuModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatCardModule
   ],
   providers: [
     SocketService,
