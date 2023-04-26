@@ -111,16 +111,17 @@ export class RoomCreationFormComponent implements OnInit {
                 this._userId = user[0].id;
             },
             error: (err: any) => {
-                console.log("Error getting userId at room creation service.", err);
+                console.error("Error getting userId at room creation service.", err);
             }
         });
     }
 
-    private _errorHandler(statusCode: number): void {
+    private _errorHandler(err: any): void {
         let errorMsg: string;
     
-        if (statusCode === 400)
-            errorMsg = "Room with provided name already exists.";
+        if (err.error
+                && err.error.message)
+            errorMsg = err.error.message;
         else
             errorMsg = "Room creation failed, try again later.";
         this.alertService.openSnackBar(errorMsg, "OK");
@@ -143,11 +144,8 @@ export class RoomCreationFormComponent implements OnInit {
                 }]);
             },
             error: (err: any) => {
-                console.log(err);
-                if (err.status)
-                    this._errorHandler(err.status);
-                else
-                    this._errorHandler(500);
+                console.error(err);
+                this._errorHandler(err);
             }
         });
     }

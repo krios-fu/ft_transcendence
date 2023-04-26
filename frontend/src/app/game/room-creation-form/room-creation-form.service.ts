@@ -37,17 +37,6 @@ export class   RoomCreationFormService {
     ) {}
 
     private _httpErrorHandler(err: HttpErrorResponse): Observable<never> {
-        return (
-            throwError(() =>
-                new Error(
-                    "GET user for room creation service failed."
-                    + `Status code ${err.status}`
-                )
-            )
-        );
-    }
-
-    private _httpRoomErrorHandler(err: HttpErrorResponse): Observable<never> {
         return (throwError(() => err));
     }
 
@@ -73,7 +62,7 @@ export class   RoomCreationFormService {
             )
             .pipe(
                 retry(1),
-                catchError(this._httpRoomErrorHandler)
+                catchError(this._httpErrorHandler)
             )
         );
     }
@@ -86,7 +75,7 @@ export class   RoomCreationFormService {
             .pipe(
                 switchMap((users: UserDto[]) => {
                     if (!users)
-                        return (throwError(() => "User not found."))
+                        throw new Error("User not found.");
                     return (this._postRoom({
                         roomName: roomName,
                         ownerId: users[0].id,
