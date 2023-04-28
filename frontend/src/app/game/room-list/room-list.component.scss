@@ -1,0 +1,30 @@
+#main-container {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    font-size: initial;
+}
+
+#list-container {
+    width: 80%;
+    max-width: 600px;
+    margin-top: 1rem;
+    background-color: rgba($color: pink, $alpha: 0.7);
+    border: 3px solid indigo;
+}
+
+mat-list {
+    margin: 0;
+    padding: 0;
+}
+
+mat-list-item:hover {
+    background-color: indigo;
+    color: white;
+    cursor: pointer;
+}
+
+.mat-line {
+    font-weight: bold;
+}

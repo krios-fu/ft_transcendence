@@ -1,0 +1,10 @@
+<div id="main-container">
+    <div id="list-container">
+        <mat-list role="list">
+            <mat-list-item role="listitem" *ngFor="let room of rooms">
+                <p mat-line class="roomName">{{ room.roomName }}</p>
+                <p matLine>players: 0</p><!--PROVISIONAL-->
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>  
