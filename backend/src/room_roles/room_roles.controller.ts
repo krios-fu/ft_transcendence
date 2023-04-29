@@ -36,7 +36,9 @@ export class RoomRolesController {
     private readonly roomRoleLogger: Logger;
 
     @Get()
-    public async findAll(@Query() queryParams: RoomRolesQueryDto): Promise<RoomRolesEntity[]> {
+    public async findAll(@Query() queryParams: RoomRolesQueryDto): Promise<RoomRolesEntity[] | [RoomRolesEntity[], number]> {
+        if (queryParams.count)
+            return this.roomRolesService.findAndCountAll(queryParams);
         return this.roomRolesService.findAll(queryParams);
     }
 

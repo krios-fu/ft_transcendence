@@ -12,5 +12,9 @@
                 <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
             </mat-list-item>
         </mat-list>
+        <mat-paginator [pageSize]="pageSize"
+                        [length]="totalRooms"
+                        (page)="pageEventHandler($event)">
+        </mat-paginator>
     </div>
 </div>  

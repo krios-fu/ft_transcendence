@@ -1,6 +1,12 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnInit } from "@angular/core";
-import { Observable, catchError, retry, switchMap, throwError } from "rxjs";
+import { Injectable } from "@angular/core";
+import {
+    Observable,
+    catchError,
+    retry,
+    switchMap,
+    throwError
+} from "rxjs";
 
 export type    RoomRole = "public" | "private";
 
@@ -32,12 +38,17 @@ export class    RoomListService {
         private readonly httpService: HttpClient
     ) {}
 
-    private _getRoomRoles(roleId: number): Observable<IRoomRole[]> {
+    private _getRoomRoles(roleId: number, limit: number,
+                            offset: number): Observable<[IRoomRole[], number]> {
         return (
-            this.httpService.get<IRoomRole[]>(
+            this.httpService.get<[IRoomRole[], number]>(
                 this._urlAuthority
                 + this._urlPathRoomRoles
                 + `?filter[roleId]=${roleId}`
+                + `&sort=roomId`
+                + `&limit=${limit}`
+                + `&offset=${offset}`
+                + `&count=true`
             )
             .pipe(
                 retry(3),
@@ -48,7 +59,8 @@ export class    RoomListService {
         );
     }
 
-    getRooms(roomRole: RoomRole): Observable<IRoomRole[]> {
+    getRooms(roomRole: RoomRole, limit: number,
+                offset: number): Observable<[IRoomRole[], number]> {
         return (
             this.httpService.get<IRole[]>(
                 this._urlAuthority
@@ -60,7 +72,7 @@ export class    RoomListService {
                     if (!roles
                             || !roles.length)
                         return ([]);
-                    return (this._getRoomRoles(roles[0].id));
+                    return (this._getRoomRoles(roles[0].id, limit, offset));
                 }),
                 catchError((err) => {
                     return throwError(() => err);

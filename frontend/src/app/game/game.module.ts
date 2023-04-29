@@ -26,6 +26,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
 import { RoomListComponent } from './room-list/room-list.component';
 import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
 // import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
@@ -55,7 +56,8 @@ import { MatListModule } from '@angular/material/list';
     MatExpansionModule,
     MatButtonModule,
     ReactiveFormsModule,
-    MatListModule
+    MatListModule,
+    MatPaginatorModule
     // MatLabel
   ],
   providers: [

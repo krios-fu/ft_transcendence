@@ -26,6 +26,13 @@ export class RoomRolesService {
         return await this.roomRolesRepository.find();
     }
 
+    public async findAndCountAll(queryParams?: RoomRolesQueryDto)
+                                        : Promise<[RoomRolesEntity[], number]> {
+        return await this.roomRolesRepository.findAndCount(
+            new QueryMapper(queryParams)
+        );
+    }
+
     public async findOne(id: number): Promise<RoomRolesEntity> {
         return await this.roomRolesRepository.findOne({
             where: { id: id }
