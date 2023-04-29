@@ -55,4 +55,8 @@ export class    RoomListComponent implements OnInit {
         });
     }
 
+    goToRoom(roomId: number, roomName: string): void {
+        console.log(`go to room id: ${roomId} with name: ${roomName}`);
+    }
+
 }

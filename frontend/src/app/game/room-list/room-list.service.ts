@@ -9,7 +9,9 @@ export interface    IRole {
 }
 
 export interface    IRoom {
+    id: number;
     roomName: string;
+    photoUrl: string;
 }
 
 export interface    IRoomRole {

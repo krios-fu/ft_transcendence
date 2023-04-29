@@ -11,20 +11,31 @@
     max-width: 600px;
     margin-top: 1rem;
     background-color: rgba($color: pink, $alpha: 0.7);
-    border: 3px solid indigo;
+    border: 3px solid magenta;
 }
 
-mat-list {
-    margin: 0;
-    padding: 0;
-}
-
-mat-list-item:hover {
-    background-color: indigo;
-    color: white;
+.mat-list-item {
+    color: indigo;
     cursor: pointer;
 }
 
-.mat-line {
+.mat-list-item:hover {
+    background-color: indigo;
+    color: magenta;
+}
+
+.mat-icon {
+    color: inherit;
+}
+
+.mat-subheader {
+    color: indigo;
+}
+
+.room-name-line {
     font-weight: bold;
+}
+
+.mat-divider {
+    color: magenta;
 }
