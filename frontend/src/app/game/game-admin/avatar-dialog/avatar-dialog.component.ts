@@ -27,8 +27,9 @@ export class AvatarDialogComponent implements OnInit {
 
   public selectNewAvatar($event: Event) {
     const target: HTMLInputElement = $event.target as HTMLInputElement;
-    
+
     this.avatar = (target.files as FileList)[0];
+    this.avatarUrl = (target.files as FileList)[0]['name'];
   }
 
   public uploadAvatar() {

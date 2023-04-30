@@ -44,7 +44,6 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         DialogNotification,
         FriendNotificationComponent,
         GameNotificationComponent
-
     ],
     providers: [{
         provide: HTTP_INTERCEPTORS,

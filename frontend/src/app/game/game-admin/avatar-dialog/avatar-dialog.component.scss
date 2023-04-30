@@ -1,9 +1,105 @@
-.file_upload {
-    display: none
-};
-#select_avatar_input {
-    padding: 20% 0%;
-};
-#modal_footer {
+@import url(https://fonts.cdnfonts.com/css/vcr-osd-mono);
+@import url(https://fonts.googleapis.com/css?family=Black+Ops+One);
+@import url(https://fonts.googleapis.com/css?family=Nothing+You+Could+Do);
+
+app-avatar-dialog, mat-dialog-container {
+    background-image: linear-gradient(to right top, #2a0041, #330049,
+        #3c0151, #450159, #4f0161, #5d016f, #6b017e, #79008d,
+        #8f00a8, #a500c4, #bb00e1, #d200ff);
     
+}
+
+.md {
+    margin: 0px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    background-image: linear-gradient(to top, #2a0041,
+        #330049, #3c0151, #450159,
+        #4f0161, #750066, #9a0068,
+        #bb0065, #ee3b52, #ff7735,
+        #ffb500, #fff400);
+    //background-image: linear-gradient(to right top, #2a0041, #330049, #3c0151, #450159, #4f0161, #5d016f, #6b017e, #79008d, #8f00a8, #a500c4, #bb00e1, #d200ff);
+}
+
+.md-body {
+    padding: 35px 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1 0 auto;
+}
+
+.md-body-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.md-avatar-url, .md-icon {
+    vertical-align: middle;
+    display: inline-block;
+    padding: 10px;
+}
+
+.md-avatar-url {
+    font-family: 'VCR OSD Mono', sans-serif;
+    color: white;
+}
+
+.md-footer {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.row {
+    padding: 35px 5px;
+}
+
+.md-title { 
+    position: relative;
+    width: 100%;
+    padding: 35px 25px;
+}
+
+.input-button {
+    display: none;
+}
+
+.text-neon {
+    position: absolute;
+    margin: 20px;
+    top: 0px;
+    left: 60px;
+    font-family: 'Black Ops One', cursive;
+    transform: rotate(-13deg);
+    font-size: 80px;
+    background: linear-gradient(#000000 0%,#113e87 22%,#10cccc 50%,
+        #000000 51%,#e21ddc 78%,#e21ddc 78%,
+        #ffffff 100%);
+    color: transparent;
+    -webkit-background-clip: text;
+            background-clip: text;
+    z-index: 1;
+}
+
+.text-chic {
+    position: absolute;
+    top: 10px;
+    left: 80px;
+    font-family: 'Nothing You Could Do', cursive;
+    font-size: 30px;
+    color: #f300ff;
+    text-shadow: #4b004f 3px 0;
+    z-index: 2;
+}
+
+button {
+    // colores
+    // tamanyos
 }

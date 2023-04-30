@@ -29,6 +29,7 @@ import { DeleteDialogComponent } from './game-admin/delete-dialog/delete-dialog.
 import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-admin-detail.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
+import { FilenamePipe } from '../common/pipes/filename.pipe';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { MatCardModule } from '@angular/material/card';
     PasswordDialogComponent,
     PrivateDialogComponent,
     DeleteDialogComponent,
-    GameAdminDetailComponent
+    GameAdminDetailComponent,
+    FilenamePipe
   ],
   imports: [
     ScrollingModule,

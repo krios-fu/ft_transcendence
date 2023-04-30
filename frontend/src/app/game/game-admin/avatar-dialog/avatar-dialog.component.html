@@ -1,13 +1,26 @@
-<h1>change avatar.</h1>
-<div mat-dialog-content>
-    <div id="select_avatar_input">
-        <input type="file" class="file_upload" (change)="selectNewAvatar($event)" #avatar_upload>
-        <button mat-raised-button color="primary" (click)="this.avatar_upload.click() ">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>Select avatar
-        </button> {{ this.avatar?.name || "No file selected" }}
+<div class="md">
+    <div class="row md-title">
+        <h2 class="text-chic">select an</h2>
+        <h1 class="text-neon">avatar</h1>
     </div>
-    <div id="modal_footer">
-        <span><button mat-raised-button [disabled]="!this.avatar" (click)="this.uploadAvatar()">Upload</button></span>
-        <span><button mat-raised-button (click)="this.closeModal()">Close</button></span>
+    <div class="row md-body">
+        <div class="md-body-content">
+            <input type="file" class="input-button" (change)="selectNewAvatar($event)" #avatar_upload>
+            <span class="md-avatar-url">{{avatarUrl | filename}}</span>
+            <span class="md-icon">
+                <button (click)="this.avatar_upload.click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                    </svg>
+                </button>
+            </span>
+        </div>
+    </div>
+    <div class="row md-footer">
+        <span><button mat-raised-button
+            (click)="this.closeModal()">Close</button></span>
+        <span><button mat-raised-button
+            (click)="this.uploadAvatar()">Post</button></span>
     </div>
 </div>

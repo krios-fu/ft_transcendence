@@ -66,6 +66,7 @@ export class GameAdminComponent implements OnInit {
     const dialogRef = this._dialog.open(AvatarDialogComponent, {
       data: { avatarUrl: this.avatarUrl, roomId: this.roomId },
       height: '500px',
+      width: '500px',
       autoFocus: true,
       disableClose: true
     });
@@ -78,7 +79,7 @@ export class GameAdminComponent implements OnInit {
   deleteRoomModal() {
     const dialogRef = this._dialog.open(DeleteDialogComponent, {
       data: { roomName: this.room?.roomName, roomId: this.roomId },
-      height: '500px', // ???
+      height: '500px',
       autoFocus: true,
       disableClose: true
     });
@@ -91,7 +92,7 @@ export class GameAdminComponent implements OnInit {
         roomId: this.roomId,
         roleId: this.privateRoleId
       },
-      // height: '500px',
+      height: '500px',
       autoFocus: true,
       disableClose: true
     });

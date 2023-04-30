@@ -6,9 +6,13 @@
 
 .modal-title {
     font-family: 'VCR OSD Mono', sans-serif;
-    font-size: 24px;
+    font-size: 18px;
+    width: minmax(auto, 250px);
 }
 
 .row {
     padding: 35px 5px;
+}
+.input-row {
+    justify-content: center;
 }
