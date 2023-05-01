@@ -41,49 +41,93 @@
 //     object-fit: cover;
 // }
 
-.main_container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
+// .main_container {
+//     width: 100%;
+//     height: 100%;
+//     display: flex;
+//     flex-direction: column;
+// }
 
-.room_container {
-    width: 100%;
+// .room_container {
+//     width: 100%;
+//     height: 100%;
+//     display: grid;
+//     grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
+//     overflow: hidden;
+// }
+
+// .room_container_btn, .room_container_info, .panel_container {
+//     border: 3px silver outset;
+//     border-radius: 20px;
+//     margin: 5px;
+//     // background: rgb(24,23,57);
+//     // background: linear-gradient(90deg, rgba(24,23,57,1) 0%, rgba(2,0,36,1) 100%); 
+//     background: black;
+// }
+
+// .room_container_btn {
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+// }
+
+// .room_container_info {
+//     display: flex;
+//     flex-direction: column;
+// }
+
+// .panel_container {
+///    width: 100%;
+//     height: 100%;
+// }
+
+// .avatar>img {
+//     width: minmax(auto, 80px);
+//     border: 5px solid silver;
+//     border-radius: 50%;
+//     height: auto;
+// }
+
+#admin-view-container {
+    // width: 100%;
+    // height: 100%;
     height: 100%;
+    width: auto;
+    background-color: black;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr);
-    overflow: hidden;
+    grid-template-rows: repeat(2, 1fr);
 }
 
-.room_container_btn, .room_container_info, .panel_container {
-    border: 3px silver outset;
-    border-radius: 20px;
-    margin: 5px;
-    // background: rgb(24,23,57);
-    // background: linear-gradient(90deg, rgba(24,23,57,1) 0%, rgba(2,0,36,1) 100%); 
-    background: black;
-}
-
-.room_container_btn {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.room_container_info {
-    display: flex;
-    flex-direction: column;
-}
-
-.panel_container {
-    width: 100%;
+.room-container {
+    // overflow: hidden;
     height: 100%;
+    width: 100%;
+    display: flex; // probablemente grid
+    flex-direction: row;
+    color: white; //tmp
 }
 
-.avatar>img {
-    width: minmax(auto, 80px);
-    border: 5px solid silver;
+.room-info {
+    width: 25%;
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.room-profile {
+    width: 50%;
+    flex: 2 0 auto;
+    margin: 0;
+    padding: 0;
+}
+
+.room-avatar {
+    border: 3px solid silver;
     border-radius: 50%;
-    height: auto;
+    // min-height: auto;
+    // max-height: 300px;
+    height: minmax(auto, 150px);
+    // height: 300px;
+    width: 40%;
 }

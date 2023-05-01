@@ -57,6 +57,10 @@ app-avatar-dialog, mat-dialog-container {
     flex-direction: row-reverse;
 }
 
+.md-footer>button {
+    margin: 5px;
+}
+
 .row {
     padding: 35px 5px;
 }
@@ -73,7 +77,9 @@ app-avatar-dialog, mat-dialog-container {
 
 .text-neon {
     position: absolute;
-    margin: 20px;
+    margin: 20px;.md-footer>button {
+        margin: 5px;
+    }
     top: 0px;
     left: 60px;
     font-family: 'Black Ops One', cursive;
@@ -97,6 +103,10 @@ app-avatar-dialog, mat-dialog-container {
     color: #f300ff;
     text-shadow: #4b004f 3px 0;
     z-index: 2;
+}
+
+.mat-dialog-container {
+    padding: 0px;
 }
 
 button {
