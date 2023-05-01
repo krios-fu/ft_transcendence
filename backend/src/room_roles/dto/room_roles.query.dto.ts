@@ -8,12 +8,12 @@ class RoomRolesQueryFilterDto extends BaseQueryFilterDto {
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
-    roomId?: string[];
+    roomId?: number[];
 
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
-    roleId?: string[];
+    roleId?: number[];
 }
 
 export class RoomRolesQueryDto extends BaseQueryDto {
