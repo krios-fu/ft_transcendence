@@ -5,7 +5,7 @@ import { RoomRolesService } from './room_roles.service';
 import { 
   Controller, 
   Get, 
-  Post, 
+  Post,
   Body, 
   Param, 
   Delete, 

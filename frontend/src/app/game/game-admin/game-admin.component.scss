@@ -107,27 +107,34 @@
     color: white; //tmp
 }
 
-.room-info {
+.room-info, .room-actions {
     width: 25%;
     flex: 1 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: end;
 }
+.room-info {
+    align-items: right;
+}
+.room-actions {
+    align-items: left;
+}
 
 .room-profile {
     width: 50%;
     flex: 2 0 auto;
-    margin: 0;
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+    // margin: 0;
+    // padding: 0;
 }
 
 .room-avatar {
-    border: 3px solid silver;
+    border: 7px solid white;
     border-radius: 50%;
-    // min-height: auto;
-    // max-height: 300px;
     height: minmax(auto, 150px);
-    // height: 300px;
     width: 40%;
 }
