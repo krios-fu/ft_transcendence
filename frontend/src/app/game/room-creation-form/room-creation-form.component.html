@@ -1,0 +1,51 @@
+<div id="main-container">
+    <div id="form-container">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <h2 id="form-title">Create Room</h2>
+            <mat-accordion>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Naming
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            Required
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Room Name</mat-label>
+                        <input matInput type="text" formControlName="roomName">
+                        <mat-error *ngIf="form.controls['roomName'].invalid">
+                            {{getNameErrorMessage()}}
+                        </mat-error>
+                    </mat-form-field>
+                </mat-expansion-panel>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Privacy
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            Optional
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Password</mat-label>
+                        <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="password">
+                        <button type="button" mat-icon-button matSuffix (click)="hidePass = !hidePass" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePass">
+                            <mat-icon style="color: black;">
+                                {{hidePass ? 'visibility_off' : 'visibility'}}
+                            </mat-icon>
+                        </button>
+                        <mat-error *ngIf="form.controls['password'].invalid">
+                            {{getPasswordErrorMessage()}}
+                        </mat-error>
+                    </mat-form-field>
+                </mat-expansion-panel>
+            </mat-accordion>
+            <button id="submit-button" mat-raised-button color="primary" type="submit" [disabled]="!form.valid">
+                Create
+            </button>
+        </form>
+    </div>
+</div>

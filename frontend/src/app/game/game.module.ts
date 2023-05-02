@@ -19,14 +19,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-// import { MatLabel } from '@angular/material/form-field';
+import { RoomCreationFormComponent } from './room-creation-form/room-creation-form.component';
+import { ReactiveFormsModule } from "@angular/forms";
+import { MatInputModule } from '@angular/material/input';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
     GameComponent,
     OnlineComponent,
     GameQueueComponent,
-    RoomGameIdComponent
+    RoomGameIdComponent,
+    RoomCreationFormComponent
   ],
   imports: [
     ScrollingModule,
@@ -42,8 +47,10 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     FormsModule,
     MatIconModule,
     MatMenuModule,
-    
-    // MatLabel
+    MatInputModule,
+    MatExpansionModule,
+    MatButtonModule,
+    ReactiveFormsModule,
   ],
   providers: [
     QueueService,

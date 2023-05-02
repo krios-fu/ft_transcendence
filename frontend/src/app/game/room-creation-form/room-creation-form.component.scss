@@ -1,0 +1,23 @@
+#main-container {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+}
+
+#form-container {
+    width: 80%;
+    max-width: 500px;
+    margin-top: 2rem;
+    padding: 0 1rem 1rem 1rem;
+    font-family: Roboto, sans-serif;
+    font-size: initial;
+    color: white;
+    border: 4px solid white;
+    border-radius: 25px;
+    background-color: rgba($color: indigo, $alpha: 0.7);
+}
+
+#submit-button {
+    margin-top: 2rem;
+}

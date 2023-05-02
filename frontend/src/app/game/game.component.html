@@ -5,7 +5,7 @@
     </div>
     <!-- <mat-divider></mat-divider> -->
     <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="warn" aria-label="primary">
-        <mat-tab label="PUBLIC {{ROOM_PUBLIC.length}}">
+        <mat-tab label="PUBLIC">
             <section>
                 <cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="5">
                     <mat-chip-list style="padding-top: 10px;" *ngFor="let room of ROOM_PUBLIC">
@@ -16,7 +16,7 @@
                 </cdk-virtual-scroll-viewport>
             </section>
         </mat-tab>
-        <mat-tab label="PRIVATE {{ROOM_PUBLIC.length}}">
+        <mat-tab label="PRIVATE">
             <div>
                 <cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="5">
                     <mat-chip-list style="padding-top: 10px;" *ngFor="let room of ROOM_PUBLIC">
@@ -29,7 +29,7 @@
         </mat-tab>
 
         <mat-tab label="NEW">
-
+            <app-room-creation-form></app-room-creation-form>
         </mat-tab>
         
     </mat-tab-group>
