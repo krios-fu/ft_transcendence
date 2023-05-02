@@ -115,8 +115,13 @@ export class    RoomListComponent implements OnInit {
         }]);
     }
 
-    private _registerToRoom(roomId: number, roomName: string): void {
-        this.roomListService.registerUserToRoom(roomId)
+    private _initRegistry(userId: string, roomId: number,
+                            roomName: string, password?: string): void {
+        this.roomListService.registerUserToRoom(
+            userId,
+            roomId,
+            password
+        )
         .subscribe({
             next: () => {
                 this._redirectToRoom(roomName);
@@ -134,11 +139,32 @@ export class    RoomListComponent implements OnInit {
         })
     }
 
+    private _registerToRoom(roomId: number, roomName: string): void {
+        const   userId: string | null = this.authService.getAuthId();
+    
+        if (userId === null)
+        {
+            console.error("Could not get the user id.");
+            return ;
+        }
+        if (this.roomPrivacy === 'private')
+        {
+            this.alertService.openPrivateRoomAccess(roomName)
+            .subscribe({
+                next: (pass: string) => {
+                    if (pass)
+                        this._initRegistry(userId, roomId, roomName, pass);
+                }
+            });
+        }
+        else
+            this._initRegistry(userId, roomId, roomName)
+    }
+
     goToRoom(roomId: number, roomName: string): void {
         this.roomListService.isUserRegisteredInRoom(roomId)
         .subscribe({
             next: (userInRoom: IUserRoom) => {
-                console.log("userInRoom: ", userInRoom);
                 if (userInRoom)
                 {
                     if (String(userInRoom.userId)

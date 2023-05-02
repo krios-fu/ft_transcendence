@@ -10,6 +10,8 @@ import {
   MatchNotificationComponent
 } from "./dialog/notification/match-notification/match-notification.component";
 import { GameInstructionsComponent } from "./dialog/info/game-instructions/game-instructions.component";
+import { RoomPasswordInputComponent } from "./dialog/input/room_password/room-password-input.component";
+import { Observable } from "rxjs";
 
 @Injectable({
     providedIn: 'root'
@@ -72,6 +74,17 @@ export class AlertServices{
         minWidth: '300px',
         maxWidth: '450px',
       });
+    }
+
+    openPrivateRoomAccess(roomName: string): Observable<any> {
+      const dialogRef: MatDialogRef<RoomPasswordInputComponent>
+                      = this._dialog.open(RoomPasswordInputComponent, {
+                        data: roomName
+                      });
+      
+      return (
+        dialogRef.afterClosed()
+      );
     }
 
 }

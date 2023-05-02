@@ -32,6 +32,9 @@ import { GameNotificationComponent } from './services/dialog/notification/game-n
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatchNotificationComponent } from './services/dialog/notification/match-notification/match-notification.component';
 import { GameInstructionsComponent } from './services/dialog/info/game-instructions/game-instructions.component';
+import { RoomPasswordInputComponent } from './services/dialog/input/room_password/room-password-input.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {
     reconnectionAttempts: 3
@@ -48,7 +51,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         FriendNotificationComponent,
         GameNotificationComponent,
         MatchNotificationComponent,
-        GameInstructionsComponent
+        GameInstructionsComponent,
+        RoomPasswordInputComponent
     ],
     providers: [{
         provide: HTTP_INTERCEPTORS,
@@ -76,14 +80,16 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         MatDialogModule,
         ScrollingModule,
         MatDividerModule,
-        MatProgressBarModule
-
+        MatProgressBarModule,
+        MatFormFieldModule,
+        MatInputModule
     ],
     entryComponents: [
         DialogNotification,
         FriendNotificationComponent,
         GameNotificationComponent,
-        MatchNotificationComponent
+        MatchNotificationComponent,
+        RoomPasswordInputComponent
       ]
 })
 export class AppModule {

@@ -132,14 +132,14 @@ export class    RoomListService {
         );
     }
 
-    registerUserToRoom(roomId: number,
+    registerUserToRoom(userId: string, roomId: number,
                         password?: string): Observable<IUserRoom> {
         return (
             this.httpService.post<IUserRoom>(
                 this._urlAuthority
                 + this._urlPathUserRoom,
                 {
-                    userId: this.authService.getAuthId(),
+                    userId: userId,
                     roomId: roomId,
                     password: password || undefined
                 }
