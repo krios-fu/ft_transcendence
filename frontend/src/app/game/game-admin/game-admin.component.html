@@ -64,7 +64,7 @@
     </div>
 </div> -->
 
-<div id="admin-view-container">
+<!-- <div id="admin-view-container">
     <div class="room-container">
         <div class="room-info">
             <div>Registered users: 4</div>
@@ -107,7 +107,85 @@
         </div>                
     </div>
     <div class="users-container">
+        <div class="users-container-list">
+            <mat-list>
+                <mat-list-item>Pepe</mat-list-item>
+                <mat-list-item>Paco</mat-list-item>
+                <mat-list-item>Bob</mat-list-item>
+            </mat-list>
+        </div>
+    </div>
+</div> -->
 
+
+<header class="room-header">room name</header>
+<div class="master">
+    <div class="info">
+        <div class="room-info">
+            <img class="room-avatar" src="https://www.rainforest-alliance.org/wp-content/uploads/2021/06/capybara-square-1.jpg.optimal.jpg"
+                alt="room avatar">
+            <div class="room-info-card">
+                <div class="room-info-header">room info</div>
+                <div class="room-info-content">
+                    <tr class="room-info-row">
+                        <span>owned by tal</span>
+                    </tr>
+                    <tr class="room-info-row">
+                        <span>(icon)</span>registered users
+                    </tr>
+                    <tr class="room-info-row">
+                        <span>(icon)</span>online users
+                    </tr>
+                    <tr class="room-info-row">
+                        <span>(icon)</span>matches hosted
+                    </tr>
+                </div>
+            </div>
+        </div>
+        <div class="room-actions">
+            <div class="room-actions-card">
+                <div class="room-actions-header">room actions</div>
+                <mat-form-field class="name-input">
+                    <mat-label>change name</mat-label>
+                    <input matInput placeholer="new room name">
+                </mat-form-field>
+                <div class="room-actions-row">
+                    <span>
+                        <button class="avatar-btn">O</button>
+                    </span>
+                    <span>change avatar</span>
+                </div>
+                <div class="room-actions-row">
+                    <span>
+                        <button class="visible-btn">O</button>
+                    </span>
+                    <span>change visibility</span>
+                </div>
+                <div class="room-actions-row">
+                    <span>
+                        <button class="delete-btn">O</button>
+                    </span>
+                    <span>destroy room</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="users">
+            <div class="user-list-card">
+            <div class="user-list-header">users in room</div>
+            <div class="user-list-content"></div>
+            <!-- <ng-container *ngFor="let user of this.registeredUsers">
+                <tr></tr>
+            </ng-container> -->
+            <table>
+                <tr>user 1</tr>
+                <tr>user 2</tr>
+                <tr>user 3</tr>
+            </table>
+        </div>
+        </div>
+        <div class="users-detail"></div>
+        <!-- this is a new outlet -->
     </div>
 </div>
-

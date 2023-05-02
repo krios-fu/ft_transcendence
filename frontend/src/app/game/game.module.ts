@@ -30,6 +30,7 @@ import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-ad
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { FilenamePipe } from '../common/pipes/filename.pipe';
+import { MatListModule } from '@angular/material/list';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import { FilenamePipe } from '../common/pipes/filename.pipe';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatCardModule
+    MatCardModule,
+    MatListModule
   ],
   providers: [
     SocketService,
