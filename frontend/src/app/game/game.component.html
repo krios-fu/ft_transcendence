@@ -5,13 +5,12 @@
     </div>
     <!-- <mat-divider></mat-divider> -->
     <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="warn" aria-label="primary">
-        <mat-tab label="PUBLIC {{ROOM_PUBLIC.length}}">
+        <mat-tab label="PUBLIC">
             <app-room-list roomPrivacy="public"></app-room-list>
         </mat-tab>
-        <mat-tab label="PRIVATE {{ROOM_PUBLIC.length}}">
+        <mat-tab label="PRIVATE">
             <app-room-list roomPrivacy="private"></app-room-list>
         </mat-tab>
-
         <mat-tab label="NEW">
             <app-room-creation-form></app-room-creation-form>
         </mat-tab>
