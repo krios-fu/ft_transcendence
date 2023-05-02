@@ -6,11 +6,15 @@ import {
 import {
     IRoom,
     IRoomRole,
+    IRoomUserCount,
+    IUserRoom,
     RoomListService,
     RoomRole
 } from './room-list.service';
 import { AlertServices } from 'src/app/services/alert.service';
 import { PageEvent } from '@angular/material/paginator';
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-room-list',
@@ -28,7 +32,9 @@ export class    RoomListComponent implements OnInit {
 
     constructor(
         private readonly roomListService: RoomListService,
-        private readonly alertService: AlertServices
+        private readonly authService: AuthService,
+        private readonly alertService: AlertServices,
+        private readonly router: Router
     ) {
         this.rooms = [];
         this.totalRooms = 0;
@@ -53,6 +59,7 @@ export class    RoomListComponent implements OnInit {
                 for (const roomRole of roomRoles)
                     this.rooms.push(roomRole.room);
                 this.totalRooms = totalRooms;
+                this.getRoomUserCount();
             },
             error: (err: any) => {
                 let errMsg: string;
@@ -67,13 +74,97 @@ export class    RoomListComponent implements OnInit {
         });
     }
 
+    /*
+    **  Not warning user if this method call fails, as the error does not
+    **  come from an action the user requested.
+    */
+    getRoomUserCount(): void {
+        this.roomListService.getRoomUserCount(
+            this.roomPrivacy,
+            this.pageSize,
+            this.pageSize * this.pageIndex
+        )
+        .subscribe({
+            next: ([roomUserCount, totalRooms]: [IRoomUserCount[], number]) => {
+                if (this.totalRooms != totalRooms)
+                {
+                    console.error("totalRooms not matching at getRoomUSerCount");
+                    return ;
+                }
+                for (const [id, room] of roomUserCount.entries())
+                {
+                    this.rooms[id].userCount = room.userCount;
+                }
+            },
+            error: (err: any) => {
+                console.error("getRoomUserCount failed: ", err);
+            }
+        })
+    }
+
     pageEventHandler(pageEvent: PageEvent): void {
         this.pageIndex = pageEvent.pageIndex;
         this.getRooms();
     }
 
+    private _redirectToRoom(roomName: string): void {
+        this.router.navigate(['/', {
+            outlets: {
+                game: ['room', roomName]
+            }
+        }]);
+    }
+
+    private _registerToRoom(roomId: number, roomName: string): void {
+        this.roomListService.registerUserToRoom(roomId)
+        .subscribe({
+            next: () => {
+                this._redirectToRoom(roomName);
+            },
+            error: (err: any) => {
+                let errMsg: string;
+            
+                if (err.error
+                        && err.error.message)
+                    errMsg = err.error.message;
+                else
+                    errMsg = "Room registry failed. Try again later.";
+                this.alertService.openSnackBar(errMsg, "OK");
+            }
+        })
+    }
+
     goToRoom(roomId: number, roomName: string): void {
-        console.log(`go to room id: ${roomId} with name: ${roomName}`);
+        this.roomListService.isUserRegisteredInRoom(roomId)
+        .subscribe({
+            next: (userInRoom: IUserRoom) => {
+                console.log("userInRoom: ", userInRoom);
+                if (userInRoom)
+                {
+                    if (String(userInRoom.userId)
+                            === this.authService.getAuthId())
+                        this._redirectToRoom(roomName);
+                    else
+                    {
+                        this.alertService.openSnackBar(
+                            "Could not redirect to room because of a credentials issue.", "OK"
+                        );
+                    }
+                }
+                else
+                    this._registerToRoom(roomId, roomName)
+            },
+            error: (err: any) => {
+                let errMsg: string;
+
+                if (err.error
+                        && err.error.message)
+                    errMsg = err.error.message;
+                else
+                    errMsg = "Could not redirect to room at this moment."
+                this.alertService.openSnackBar(errMsg, "OK");
+            }
+        })
     }
 
 }

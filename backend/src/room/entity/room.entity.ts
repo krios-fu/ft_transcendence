@@ -65,7 +65,7 @@ export class RoomEntity extends BaseEntity {
 
     @OneToMany(
         () => RoomRolesEntity,
-        (roomRole: RoomRolesEntity) => roomRole.roomId
+        (roomRole: RoomRolesEntity) => roomRole.room
     )
     roomRole: RoomRolesEntity[];
 }
