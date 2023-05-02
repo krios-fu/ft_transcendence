@@ -94,17 +94,16 @@ export class RoomService {
                 .where('roles.role = :role_name', { role_name: 'private' })
                 .getOne())
             ['id'];
+            const role: RoomRolesEntity = new RoomRolesEntity({
+                'roomId': roomId,
+                'roleId': privateRoleId,
+                'password': password
+            });
             await queryRunner.manager
                 .createQueryBuilder()
                 .insert()
                 .into(RoomRolesEntity)
-                .values([
-                    { 
-                        roomId: roomId, 
-                        roleId: privateRoleId, 
-                        password: password 
-                    }
-                ])
+                .values(role)
                 .execute();
         } catch(err) {
             await queryRunner.rollbackTransaction();
