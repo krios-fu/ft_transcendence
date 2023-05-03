@@ -38,7 +38,9 @@ export class RoomController {
     private readonly roomLogger: Logger;
 
     @Get()
-    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[]> {
+    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[] | [RoomEntity[], number]> {
+        if (queryParams.count)
+            return await this.roomService.findAndCountAllRooms(queryParams);
         return await this.roomService.findAllRooms(queryParams);
     }
 

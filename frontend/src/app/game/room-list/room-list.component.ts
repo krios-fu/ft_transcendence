@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import {
     IRoom,
-    IRoomRole,
     IRoomUserCount,
     IUserRoom,
     RoomListService,
@@ -55,9 +54,8 @@ export class    RoomListComponent implements OnInit {
             this.pageSize * this.pageIndex
         )
         .subscribe({
-            next: ([roomRoles, totalRooms]: [IRoomRole[], number]) => {
-                for (const roomRole of roomRoles)
-                    this.rooms.push(roomRole.room);
+            next: ([rooms, totalRooms]: [IRoom[], number]) => {
+                this.rooms = rooms;
                 this.totalRooms = totalRooms;
                 this.getRoomUserCount();
             },

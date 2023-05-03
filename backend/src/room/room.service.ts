@@ -14,6 +14,7 @@ import { DataSource, InsertResult, QueryRunner, SelectQueryBuilder } from "typeo
 import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 import { RolesEntity } from "src/roles/entity/roles.entity";
 import { RoomUserCountQueryDto } from "./dto/room-user-count.query.dto";
+import { RoomQueryMapper } from "./mappers/roomQuery.mapper";
 
 
 class RoomDto {
@@ -41,6 +42,13 @@ export class RoomService {
         return await this.roomRepository.find();
     }
 
+    public async findAndCountAllRooms(queryParams: RoomQueryDto): Promise<[RoomEntity[], number]> {
+        if (queryParams !== undefined) {
+            return await this.roomRepository.findAndCount(new RoomQueryMapper(queryParams))
+        }
+        return await this.roomRepository.findAndCount();
+    }
+
     public async findAllRoomsUserCount(queryParams: RoomUserCountQueryDto): Promise<[RoomEntity[], number]> {
         const   dbQuery: SelectQueryBuilder<RoomEntity> =
                         this.roomRepository.createQueryBuilder('room')
@@ -51,7 +59,12 @@ export class RoomService {
                         .select(['room.id']);
         
         if (queryParams.roleName)
-            dbQuery.where('role.role = :roleName', { roleName: queryParams.roleName });
+        {
+            if (queryParams.roleName === 'public')
+                dbQuery.where('role.role != :roleName OR role IS NULL', { roleName: 'private' });
+            else
+                dbQuery.where('role.role = :roleName', { roleName: queryParams.roleName });
+        }
         if (queryParams.order
                 && queryParams.order.length)
         {

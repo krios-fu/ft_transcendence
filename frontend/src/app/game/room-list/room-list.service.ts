@@ -4,26 +4,17 @@ import {
     Observable,
     catchError,
     retry,
-    switchMap,
     throwError
 } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 
 export type    RoomRole = "public" | "private";
 
-export interface    IRole {
-    id: number;
-}
-
 export interface    IRoom {
     id: number;
     roomName: string;
     photoUrl: string;
     userCount: number;
-}
-
-export interface    IRoomRole {
-    room: IRoom;
 }
 
 export interface    IRoomUserCount {
@@ -42,23 +33,23 @@ export class    RoomListService {
 
     // Store common urls in separate file to avoid duplication
     private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _urlPathRoomRoles: string = "/room_roles";
-    private readonly _urlPathRoles: string = "/roles";
-    private readonly _urlPathRoomUserCount: string = "/room/user_count";
-    private readonly _urlPathUserRoom: string = "/user_room"
+    private readonly _urlPathRoom: string = "/room";
+    private readonly _urlPathRoomUserCount: string =
+                            this._urlPathRoom + "/user_count";
+    private readonly _urlPathUserRoom: string = "/user_room";
 
     constructor(
         private readonly httpService: HttpClient,
         private readonly authService: AuthService
     ) {}
 
-    private _getRoomRoles(roleId: number, limit: number,
-                            offset: number): Observable<[IRoomRole[], number]> {
+    getRooms(roomRole: RoomRole, limit: number,
+                offset: number): Observable<[IRoom[], number]> {
         return (
-            this.httpService.get<[IRoomRole[], number]>(
+            this.httpService.get<[IRoom[], number]>(
                 this._urlAuthority
-                + this._urlPathRoomRoles
-                + `?filter[roleId]=${roleId}`
+                + this._urlPathRoom
+                + `?filter[roomRole]=${roomRole}`
                 + `&sort=roomId`
                 + `&limit=${limit}`
                 + `&offset=${offset}`
@@ -67,28 +58,6 @@ export class    RoomListService {
             .pipe(
                 retry(3),
                 catchError((err: any) => {
-                    return throwError(() => err);
-                })
-            )
-        );
-    }
-
-    getRooms(roomRole: RoomRole, limit: number,
-                offset: number): Observable<[IRoomRole[], number]> {
-        return (
-            this.httpService.get<IRole[]>(
-                this._urlAuthority
-                + this._urlPathRoles
-                + `?filter[role]=${roomRole}`
-            )
-            .pipe(
-                switchMap((roles: IRole[]) => {
-                    if (!roles
-                            || !roles.length)
-                        return ([]);
-                    return (this._getRoomRoles(roles[0].id, limit, offset));
-                }),
-                catchError((err) => {
                     return throwError(() => err);
                 })
             )
