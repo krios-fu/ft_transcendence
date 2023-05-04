@@ -147,98 +147,147 @@
 //     height: minmax(auto, 150px);
 //     width: 40%;
 // }
-@import url(https://fonts.googleapis.com/css?family=Mr+Dafoe);
+// @import url(https://fonts.googleapis.com/css?family=Mr+Dafoe);
 
-.room-header {
-    font-family: 'Mr Dafoe', cursive;
-    color: rgb(255, 57, 209);
-    font-size: 140px;
-    text-align: center;
-    text-shadow: -2px -2px rgb(255, 210, 245)
-}
+// .room-header {
+//     font-family: 'Mr Dafoe', cursive;
+//     color: rgb(255, 57, 209);
+//     font-size: 140px;
+//     text-align: center;
+//     text-shadow: -2px -2px rgb(255, 210, 245)
+// }
 
-.master {
-    height: 100%;
-    width: auto;
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-//    background-image: url(https://static.vecteezy.com/system/resources/previews/002/859/208/non_2x/seamless-pattern-90s-with-geometric-shape-free-vector.jpg);
-//    background-color: black;
-//    background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
-    color: white;
-    font-size: 24px;
-}
+// .master {
+//     height: 100%;
+//     width: auto;
+//     display: grid;
+//     grid-template-rows: repeat(2, 1fr);
+// //    background-image: url(https://static.vecteezy.com/system/resources/previews/002/859/208/non_2x/seamless-pattern-90s-with-geometric-shape-free-vector.jpg);
+// //    background-color: black;
+// //    background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
+//     color: white;
+//     font-size: 24px;
+// }
 
-.info {
-    display: flex;
-    flex-direction: row;
-    border-top: 5px inset silver;
-    border-bottom: 5px inset silver;
-    background: linear-gradient(90deg, 
-        rgba(222, 0, 174, 0.25) 0, 
-        rgba(12, 0, 81, 0.25) 100%);
-}
+// .info {
+//     display: flex;
+//     flex-direction: row;
+//     border-top: 5px inset silver;
+//     border-bottom: 5px inset silver;
+//     background: linear-gradient(90deg, 
+//         rgba(222, 0, 174, 0.25) 0, 
+//         rgba(12, 0, 81, 0.25) 100%);
+// }
 
-.room-info {
-    width: 50%;
-    display: flex;
-    flex: 1 0 auto;
-    flex-direction: column;
-    gap: 40px;
-    justify-content: center;
-    align-items: center;
-}
+// .room-info {
+//     width: 50%;
+//     display: flex;
+//     flex: 1 0 auto;
+//     flex-direction: column;
+//     gap: 40px;
+//     justify-content: center;
+//     align-items: center;
+// }
 
-.room-info-card {
-    padding: 25px;
-    border: 1px outset black;
-    background:rgba(222, 0, 174, 1);
-}
+// .room-info-card {
+//     padding: 25px;
+//     border: 1px outset black;
+//     background:rgba(222, 0, 174, 1);
+// }
 
-.room-info-header {
-    text-align: center;
-    padding: 5px;
-    border-bottom: 1px solid black;
-}
+// .room-info-header {
+//     text-align: center;
+//     padding: 5px;
+//     border-bottom: 1px solid black;
+// }
 
-.room-info-content { 
-    padding: 25px 0px;
-}
+// .room-info-content { 
+//     padding: 25px 0px;
+// }
 
-.room-info-row { 
-    padding: 0px 20px;
-}
+// .room-info-row { 
+//     padding: 0px 20px;
+// }
 
-.room-actions {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+// .room-actions {
+//     width: 50%;
+//     display: flex;
+//     flex-direction: column;
+//     justify-content: center;
+//     align-items: center;
+// }
 
-.room-actions-card { 
-    border: 2px outset white;
-    background-color:rgb(255, 57, 209);
-    padding: 100px 100px;
-}
+// .room-actions-card { 
+//     border: 2px outset white;
+//     background-color:rgb(255, 57, 209);
+//     padding: 100px 100px;
+// }
 
-.room-actions-header { }
+// .room-actions-header { }
 
-.room-actions-content { }
+// .room-actions-content { }
 
-.room-actions-row { }
+// .room-actions-row { }
 
-.room-avatar {
-    width: 40%;
-    border: 7px solid white;
-    border-radius: 50%;
-    height: minmax(auto, 150px);
-}
+// .room-avatar {
+//     width: 40%;
+//     border: 7px solid white;
+//     border-radius: 50%;
+//     height: minmax(auto, 150px);
+// }
 
-.container-btn {
-    padding: 20px;
-}
+// .container-btn {
+//     padding: 20px;
+// }
 // .container-btn>span {
 //     padding: 0px 5px;
 // }
+@import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
+
+#container-admin {
+    height: 100%;
+    width: auto;
+    background-color: #005ae1;
+    color: white;
+    font: 30px 'VCR OSD Mono', sans-serif;
+}
+
+.home-btn {
+    animation: test 5s 0s linear infinite;
+}
+
+@keyframes test {
+    0%, 100% {
+        top: 0px;
+        background-color: red;
+    }
+    10% { 
+        top: 5px;
+    }
+    25% { 
+        top: 10px; 
+    }
+    50% {
+        top: 15px;
+        background-color: white;
+    }
+    75% {
+        top: 20px;
+    }
+}
+
+.container-admin {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.admin-header {
+    display: flex;
+    flex-direction: row;
+}
+
+.admin-actions {
+    display: flex;
+}
