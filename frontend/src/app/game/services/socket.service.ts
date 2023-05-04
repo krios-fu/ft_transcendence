@@ -22,6 +22,7 @@ interface   SocketExceptionData {
 export class    SocketService {
 
     private _socket: SockIO.Socket;
+    private _connectAttempts: number;
     private _authAttempts: number;
     private _authenticating: boolean;
     private _failedEvents: SocketExceptionData[];
@@ -29,13 +30,14 @@ export class    SocketService {
     constructor(
         private readonly authService: AuthService
     ) {
-        this._socket = SockIO.io("ws://localhost:3001");
+        this._socket = SockIO.io("ws://localhost:3001", {
+            reconnectionAttempts: 3
+        });
         this._addConnectionEvents();
+        this._connectAttempts = 0;
         this._authAttempts = 0;
         this._authenticating = false;
         this._failedEvents = [];
-        //Authenticate through this event to register user in socket server
-        this.emit("authentication", this.authService.getAuthToken());
     }
 
     get socket(): SockIO.Socket {
@@ -43,19 +45,10 @@ export class    SocketService {
     }
 
     private _reconnect(): void {
+        if (this._connectAttempts >= 3)
+            return ;
+        ++this._connectAttempts;
         this._socket.connect();
-        //Authenticate through this event to register user in socket server
-        this.emit("authentication", this.authService.getAuthToken());
-    }
-
-    private _checkMaxAuthAttempts(): boolean {
-        if (this._authAttempts < 3)
-            return (false);
-        this._authAttempts = 0;
-        this._authenticating = false;
-        this._socket.disconnect();
-        this._reconnect();
-        return (true);
     }
 
     /*
@@ -66,8 +59,8 @@ export class    SocketService {
     **  the socket each time the token gets refreshed, as it would impact UX
     **  negatively.
     */
-    private _authenticateConnection(): void {
-        if (this._checkMaxAuthAttempts())
+    private _reAuthenticateConnection(): void {
+        if (this._authAttempts >= 3)
             return ;
         ++this._authAttempts;
         this.authService.directRefreshToken().subscribe(
@@ -87,8 +80,13 @@ export class    SocketService {
     }
 
     private _addConnectionEvents(): void {
+        this._socket.on("connect", () => {
+            this._connectAttempts = 0;
+            //Authenticate through this event to register user in socket server
+            this.emit("authentication", this.authService.getAuthToken());
+        });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
-            console.log("Exception: ", xcpt);
+            console.log("Websocket exception: ", xcpt);
             if (xcpt.cause != SocketException.Forbidden)
             {
                 if (xcpt.targetEvent != "authentication")
@@ -96,10 +94,10 @@ export class    SocketService {
                 if (this._authenticating)
                     return ;
                 this._authenticating = true;
-                this._authenticateConnection();
+                this._reAuthenticateConnection();
             }
         });
-        this.socket.on("authSuccess", () => {
+        this._socket.on("authSuccess", () => {
             this._authenticating = false;
             this._authAttempts = 0;
             this._emitFailedEvents();
