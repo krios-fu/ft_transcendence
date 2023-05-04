@@ -33,7 +33,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatchNotificationComponent } from './services/dialog/notification/match-notification/match-notification.component';
 import { GameInstructionsComponent } from './services/dialog/info/game-instructions/game-instructions.component';
 
-const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {} }
+const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {
+    reconnectionAttempts: 3
+} }
 
 @NgModule({
     declarations: [
