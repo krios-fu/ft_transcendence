@@ -244,16 +244,34 @@
 // }
 @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
 
+
+
 #container-admin {
+    position: relative;
     height: 100%;
     width: auto;
-    background-color: #005ae1;
+    background: #005ae1;
     color: white;
     font: 30px 'VCR OSD Mono', sans-serif;
 }
 
+#container-admin::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+    background: radial-gradient(rgba(0,0,0,0), rgba(0,0,0,0.3));
+}
+
 .home-btn {
     animation: test 5s 0s linear infinite;
+}
+
+.action-row:hover {
+    background-color: white;
+    color: #005ae1;
 }
 
 @keyframes test {
@@ -286,8 +304,23 @@
 .admin-header {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
+    padding: 40px 40px;
+}
+
+.admin-date {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
 }
 
 .admin-actions {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+}
+
+.admin-actions-header {
+    justify-content: center;
 }
