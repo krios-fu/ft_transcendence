@@ -30,6 +30,7 @@ export class GameAdminComponent implements OnInit {
     private _dialog: MatDialog
     ) {
       console.log('hola');
+      setInterval(() => this.currentDate = new Date(), 1000);
       this.roomId = this.roomId = this._route.snapshot.params['id'];
       this._http.get<RoleDto[]>(`http://localhost:3000/room_roles/rooms/${this.roomId}`)
         .subscribe({
@@ -61,6 +62,7 @@ export class GameAdminComponent implements OnInit {
   selectedUser?: UserDto;
 
   newRoomName: string | null = null;
+  currentDate: Date = new Date();
 
   openAvatarModal() {
     const dialogRef = this._dialog.open(AvatarDialogComponent, {
