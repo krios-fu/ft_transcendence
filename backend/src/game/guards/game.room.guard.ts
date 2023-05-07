@@ -81,11 +81,13 @@ export class    GameRoomGuard implements CanActivate {
         if (handlerName === "matchInviteResponse")
         {
             if (!data.roomId
-                    || typeof data.roomId != "string")
+                    || typeof data.roomId != "string"
+                    || Number.isNaN(Number(data.roomId)))
                 return (false);
             return (true); //There is a validation pipe afterwards
         }
-        if (typeof data != "string")
+        if (typeof data != "string"
+                || Number.isNaN(Number(data)))
             return (false);
         return (true);
     }
