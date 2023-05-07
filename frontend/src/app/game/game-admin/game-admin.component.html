@@ -189,21 +189,30 @@
     </div>
 </div> -->
 
-<div class="bg"></div>
-<div id="container-admin">
-    <div class="admin-header">
-        <div>PLACEHOLDER</div>
-        <div class="home-btn">HOME</div>    
-    </div>
-    <div class="admin-actions">
-        <table>
-            <thead class="admin-actions-header">-- ROOM ACTIONS --</thead>
-            <tr class="action-row">USER ACTIONS</tr>
-            <tr class="action-row">ROOM INFO</tr>
-            <tr class="action-row">CHANGE AVATAR</tr>
-            <tr class="action-row">CHANGE VISIBILITY</tr>
-            <tr class="action-row">DESTROY ROOM</tr>
-        </table>
-    </div>
-    <div class="admin-date">{{ currentDate | date: 'mediumTime' }}</div>
-</div> 
+<div id="bg">
+    <div id="anim">
+    <ng-container [ngSwitch]="test">
+        <app-avatar *ngSwitchCase="1"></app-avatar>
+        <app-delete-room *ngSwitchCase="2"></app-delete-room>
+        <app-password *ngSwitchCase="3"></app-password>
+        <app-visibility *ngSwitchCase="4"></app-visibility>
+        <div *ngSwitchDefault id="container-admin">
+           <div class="admin-header">
+               <div>{{ room?.roomName || "undefined" }}</div>
+               <div class="home-btn">HOME</div>    
+            </div>
+            <div class="admin-actions">
+                <table>
+                    <thead class="admin-actions-header">-- ROOM ACTIONS --</thead>
+                    <tr class="action-row">USER ACTIONS</tr>
+                    <tr class="action-row">ROOM INFO</tr>
+                    <tr class="action-row" (click)="showAvatarActions('bobo')">CHANGE AVATAR</tr>
+                    <tr class="action-row">CHANGE VISIBILITY</tr>
+                    <tr class="action-row">DESTROY ROOM</tr>
+                </table>
+            </div>
+            <div class="admin-date">{{ currentDate | date: 'mediumTime' }}</div>
+        </div> 
+    </ng-container>
+</div>
+</div>

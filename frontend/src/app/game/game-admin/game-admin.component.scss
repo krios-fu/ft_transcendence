@@ -244,48 +244,59 @@
 // }
 @import url('https://fonts.cdnfonts.com/css/vcr-osd-mono');
 
-
-
-#container-admin {
+#bg {
     position: relative;
     height: 100%;
     width: auto;
-    background: #005ae1;
+    background: #670051;
     color: white;
-    font: 30px 'VCR OSD Mono', sans-serif;
-}
+    font: 38px 'VCR OSD Mono', sans-serif;
+    z-index: 0;
 
-#container-admin::before {
+    &::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        content: "";
+        background: radial-gradient(rgba(0,0,0,0), rgba(0,0,0,0.3)); 
+    }
+}
+#anim {
     position: absolute;
     top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    content: "";
-    background: radial-gradient(rgba(0,0,0,0), rgba(0,0,0,0.3));
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    animation: scanlines 0.2s 0s linear infinite;
+    overflow: hidden;
+}
+#container-admin {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
 }
 .home-btn {
     animation: home 5s 0s linear infinite;
 }
 .action-row {
     position: relative;
-    z-index: 100;
-
-    &::before {
-        content: '-> ';
-    }
     &:hover {
         background-color: white;
         position: relative;
-        z-index: 100;
-        color: #005ae1;        
+        z-index: 2;
+        color: #670051;
     }
-}
-.container-admin {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
+    // &:hover::before {
+    //     content: '○';
+    // }
 }
 .admin-header {
     display: flex;
@@ -301,13 +312,16 @@
     padding: 40px;
 }
 .admin-actions {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 80%;
+    z-index: 2;
 }
 .admin-actions-header {
     justify-content: center;
+    padding: 0px 10px;
 }
 
 @keyframes home {
@@ -315,17 +329,26 @@
         top: 0px;
         background-color: red;
     }
-    10% { 
-        top: 5px;
-    }
-    25% { 
-        top: 10px; 
-    }
+    10% { top: 5px; }
+    25% { top: 10px; }
     50% {
         top: 15px;
         background-color: white;
     }
-    75% {
-        top: 20px;
-    }
+    75% { top: 20px; }
+}
+
+@keyframes scanlines {
+  0% {
+    background: linear-gradient(to bottom, 
+                                transparent 50%, 
+                                rgba(0, 0, 0, 0.2) 50%);
+    background-size: 100% 4px;
+  }
+  100% {
+    background: linear-gradient(to bottom, 
+                                rgba(0, 0, 0, 0.2) 50%,
+                                transparent 50%);
+	background-size: 100% 4px;
+  }
 }

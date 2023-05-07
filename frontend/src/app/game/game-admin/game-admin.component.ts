@@ -165,4 +165,11 @@ export class GameAdminComponent implements OnInit {
     //this.http.get<RoomRoleDto>()
   
   }
+
+  test: number = 7;
+  showAvatarActions(value: any) {
+    console.log(`Recibimos de user: ${value}`);
+    console.log('hola');
+   this.test = 1;
+  }
 }

@@ -1,0 +1,23 @@
+.avatar-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.avatar-actions-menu {
+    display: flex;
+    flex-direction: row;
+    border: 2px solid white;
+    border-radius: 2px;
+}
+.avatar-img {
+
+}
+.avatar-img>img {
+    position: relative;
+    z-index: -1;
+    height: 100%;
+    width: auto;
+    border: 5px solid white;
+    border-radius: 50%;
+}

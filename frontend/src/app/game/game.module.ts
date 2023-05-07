@@ -31,6 +31,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { FilenamePipe } from '../common/pipes/filename.pipe';
 import { MatListModule } from '@angular/material/list';
+import { AvatarComponent } from './game-admin/avatar/avatar.component';
+import { DeleteRoomComponent } from './game-admin/delete-room/delete-room.component';
+import { VisibilityComponent } from './game-admin/visibility/visibility.component';
+import { PasswordComponent } from './game-admin/password/password.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +48,11 @@ import { MatListModule } from '@angular/material/list';
     PrivateDialogComponent,
     DeleteDialogComponent,
     GameAdminDetailComponent,
-    FilenamePipe
+    FilenamePipe,
+    AvatarComponent,
+    DeleteRoomComponent,
+    VisibilityComponent,
+    PasswordComponent
   ],
   imports: [
     ScrollingModule,
