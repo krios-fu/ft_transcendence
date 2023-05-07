@@ -19,6 +19,7 @@ export interface    ICreateRoom {
 }
 
 export interface    IRoomData {
+    id: number;
     roomName: string;
 }
 

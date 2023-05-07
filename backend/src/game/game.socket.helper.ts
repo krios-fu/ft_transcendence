@@ -15,6 +15,18 @@ export class    SocketHelper {
         this._server = undefined;
     }
 
+    static roomIdToName(roomId: number): string {
+        return (String(roomId));
+    }
+
+    static roomNameToId(roomName: string): number | undefined {
+        const   roomId: number = Number(roomName);
+
+        if (Number.isNaN(roomId))
+            return (undefined);
+        return (roomId);
+    }
+
     static getUserRoomName(username: string): string {
         return (`${username}-User`);
     }

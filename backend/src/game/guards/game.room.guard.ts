@@ -26,26 +26,27 @@ export class    GameRoomGuard implements CanActivate {
         private readonly userRoomService: UserRoomService
     ) {}
 
-    private _checkClientInRoom(roomId: string, client: Socket): boolean {
-        if (!client.rooms.has(roomId)
-                && this.socketHelper.getClientRoomPlayer(client)[0] != roomId)
+    private _checkClientInRoom(roomId: number, client: Socket): boolean {
+        if (!client.rooms.has(SocketHelper.roomIdToName(roomId))
+                && this.socketHelper.getClientRoomPlayer(client)[0]
+                    != SocketHelper.roomIdToName(roomId))
             return (false);
         return (true);
     }
 
-    private async _checkRoomJoin(roomId: string,
+    private async _checkRoomJoin(roomId: number,
                                     username: string): Promise<boolean> {    
         try {
             const   userEntity: Promise<UserEntity> =
                             this.userService.findOneByUsername(username);
             const   roomEntity: Promise<RoomEntity> =
-                            this.roomService.findByName(roomId);
+                            this.roomService.findOne(roomId);
         
             if (!await userEntity
                     || !await roomEntity
                     || !await this.userRoomService.findUserRoomIds(
                                                         (await userEntity).id,
-                                                        (await roomEntity).id)
+                                                        roomId)
             )
                 return (false);
         } catch (err: any) {

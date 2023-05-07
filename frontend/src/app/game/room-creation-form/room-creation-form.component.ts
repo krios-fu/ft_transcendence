@@ -139,7 +139,7 @@ export class RoomCreationFormComponent implements OnInit {
             next: (roomData: IRoomData) => {
                 this.router.navigate(['/', {
                     outlets: {
-                        game: ['room', roomData.roomName]
+                        game: ['room', roomData.id]
                     }
                 }]);
             },
