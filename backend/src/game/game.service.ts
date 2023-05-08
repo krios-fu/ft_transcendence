@@ -19,6 +19,8 @@ import { WinnerService } from "src/match/winner/winner.service";
 import { LoserService } from "src/match/loser/loser.service";
 import { WinnerDto } from "src/match/winner/winner.dto";
 import { LoserDto } from "src/match/loser/loser.dto";
+import { RoomRolesService } from "src/room_roles/room_roles.service";
+import { SocketHelper } from "./game.socket.helper";
 
 interface   MatchData {
     gameId: string;
@@ -39,12 +41,21 @@ export class    GameService {
         private readonly winnerService: WinnerService,
         private readonly loserService: LoserService,
         private readonly achievementsService: GameAchievementsService,
-        private readonly datasource: DataSource
+        private readonly datasource: DataSource,
+        private readonly roomRolesService: RoomRolesService
     ) {}
 
-    private isOfficial(gameId: string): boolean {
-        // Pending ...
-        return (true);
+    private async isOfficial(gameId: string): Promise<boolean> {
+        const   roomId: number | undefined = SocketHelper.roomNameToId(gameId);
+    
+        if (roomId === undefined)
+            return (false);
+        return (
+            this.roomRolesService.isRole(
+                "official",
+                roomId
+            )
+        );
     }
 
     private async saveRankings(playerA: UserEntity, playerB: UserEntity,
@@ -208,7 +219,7 @@ export class    GameService {
         // Matches cancelled because of lag don't satisfy this condition
         if (gameResult.winnerScore === gameResult.loserScore)
             return ;
-        matchData.official = this.isOfficial(gameId);
+        matchData.official = await this.isOfficial(gameId);
         matchData.winner = this.getWinner(players.a, gameResult);
         retries = 0;
         while (retries < 3)
