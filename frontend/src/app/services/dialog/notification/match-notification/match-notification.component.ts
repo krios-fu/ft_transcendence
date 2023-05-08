@@ -9,6 +9,11 @@ interface IMatchInviteResponse {
     accept: boolean;
 }
 
+export interface    InviteData {
+    roomId: string;
+    roomName: string;
+}
+
 @Component({
     selector: 'app-match-notification',
     templateUrl: './match-notification.component.html',
@@ -21,7 +26,7 @@ export class    MatchNotificationComponent implements OnInit {
 
     constructor(
         private readonly dialogRef: MatDialogRef<MatchNotificationComponent>,
-        @Inject(MAT_DIALOG_DATA) public readonly roomId: string,
+        @Inject(MAT_DIALOG_DATA) public readonly inviteData: InviteData,
         private readonly gameSocketService: SocketService,
         private readonly router: Router
     ) {}
@@ -67,7 +72,7 @@ export class    MatchNotificationComponent implements OnInit {
 
     ngOnInit(): void {
         this.startTimer(10);
-        this.setActions(this.roomId);
+        this.setActions(this.inviteData.roomId);
     }
 
 }

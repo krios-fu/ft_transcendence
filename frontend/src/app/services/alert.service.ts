@@ -5,7 +5,10 @@ import { DialogNotification } from "./dialog/dialog.notification";
 import { FriendNotificationComponent } from "./dialog/notification/friend-notification/friend-notification.component";
 import { GameNotificationComponent } from "./dialog/notification/game-notification/game-notification.component";
 import { UserDto } from "../dtos/user.dto";
-import { MatchNotificationComponent } from "./dialog/notification/match-notification/match-notification.component";
+import {
+  InviteData,
+  MatchNotificationComponent
+} from "./dialog/notification/match-notification/match-notification.component";
 import { GameInstructionsComponent } from "./dialog/info/game-instructions/game-instructions.component";
 
 @Injectable({
@@ -52,11 +55,11 @@ export class AlertServices{
           }});
     }
 
-    openMatchInvite(roomId: string ) {
+    openMatchInvite(inviteData: InviteData) {
       this._dialog.open(MatchNotificationComponent,{
           minWidth: '300px',
           maxWidth: '450px',
-          data: roomId,
+          data: inviteData,
           position: {
             bottom: '20px',
             left: '20px'

@@ -10,11 +10,18 @@ import {
     OnEvent
 } from '@nestjs/event-emitter';
 import { GameDataService } from "./game.data.service";
+import { RoomService } from "src/room/room.service";
+import { RoomEntity } from "src/room/entity/room.entity";
 
 export interface    UserQueueUpdate {
     queued: boolean,
     roomId?: string;
     type?: GameType;
+}
+
+interface   InviteData {
+    roomId: string;
+    roomName: string;
 }
 
 @Injectable()
@@ -26,6 +33,7 @@ export class    GameMatchmakingService {
         private readonly queueService: GameQueueService,
         private readonly socketHelper: SocketHelper,
         private readonly gameDataService: GameDataService,
+        private readonly roomService: RoomService,
         private eventEmitter: EventEmitter2
     ) {
         this._pairingTimeouts = new Map<string, NodeJS.Timeout>;
@@ -192,7 +200,7 @@ export class    GameMatchmakingService {
         }
     }
 
-    private _sendInvites(gameId: string,
+    private _sendInvites(data: InviteData,
                             nextPlayers: Readonly<NextPlayerPair>): void {
         for (const nextPlayer of nextPlayers)
         {
@@ -203,7 +211,7 @@ export class    GameMatchmakingService {
                     nextPlayer.queueElement.user.username
                 ),
                 "matchInvite",
-                gameId
+                data
             );
         }
     }
@@ -223,6 +231,44 @@ export class    GameMatchmakingService {
                 );
             }
         }
+    }
+
+    private async _getInviteData(gameId: string)
+                                    : Promise<InviteData | undefined> {
+        let roomEntity: RoomEntity;
+    
+        for (let i = 0; i < 3; ++i)
+        {
+            try {
+                roomEntity = await this.roomService.findOne(
+                    SocketHelper.roomNameToId(gameId)
+                );
+                return (
+                    roomEntity
+                        ? {roomId: gameId, roomName: roomEntity.roomName}
+                        : undefined
+                );
+            } catch(err: any) {
+                console.error("Room query for match invites failed: ", err);
+            }
+        }
+        return ({roomId: gameId, roomName: gameId});
+    }
+
+    private async _pairPlayers(gameId: string,
+                                nextPlayers: Readonly<NextPlayerPair>)
+                                : Promise<void> {
+        const   inviteData: InviteData | undefined =
+                        await this._getInviteData(gameId);
+        
+        if (!inviteData)
+        { // Means the room no longer exists.
+            this.queueService.deleteGameQueues(gameId);
+            return ;
+        }
+        this._sendInvites(inviteData, nextPlayers);
+        this._setPairingTimeout(gameId);
+        await this._initInRoom(gameId, nextPlayers);
     }
 
     private _setPairingTimeout(gameId: string): void {
@@ -278,9 +324,7 @@ export class    GameMatchmakingService {
             }
             return ;
         }
-        this._setPairingTimeout(gameId);
-        this._sendInvites(gameId, nextPlayers);
-        await this._initInRoom(gameId, nextPlayers);
+        this._pairPlayers(gameId, nextPlayers);
     }
 
     private _removePairingTimeout(gameId: string): void {
