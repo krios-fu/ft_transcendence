@@ -135,12 +135,11 @@ export class    GameService {
                                 isOfficial: boolean, qR: QueryRunner)
                                 : Promise<void> {
         const   matchDto: MatchDto = new MatchDto;
-        let     matchEntity: MatchEntity;
     
         [ matchDto.winner, matchDto.loser ] =
             await this.createPlayerEntities(players, gameResult);
         matchDto.official = isOfficial;
-        await this.matchService.addMatch(matchDto);
+        await this.matchService.addMatch(matchDto, qR);
     }
 
     private getWinner(playerA: UserEntity, gameResult: IGameResult): number {
