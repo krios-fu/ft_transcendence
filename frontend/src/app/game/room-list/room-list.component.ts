@@ -105,16 +105,16 @@ export class    RoomListComponent implements OnInit {
         this.getRooms();
     }
 
-    private _redirectToRoom(roomName: string): void {
+    private _redirectToRoom(roomId: string): void {
         this.router.navigate(['/', {
             outlets: {
-                game: ['room', roomName]
+                game: ['room', roomId]
             }
         }]);
     }
 
-    private _initRegistry(userId: string, roomId: number,
-                            roomName: string, password?: string): void {
+    private _initRegistry(userId: string, roomId: string,
+                            password?: string): void {
         this.roomListService.registerUserToRoom(
             userId,
             roomId,
@@ -122,7 +122,7 @@ export class    RoomListComponent implements OnInit {
         )
         .subscribe({
             next: () => {
-                this._redirectToRoom(roomName);
+                this._redirectToRoom(roomId);
             },
             error: (err: any) => {
                 let errMsg: string;
@@ -137,7 +137,7 @@ export class    RoomListComponent implements OnInit {
         })
     }
 
-    private _registerToRoom(roomId: number, roomName: string): void {
+    private _registerToRoom(roomId: string, roomName: string): void {
         const   userId: string | null = this.authService.getAuthId();
     
         if (userId === null)
@@ -151,7 +151,7 @@ export class    RoomListComponent implements OnInit {
             .subscribe({
                 next: (pass: string) => {
                     if (pass)
-                        this._initRegistry(userId, roomId, roomName, pass);
+                        this._initRegistry(userId, roomId, pass);
                 }
             });
         }
@@ -159,7 +159,7 @@ export class    RoomListComponent implements OnInit {
             this._initRegistry(userId, roomId, roomName)
     }
 
-    goToRoom(roomId: number, roomName: string): void {
+    goToRoom(roomId: string, roomName: string): void {
         this.roomListService.isUserRegisteredInRoom(roomId)
         .subscribe({
             next: (userInRoom: IUserRoom) => {
@@ -167,7 +167,7 @@ export class    RoomListComponent implements OnInit {
                 {
                     if (String(userInRoom.userId)
                             === this.authService.getAuthId())
-                        this._redirectToRoom(roomName);
+                        this._redirectToRoom(roomId);
                     else
                     {
                         this.alertService.openSnackBar(

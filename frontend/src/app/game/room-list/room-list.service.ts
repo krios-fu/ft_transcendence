@@ -11,7 +11,7 @@ import { AuthService } from "src/app/services/auth.service";
 export type    RoomRole = "public" | "private";
 
 export interface    IRoom {
-    id: number;
+    id: string;
     roomName: string;
     photoUrl: string;
     userCount: number;
@@ -83,7 +83,7 @@ export class    RoomListService {
         );
     }
 
-    isUserRegisteredInRoom(roomId: number): Observable<IUserRoom> {
+    isUserRegisteredInRoom(roomId: string): Observable<IUserRoom> {
         return (
             this.httpService.get<IUserRoom>(
                 this._urlAuthority
@@ -101,7 +101,7 @@ export class    RoomListService {
         );
     }
 
-    registerUserToRoom(userId: string, roomId: number,
+    registerUserToRoom(userId: string, roomId: string,
                         password?: string): Observable<IUserRoom> {
         return (
             this.httpService.post<IUserRoom>(
