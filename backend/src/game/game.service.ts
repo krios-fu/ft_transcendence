@@ -144,13 +144,13 @@ export class    GameService {
 
     private async saveMatch(players: Players, gameResult: IGameResult,
                                 isOfficial: boolean, qR: QueryRunner)
-                                : Promise<void> {
+                                : Promise<MatchEntity> {
         const   matchDto: MatchDto = new MatchDto;
     
         [ matchDto.winner, matchDto.loser ] =
             await this.createPlayerEntities(players, gameResult);
         matchDto.official = isOfficial;
-        await this.matchService.addMatch(matchDto, qR);
+        return (await this.matchService.addMatch(matchDto, qR));
     }
 
     private getWinner(playerA: UserEntity, gameResult: IGameResult): number {
@@ -161,13 +161,14 @@ export class    GameService {
     private async startTransaction(data: MatchData,
                                     retries: number): Promise<boolean> {
         const   queryRunner: QueryRunner = this.datasource.createQueryRunner();
+        let     matchEntity: MatchEntity;
         let     result: boolean = true;
     
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            await this.saveMatch(data.players, data.result,
-                                    data.official, queryRunner);
+            matchEntity = await this.saveMatch(data.players, data.result,
+                                                data.official, queryRunner);
             if (data.official)
             {
                 await this.updatePlayerRankings(data.players, data.winner,
@@ -176,6 +177,7 @@ export class    GameService {
                 {
                     await this.achievementsService.updateAchievements(
                         player,
+                        matchEntity,
                         queryRunner
                     );
                 }
