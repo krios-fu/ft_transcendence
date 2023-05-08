@@ -204,7 +204,7 @@ export class    GameService {
         } as MatchData;
         let     retries: number;
 
-        // Matches cancelled because of lag don't satisfy this condition
+        // Matches cancelled because of lag satisfy this condition
         if (gameResult.winnerScore === gameResult.loserScore)
             return ;
         matchData.official = this.isOfficial(gameId);
