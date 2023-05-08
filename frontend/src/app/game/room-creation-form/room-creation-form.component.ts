@@ -12,8 +12,6 @@ import {
     IRoomData,
     RoomCreationFormService
 } from './room-creation-form.service';
-import { AuthService } from 'src/app/services/auth.service';
-import { UserDto } from 'src/app/dtos/user.dto';
 import { Router } from '@angular/router';
 import { AlertServices } from 'src/app/services/alert.service';
 
@@ -27,12 +25,8 @@ export class RoomCreationFormComponent implements OnInit {
     form: FormGroup;
     hidePass = true;
 
-    private _userId: number | undefined;
-    private _username: string;
-
     constructor(
         formBuilder: FormBuilder,
-        private readonly authService: AuthService,
         private readonly alertService: AlertServices,
         private readonly roomCreationFormService: RoomCreationFormService,
         private readonly router: Router
@@ -56,20 +50,10 @@ export class RoomCreationFormComponent implements OnInit {
                 ]
             ]
         });
-        this._userId = undefined;
-        this._username = "";
     }
 
-    ngOnInit(): void {
-        let username: string | null;
-    
+    ngOnInit(): void {    
         this.form.reset();
-        username = this.authService.getAuthUser();
-        if (username)
-        {
-            this._username = username;
-            this._getUserId();
-        }
     }
 
     getNameErrorMessage() {
@@ -104,18 +88,6 @@ export class RoomCreationFormComponent implements OnInit {
         );
     }
 
-    private _getUserId(): void {
-        this.roomCreationFormService.getUser(this._username)
-        .subscribe({
-            next: (user: UserDto[]) => {
-                this._userId = user[0].id;
-            },
-            error: (err: any) => {
-                console.error("Error getting userId at room creation service.", err);
-            }
-        });
-    }
-
     private _errorHandler(err: any): void {
         let errorMsg: string;
     
@@ -127,12 +99,9 @@ export class RoomCreationFormComponent implements OnInit {
         this.alertService.openSnackBar(errorMsg, "OK");
     }
 
-    private _postRoom(roomName: string, ownerId?: number,
-                        password?: string): void {
+    private _postRoom(roomName: string, password?: string): void {
         this.roomCreationFormService.postRoom(
-            this._username,
             roomName,
-            ownerId,
             password
         )
         .subscribe({
@@ -153,7 +122,6 @@ export class RoomCreationFormComponent implements OnInit {
     onSubmit() {
         this._postRoom(
             this.form.get("roomName")?.value,
-            this._userId,
             this.form.get("password")?.value
         );
     }
