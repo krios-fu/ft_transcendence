@@ -23,6 +23,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileTypeValidatorPipe } from "../common/validators/filetype-validator.class";
 import * as fs from 'fs';
 import { Express } from 'express';
+import { UserCreds } from "src/common/decorators/user-cred.decorator";
+import { UserCredsDto } from "src/common/dtos/user.creds.dto";
 
 @Controller('room')
 export class RoomController {
@@ -95,22 +97,27 @@ export class RoomController {
     }
 
     @Post()
-    public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
-        const { roomName, ownerId } = dto;
-        if (await this.userService.findOne(ownerId) === null) {
-            this.roomLogger.error(`No user with id ${ownerId} found in database`);
-            throw new BadRequestException('user not found in database');
-        }
+    public async createRoom(
+        @Body() dto: CreateRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<RoomEntity> {
+        const { roomName } = dto;
+        
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
             this.roomLogger.error(`room with name ${roomName} already in database`);
             throw new BadRequestException('room cannot contain duplicate name');
         }
-        return await this.roomService.createRoom(dto);
+        return await this.roomService.createRoom({ 'ownerId': userCreds.id, 'roomName': roomName });
     }
 
     @Post('private')
-    public async createPrivateRoom(@Body() dto: CreatePrivateRoomDto): Promise<RoomEntity> {
-        const { roomName, ownerId } = dto;
+    public async createPrivateRoom(
+        @Body() dto: CreatePrivateRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<RoomEntity> {
+        const { roomName, password } = dto;
+        const { id: ownerId } = userCreds;
+
         if (await this.userService.findOne(ownerId) === null) {
             this.roomLogger.error(`No user with id ${ownerId} found in database`);
             throw new BadRequestException('user not found in database');
@@ -119,7 +126,11 @@ export class RoomController {
             this.roomLogger.error(`Room with name ${roomName} already exists in database`);
             throw new BadRequestException('room cannot contain duplicate name');
         }
-        return await this.roomService.createPrivateRoom(dto);
+        return await this.roomService.createPrivateRoom({ 
+            'ownerId': ownerId,
+            'roomName': roomName,
+            'password': password
+        });
     }
 
 

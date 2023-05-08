@@ -21,7 +21,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         callback: (err: any, payload: any) => void,
     ): Promise<any> {
         const { username, name, profileUrl, emails, _json } = profile;
-        console.log("payload --->", _json.image.link);
         const userProfile: CreateUserDto = {
             username: username,
             firstName: name.givenName,

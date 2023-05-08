@@ -25,6 +25,7 @@ import { TokenCredentials } from './token-credentials.dto';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { TwoFactorAuthGuard } from './guard/twofactor-auth.guard';
 import { UserEntity } from '../user/entities/user.entity';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;
@@ -67,8 +68,10 @@ export class AuthController {
     }
 
     @Post('/2fa/generate')
-    public async generateNew2FASecret(@UserCreds() username: string): Promise<Object> {
+    public async generateNew2FASecret(@UserCreds() userCreds: UserCredsDto): Promise<Object> {
+        const { username } = userCreds;
         const user = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -79,10 +82,12 @@ export class AuthController {
     @Post('/2fa/confirm')
     public async confirm2FAForUser
     (
-        @UserCreds() username: string,
+        @UserCreds() userCreds: UserCredsDto,
         @Body() otpPayload: OtpPayload 
     ) {
+        const { username } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -95,11 +100,13 @@ export class AuthController {
     @Post('/2fa/validate')
     public async validate2FACode
         (
-            @UserCreds() username: string,
+            @UserCreds() userCreds: UserCredsDto,
             @Body() otpPayload: OtpPayload,
             @Res({ passthrough: true }) res: Response
         ): Promise<IAuthPayload> {
+        const { username } = userCreds;    
         const user = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();

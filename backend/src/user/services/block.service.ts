@@ -46,7 +46,7 @@ export class    BlockService {
         }
         const test = await this.blockRepository.remove(friendship.block);
         console.log(`testing: ${JSON.stringify(test)}`); /* remove this laterrrr */
-        return await this.friendshipService.unblockFriend(friendship.id);
+        await this.friendshipService.unblockFriend(friendship.id);
     }
 
     

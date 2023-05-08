@@ -102,6 +102,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
           this.authService.setAuthInfo({
             "accessToken": res.body.accessToken,
             "username": res.body.username,
+            "id": res.body.id
           });
 
           // const username: string = this.authService.getAuthUser() as string;

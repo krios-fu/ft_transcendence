@@ -7,11 +7,6 @@ export class CreateRoomDto {
     @IsNotEmpty()
     @Matches(/^\w+$/)
     roomName: string;
-
-    @IsNumber()
-    @Type(() => Number)
-    @IsNotEmpty()
-    ownerId: number; // bad
 }
 
 export class CreatePrivateRoomDto extends CreateRoomDto {
@@ -42,14 +37,4 @@ export class UpdateRoomOwnerDto {
 export class RoomMsgDto {
     @IsString() room: string;
     @IsString() message: string;
-}
-
-export class CreateRoomMessageDto {
-    @IsNumber()
-    @IsNotEmpty()
-    userRoomId: number;
-
-    @IsString()
-    @IsNotEmpty()
-    content: string;
 }
