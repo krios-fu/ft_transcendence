@@ -4,6 +4,7 @@ import { AchievementsService } from "src/achievements/achievements.service";
 import { AchievementEntity } from "src/achievements/entity/achievement.entity";
 import { AchievementsUserService } from "src/achievements_user/achievements_user.service";
 import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
+import { MatchEntity } from "src/match/match.entity";
 import { MatchService } from "src/match/match.service";
 import { UserEntity } from "src/user/entities/user.entity";
 import { QueryRunner } from "typeorm";
@@ -50,6 +51,7 @@ export class    GameAchievementsService {
     }
 
     async updateAchievements(userEntity: UserEntity,
+                                lastMatch: MatchEntity,
                                 qR: QueryRunner): Promise<void> {
         const   pendingAchievements =
                     await this._getPendingAchievements(userEntity.id);
@@ -57,6 +59,7 @@ export class    GameAchievementsService {
             username: userEntity.username
         });
 
+        matches.unshift(lastMatch);
         pendingAchievements.forEach(async (achievement) => {
             if (
                 this.achievementControlService.check(
