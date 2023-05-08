@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { AlertServices } from "src/app/services/alert.service";
 import { UserQueueData } from "../game-queue/game-queue.component";
 import { SocketService } from "./socket.service";
+import { InviteData } from "src/app/services/dialog/notification/match-notification/match-notification.component";
 
 @Injectable({
     providedIn: "root"
@@ -13,7 +14,7 @@ export class    QueueService {
     private _queueHero: Observable<number>;
     private _unqueue: Observable<void>;
     private _userQueue: Observable<UserQueueData>;
-    private _invite: Observable<string>;
+    private _invite: Observable<InviteData>;
     private _gameCancel: Observable<string>;
 
     constructor(
@@ -24,7 +25,7 @@ export class    QueueService {
         this._queueHero = this._setObservable<number>("queueHeroLength");
         this._unqueue = this._setObservable<void>("unqueue");
         this._userQueue = this._setObservable<UserQueueData>("userQueue");
-        this._invite = this._setObservable<string>("matchInvite");
+        this._invite = this._setObservable<InviteData>("matchInvite");
         this._gameCancel = this._setObservable<string>("gameCancel");
         this._setSubscriptions();
     }
@@ -35,8 +36,8 @@ export class    QueueService {
 
     private _setSubscriptions(): void {
         this._invite.subscribe({
-            next: (roomId: string) => {
-                this.alertService.openMatchInvite(roomId);
+            next: (inviteData: InviteData) => {
+                this.alertService.openMatchInvite(inviteData);
             },
             error: (err: any) => {
                 console.log(`Error in Match Invite Notification. ${err}`);

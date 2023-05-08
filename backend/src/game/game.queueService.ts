@@ -414,6 +414,10 @@ export class    GameQueueService {
         return (undefined);
     }
 
+    deleteGameQueues(gameId: string): void {
+        this._gameQueues.delete(gameId);
+    }
+
     private _reInsertToQueue(queue: IQueueElement[],
                                 player: IQueueElement): void {
         const   insertIndex: number = sortedIndexBy(queue, {

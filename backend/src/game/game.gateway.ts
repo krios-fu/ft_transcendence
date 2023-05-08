@@ -87,51 +87,53 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
-    @UsePipes(StringValidator)
+    @UsePipes(NumberValidator)
     @SubscribeMessage("joinRoom")
     async joinRoom(
         @ConnectedSocket() client: Socket,
-        @MessageBody() roomId: string
+        @MessageBody() roomId: number
     ) {
+        const   roomName: string = SocketHelper.roomIdToName(roomId);
         const   [initScene, initData]: [string,
                                         IMenuInit |
                                         IGameClientStart |
                                         IGameResultData |
                                         undefined] =
-                    this.updateService.getClientInitData(roomId);
+                    this.updateService.getClientInitData(roomName);
     
         this.roomService.join(
             client.data.username,
-            roomId
+            roomName
         );
-        this.matchMakingService.emitAllQueuesLength(roomId, client.id);
+        this.matchMakingService.emitAllQueuesLength(roomName, client.id);
         if (initScene && initData)
             client.emit(initScene, initData);
         await this.matchMakingService.updateNextPlayerRoom(
             client.data.username,
-            roomId,
+            roomName,
             true
         );
-        console.log(`${client.data.username} joined Game room ${roomId}`);
+        console.log(`${client.data.username} joined Game room ${roomName}`);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
-    @UsePipes(StringValidator)
+    @UsePipes(NumberValidator)
     @SubscribeMessage("leaveRoom")
     async leaveRoom(
         @ConnectedSocket() client: Socket,
-        @MessageBody() roomId: string
-    ) {    
+        @MessageBody() roomId: number
+    ) {
+        const   roomName: string = SocketHelper.roomIdToName(roomId);
         this.roomService.leave(
             client.data.username,
-            roomId
+            roomName
         );
         await this.matchMakingService.updateNextPlayerRoom(
             client.data.username,
-            roomId,
+            roomName,
             false
         );
-        console.log(`${client.data.username} left Game room ${roomId}`);
+        console.log(`${client.data.username} left Game room ${roomName}`);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
