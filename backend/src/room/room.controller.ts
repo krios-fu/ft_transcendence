@@ -25,6 +25,7 @@ import * as fs from 'fs';
 import { Express } from 'express';
 import { UserCreds } from "src/common/decorators/user-cred.decorator";
 import { UserCredsDto } from "src/common/dtos/user.creds.dto";
+import { RoomUserCountQueryDto } from "./dto/room-user-count.query.dto";
 
 @Controller('room')
 export class RoomController {
@@ -37,8 +38,15 @@ export class RoomController {
     private readonly roomLogger: Logger;
 
     @Get()
-    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[]> {
+    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[] | [RoomEntity[], number]> {
+        if (queryParams.count)
+            return await this.roomService.findAndCountAllRooms(queryParams);
         return await this.roomService.findAllRooms(queryParams);
+    }
+
+    @Get('user_count')
+    public async findRoomUserCount(@Query() queryParams: RoomUserCountQueryDto): Promise<[RoomEntity[], number]> {
+        return await this.roomService.findAllRoomsUserCount(queryParams);
     }
 
     @Get(':room_id([0-9]+)')

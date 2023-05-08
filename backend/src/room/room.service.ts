@@ -10,9 +10,11 @@ import * as fs from 'fs';
 import { UserService } from "src/user/services/user.service";
 import {UserRoomEntity} from "../user_room/entity/user_room.entity";
 import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
-import { DataSource, InsertResult, QueryRunner } from "typeorm";
+import { DataSource, InsertResult, QueryRunner, SelectQueryBuilder } from "typeorm";
 import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
 import { RolesEntity } from "src/roles/entity/roles.entity";
+import { RoomUserCountQueryDto } from "./dto/room-user-count.query.dto";
+import { RoomQueryMapper } from "./mappers/roomQuery.mapper";
 
 
 class RoomDto {
@@ -38,6 +40,44 @@ export class RoomService {
             return await this.roomRepository.find(new QueryMapper(queryParams));
         }
         return await this.roomRepository.find();
+    }
+
+    public async findAndCountAllRooms(queryParams: RoomQueryDto): Promise<[RoomEntity[], number]> {
+        if (queryParams !== undefined) {
+            return await this.roomRepository.findAndCount(new RoomQueryMapper(queryParams))
+        }
+        return await this.roomRepository.findAndCount();
+    }
+
+    public async findAllRoomsUserCount(queryParams: RoomUserCountQueryDto): Promise<[RoomEntity[], number]> {
+        const   dbQuery: SelectQueryBuilder<RoomEntity> =
+                        this.roomRepository.createQueryBuilder('room')
+                        .leftJoin('room.userRoom', 'userRoom')
+                        .leftJoin('room.roomRole', 'roomRole')
+                        .leftJoin('roomRole.role', 'role')
+                        .loadRelationCountAndMap('room.userCount', 'room.userRoom')
+                        .select(['room.id']);
+        
+        if (queryParams.roleName)
+        {
+            if (queryParams.roleName === 'public')
+                dbQuery.where('role.role != :roleName OR role IS NULL', { roleName: 'private' });
+            else
+                dbQuery.where('role.role = :roleName', { roleName: queryParams.roleName });
+        }
+        if (queryParams.order
+                && queryParams.order.length)
+        {
+            for (const orderVal of queryParams.order)
+            {
+                dbQuery.orderBy('room.' + orderVal);
+            }
+        }
+        if (queryParams.limit)
+            dbQuery.limit(queryParams.limit);
+        if (queryParams.offset)
+            dbQuery.offset(queryParams.offset);
+        return (await dbQuery.getManyAndCount());
     }
 
     public async findOne(roomId: number): Promise<RoomEntity> {

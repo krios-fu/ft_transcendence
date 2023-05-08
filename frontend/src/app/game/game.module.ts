@@ -24,6 +24,10 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
+import { RoomListComponent } from './room-list/room-list.component';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
+// import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -31,7 +35,8 @@ import { MatButtonModule } from '@angular/material/button';
     OnlineComponent,
     GameQueueComponent,
     RoomGameIdComponent,
-    RoomCreationFormComponent
+    RoomCreationFormComponent,
+    RoomListComponent
   ],
   imports: [
     ScrollingModule,
@@ -51,6 +56,9 @@ import { MatButtonModule } from '@angular/material/button';
     MatExpansionModule,
     MatButtonModule,
     ReactiveFormsModule,
+    MatListModule,
+    MatPaginatorModule
+    // MatLabel
   ],
   providers: [
     QueueService,
