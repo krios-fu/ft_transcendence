@@ -144,18 +144,10 @@ export class AuthService {
 
     public async generateNew2FASecret(username: string, id: number): Promise<Object> {
         const userSecret = authenticator.generateSecret();
-        this.userService.updateUser(id, { 
-            /*doubleAuth: true,*/
+        this.userService.updateUser(id, {
             doubleAuthSecret: userSecret 
         });
-        const keyuri = authenticator.keyuri(username, 'ft_transcendence', userSecret);
-        /* 
-        **  For testing purposes:
-        **      print generated QR code in terminal
-        **/
-         const qr_img = await QRCode.toString(keyuri, { type: 'terminal' })
-         console.log(`QR generated: \n${qr_img}`);
-        /**/
+        const keyuri: string = authenticator.keyuri(username, 'ft_transcendence', userSecret);
         return { qr: await QRCode.toDataURL(keyuri) };
     }
 
