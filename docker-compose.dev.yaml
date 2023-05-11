@@ -9,3 +9,14 @@ services:
       - ./backend/:/usr/src/app
     entrypoint: ["npm", "run", "start:dev"]
     restart: unless-stopped
+
+  frontend:
+    build:
+      target: dev
+    ports:
+      - 4200:4200
+    volumes:
+      - ./frontend/:/usr/src/
+    entrypoint: ["npm", "run", "start"]
+#    entrypoint: sleep infinity
+    restart: unless-stopped
