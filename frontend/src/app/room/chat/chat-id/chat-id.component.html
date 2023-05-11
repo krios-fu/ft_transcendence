@@ -1,4 +1,4 @@
-<div [ngClass]="state" *ngIf="user && me" >
+<div class="chat" *ngIf="user && me" >
     <div class="chat-title">
 
         <div
@@ -23,9 +23,9 @@
                 <mat-icon>{{unfold}}</mat-icon>
             </button>
 
-            <button mat-icon-button routerLink="../">
+            <!-- <button mat-icon-button (click)="close()">
                 <mat-icon>close</mat-icon>
-            </button>
+            </button> -->
             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
                 <mat-icon>more_vert</mat-icon>
             </button>
@@ -35,7 +35,7 @@
                     <mat-icon>videogame_asset</mat-icon>
                     <span>Game</span>
                 </button>
-                <button mat-menu-item [routerLink]="['/home/profile/', user.username]">
+                <button mat-menu-item [routerLink]="['/profile', user.username]">
                     <mat-icon>person</mat-icon>
                     <span>Profile</span>
                 </button>
@@ -58,9 +58,8 @@
             </div>
             <ng-template #other>
                 <div class="message">
-                    <figure class="avatar">
-                        <img src={{user.photoUrl}}>
-                    </figure> {{msg.content}}
+                        <img class="avatar" src={{user.photoUrl}}>
+                    {{msg.content}}
                 </div>
             </ng-template>
         </div>

@@ -18,13 +18,14 @@ a {
 
 [aria-label=primary] {
 
-  background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
+  // background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
 // test
   // background: linear-gradient(90deg, rgba(3, 9, 73, 0.319) 0, rgba(61, 56, 85, 0.25) 100%);
 
-  border: 3px outset rgba(255, 255, 255, 0.499);
-  font-family: 'Super Mario World Text Box', sans-serif;
-  border-radius: 22px;
+  // border: 3px outset rgba(255, 255, 255, 0.499);
+  // font-family: 'Super Mario World Text Box', sans-serif;
+  font-size: 25px;
+  // border-radius: 22px;
 
 }
 
@@ -50,8 +51,8 @@ a {
   position: relative;
 
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -68,11 +69,11 @@ a {
 .avatar_online {
   position: relative;
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   overflow: hidden;
   margin: 0;
-  padding: 0;
+  // padding: 25;
   border: 3px solid rgba(255, 255, 255, 0.24);
   background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
   animation: spin 2.5s linear infinite;
@@ -95,9 +96,9 @@ a {
 }
 
 .tag {
-  padding-left: 0;
+  padding: 15px;
   border-radius: 22px;
-  height: 50px;
+  height: 70px;
   box-shadow: 10px rgb(255, 255, 255);
 
   // background: linear-gradient(90deg, rgba(222, 0, 89, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);

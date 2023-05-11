@@ -18,9 +18,10 @@
 
 
 .icon-display {
-  transform: scale(1) translateX(42px);
+  // transform: scale(1) translateX(42px);
   color: greenyellow;
   box-shadow: inset 4px;
+  font-size: 25px;
 }
 
 .badge {
@@ -38,8 +39,8 @@
     position: relative;
     left: 5px;
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     overflow: hidden;
     margin: 0;
     padding: 0;

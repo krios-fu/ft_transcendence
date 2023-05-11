@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Chat } from '../chat';
 import { FormControl, FormGroup } from '@angular/forms'; //
@@ -8,6 +8,7 @@ import { IUser, UsersService } from 'src/app/services/users.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { AlertServices } from 'src/app/services/alert.service';
+import { Location } from '@angular/common';
 
 
 interface chat_user {
@@ -21,7 +22,7 @@ interface chat_user {
   templateUrl: './chat-id.component.html',
   styleUrls: ['./chat-id.component.scss'],
 })
-export class ChatIdComponent implements OnInit {
+export class ChatIdComponent implements OnInit, OnDestroy {
 
   state = {
     'chat': false,
@@ -53,6 +54,7 @@ export class ChatIdComponent implements OnInit {
     private socketGameNotification: SocketNotificationService,
     private userService: UsersService,
     private alertService: AlertServices,
+    private router: Router
 
 
   ) {
@@ -130,5 +132,23 @@ export class ChatIdComponent implements OnInit {
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
 
+  }
+
+  ngOnDestroy(): void {
+      
+  }
+  close(){
+    const currentUrl = this.router.url;
+
+    // eliminar el segmento de outlet de chat
+    const urlParts = currentUrl.split('(').filter(part => !part.startsWith('chat:'));
+
+    // reconstruir la nueva ruta sin el outlet de chat
+    const newUrl = urlParts.join('(');
+
+    // navegar hacia la nueva ruta sin el outlet de chat
+    console.log(currentUrl)
+    console.log(newUrl)
+    this.router.navigateByUrl(newUrl);
   }
 }

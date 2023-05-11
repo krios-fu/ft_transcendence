@@ -1,0 +1,59 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	.title {
+	  color: white;
+	}
+	.form-container {
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-around;
+	  margin-top: 30px;
+	  width: 50%;
+	  .input-field {
+		margin: 0px;
+		padding: 8px 20px 5px 15px;
+		height: 40px;
+		width: 90%;
+		background-color: rgba(30, 30, 30, 0.5);
+		color: #c7c7c7;
+		border: none;
+		font-size: 16px;
+	  }
+	  .send-button {
+		border: none;
+		background-color: transparent;
+		color: white;
+		font-size: 24px;
+		cursor: pointer;
+		&:focus {
+		  outline: none;
+		}
+	  }
+	}
+	.form-group:focus-within .submit-button,
+	.form-group.has-value .submit-button {
+	  display: block;
+	}
+  }
+
+  h1 {
+	color: white;
+	text-align: center;
+	animation: jump 1s ease-in-out infinite;
+  }
+  
+  @keyframes jump {
+	0% {
+	  transform: translateY(0);
+	}
+	50% {
+	  transform: translateY(-20px);
+	}
+	100% {
+	  transform: translateY(0);
+	}
+  }

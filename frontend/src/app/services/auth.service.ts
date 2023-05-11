@@ -29,6 +29,7 @@ export class AuthService {
             }
         );
 
+        console.log('AUTH', auth$)
         return auth$;
     }
 
@@ -67,11 +68,11 @@ export class AuthService {
     }
 
     redirectHome(): void {
-        this.router.navigate(['/home/profile']);
+        this.router.navigate(['/profile/me']);
     }
 
     redirecOtpSesion(): void {
-        this.router.navigate(['/otp_session']);
+        this.router.navigate(['/login/2fa']);
     }
 
     redirectLogin(): void {

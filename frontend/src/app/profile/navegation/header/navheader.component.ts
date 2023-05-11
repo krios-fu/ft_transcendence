@@ -42,7 +42,7 @@ export class NavHeaderComponent implements OnInit {
        this.gameNotification.joinRoomNotification(this.user.username);
 
         this.color_icon = (this.user.defaultOffline) ? '#49ff01' : '#ff0000';
-        this.online_icon = (this.user.defaultOffline) ? 'sentiment_very_satisfied' : 'sentiment_very_dissatisfied';
+        this.online_icon = (this.user.defaultOffline) ? 'online_prediction' : 'online_prediction';
       })
 
  

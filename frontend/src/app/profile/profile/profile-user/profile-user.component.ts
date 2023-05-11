@@ -101,6 +101,11 @@ export class ProfileUserComponent implements OnInit {
       // this.formMessage.patchValue({ id });
       this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
+          if (user.length === 0)
+          {
+            this.alertService.openSnackBar('User not foud', 'OK')
+            this.authService.redirectHome()
+          }
           this.user = user[0];
           this.icon_activate = true;
 

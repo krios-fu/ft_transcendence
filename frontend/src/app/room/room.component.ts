@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { UserDto } from '../dtos/user.dto';
 import { RoomDto } from '../dtos/room.dto';
 import { UsersService } from '../services/users.service';
-import { ChatIdComponent } from './chat/chat-id/chat-id.component';
 
 
 interface chat_user {

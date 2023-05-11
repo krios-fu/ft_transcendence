@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HomeComponent } from './home.component';
+import { ProfileComponent} from './profile.component';
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { Router } from "@angular/router";
-import { HomeRoutingModule } from "./home-routing.module";
+import { ProfileRoutingModule } from "./profile-routing.module";
 import { MatIconModule } from "@angular/material/icon";
 import { MatBadgeModule } from "@angular/material/badge";
 import { MatButtonModule } from "@angular/material/button";
@@ -28,12 +28,14 @@ import { SocketNotificationService } from '../services/socket-notification.servi
 
 @NgModule({
     declarations: [
-        HomeComponent,
         NavHeaderComponent,
-        RoomComponent,
+        // RoomComponent,
         SettingComponent,
         FriendOnlineComponent,
         ProfileUserComponent,
+        ProfileComponent,
+        RoomComponent
+
         // DialogNotification
     ],
     exports: [
@@ -49,7 +51,7 @@ import { SocketNotificationService } from '../services/socket-notification.servi
         CommonModule,
         ReactiveFormsModule,
         MatExpansionModule,
-        HomeRoutingModule,
+        ProfileRoutingModule,
         MatIconModule,
         MatBadgeModule,
         MatChipsModule,
@@ -68,7 +70,7 @@ import { SocketNotificationService } from '../services/socket-notification.servi
     //     DialogNotification
     //   ]
 })
-export class HomeModule {
+export class ProfileModule {
     constructor(router: Router) {
     }
 }
