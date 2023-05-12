@@ -18,5 +18,4 @@ services:
     volumes:
       - ./frontend/:/usr/src/
     entrypoint: ["npm", "run", "start"]
-#    entrypoint: sleep infinity
     restart: unless-stopped

@@ -14,5 +14,5 @@ services:
     ports:
       - 80:80
       - 443:443
-    entrypoint: ["nginx", "-g 'daemon off;"]
+    entrypoint: ["nginx", "-g", "daemon off;"]
     restart: always

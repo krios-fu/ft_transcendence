@@ -58,7 +58,7 @@ services:
       - frontend_node_modules:/usr/src/node_modules
     depends_on:
       - backend
-    working_dir: /usr/src/
+    working_dir: /usr/src/app
 
 
 networks:
@@ -68,6 +68,6 @@ networks:
 volumes:
   dbdata: {}
   pgadmindata: {}
-  backend_node_modules: {} # tmp definition
+  backend_node_modules: {}
   frontend_node_modules: {}
 

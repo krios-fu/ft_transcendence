@@ -3,7 +3,7 @@
 # --------------------- #
 
 FROM node:18-alpine as dev
-WORKDIR /usr/src/app
+WORKDIR /usr/src/
 COPY package*.json ./
 RUN npm install
 COPY . .
@@ -19,19 +19,19 @@ CMD ["npm", "run", "start"]
 
 # ~ BUILD STAGE ~
 FROM node:18-alpine as build
-WORKDIR /usr/src/app
+WORKDIR /usr/src/
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN ["npm", "build"]
+RUN ["npm", "run", "build"]
 
 # ~ PROD STAGE ~
-FROM nginx:1.23-alpine
-COPY --from=build /usr/src/app/dist /var/www/html/
-COPY ./conf/nginx.conf /etc/nginx/
-COPY ./conf/ssl /etc/ssl
+FROM nginx:1.23-alpine as prod
+COPY --from=build /usr/src/dist/web /var/www/app
+COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/ssl/* /etc/ssl/
 
 EXPOSE 80
 EXPOSE 443
 
-CMD ["nginx", "-g 'daemon off;"]
+CMD ["nginx", "-g", "daemon off;"]
