@@ -34,6 +34,7 @@ export class RoomGameIdComponent implements OnInit {
     user?: UserDto;
     room_id?: string;
     room_dto? : RoomDto;
+    close = false;
     public formMessage = new FormGroup({
         message: new FormControl('')
       })
@@ -127,6 +128,11 @@ export class RoomGameIdComponent implements OnInit {
 
     leaveRoom(){
         this.gameServiceNoti.roomLeave(this.room_id, this.me);
+    }
+
+    open_chat(){
+        this.close = !this.close;
+        console.log(this.close);
     }
 
 }

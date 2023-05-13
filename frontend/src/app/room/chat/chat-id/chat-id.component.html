@@ -11,13 +11,6 @@
 
 
         <div class="icon" style=" display: flex; color : #ffffff; align-items: center; align-content: center;">
-            <!-- <button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()">
-                <mat-icon>{{unfold}}</mat-icon>
-            </button> -->
-
-            <!-- <button mat-icon-button (click)="close()">
-                <mat-icon>close</mat-icon>
-            </button> -->
             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
                 <mat-icon>more_vert</mat-icon>
             </button>
@@ -47,7 +40,7 @@
 
     <div class="messages">
         <div *ngFor="let msg of messages">
-            <div readonly *ngIf="msg.sender == this.me.id; else other" class="message message-personal new">
+            <div readonly *ngIf="msg.sender === this.me.id; else other" class="message message-personal new">
                 {{msg.content}}
             </div>
             <ng-template #other>

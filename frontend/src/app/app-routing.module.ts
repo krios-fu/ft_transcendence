@@ -26,6 +26,11 @@ const routes: Routes = [
     canActivate: [AuthGuard]
 
   },
+  {
+    path: 'game',
+    loadChildren: () => import('./game/game.module').then(m => m.GameModule)
+
+  },
   { path: '**', component: PagenotfoundComponent },
 ];
 

@@ -9,12 +9,14 @@ import { AuthService } from "../../services/auth.service";
 export class message {
   content: string;
   sender: number;
-  id_chat?: number;
+  id_chat?: number | string;
+  avatar ?: string;
 
-  constructor(content: string, sender: number, chat?: number) {
+  constructor(content: string, sender: number, chat?: number | string, avatar ?: string) {
     this.content = content;
     this.sender = sender;
     this.id_chat = chat;
+    this.avatar = avatar;
   }
 }
 
@@ -44,5 +46,16 @@ export class Chat implements OnInit {
     });
   }
 
+  public getMessagesGame(): Observable<message> {
+    return new Observable<message>(observer => {
+      this.socket.fromEvent('new_message-game').subscribe((message: any) => {
+        observer.next(message);
+      });
+    });
+  }
+  sendMessageGame(txt: string, sender: number, id_chat?: number | string) {
+    const msg = new message(txt, sender, id_chat)
+    this.socket.emit('message-game', msg);
+  }
 
 }

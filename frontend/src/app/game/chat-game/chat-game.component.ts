@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Chat } from '../chat';
+// import { Chat } from '../../chat';
 import { FormControl, FormGroup } from '@angular/forms'; //
 import { UserDto } from 'src/app/dtos/user.dto';
 import { IUser, UsersService } from 'src/app/services/users.service';
@@ -9,16 +9,18 @@ import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { AlertServices } from 'src/app/services/alert.service';
 import { Location } from '@angular/common';
-import { message } from '../chat';
+import { message } from 'src/app/room/chat/chat';
 import { catchError, throwError } from 'rxjs';
+import { Chat } from 'src/app/room/chat/chat';
 
 
 @Component({
-  selector: 'app-chat-id',
-  templateUrl: './chat-id.component.html',
-  styleUrls: ['./chat-id.component.scss'],
+  selector: 'app-chat-game',
+  templateUrl: './chat-game.component.html',
+  styleUrls: ['./chat-game.component.scss']
 })
-export class ChatIdComponent implements OnInit, OnDestroy {
+export class ChatGameComponent implements OnInit {
+
 
 
   unfold: string;
@@ -59,56 +61,38 @@ export class ChatIdComponent implements OnInit, OnDestroy {
       this.formMessage.patchValue({ id });
       this.messages = [];
       this.id = id;
-      this.chat.joinRoom(id);
-      this.getMessageApi(id);
+      this.chat.joinRoom( 'game' + id);
+      this.getMessage();
       this.userService.getUser('me')
         .subscribe((user: UserDto[]) => {
           this.me = user[0];
           this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
-          this.http.get(`http://localhost:3000/chat/${id}`)
-            .pipe(
-              catchError(error => {
-                this.alertService.openSnackBar('CHAT NO FOUND', 'OK')
-                // Puedes realizar acciones adicionales en caso de error, como mostrar un mensaje de error al usuario
-                return throwError('Ocurrió un error en la solicitud HTTP. Por favor, inténtalo de nuevo más tarde.');
-              })
-            )
-            .subscribe((entity) => {
-              let chats = Object.assign(entity);
-              let id_friend = (chats[0].users[0].userId == this.me?.id) ? chats[0].users[1].userId : chats[0].users[0].userId;
 
-              this.userService.getUserById(id_friend)
-                .subscribe((user: UserDto) => {
-                  this.user = user;
-                }, error => {
-                });
-            }, error => {
-            });
         });
     });
   }
 
 
-  getMessageApi(id_chat: string) {
-    this.http.get(`http://localhost:3000/message/chat/${id_chat}`)
-      .subscribe((entity: any) => {
-        let data = Object.assign(entity);
-        for (let msg in data) {
-          const msgs = new message(data[msg].content, data[msg]['chatUser'].userId)
-          this.messages.unshift(msgs);
-        }
+  getMessage() {
+
+    this.chat.getMessagesGame().subscribe(message => {
+      this.userService.getUserById(message.sender)
+      .subscribe((user: UserDto) => {
+        message.avatar = user.photoUrl;
+        this.messages.unshift(message);
       })
-    this.chat.getMessages().subscribe(message => {
-      this.messages.unshift(message);
     });
   }
 
+
+
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
+    console.log(message, room)
     if (!message || message.trim() == '')
       return false;
-    this.chat.sendMessage(message, this.me?.id as number, this.id);
+    this.chat.sendMessageGame(message, this.me?.id as number, 'game' + this.id);
     this.formMessage.controls['message'].reset();
     return true;
   }
@@ -131,7 +115,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnDestroy(): void {
 
-  }
+
 }

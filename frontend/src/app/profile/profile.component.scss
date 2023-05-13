@@ -16,6 +16,8 @@
 	  font-size: 8px;
 	  letter-spacing: 1px;
 	}
+	// max-height: 100vh; /* Establece la altura máxima del div al 100% del alto de la ventana */
+	// overflow-y: auto;
   
   }
 
@@ -88,50 +90,11 @@
 	margin: 0;
 	position: relative;
 	border-left: none;
-	// background: repeating-linear-gradient(
-    //   to bottom,
-    //   rgb(0, 0, 0),
-    //   rgb(0, 0, 0) 2px,
-    //    /* lighten(#000002, 3%) 2px, */
-    //     lighten(#212020, 3%) 4px,
-    //     lighten(#000000, 3%) 4px
-    // );
 
-	// background-image: url("https://images2.alphacoders.com/109/1092728.jpg");
-	// opacity: 0.4;
 	background-position: center; /* Center the image */
-  	// background-repeat: no-repeat; /* Do not repeat the image */
   	background-size: cover;
-	nav{
-	position: relative;
-	.title{
-	  bottom: 1vh;
-	  background-image: url("http://8bitters.com/wp-content/themes/8bitters/images/load_btn_bg.svg");
-	  background-position-x: center;
-	  background-position-y: center;
-	  background-size: initial;
-	  background-repeat-x: no-repeat;
-	  background-attachment: initial;
-	  background-origin: initial;
-	  background-clip: initial;
-	  padding: 21px 0 21px 0; justify-content: center; text-align: center;
-  
-	  a{
-		display: block;
-		color: white;
-		h1:hover{
-		  color: purple;
-		}
-		text-decoration: none;
-	  }
-	  &:hover {
-		box-shadow: 7px 6px 28px 1px rgba(0, 0, 0, 0.24);
-		transform: translateY(4px);
-	  }
-	}
-	}
-  
-	height: auto;
+
+	// height: 75%;
   
   }
 

@@ -20,14 +20,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-// import { MatLabel } from '@angular/material/form-field';
+import { SocketNotificationService } from '../services/socket-notification.service';
+import { GamehomeComponent } from './gamehome/gamehome.component';
+import { ChatGameComponent } from './chat-game/chat-game.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import { Chat } from '../room/chat/chat';
+
 
 @NgModule({
   declarations: [
     GameComponent,
     OnlineComponent,
     GameQueueComponent,
-    RoomGameIdComponent
+    RoomGameIdComponent,
+    GamehomeComponent,
+    ChatGameComponent
   ],
   imports: [
     ScrollingModule,
@@ -43,6 +50,7 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
     FormsModule,
     MatIconModule,
     MatMenuModule,
+    ReactiveFormsModule
     
     // MatLabel
   ],
@@ -53,7 +61,10 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
-  }
+  },
+  SocketNotificationService,
+  Chat
+
   ],
 })
 export class GameModule { }

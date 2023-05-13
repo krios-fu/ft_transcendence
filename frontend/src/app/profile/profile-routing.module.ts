@@ -46,19 +46,6 @@ const ProfileRoutes: Routes = [
   },
 
 
-
-  // {
-  //   path: 'chat/:id',
-  //   loadChildren: () => import('../room/chat/chat.module').then(m => m.ChatModule), outlet: 'chat',
-  //   canActivate: [AuthGuard]
-  // },
-
-  {
-    path: 'room',
-    loadChildren: () => import('../game/game.module').then(m => m.GameModule), outlet: 'game',
-    canActivate: [AuthGuard]
-  },
-
 ];
 
 @NgModule({

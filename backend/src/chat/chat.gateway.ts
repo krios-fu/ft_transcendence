@@ -54,6 +54,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.messageService.saveMessages(payload);
   }
 
+  @SubscribeMessage('message-game')
+  gameMessage(
+    client: Socket,
+    payload: {msg: string, sender: number,  id_chat: number },
+  ) {
+    // const {  msg, sender, id_chat } = payload;
+    this.server.to(`room_${payload.id_chat}`).emit('new_message-game', payload);
+  }
+
 
   /*
    ** Funtions send notification to user "invite game "
