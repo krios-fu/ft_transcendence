@@ -140,8 +140,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   goTochat(player: UserDto) {
     this.chatService.createChat(player.id)
-      .subscribe(() => {
-        this.router.navigate(['/', { outlets: { chat: ['chat', player.username] } }])
+      .subscribe((data : any) => {
+        this.router.navigate(['/chat/', data.id])
       })
   }
 
