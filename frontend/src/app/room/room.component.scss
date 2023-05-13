@@ -86,7 +86,7 @@ a {
 }
 
 .scroll {
-  height: 30vh;
+  height: 75vh;
   position: relative;
   color: white;
   /* box-shadow: 0 0 4px 0 goldenrod; */
@@ -97,15 +97,15 @@ a {
 
 .tag {
   padding: 15px;
-  border-radius: 22px;
+  // border-radius: 22px;
   height: 70px;
-  box-shadow: 10px rgb(255, 255, 255);
+  // box-shadow: 10px rgb(255, 255, 255);
 
   // background: linear-gradient(90deg, rgba(222, 0, 89, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
   background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 
   color: white;
-  border: outset 3px silver;
+  // border: outset 3px silver;
   margin-top: 10px;
 
 

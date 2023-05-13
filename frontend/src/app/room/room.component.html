@@ -37,7 +37,7 @@
       style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
       <cdk-virtual-scroll-viewport class="efect" class="scroll" itemSize="5">
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
-          <mat-chip class="tag" [routerLink]="['/home/profile/', user.username]">
+          <mat-chip class="tag" [routerLink]="['/profile/', user.username]">
             <img class="avatar_online" *ngIf="user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}}
               alt={{user.nickName}} />
             <img class="avatar" *ngIf="!user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}}

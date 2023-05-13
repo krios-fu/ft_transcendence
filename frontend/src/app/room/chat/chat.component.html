@@ -3,13 +3,11 @@
 	<section class="row">
 		
 		<div class="column1 " style="border: outset 4px silver; ">
-			<div class="chat-title">
-				<h1>
+				<h1 class="chat-title">
 					Chat
 				</h1> 
-			</div>
 				
-			<div style=" padding: 20px; font-size:large; align-items: center; justify-content: center; align-items: center;">
+			<div style=" padding: 20px; font-size:large;  align-items: center; justify-content: center; align-items: center;">
 				  <cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="5" >
 					<mat-chip-list style="padding-top: 10px;" *ngFor="let chat of CHATS_USERS">
 					  <mat-chip class="tag" [routerLink]="[ '/', 'chat' ,chat.chat_id ] ">

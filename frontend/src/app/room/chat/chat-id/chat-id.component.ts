@@ -9,13 +9,9 @@ import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { AlertServices } from 'src/app/services/alert.service';
 import { Location } from '@angular/common';
+import { message } from '../chat';
+import { catchError, throwError } from 'rxjs';
 
-
-interface chat_user {
-  chat_id: number;
-  user: UserDto;
-
-}
 
 @Component({
   selector: 'app-chat-id',
@@ -24,10 +20,7 @@ interface chat_user {
 })
 export class ChatIdComponent implements OnInit, OnDestroy {
 
-  state = {
-    'chat': false,
-    'chat-min': true,
-  };
+
   unfold: string;
   hidden = true;
 
@@ -37,9 +30,7 @@ export class ChatIdComponent implements OnInit, OnDestroy {
   me?: UserDto;
   id?: number;
 
-
-
-  // @Input() chatuser ?: chat_user;
+  public messages: message[] = [];
 
 
   public formMessage = new FormGroup({
@@ -60,49 +51,67 @@ export class ChatIdComponent implements OnInit, OnDestroy {
   ) {
 
     this.unfold = 'unfold_less';
-    // this.login = this.route.snapshot.paramMap.get('id')?.toString();
   }
 
   ngOnInit(): void {
-    
+
     this.route.params.subscribe(({ id }) => {
       this.formMessage.patchValue({ id });
+      this.messages = [];
       this.id = id;
-      this.chat.getMessageApi(id);
+      this.chat.joinRoom(id);
+      this.getMessageApi(id);
       this.userService.getUser('me')
         .subscribe((user: UserDto[]) => {
           this.me = user[0];
           this.socketGameNotification.joinRoomNotification(this.me.username);
-          
-          
-          this.chat.resetChat();
           delete this.user;
-          
           this.http.get(`http://localhost:3000/chat/${id}`)
-          .subscribe((entity) => {
-            let chats = Object.assign(entity)
-            let id_friend = (chats[0].users[0].userId == this.me?.id)
-            ? chats[0].users[1].userId : chats[0].users[0].userId;
-            
-            this.userService.getUserById(id_friend)
-            .subscribe((user: UserDto) => {
-              this.user = user;
+            .pipe(
+              catchError(error => {
+                this.alertService.openSnackBar('CHAT NO FOUND', 'OK')
+                // Puedes realizar acciones adicionales en caso de error, como mostrar un mensaje de error al usuario
+                return throwError('Ocurrió un error en la solicitud HTTP. Por favor, inténtalo de nuevo más tarde.');
+              })
+            )
+            .subscribe((entity) => {
+              let chats = Object.assign(entity);
+              let id_friend = (chats[0].users[0].userId == this.me?.id) ? chats[0].users[1].userId : chats[0].users[0].userId;
 
+              this.userService.getUserById(id_friend)
+                .subscribe((user: UserDto) => {
+                  this.user = user;
+                }, error => {
+                });
+            }, error => {
             });
-            
-          });
-          
         });
     });
   }
 
+
+  getMessageApi(id_chat: string) {
+    this.http.get(`http://localhost:3000/message/chat/${id_chat}`)
+      .subscribe((entity: any) => {
+        let data = Object.assign(entity);
+
+        for (let msg in data) {
+          const msgs = new message(data[msg].content, data[msg]['chatUser'].userId)
+          console.log('messaje []', msgs);
+          this.messages.unshift(msgs);
+        }
+      })
+    this.chat.getMessages().subscribe(message => {
+      this.messages.unshift(message);
+    });
+  }
 
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
     console.log(message, room)
     if (message.trim() == '')
       return false;
-    this.chat.sendMessage( message, this.me?.id as number, this.id);
+    this.chat.sendMessage(message, this.me?.id as number, this.id);
     this.formMessage.controls['message'].reset();
     return true;
   }
@@ -112,22 +121,13 @@ export class ChatIdComponent implements OnInit, OnDestroy {
     this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
-  chatMin(): void {
-    this.state["chat"] = !this.state["chat"];
-    this.state["chat-min"] = !this.state["chat-min"];
-    this.unfold = (this.state["chat-min"]) ? 'unfold_more' : 'unfold_less';
-    this.chat.count_new_msg = 0;
-  }
+
 
   getMeId() {
     return this.me?.id as number
   }
 
 
-  viewMessage() {
-    console.log("VIEW MESSAGE", this.chat.getMessage())
-    return this.chat.getMessage();
-  }
 
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
@@ -135,20 +135,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-      
-  }
-  close(){
-    const currentUrl = this.router.url;
 
-    // eliminar el segmento de outlet de chat
-    const urlParts = currentUrl.split('(').filter(part => !part.startsWith('chat:'));
-
-    // reconstruir la nueva ruta sin el outlet de chat
-    const newUrl = urlParts.join('(');
-
-    // navegar hacia la nueva ruta sin el outlet de chat
-    console.log(currentUrl)
-    console.log(newUrl)
-    this.router.navigateByUrl(newUrl);
   }
 }

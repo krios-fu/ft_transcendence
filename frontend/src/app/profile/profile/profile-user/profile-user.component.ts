@@ -22,6 +22,7 @@ export class ProfileUserComponent implements OnInit {
   icon_activate = true;
 
   id_friendship = -1
+  id_chat = -1;
 
   urlApi = 'http://localhost:3000/';
 
@@ -96,6 +97,10 @@ export class ProfileUserComponent implements OnInit {
         })
   }
 
+  get_chat_id(){
+    return this.id_chat;
+  }
+
   friend() {
     this.route.params.subscribe(({ id }) => {
       // this.formMessage.patchValue({ id });
@@ -107,20 +112,14 @@ export class ProfileUserComponent implements OnInit {
             this.authService.redirectHome()
           }
           this.user = user[0];
-          this.icon_activate = true;
+          this.icon_activate = false;
 
-          // console.log("USERRR CREATED CHAT", this.user)
           if (this.user.username != this.authService.getAuthUser()){
             this.icon_activate = true;
           }
-          // else
-          console.log("POST CHAT FRIEND");
-            this.chatService.createChat(this.user.id).subscribe(data => console.log('CHAT POST SERVICES', data));
-
+            this.chatService.createChat(this.user.id).subscribe((data : any) => this.id_chat = data.id );
 
           this.FRIENDS_USERS = [];
-          // change de icone visible add o remove 
-
           this.http.get<any>(this.urlApi + `users/me/friends/as_pendding?filter[nickName]=${id}`)
             .subscribe((friend: any) => {
               if (friend.length > 0) {

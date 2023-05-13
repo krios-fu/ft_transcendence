@@ -4,9 +4,7 @@
             justify-content: center;
             padding: 0;
             position: relative;" *ngIf="user">
-    <figure class="avatar">
-        <img src={{getPhotoUrl()}} />
-    </figure>
+    <img class="avatar" src={{getPhotoUrl()}} />
 </section>
 <section style="margin-top: 5px; display: flex; 
 position: relative; 
@@ -40,13 +38,13 @@ justify-content: space-around;
         </a>
     </span>
     <span>
-        <a mat-icon-button class="send_friendship"
-            [routerLink]="[ '/', { outlets: {  chat: ['chat', getNickName() ] } }]">
+        <a mat-icon-button class="send_friendship" [routerLink]="[ '/chat/',  get_chat_id() ]">
             <mat-icon>chat</mat-icon>
         </a>
     </span>
     <span>
-        <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship" [routerLink]="[ '/', { outlets: {  game: 'room' } }]">
+        <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship"
+            [routerLink]="[ '/', { outlets: {  game: 'room' } }]">
             <mat-icon>videogame_asset</mat-icon>
         </a>
     </span>
@@ -62,7 +60,7 @@ justify-content: space-around;
             style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
             <cdk-virtual-scroll-viewport class="efect" class="scroll_friend" itemSize="5">
                 <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
-                    <mat-chip class="tag_friend" [routerLink]="['/home/profile/', user.nickName]">
+                    <mat-chip class="tag_friend" [routerLink]="['/profile/', user.username]">
                         <img class="avatar_friend_online" *ngIf="user.defaultOffline" style="padding-left:0;"
                             src={{user.photoUrl}} alt={{user.nickName}} />
                         <img class="avatar_friend" *ngIf="!user.defaultOffline" style="padding-left:0;"

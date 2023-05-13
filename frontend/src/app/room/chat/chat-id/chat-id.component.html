@@ -1,27 +1,19 @@
-<div class="chat" *ngIf="user && me" >
+<div class="chat" *ngIf="user && me">
     <div class="chat-title">
 
         <div
             style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
 
-            <div class="badge">
+            <img class="avatar" src={{user.photoUrl}} alt="krios-fu" />
 
-                <button class="avatar" href="#">
-                    <img src={{user.photoUrl}} alt="krios-fu" />
-                </button>
-            </div>
-
-            <div *ngIf="this.chat.count_new_msg" matBadge="{{this.chat.count_new_msg}}" matBadgeOverlap="true"
-                matBadgeSize="small" matBadgePosition="after" matBadgeColor="warn" [matBadgeHidden]="hidden"
-                style="position: absolute; left: 32px; bottom: 6px ; "></div>
             <span>{{user.nickName}}</span>
         </div>
 
 
         <div class="icon" style=" display: flex; color : #ffffff; align-items: center; align-content: center;">
-            <button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()">
+            <!-- <button mat-icon-button (click)="chatMin(); toggleBadgeVisibility()">
                 <mat-icon>{{unfold}}</mat-icon>
-            </button>
+            </button> -->
 
             <!-- <button mat-icon-button (click)="close()">
                 <mat-icon>close</mat-icon>
@@ -31,7 +23,8 @@
             </button>
             <mat-menu #menu="matMenu">
                 <!--disabled option -->
-                <button mat-menu-item (click)="sendInvitationGame()" [routerLink]="[ '/', { outlets: {  game: ['room', user.username] } }]">
+                <button mat-menu-item (click)="sendInvitationGame()"
+                    [routerLink]="[ '/', { outlets: {  game: ['room', user.username] } }]">
                     <mat-icon>videogame_asset</mat-icon>
                     <span>Game</span>
                 </button>
@@ -52,13 +45,14 @@
 
     </div>
 
-    <div class="messages"  >
-        <div  *ngFor="let msg of viewMessage()" >
-            <div readonly  *ngIf="msg.sender == this.me.id; else other" class="message message-personal new"> {{msg.content}}
+    <div class="messages">
+        <div *ngFor="let msg of messages">
+            <div readonly *ngIf="msg.sender == this.me.id; else other" class="message message-personal new">
+                {{msg.content}}
             </div>
             <ng-template #other>
                 <div class="message">
-                        <img class="avatar" src={{user.photoUrl}}>
+                    <!-- <img class="avatar" src={{user.photoUrl}}> -->
                     {{msg.content}}
                 </div>
             </ng-template>

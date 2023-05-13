@@ -3,23 +3,28 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { ChatIdComponent } from './chat-id/chat-id.component';
 import { ChatComponent } from './chat.component';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 
 const routes: Routes = [
-	{ path: '', component : ChatComponent,
+  {
+    path: '',
+    component: ChatComponent,
     children: [
-  { path: ':id', component : ChatIdComponent}
-
-
+      {
+        path: ':id',
+        component: ChatIdComponent,
+        canActivate: [AuthGuard]
+      }
     ]
-},
+  },
 ]
 
 @NgModule({
   declarations: [],
   imports: [
-	RouterModule.forChild(routes),
+    RouterModule.forChild(routes),
     CommonModule
   ],
-  exports:[RouterModule]
+  exports: [RouterModule]
 })
 export class ChatRoutingModule { }
