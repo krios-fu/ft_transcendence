@@ -4,13 +4,17 @@ import {
     ExtractJwt,
 } from 'passport-jwt';
 import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
-import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
-import { UserService } from 'src/user/services/user.service';
+import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
+import { UserService } from '../../user/services/user.service';
+import { NotValidatedException } from '../../common/classes/not-validated.exception';
+import { UserRolesService } from '../../user_roles/user_roles.service';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 constructor (
     private readonly userService: UserService,
+    private readonly userRolesService: UserRolesService
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -25,19 +29,28 @@ constructor (
     private jwtLogger: Logger;
 
     async validate(jwtPayload: IJwtPayload): Promise<IJwtPayload> {
-        const username = jwtPayload.data?.username;
-        if (username === undefined) {
+        const username: string | undefined = jwtPayload.data?.username;
+        const id: number | undefined = jwtPayload.data?.id;
+
+        if (username === undefined || id === undefined) {
             this.jwtLogger.error('JWT auth. service unexpected failure');
             throw new InternalServerErrorException()
         }
-        const user = await this.userService.findOneByUsername(username);
-
-        if (user === undefined) {
-            this.jwtLogger.error(`User ${username} validated by jwt not found in database`);
+        const user: UserEntity= await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.jwtLogger.error(`Authentication token not assigned to a registered user`);
+            throw new UnauthorizedException();
+        }
+        if (user.id !== id) {
+            this.jwtLogger.error('Unauthorized login');
+            throw new UnauthorizedException;
+        }
+        if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
+            this.jwtLogger.error(`User ${username} is banned from the server`);
             throw new UnauthorizedException();
         }
         if (jwtPayload.data?.validated !== true) {
-            throw new UnauthorizedException('User needs validation for 2fa strategy');
+            throw new NotValidatedException('User needs validation for 2fa strategy');
         }
         return jwtPayload;
     }

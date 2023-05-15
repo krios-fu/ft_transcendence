@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { UserEntity } from "src/user/entities/user.entity";
 import {
     Game,
     GameState,
@@ -17,6 +16,16 @@ import {
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameReconciliationService } from "./game.reconciliation.service";
+import { IMenuInit } from "./interfaces/msg.interfaces";
+import {
+    GameDataService,
+    Players,
+    RunningGame
+} from "./game.data.service";
+import {
+    EventEmitter2,
+    OnEvent
+} from '@nestjs/event-emitter';
 
 export interface    IGameResultData {
     aNick: string;
@@ -32,81 +41,86 @@ export interface    IGameResultData {
 @Injectable()
 export class    GameUpdateService {
 
-    games: Map<string, Game>;
-    gameSelections: Map<string, GameSelection>;
-    updateInterval: NodeJS.Timer = undefined;
-    pointTimeout: NodeJS.Timeout = undefined;
+    private _updateInterval: NodeJS.Timer;
 
     static readonly updateTimeInterval: number = 1000 / 20;
     static readonly clientUpdateTimeInterval: number = 1000 / 60;
 
     constructor(
         private readonly gameService: GameService,
+        private readonly gameDataService: GameDataService,
         private readonly socketHelper: SocketHelper,
-        private readonly reconciliationService: GameReconciliationService
+        private readonly reconciliationService: GameReconciliationService,
+        private eventEmitter: EventEmitter2
     ) {
-        this.games = new Map<string, Game>();
-        this.gameSelections = new Map<string, GameSelection>;
+        this._updateInterval = undefined;
     }
 
-    private getGameSelection(roomId: string): GameSelection {
-        return (this.gameSelections.get(roomId));
-    }
-
-    private getGame(roomId: string): Game {
-        const   game: Game = this.games.get(roomId);
-
-        if (!game
-            || game.state != GameState.Running)
-            return (undefined);
-        return (game);
+    @OnEvent('game.start')
+    handleGameStartEvent(gameId: string) {
+        const   gameType: GameType | undefined =
+                        this.gameDataService.getType(gameId);
+        
+        if (!gameType)
+            return ;
+        this.startGame(gameId, gameType);
     }
 
     getGameSelectionData(roomId: string): IGameSelectionData {
-        const   gameSelection: GameSelection = this.getGameSelection(roomId);
+        const   gameSelection: GameSelection =
+                            this.gameDataService.getSelection(roomId);
 
-        if (gameSelection)
+        if (gameSelection
+                && gameSelection.status != SelectionStatus.Canceled)
             return (gameSelection.data);
         return (undefined);
     }
 
-    getGameClientStartData(roomId): IGameClientStart {
-        const   game: Game = this.getGame(roomId);
+    getGameClientStartData(roomId: string): IGameClientStart {
+        const   game: Game = this.gameDataService.getGame(roomId);
     
-        if (game)
+        if (game
+                && (game.state === GameState.Running
+                        || (game.state === GameState.Finished
+                                && !this.getGameResult(roomId))))
             return (game.clientStartData());
         return (undefined);
     }
 
-    getGameResult(roomId): IGameResultData | undefined {
-        const   game: Game | undefined = this.games.get(roomId);
-        const   players : [UserEntity, UserEntity] | undefined =
-                    this.gameService.getPlayers(roomId);
-
-        if (!game
-                || game.state != GameState.Finished
-                || !players
-                || !players[0]
-                || !players[1])
-            return (undefined);
-        return (
-            this.buildResultData(
-                [{...players[0]}, {...players[1]}],
-                game.getResult()
-            )
-        );
+    getGameResult(roomId: string): IGameResultData | undefined {
+        return (this.gameDataService.getResult(roomId));
     }
 
-    attemptGameInit(roomId: string): void {
-        if (!this.gameSelections.get(roomId)
-                && !this.games.get(roomId))
-            this.startGame(roomId);
+    getClientInitData(roomId: string)
+                        : [string, IMenuInit |
+                                    IGameClientStart |
+                                    IGameResultData |
+                                    undefined] {
+        let data: IGameSelectionData | IGameClientStart |
+                    IGameResultData | undefined = undefined;
+
+        data = this.getGameSelectionData(roomId);
+        if (data)
+        {
+            return (["newGame", {
+                role: "Spectator",
+                selection: data
+            } as IMenuInit]);
+        }
+        data = this.getGameClientStartData(roomId);
+        if (data)
+            return (["startMatch", data]);
+        data = this.getGameResult(roomId);
+        if (data)
+            return (["end", data]);
+        return (["", undefined]);
     }
 
     //input: 0 === left, 1 === right, 2 === confirm 
     selectionInput(roomId: string, player: string,
                     input: number): IGameSelectionData {
-        const   gameSelection: GameSelection = this.getGameSelection(roomId);
+        const   gameSelection: GameSelection =
+                            this.gameDataService.getSelection(roomId);
     
         if (!gameSelection)
             return (undefined);
@@ -120,25 +134,29 @@ export class    GameUpdateService {
     }
 
     attemptSelectionFinish(roomId: string): void {
-        const   gameSelection: GameSelection = this.getGameSelection(roomId);
+        const   gameSelection: GameSelection =
+                            this.gameDataService.getSelection(roomId);
 
         if (gameSelection
             && gameSelection.finished)
         {
+            //It does't matter if it was already cleared
+            if (gameSelection.heroMenuTimeoutDate)
+                gameSelection.clearHeroMenuTimeout();
             setTimeout(() => {
                 //Checks for canceled gameSelection
                 if (!gameSelection
                         || !gameSelection.finished)
                     return ;
                 this.startMatch(roomId, gameSelection.data);
-                this.gameSelections.delete(roomId);
+                this.gameDataService.setSelection(roomId, undefined);
             }, 3000);
         }
     }
 
     paddleInput(roomId: string, player: string,
                     up: boolean, when: number): void {
-        const   game: Game = this.getGame(roomId);
+        const   game: Game = this.gameDataService.getGame(roomId);
     
         if (!game)
             return ;
@@ -152,7 +170,7 @@ export class    GameUpdateService {
 
     heroInput(roomId: string, player: string,
                 up: boolean, when: number): void {
-        const   game: Game = this.getGame(roomId);
+        const   game: Game = this.gameDataService.getGame(roomId);
     
         if (!game)
             return ;
@@ -164,67 +182,75 @@ export class    GameUpdateService {
         });
     }
 
-    private checkPointCancel(data: IGameData): boolean {
-        return (data.ball.xVel != 0
-                    && this.pointTimeout != undefined);
+    private checkPointCancel(gameId: string, data: IGameData): boolean {
+        return (
+            data.ball.xVel != 0
+                && this.gameDataService.getPointTimeout(gameId) != undefined
+        );
     }
 
     private gameTransition(gameId: string): void {
         setTimeout(() => {
-            this.gameSelections.delete(gameId);
-            this.games.delete(gameId);
+            this.gameDataService.removeGameData(gameId);
             this.manageUpdateInterval();
-            this.startGame(gameId);
+            this.eventEmitter.emit('game.ended', gameId);
         }, 10000);
     }
 
-    private buildResultData(players: [UserEntity, UserEntity],
+    private buildResultData(players: Players,
                                 result: IGameResult): IGameResultData {
         return ({
-            aNick: players[0].nickName,
-            bNick: players[1].nickName,
-            aCategory: GameSelection.stringifyCategory(players[0].category),
-            bCategory: GameSelection.stringifyCategory(players[1].category),
-            aScore: players[0].nickName === result.winnerNick
+            aNick: players.a.nickName,
+            bNick: players.b.nickName,
+            aCategory: GameSelection.stringifyCategory(players.a.category),
+            bCategory: GameSelection.stringifyCategory(players.b.category),
+            aScore: players.a.nickName === result.winnerNick
                         ? result.winnerScore : result.loserScore,
-            bScore: players[1].nickName === result.winnerNick
+            bScore: players.b.nickName === result.winnerNick
                         ? result.winnerScore : result.loserScore,
-            aAvatar: players[0].photoUrl,
-            bAvatar: players[1].photoUrl
+            aAvatar: players.a.photoUrl,
+            bAvatar: players.b.photoUrl
         });
     }
 
-    private gameEnd(gameId: string, gameResult: IGameResult): void {
-        const   players : [UserEntity, UserEntity] =
-                            this.gameService.getPlayers(gameId);
+    private async gameEnd(gameId: string,
+                            gameResult: IGameResult): Promise<void> {
+        const   players : Players = this.gameDataService.getPlayers(gameId);
         
         if (gameResult.winnerNick === "")
         { // For cancelled games because of lag
-            gameResult.winnerNick = players[0].nickName;
-            gameResult.loserNick = players[1].nickName;
+            gameResult.winnerNick = players.a.nickName;
+            gameResult.loserNick = players.b.nickName;
         }
+        this.gameDataService.setResult(
+            gameId,
+            this.buildResultData(players, gameResult)
+        );
         this.socketHelper.emitToRoom(
             gameId,
             "end",
-            this.buildResultData(players, gameResult)
+            this.gameDataService.getResult(gameId)
         );
-        this.gameService.endGame(gameId, gameResult);
+        await this.gameService.endGame(gameId, gameResult);
         this.socketHelper.clearRoom(`${gameId}-PlayerA`);
         this.socketHelper.clearRoom(`${gameId}-PlayerB`);
         this.gameTransition(gameId);
     }
 
     private pointTransition(game: Game, gameId: string): void {
-        this.pointTimeout = setTimeout(() => {
-            if (game.isFinished())
-            {
-                this.gameEnd(gameId, game.getResult());
-                return ;
-            }
-            else if (game.state != GameState.Terminated)
-                game.serveBall();
-            this.pointTimeout = undefined;
-        }, 5000);
+        this.gameDataService.setPointTimeout(gameId,
+            setTimeout(() => {
+                if (game.isFinished())
+                {
+                    this.gameEnd(gameId, game.getResult());
+                    return ;
+                }
+                else if (game.state != GameState.Terminated)
+                    game.serveBall();
+                this.gameDataService.setPointTimeout(gameId, undefined);
+            },
+            5 * 1000)
+        );
     }
 
     private gameUpdate(game: Game, room: string): void {
@@ -246,43 +272,83 @@ export class    GameUpdateService {
         }
         if (updateResult === GameUpdateResult.Point)
         { // A player scored
-            if (!this.pointTimeout)
+            if (!this.gameDataService.getPointTimeout(room))
                 this.pointTransition(game, room);
         }
         gameData = game.data();
-        if (this.checkPointCancel(gameData))
-        {
-            clearTimeout(this.pointTimeout);
-            this.pointTimeout = undefined;
-        }
+        if (this.checkPointCancel(room, gameData))
+            this.gameDataService.clearPointTimeout(room);
         this.socketHelper.emitToRoom(room, 'matchUpdate', game.data());
     }
 
+    /*
+    **  The game update loop is managed here.
+    **
+    **  The ideal design would have been creating update services decoupled from
+    **  the Game class instances in order to calculate snapshot updates
+    **  for each game in separate threads using a job queue.
+    **  But for the current implementation, the fastest way we could think of
+    **  to update the games in the main thread without blocking the NodeJS event
+    **  loop for too long is partitioning game updates by setting an amount
+    **  of games to process before scheduling the following updates for the next
+    **  iteration of the event loop with setImmediate.
+    */
     private manageUpdateInterval(): void {
-        if (this.updateInterval === undefined
-                && this.games.size === 1) {
-            this.updateInterval = setInterval(() => {
-                    this.games.forEach(
-                        (gameElem, room) => {
-                            if (gameElem.state === GameState.Running)
-                                this.gameUpdate(gameElem, room);
+        const   runningGames: RunningGame[] =
+                            this.gameDataService.getRunningGames();
+    
+        if (this._updateInterval === undefined
+                && runningGames.length === 1) {
+            this._updateInterval = setInterval(async () => {
+                    let gamesPartition: number = 0;
+                
+                    for (const elem of runningGames)
+                    {
+                        ++gamesPartition;
+                        if (elem.game.state === GameState.Running)
+                        {
+                            this.gameUpdate(elem.game, elem.id);
+                            if (gamesPartition === 2)
+                            {
+                                await new Promise((resolve) => {
+                                    setImmediate(resolve);
+                                });
+                                gamesPartition = 0;
+                            }
                         }
-                    );
+                    }
                 },
                 GameUpdateService.updateTimeInterval
             );
         }
-        else if (this.updateInterval
-                    && this.games.size === 0)
+        else if (this._updateInterval
+                    && runningGames.length === 0)
         {
-            clearInterval(this.updateInterval);
-            this.updateInterval = undefined
+            clearInterval(this._updateInterval);
+            this._updateInterval = undefined
         }
+    }
+
+    /*
+    **  gameSelection.heroMenuTimeoutDate is higher than Date.now(), as it
+    **  represents a future date.
+    */
+    private scheduleHeroMatchStart(gameId: string): void {
+        const   gameSelection: GameSelection =
+                            this.gameDataService.getSelection(gameId);
+        
+        gameSelection.heroMenuTimeout = setTimeout(() => {
+            if (!gameSelection
+                    || gameSelection.status === SelectionStatus.Canceled)
+                return ;
+            gameSelection.forceConfirm();
+            this.attemptSelectionFinish(gameId);
+        }, gameSelection.heroMenuTimeoutDate - Date.now());
     }
 
     private scheduleClassicMatchStart(gameId: string): void {
         const   gameSelection: GameSelection =
-                                    this.getGameSelection(gameId);
+                            this.gameDataService.getSelection(gameId);
         
         setTimeout(() => {
             if (!gameSelection
@@ -303,76 +369,70 @@ export class    GameUpdateService {
         });
     }
 
-
     private async prepareClients(gameId: string, gameType: GameType,
-                                    players: [UserEntity, UserEntity],
+                                    players: Players,
                                     selectionData: IGameSelectionData)
                                     : Promise<void> {
         let     playerRoom: string;
         const   gameHero = gameType === "hero";
 
         playerRoom = `${gameId}-PlayerA`;
-        await this.socketHelper.addUserToRoom(players[0].username, playerRoom);
+        await this.socketHelper.addUserToRoom(players.a.username, playerRoom);
         this.sendSelectionData(gameHero, "PlayerA", selectionData, playerRoom);
         this.socketHelper.emitToRoom(playerRoom, "unqueue");
         playerRoom = `${gameId}-PlayerB`;
-        await this.socketHelper.addUserToRoom(players[1].username, playerRoom);
+        await this.socketHelper.addUserToRoom(players.b.username, playerRoom);
         this.sendSelectionData(gameHero, "PlayerB", selectionData, playerRoom);
         this.socketHelper.emitToRoom(playerRoom, "unqueue");
         this.sendSelectionData(gameHero, "Spectator", selectionData, gameId);
     }
 
-    private async startGame(gameId: string): Promise<void> {
-        let gameSelection: GameSelection;
-        let selectionData: IGameSelectionData;
-        let [players, gameType]: [[UserEntity, UserEntity], GameType] =
-                                    this.gameService.startGame(gameId);
+    private async startGame(gameId: string, gameType: GameType): Promise<void> {
+        let     gameSelection: GameSelection;
+        let     selectionData: IGameSelectionData;
+        const   players: Players = this.gameDataService.getPlayers(gameId);
         
-        if (!players[0] || !players[1])
+        if (!players)
             return ;
-        if (this.gameSelections.get(gameId) != undefined)
-            this.gameSelections.delete(gameId);
-        gameSelection = this.gameSelections.set(gameId, new GameSelection({
-            nickPlayerA: players[0].username,
-            nickPlayerB: players[1].username,
-            categoryA: players[0].category,
-            categoryB: players[1].category,
-            avatarA: players[0].photoUrl,
-            avatarB: players[1].photoUrl
-        }, gameType === "hero")).get(gameId);
+        gameSelection = new GameSelection({
+            nickPlayerA: players.a.username,
+            nickPlayerB: players.b.username,
+            categoryA: players.a.category,
+            categoryB: players.b.category,
+            avatarA: players.a.photoUrl,
+            avatarB: players.b.photoUrl
+        }, gameType === "hero");
+        this.gameDataService.setSelection(gameId, gameSelection);
         selectionData = gameSelection.data;
         await this.prepareClients(gameId, gameType, players, selectionData);
         if (gameType === "classic")
             this.scheduleClassicMatchStart(gameId);
-    }
-
-    private createGame(gameId: string,
-                        gameSelectionData: IGameSelectionData): Game {
-        let game : Game;
-
-        game = new Game(gameSelectionData, this.reconciliationService);
-        this.games.set(gameId, game);
-        return (game);
+        else
+            this.scheduleHeroMatchStart(gameId);
     }
 
     private startMatch(gameId: string,
                         gameSelectionData: IGameSelectionData): void {
-        let game: Game;
+        const   game: Game = new Game(
+            gameSelectionData,
+            this.reconciliationService
+        );
     
-        if (this.games.get(gameId) != undefined)
-            this.games.delete(gameId);
-        game = this.createGame(gameId, gameSelectionData);
+        this.gameDataService.setGame(gameId, game);
         this.socketHelper.emitToRoom(
             gameId, "startMatch",
             game.clientStartData()
         );
-        this.pointTransition(game, gameId);
+        setTimeout(() => {
+            this.pointTransition(game, gameId);
+        }, 5000);
         this.manageUpdateInterval();
     }
 
-    playerWithdrawal(roomId: string, playerRoomId: string): void {
-        const   gameSelection: GameSelection = this.getGameSelection(roomId);
-        const   game: Game = this.getGame(roomId);
+    async playerWithdrawal(roomId: string, playerRoomId: string): Promise<void> {
+        const   gameSelection: GameSelection =
+                            this.gameDataService.getSelection(roomId);
+        const   game: Game = this.gameDataService.getGame(roomId);
         const   winner: number = playerRoomId[playerRoomId.length - 1] === 'A'
                                     ? 1 : 0;
 
@@ -385,11 +445,14 @@ export class    GameUpdateService {
         {
             game.state = GameState.Terminated;
             game.forceWin(winner);
-            this.gameEnd(roomId, game.getResult());
+            await this.gameEnd(roomId, game.getResult());
             return ;
         }
         gameSelection.status = SelectionStatus.Canceled;
-        this.gameEnd(roomId, {
+        //It does't matter if it was already cleared
+        if (gameSelection.heroMenuTimeoutDate)
+                gameSelection.clearHeroMenuTimeout();
+        await this.gameEnd(roomId, {
             winnerNick: winner === 0 ? gameSelection.data.nickPlayerA
                                         : gameSelection.data.nickPlayerB,
             loserNick: winner != 0 ? gameSelection.data.nickPlayerA

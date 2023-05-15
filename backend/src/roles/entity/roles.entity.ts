@@ -1,8 +1,12 @@
 import { BaseEntity } from "src/common/classes/base.entity";
+import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
+import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
+import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
 import { 
     Column, 
     Entity, 
-    PrimaryGeneratedColumn
+    PrimaryGeneratedColumn,
+    OneToMany 
 } from "typeorm";
 import { CreateRoleDto } from "../dto/role.dto";
 
@@ -20,6 +24,20 @@ export class RolesEntity extends BaseEntity {
     @Column({ 
         type:  'varchar',
         unique: true,
+        length: 15
      })
     role!: string
+
+    @OneToMany(() => UserRoomRolesEntity, (userRoomRoles) => userRoomRoles.role)
+    userRoomRole: UserRoomRolesEntity;
+
+    @OneToMany(
+        () => UserRolesEntity,
+        (userRole) => userRole.role,
+        { cascade: true }
+    )
+    userRole: UserRolesEntity[];
+
+    @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.role)
+    roomRole: RoomRolesEntity[];
 }

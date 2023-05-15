@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
-import { CreateUserDto } from 'src/user/dto/user.dto';
+import { CreateUserDto } from '../../user/dto/user.dto';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -21,7 +21,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         callback: (err: any, payload: any) => void,
     ): Promise<any> {
         const { username, name, profileUrl, emails, _json } = profile;
-        console.log("payload --->", _json.image.link);
         const userProfile: CreateUserDto = {
             username: username,
             firstName: name.givenName,

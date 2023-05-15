@@ -1,9 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { MatchQueryDto } from "./dtos/matchQuery.dto";
 import { MatchDto } from "./match.dto";
 import { MatchEntity } from "./match.entity";
 import { MatchMapper } from "./match.mapper";
 import { MatchRepository } from "./match.repository";
+import { QueryRunner } from "typeorm";
 
 @Injectable()
 export class    MatchService {
@@ -15,42 +17,53 @@ export class    MatchService {
         console.log("MatchService initiated.");
     }
 
-    async findAllMatches(): Promise<MatchEntity[]> {
-        return await this.matchRepository.find();
+    async findAllMatches(): Promise<[MatchEntity[], number]> {
+        return (await this.matchRepository.findAndCount({
+            relations: {
+                winner: {
+                    user: true
+                },
+                loser: {
+                    user: true
+                },
+            }
+        }));
     }
 
-    async findUserMatches(userId: string): Promise<MatchEntity[]> {
-        return (await this.matchRepository.createQueryBuilder("match")
-            .leftJoinAndSelect(
-                "match.winner",
-                "winner")
-            .leftJoinAndSelect(
-                "match.loser",
-                "loser")
-            .leftJoinAndSelect(
-                "winner.user",
-                "winnerUser")
-            .leftJoinAndSelect(
-                "loser.user",
-                "loserUser")
-            .select(
-                [
-                    "match.official",
-                    "match.playedAt",
-                    "winner.score",
-                    "loser.score",
-                    "winnerUser.nickName",
-                    "loserUser.nickName",
-                    "winnerUser.photoUrl",
-                    "loserUser.photoUrl"
-                ])
-            .where(
-                "winnerUser.username= :id",
-                {id: userId})
-            .orWhere(
-                "loserUser.username= :id",
-                {id: userId})
-            .getMany()
+    findUserMatches(queryParams: MatchQueryDto)
+                                : Promise<[MatchEntity[], number]> {
+        return (
+            this.matchRepository.findAndCount({
+                relations: {
+                    winner: {
+                        user: true
+                    },
+                    loser: {
+                        user: true
+                    },
+                },
+                where: [
+                    {
+                        winner: {
+                            user: {
+                                username: queryParams.username
+                            }
+                        }
+                    },
+                    {
+                        loser: {
+                            user: {
+                                username: queryParams.username
+                            }
+                        }
+                    }
+                ],
+                order: {
+                    playedAt: "DESC"
+                },
+                skip: queryParams.offset ? queryParams.offset : undefined,
+                take: queryParams.limit ? queryParams.limit : undefined
+            })
         );
     }
 
@@ -65,16 +78,14 @@ export class    MatchService {
     /*
     **  It is only used by game gateway. Do not expose to clients.
     */
-    async addMatch(matchDto: MatchDto): Promise<MatchEntity> {
+    async addMatch(matchDto: MatchDto, qR?: QueryRunner): Promise<MatchEntity> {
         const   matchEntity: MatchEntity = this.matchMapper.toEntity(matchDto);
-        
-        try {
-            await this.matchRepository.save(matchEntity);
-        } catch (err) {
-            console.log(err);
-            return (null);
+    
+        if (qR)
+        { // For transactions
+            return (await qR.manager.save(matchEntity));
         }
-        return (matchEntity);
+        return (await this.matchRepository.save(matchEntity));
     }
 
     async countUserMatches(userId: string): Promise<number> {

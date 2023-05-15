@@ -10,20 +10,22 @@ import {
     Req,
     Res,
     UnauthorizedException,
+    ForbiddenException,
     UseGuards,
 } from '@nestjs/common';
 
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
-import { CreateUserDto } from 'src/user/dto/user.dto';
-import { IAuthPayload, IRequestUser } from 'src/common/interfaces/request-payload.interface';
-import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { UserService } from 'src/user/services/user.service';
+import { CreateUserDto } from '../user/dto/user.dto';
+import { IAuthPayload, IRequestUser } from '../common/interfaces/request-payload.interface';
+import { UserCreds } from '../common/decorators/user-cred.decorator';
+import { UserService } from '../user/services/user.service';
 import { TokenCredentials } from './token-credentials.dto';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { TwoFactorAuthGuard } from './guard/twofactor-auth.guard';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;
@@ -66,8 +68,10 @@ export class AuthController {
     }
 
     @Post('/2fa/generate')
-    public async generateNew2FASecret(@UserCreds() username: string): Promise<Object> {
+    public async generateNew2FASecret(@UserCreds() userCreds: UserCredsDto): Promise<Object> {
+        const { username } = userCreds;
         const user = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -78,10 +82,12 @@ export class AuthController {
     @Post('/2fa/confirm')
     public async confirm2FAForUser
     (
-        @UserCreds() username: string,
+        @UserCreds() userCreds: UserCredsDto,
         @Body() otpPayload: OtpPayload 
     ) {
+        const { username } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -94,11 +100,13 @@ export class AuthController {
     @Post('/2fa/validate')
     public async validate2FACode
         (
-            @UserCreds() username: string,
+            @UserCreds() userCreds: UserCredsDto,
             @Body() otpPayload: OtpPayload,
             @Res({ passthrough: true }) res: Response
         ): Promise<IAuthPayload> {
+        const { username } = userCreds;    
         const user = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -159,7 +167,7 @@ export class AuthController {
         if (app_id !== process.env.FORTYTWO_APP_ID ||
             app_secret !== process.env.FORTYTWO_APP_SECRET) {
                 this.authLogger.error('Invalid app credentials');
-                throw new HttpException('wrong app credentials', HttpStatus.FORBIDDEN);
+                throw new ForbiddenException('wrong app credentials')
         }
         return await this.authService.authUser(userProfile, res);
     }

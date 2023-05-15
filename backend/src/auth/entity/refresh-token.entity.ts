@@ -1,5 +1,5 @@
-import { BaseEntity } from "src/common/classes/base.entity";
-import { UserEntity } from "src/user/entities/user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { UserEntity } from "../../user/entities/user.entity";
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 export interface RefreshTokenOptions {
@@ -15,8 +15,11 @@ export class RefreshTokenEntity extends BaseEntity {
     @OneToOne
     (
         () => UserEntity,
-        (user) => user.token,
-		{ onDelete: 'CASCADE' }
+        (user: UserEntity) => user.token,
+		{ 
+            onDelete: 'CASCADE',
+            eager: true
+        }
     )
     @JoinColumn({ name: 'token_user' })
     authUser: UserEntity;

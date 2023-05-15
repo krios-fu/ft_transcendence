@@ -37,7 +37,8 @@ export class ChatUserEntity extends BaseEntity {
 
     @ManyToOne(
         () => ChatEntity,
-        (chat: ChatEntity) => chat.users
+        (chat: ChatEntity) => chat.users,
+        { onDelete: 'CASCADE' }
         // { eager: true }
     )
     @JoinColumn({ name: 'chat_id' })
@@ -53,7 +54,10 @@ export class ChatUserEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         (user: UserEntity) => user.chats,
-        { eager: true }
+        { 
+            eager: true,
+            onDelete: 'CASCADE'
+        }
     )
     @JoinColumn({ name: 'user_id' })
     user: UserEntity;

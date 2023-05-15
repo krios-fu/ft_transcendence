@@ -5,7 +5,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { GameQueueComponent } from './game-queue/game-queue.component';
-import { SocketService } from './services/socket.service';
 import { QueueService } from './services/queue.service';
 import { GameRoutingModule } from './game-routing.module';
 import { RoomGameIdComponent } from './room-game-id/room-game-id.component';
@@ -25,7 +24,14 @@ import { GamehomeComponent } from './gamehome/gamehome.component';
 import { ChatGameComponent } from './chat-game/chat-game.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import { Chat } from '../room/chat/chat';
-
+import { RoomCreationFormComponent } from './room-creation-form/room-creation-form.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
+import { RoomListComponent } from './room-list/room-list.component';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
+// import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -34,7 +40,9 @@ import { Chat } from '../room/chat/chat';
     GameQueueComponent,
     RoomGameIdComponent,
     GamehomeComponent,
-    ChatGameComponent
+    ChatGameComponent,
+    RoomCreationFormComponent,
+    RoomListComponent
   ],
   imports: [
     ScrollingModule,
@@ -50,12 +58,17 @@ import { Chat } from '../room/chat/chat';
     FormsModule,
     MatIconModule,
     MatMenuModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
     
+    MatInputModule,
+    MatExpansionModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatListModule,
+    MatPaginatorModule
     // MatLabel
   ],
   providers: [
-    SocketService,
     QueueService,
     {
       provide: HTTP_INTERCEPTORS,

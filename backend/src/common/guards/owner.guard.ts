@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { RoomEntity } from "src/room/entity/room.entity";
-import { RoomService } from "src/room/room.service";
+import { RoomEntity } from "../../room/entity/room.entity";
+import { RoomService } from "../../room/room.service";
 
 @Injectable()
 export class OwnerGuard implements CanActivate {

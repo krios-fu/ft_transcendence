@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBlockDto } from 'src/user/dto/friendship.dto';
-import { FriendshipEntity } from 'src/user/entities/friendship.entity';
+import { CreateBlockDto } from '../../user/dto/friendship.dto';
+import { FriendshipEntity } from '../../user/entities/friendship.entity';
 import { UpdateResult } from 'typeorm';
 import { BlockRepository } from "../repositories/block.repository";
 import { BlockEntity } from "../entities/block.entity";
@@ -40,13 +40,13 @@ export class    BlockService {
 
     public async unblockFriend(senderId: number, recvId: number)
                         : Promise<UpdateResult> {
-        const friendship = await this.friendshipService.getOneBlock(senderId, recvId);
+        const friendship: FriendshipEntity = await this.friendshipService.getOneBlock(senderId, recvId);
         if (friendship === null) {
             return ;
         }
-        const test = await this.blockRepository.softDelete(friendship.block.id);
+        const test = await this.blockRepository.remove(friendship.block);
         console.log(`testing: ${JSON.stringify(test)}`); /* remove this laterrrr */
-        return await this.friendshipService.unblockFriend(friendship.id);
+        await this.friendshipService.unblockFriend(friendship.id);
     }
 
     

@@ -51,6 +51,7 @@ if __name__ == '__main__':
     if args.PETITION == 'generate':
         r = requests.post(req_uri, headers=headers, timeout=2)
         print(f'returned: {r.content}')
+        print(f'headers: {r.headers}')
     elif args.PETITION == 'validate':
         token = input('Introduce token...')
         r = requests.post(
@@ -69,6 +70,9 @@ if __name__ == '__main__':
         )
         print(f'returned with status code {r.status_code}')
         print(r.json())
+    elif args.PETITION == 'test':
+        r = requests.get('http://localhost:3000/users/me', headers=headers)
+        print(f'returned with status code {r.status_code}')
     else:
         print('please provide a valid petition', file=sys.stderr)
         sys.exit(1)

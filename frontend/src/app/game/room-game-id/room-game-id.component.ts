@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core"
+import { Component, OnDestroy, OnInit } from "@angular/core"
 import * as Phaser from 'phaser'
 import * as SockIO from 'socket.io-client'
 import { ClassicPlayerScene } from "../scenes/ClassicPlayerScene";
@@ -20,19 +20,23 @@ import { FormControl, FormGroup } from "@angular/forms";
 import { RoomDto } from "src/app/dtos/room.dto";
 import { SocketNotificationService } from "src/app/services/socket-notification.service";
 import { UsersService } from "src/app/services/users.service";
+import { Subscription } from "rxjs";
+import { BaseScene } from "../scenes/BaseScene";
 
 @Component({
   selector: 'app-room-game-id',
   templateUrl: './room-game-id.component.html',
   styleUrls: ['./room-game-id.component.scss']
 })
-export class RoomGameIdComponent implements OnInit {
-    private config: Phaser.Types.Core.GameConfig;
+export class RoomGameIdComponent implements OnInit, OnDestroy {
+    private readonly config: Phaser.Types.Core.GameConfig;
     private socket: SockIO.Socket;
+    private scenes?: BaseScene[];
     private game?: Phaser.Game;
+    private routeParamsSubscription?: Subscription;
     me ?: UserDto;
     user?: UserDto;
-    room_id?: string;
+    room_id: string;
     room_dto? : RoomDto;
     close = false;
     public formMessage = new FormGroup({
@@ -69,12 +73,21 @@ export class RoomGameIdComponent implements OnInit {
             scene: undefined // Will be assigned afterwards
         };
         this.socket = this.socketService.socket;
+        this.room_id = this.route.snapshot.params['id'];
+    }
+
+    private _initRoomConnection(roomId: string): void {
+        if (this.room_id != roomId)
+            this.socketService.emit<string>("leaveRoom", this.room_id);
+        this.socketService.joinRoom(roomId);
     }
 
     ngOnInit(): void {
 
-        this.route.params.subscribe(({ id }) => {
+        this.routeParamsSubscription = this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
+            this._initRoomConnection(id); //Call before reassigning this.room_id
+            this._initGame(id);
             this.room_id = id;
             delete this.room_dto;
             this.http.get<RoomDto>(`http://localhost:3000/room/${this.room_id}`)
@@ -87,43 +100,61 @@ export class RoomGameIdComponent implements OnInit {
               .subscribe((users : UserDto[]) => {
                 this.me = users[0];
               })
-          });
+          });        
+    }
 
+    // Returns the HTMLCanvasElement that is created by Phaser.
+    private _getGameCanvas(): HTMLCanvasElement | undefined {
+        const   canvas: HTMLCanvasElement | null =
+                    document.querySelector("canvas");
 
-        const   startScene: StartScene =
-                    new StartScene(this.socket, "Game1", this.recoveryService);
-        const   menuScene: MenuScene =
-                    new MenuScene(this.socket, "Game1", this.recoveryService);
-        const   menuHeroScene: MenuHeroScene =
-                    new MenuHeroScene(this.socket, "Game1",
-                                        this.soundService,
-                                        this.recoveryService);
-        const   playerScene: PlayerScene =
-                    new PlayerScene(this.socket, "Game1",
-                                        this.lagCompensator,
-                                        this.loadService,
-                                        this.soundService,
-                                        this.recoveryService);
-        const   classicPlayerScene: ClassicPlayerScene =
-                    new ClassicPlayerScene(this.socket, "Game1",
-                                        this.lagCompensator,
-                                        this.loadService,
-                                        this.soundService,
-                                        this.recoveryService);
-        const   spectatorScene: SpectatorScene =
-                    new SpectatorScene(this.socket, "Game1",
-                                        this.lagCompensator,
-                                        this.loadService,
-                                        this.soundService,
-                                        this.recoveryService);
-        const   endScene: EndScene =
-                    new EndScene(this.socket, "Game1", this.recoveryService);
-            
-        this.config.scene = [
-            startScene, menuScene, menuHeroScene, playerScene,
-            classicPlayerScene, spectatorScene, endScene
+        return (canvas ? canvas : undefined);
+    }
+
+    // Mainly to remove the socket instance's event listeners
+    private _destroyScenes(scenes: BaseScene[] | undefined): void {
+        if (!scenes)
+            return ;
+        for (const scene of scenes) {
+            scene.destroy();
+        }
+    }
+
+    /*
+    **  On reconnection, this.socket's event listeners are still valid,
+    **  so no socket disconnection handling is necessary.
+    **
+    **  No need to explicitly remove game event listeners on destroy,
+    **  because they are associated to game instances.
+    */
+    private _initGame(roomId: string): void {
+        if (this.game)
+        {
+            this._destroyScenes(this.scenes);
+            this.game.destroy(false, false);
+            this.config.canvas = this._getGameCanvas();
+        }
+        this.scenes = [
+            new StartScene(this.socket, this.recoveryService),
+            new MenuScene(this.socket, this.recoveryService),
+            new MenuHeroScene(this.socket, this.soundService,
+                                this.recoveryService),
+            new PlayerScene(this.socket, this.lagCompensator,
+                                this.loadService, this.soundService,
+                                this.recoveryService),
+            new ClassicPlayerScene(this.socket, this.lagCompensator,
+                                    this.loadService, this.soundService,
+                                    this.recoveryService),
+            new SpectatorScene(this.socket, this.lagCompensator,
+                                    this.loadService, this.soundService,
+                                    this.recoveryService),
+            new EndScene(this.socket, this.recoveryService)
         ];
+        this.config.scene = this.scenes;
         this.game = new Phaser.Game(this.config);
+        this.game.events.on("visible", () => {
+            this.socket.emit("recover", roomId);
+        });
     }
 
     leaveRoom(){
@@ -133,6 +164,13 @@ export class RoomGameIdComponent implements OnInit {
     open_chat(){
         this.close = !this.close;
         console.log(this.close);
+    }
+
+    ngOnDestroy(): void {
+        this.socketService.emit<string>("leaveRoom", this.room_id);
+        this.routeParamsSubscription?.unsubscribe();
+        this._destroyScenes(this.scenes);
+        this.game?.destroy(true, false);
     }
 
 }

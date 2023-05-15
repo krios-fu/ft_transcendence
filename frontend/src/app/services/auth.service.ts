@@ -57,7 +57,8 @@ export class AuthService {
                     {
                         this.setAuthInfo({
                             accessToken: data.body.accessToken,
-                            username: data.body.username
+                            username: data.body.username,
+                            id: data.body.id
                         });
                         subscriber.next(data.body);
                     }
@@ -77,7 +78,6 @@ export class AuthService {
 
     redirectLogin(): void {
         this.router.navigateByUrl('/login');
-
     }
 
     /* Solo permite ejecución a usuarios logeados */
@@ -85,6 +85,7 @@ export class AuthService {
         this.cookies.delete('refresh_token', '/', 'localhost', true, 'None');
         localStorage.removeItem('access_token');
         localStorage.removeItem('username');
+        localStorage.removeItem('id');
         this.router.navigateByUrl('/login');
 
     }
@@ -99,6 +100,7 @@ export class AuthService {
     setAuthInfo(authPayload: IAuthPayload) {
         localStorage.setItem('access_token', authPayload.accessToken);
         localStorage.setItem('username', authPayload.username);
+        localStorage.setItem('user_id', String(authPayload.id));
     }
 
     getAuthToken(): string | null {
@@ -107,5 +109,9 @@ export class AuthService {
 
     getAuthUser(): string | null {
         return localStorage.getItem('username');
+    }
+
+    getAuthId(): string | null {
+        return localStorage.getItem('user_id');
     }
 }

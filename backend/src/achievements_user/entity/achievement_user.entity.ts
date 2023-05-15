@@ -1,4 +1,4 @@
-import { BaseEntity } from "src/common/classes/base.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
 import { 
     Column, 
     Entity, 
@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { CreateAchievementUserDto } from "../dto/achievement_user.dto";
 import { UserEntity } from "src/user/entities/user.entity";
+import { AchievementEntity } from "src/achievements/entity/achievement.entity";
 
 @Entity({ name: 'achievement_user' })
 @Index(['achievementId', 'userId'], { unique: true })
@@ -25,23 +26,31 @@ export class AchievementUserEntity extends BaseEntity {
 
     @Column({ 
         name: 'user_id',
-        type: 'bigint', 
-        unique: true 
+        type: 'bigint'
     })
     userId: number;
 
-    @ManyToOne(() => UserEntity)
-    @JoinColumn({ name: 'userId' })
+    @ManyToOne(
+        () => UserEntity,
+        { onDelete: 'CASCADE' }
+        )
+    @JoinColumn({ name: 'user_id' })
     user: UserEntity;
 
     @Column({ 
         name: 'achievement_id',
-        type: 'bigint', 
-        unique: true 
+        type: 'bigint'
     })
     achievementId: number;
 
-    @ManyToOne(() => UserEntity)
-    @JoinColumn({ name: 'achievementId' })
-    achievement: UserEntity;
+    @ManyToOne(
+        () => AchievementEntity,
+        (achievement: AchievementEntity) => achievement.achievementUser,
+        {
+            onDelete: 'CASCADE',
+            eager: true
+        }
+    )
+    @JoinColumn({ name: 'achievement_id' })
+    achievement: AchievementEntity;
 }

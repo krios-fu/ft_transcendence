@@ -1,6 +1,6 @@
 import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsObject } from "class-validator";
-import { FriendshipStatus } from "../enum/friendship-status.enum";
 import { UserEntity } from "../entities/user.entity";
+import { FriendshipStatus } from "../enums/user.enum";
 
 export class    FriendDto {
     @IsObject()
@@ -20,10 +20,6 @@ export class FriendshipPayload {
     @IsNumber()
     @IsNotEmpty()
     receiverId: number;
-
-    // @IsEnum(FriendshipStatus)
-    // @IsNotEmpty()
-    // status: FriendshipStatus;
 }
 
 export class CreateFriendDto extends FriendshipPayload {

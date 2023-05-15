@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '../user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { CreateUserDto } from 'src/user/dto/user.dto';
+import { CreateUserDto } from '../user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
 import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { authenticator } from 'otplib';
 import * as QRCode from 'qrcode';
 @Injectable()
@@ -21,42 +21,47 @@ export class AuthService {
         private readonly refreshTokenRepository: RefreshTokenRepository
     ) { }
 
-    private signJwt(username: string): string {
+    private signJwt(user: UserEntity): string {
+        const { id, username } = user;
         return this.jwtService.sign({ 
-            data: { 
+            data: {
+                id: id,
                 username: username,
                 validated: true
             },
         });
     }
 
-    private signLowPrivJwt(username: string): string {
+    private signLowPrivJwt(user: UserEntity): string {
+        const { id, username } = user;
         return this.jwtService.sign({
             data: { 
+                id: id,
                 username: username,
                 validated: false
             }
-        })
+        });
     }
 
     public async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
-        const username: string = userProfile.username;
-        let   loggedUser: UserEntity;
+        const { username } = userProfile;
+        let loggedUser: UserEntity = await this.userService.findOneByUsername(username);
         
-        loggedUser = await this.userService.findOneByUsername(username);
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
         }
         if (loggedUser.doubleAuth === true) {
             return {
-                'accessToken': this.signLowPrivJwt(username),
-                'username': username
+                'accessToken': this.signLowPrivJwt(loggedUser),
+                'username': username,
+                'id': loggedUser.id
             }
         }
         return await this.authUserValidated(loggedUser, res);
     }
 
     private async authUserValidated(user: UserEntity, res: Response): Promise<IAuthPayload> {
+        const { id, username } = user;
         let   tokenEntity: RefreshTokenEntity;
 
         tokenEntity = await this.refreshTokenRepository.findOne({
@@ -80,8 +85,9 @@ export class AuthService {
             secure: true,
         });
         return {
-            'accessToken': this.signJwt(user.username),
-            'username': user.username,
+            'accessToken': this.signJwt(user),
+            'username': username,
+            'id': id
         };
     }
 
@@ -106,18 +112,20 @@ export class AuthService {
     }
 
     public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
-        let tokenEntity: RefreshTokenEntity;
+        let tokenEntity: RefreshTokenEntity = await this.getTokenByUsername(username);
   
-        tokenEntity = await this.getTokenByUsername(username);
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
             await this.refreshTokenRepository.delete(tokenEntity.token);
             throw TokenError.TOKEN_EXPIRED;
         }
+        const { token, authUser } = tokenEntity;
+        console.log(`user: ${authUser}`);
         return {
-            'accessToken': this.signJwt(username),
+            'accessToken': this.signJwt(authUser),
             'username': username,
+            'id': authUser.id
         }
     }
 

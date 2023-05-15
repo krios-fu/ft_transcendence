@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { TwoFactorStrategy } from './strategy/two-factor.strategy';
+import { UserRolesModule } from '../user_roles/user_roles.module';
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { TwoFactorStrategy } from './strategy/two-factor.strategy';
             RefreshTokenEntity, 
          ]),
         UserModule,
+        UserRolesModule,
         PassportModule,
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,

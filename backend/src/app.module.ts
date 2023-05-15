@@ -20,7 +20,9 @@ import { WinnerModule } from './match/winner/winner.module';
 import { LoserModule } from './match/loser/loser.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 @Module({
@@ -29,8 +31,11 @@ import { join } from 'path';
         AuthModule,
         ChatModule,
         MulterModule.register({
-            dest: './public',
+            dest: './static',
         }),
+        //ThrottlerModule.forRoot({
+        //    ttl: 10, limit: 5
+        //}),
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
@@ -39,12 +44,16 @@ import { join } from 'path';
             password: process.env.DB_PASSWD,
             database: process.env.DB_NAME,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true,
-            // logging: true
+            synchronize: true, // should be managed in dev only,
         }),
         ServeStaticModule.forRoot({
-            rootPath: join(__dirname, '..', 'public'),
+            rootPath: join(__dirname, '..', 'static'),
+            serveRoot: '/static',
+            serveStaticOptions: {
+                index: false
+            }
         }),
+        EventEmitterModule.forRoot(),
         RolesModule,
         RoomModule,
         UserRoomModule,
@@ -61,6 +70,10 @@ import { join } from 'path';
     ],
     controllers: [],
     providers: [
+        //{
+        //    provide: APP_GUARD,
+        //    useClass: ThrottlerGuard
+        //},
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,

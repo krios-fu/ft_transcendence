@@ -1,9 +1,10 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import {IsNotEmpty, IsString, Length} from "class-validator";
 import { PartialType } from '@nestjs/mapped-types';
 
-export class CreateRoleDto { 
+export class CreateRoleDto {
     @IsNotEmpty()
-    @IsString() 
+    @Length(1, 15)
+    @IsString()
     role: string;
 }
 

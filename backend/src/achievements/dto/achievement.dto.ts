@@ -7,5 +7,9 @@ export class CreateAchievementDto {
 
     @IsString()
     @IsNotEmpty()
+    description: string;
+
+    @IsString()
+    @IsNotEmpty()
     photoUrl: string;
 }

@@ -6,7 +6,8 @@ import {
     Patch, 
     Param, 
     Delete, 
-    HttpException, 
+    NotFoundException,
+    BadRequestException,
     HttpStatus, 
     ParseIntPipe, 
     Logger, 
@@ -27,17 +28,29 @@ export class RolesController {
     /* Get all roles */
     @Get()
     public async findAll(@Query() queryParams: RoleQueryDto): Promise<RolesEntity[]> {
-        console.log('query tal: ' + JSON.stringify(queryParams));
         return await this.rolesService.findAll(queryParams);
     }
 
-    /* Get a role */
-    @Get(':role_id')
-    public async findOne(@Param('role_id', ParseIntPipe) roleId: number): Promise<RolesEntity> {
+    /* Get a role by ID */
+    @Get(':role_id([0-9]+)')
+    public async findOneById(@Param('role_id', ParseIntPipe) roleId: number): Promise<RolesEntity> {
         const role = await this.rolesService.findOne(roleId);
+
         if (role === null) {
-            this.roleLogger.error('No role with id ' + roleId + ' in database');
-            throw new HttpException('no role in db', HttpStatus.NOT_FOUND);
+            this.roleLogger.error(`No role with id ${roleId} in database`);
+            throw new NotFoundException('role not found in database');
+        }
+        return role;
+    }
+
+    /* Get a role via role name */
+    @Get(':role_name([A-Za-z]+)')
+    public async findOneByName(@Param('role_name') roleName: string): Promise<RolesEntity> {
+        const role: RolesEntity = await this.rolesService.findByName(roleName);
+
+        if (role === null) {
+            this.roleLogger.error(`No role with name ${roleName} in database`);
+            throw new NotFoundException('role not found in database');
         }
         return role;
     }
@@ -46,29 +59,33 @@ export class RolesController {
     @Post()
     public async create(@Body() dto: CreateRoleDto): Promise<RolesEntity> {
         if (await this.rolesService.findRoleByName(dto.role) !== null) {
-            this.roleLogger.error('Role with id ' + dto.role + ' is already in database');
-            throw new HttpException('role already in db', HttpStatus.BAD_REQUEST);
+            this.roleLogger.error(`Role with id ${dto.role} is already in database`);
+            throw new BadRequestException('role already exists');
         }
         return await this.rolesService.create(dto);
     }
 
     /* Update a role */
-    /* 
-    * @UseGuard(RoleGuard)
-    * @Decorator(scope, role)
-    */
     @Patch(':role_id')
     public async update
     (
         @Param('role_id', ParseIntPipe) roleId: number, 
         @Body() updateRoleDto: UpdateRoleDto
     ): Promise<RolesEntity> {
+        if (await this.rolesService.findOne(roleId) === null) {
+            this.roleLogger.error(`No role with id ${roleId} in database`);
+            throw new NotFoundException('resource not found in db');
+        }
         return await this.rolesService.update(roleId, updateRoleDto);
     }
 
     /* Delete a role */
     @Delete(':role_id')
     public async remove(@Param('role_id', ParseIntPipe) roleId: number): Promise<void> {
+        if (await this.rolesService.findOne(roleId) === null) {
+            this.roleLogger.error(`No role with id ${roleId} in database`);
+            throw new NotFoundException('resource not found in db');
+        }
         return await this.rolesService.remove(roleId);
     }
 }

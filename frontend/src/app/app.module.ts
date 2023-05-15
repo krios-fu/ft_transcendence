@@ -18,7 +18,6 @@ import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { MatIconModule } from '@angular/material/icon';
 import { SearchComponent } from './search/search.component';
 import { MatChipList, MatChipsModule, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material/chips'
-import { MDCChipSet } from '@material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
 
 import { OtpSessionComponent } from './login/otp-session/otp-session.component';
@@ -34,7 +33,15 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MiniFooterComponent } from './profile/mini-footer/mini-footer.component';
 import { LoginModule } from './login/login.module';
 import { HomeComponent } from './home/home.component';
-const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {} }
+import { MatchNotificationComponent } from './services/dialog/notification/match-notification/match-notification.component';
+import { GameInstructionsComponent } from './services/dialog/info/game-instructions/game-instructions.component';
+import { RoomPasswordInputComponent } from './services/dialog/input/room_password/room-password-input.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
+const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {
+    reconnectionAttempts: 3
+} }
 
 @NgModule({
     declarations: [
@@ -49,6 +56,9 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         MiniFooterComponent,
         HomeComponent,
 
+        MatchNotificationComponent,
+        GameInstructionsComponent,
+        RoomPasswordInputComponent
     ],
     providers: [{
         provide: HTTP_INTERCEPTORS,
@@ -78,15 +88,16 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         MatDividerModule,
         MatProgressBarModule,
         MatTabsModule,
-        LoginModule
-
-
+        LoginModule,
+        MatFormFieldModule,
+        MatInputModule
     ],
     entryComponents: [
         DialogNotification,
         FriendNotificationComponent,
-        GameNotificationComponent
-
+        GameNotificationComponent,
+        MatchNotificationComponent,
+        RoomPasswordInputComponent
       ]
 })
 export class AppModule {

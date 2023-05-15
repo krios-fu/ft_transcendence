@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Socket } from "socket.io";
-import { GameQueueService } from "./game.queueService";
+import { GameMatchmakingService } from "./game.matchmaking.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameUpdateService } from "./game.updateService";
 
@@ -8,12 +8,11 @@ import { GameUpdateService } from "./game.updateService";
 export class    GameSocketAuthService {
 
     private _authTimeout: Map<string, NodeJS.Timeout>;
-    private _mockUserNum: number = 1; //Provisional
 
     constructor(
         private readonly socketHelper: SocketHelper,
-        private readonly queueService: GameQueueService,
-        private readonly updateService: GameUpdateService
+        private readonly updateService: GameUpdateService,
+        private readonly matchMakingService: GameMatchmakingService
     ) {
         this._authTimeout = new Map<string, NodeJS.Timeout>;
     }
@@ -53,24 +52,18 @@ export class    GameSocketAuthService {
 
     private _getCurrentUser(client: Socket): string {
         const   rooms: IterableIterator<string> = client.rooms.keys();
-        const   userRoomSpecifier: string = "-User";
         let     username: string = "";
 
         for (const room of rooms)
         {
-            if (room.endsWith(userRoomSpecifier))
-            {
-                username = room.slice(
-                    0,
-                    room.length - userRoomSpecifier.length
-                );
+            username = SocketHelper.getUserNameFromRoomName(room);
+            if (username)
                 break ;
-            }
         }
         return (username);
     }
 
-    registerUser(client: Socket, username: string): void {
+    async registerUser(client: Socket, username: string): Promise<void> {
         const   currentUsername: string = this._getCurrentUser(client);
     
         if (currentUsername)
@@ -78,20 +71,10 @@ export class    GameSocketAuthService {
             if (currentUsername === username)
                 return ;
             else
-                this.removeUser(client, username);
+                await this.removeUser(client, username);
         }
-        client.emit("mockUser", {
-            mockUser: `user-${this._mockUserNum}`
-        }); //Provisional
-        client.data.mockUser = `user-${this._mockUserNum}`; //Provisional
-        client.join(`user-${this._mockUserNum}`); //Provisional
-        client.join(`${username}-User`);
-        console.log(
-            `With id: ${client.id}, username ${username}-User`
-            +
-            `, and testing-username user-${this._mockUserNum}`
-        );
-        ++this._mockUserNum; //Provisional
+        client.join(SocketHelper.getUserRoomName(username));
+        console.log(`Registered client with id: ${client.id}, username: ${username}`);
     }
 
     private async _removePlayer(playerRoom: string): Promise<void> {
@@ -105,21 +88,20 @@ export class    GameSocketAuthService {
         */
         if (await this.socketHelper.roomSocketLength(playerRoom) > 1)
             return ;
-        this.updateService.playerWithdrawal(roomId, playerRoom);
+        await this.updateService.playerWithdrawal(roomId, playerRoom);
     }
 
     // Not leaving default room in case it is not disconnected
     async removeUser(client: Socket, username: string): Promise<void> {
         const   rooms: IterableIterator<string> = client.rooms.values();
     
+        await this.matchMakingService.removeFromAllQueues(username);
         for (const room of rooms)
         {
             if (room === client.id)
                 continue ;
             else if (room.includes("Player"))
                 await this._removePlayer(room);
-            else if (!room.endsWith("-User"))
-                this.queueService.removeAll(room, username);
             client.leave(room);
         }
     }

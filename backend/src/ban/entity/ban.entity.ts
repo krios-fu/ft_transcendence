@@ -1,6 +1,6 @@
-import { BaseEntity } from "src/common/classes/base.entity";
-import { RoomEntity } from "src/room/entity/room.entity";
-import { UserEntity } from "src/user/entities/user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { RoomEntity } from "../../room/entity/room.entity";
+import { UserEntity } from "../../user/entities/user.entity";
 import { 
     Column, 
     Entity, 
@@ -53,6 +53,7 @@ export class BanEntity extends BaseEntity {
         {
             cascade: true,
             eager: true,
+            onDelete: 'CASCADE'
         }
     )
     @JoinColumn({ name: 'room_id' })

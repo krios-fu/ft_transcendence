@@ -1,0 +1,60 @@
+#ranking-container {
+    min-width: 500px;
+}
+
+table {
+    width: 100%;
+    text-align: center;
+    color: white;
+    background-color: transparent;
+}
+
+.rank-cell {
+    font-weight: bold;
+}
+
+.mat-row {
+    height: 90px;
+    background-color: rgba($color: purple, $alpha: 0.7);
+}
+
+.mat-header-cell {
+    text-align: center;
+    border-bottom: 3px solid white;
+    color: inherit;
+    background-color: rgba($color: indigo, $alpha: 0.7);
+}
+
+.mat-cell {
+    color: inherit;
+    border-bottom: 1px solid white;
+}
+
+.mat-column-rank {
+    border-right: 3px solid white;
+    font-size: 20px;
+    background-color: rgba($color: deeppink, $alpha: 0.7);
+}
+
+.ranking-photo {
+    display:inline;
+    vertical-align: middle;
+    padding-right: 10px;
+}
+
+.ranking-photo img {
+    display: inherit;
+    height: 50px;
+    width: auto;
+}
+
+.ranking-nickname {
+    display:inline;
+    vertical-align: middle;
+}
+
+mat-paginator {
+    color: white;
+    background-color: rgba($color: indigo, $alpha: 0.7);
+    border-bottom: 1px solid white;
+}

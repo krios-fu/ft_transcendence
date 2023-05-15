@@ -40,6 +40,7 @@ export interface    IGameSelectionData {
     heroAConfirmed?: boolean;
     heroBConfirmed?: boolean;
     stage?: StageId;
+    timeoutDate?: number;
     status: SelectionStatus;
 }
 
@@ -56,6 +57,8 @@ export class    GameSelection {
     private _heroAConfirmed?: boolean;
     private _heroBConfirmed?: boolean;
     private _stage?: number;
+    private _timeoutDate?: number;
+    private _timeout?: NodeJS.Timeout;
     private _status: SelectionStatus;
 
     constructor(initData: IGameSelectionInit, hero: boolean) {
@@ -72,6 +75,7 @@ export class    GameSelection {
             this._heroAConfirmed = false;
             this._heroBConfirmed = false;
             this._stage = StageId.Atlantis;
+            this._timeoutDate = Date.now() + 1.5 * 60 * 1000;
         }
         this._status = SelectionStatus.Hero;
     }
@@ -114,8 +118,26 @@ export class    GameSelection {
             heroAConfirmed: this._heroAConfirmed,
             heroBConfirmed: this._heroBConfirmed,
             stage: this._stage,
+            timeoutDate: this._timeoutDate,
             status: this._status
         });
+    }
+
+    get heroMenuTimeoutDate(): number | undefined {
+        return (this._timeoutDate);
+    }
+
+    set heroMenuTimeout(timeout: NodeJS.Timeout | undefined) {
+        if (!this._timeoutDate)
+            return ;
+        this._timeout = timeout;
+    }
+
+    clearHeroMenuTimeout(): void {
+        if (!this._timeout)
+            return ;
+        clearTimeout(this._timeout);
+        this._timeout = undefined;
     }
 
     private heroLeft(hero: HeroId): HeroId {
@@ -203,6 +225,14 @@ export class    GameSelection {
             if (player === "PlayerA")
                 this._status = SelectionStatus.Finished;
         }
+    }
+
+    forceConfirm(): void {
+        if (!this._timeoutDate)
+            return ;
+        this._heroAConfirmed = true;
+        this._heroBConfirmed = true;
+        this._status = SelectionStatus.Finished;
     }
 
 }

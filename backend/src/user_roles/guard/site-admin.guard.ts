@@ -12,8 +12,8 @@ import {
     Injectable 
 } from "@nestjs/common";
 import { Observable } from "rxjs";
-import { UserRolesService } from "src/user_roles/user_roles.service";
-import { IRequestUser } from "src/common/interfaces/request-payload.interface";
+import { UserRolesService } from "../../user_roles/user_roles.service";
+import { IRequestUser } from "../../common/interfaces/request-payload.interface";
 
 @Injectable()
 export class SiteAdminGuard implements CanActivate {
@@ -23,8 +23,11 @@ export class SiteAdminGuard implements CanActivate {
 
     canActivate(ctx: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const req: IRequestUser = ctx.switchToHttp().getRequest();
-        const username = req.user.data.username;
+        const username: string | undefined = req.user?.data?.username;
         
-        return this.userRolesService.validateAdminRole(username);
+        if (username === undefined) {
+            return false;
+        }
+        return this.userRolesService.validateGlobalRole(username, ['admin']);
     }
 }

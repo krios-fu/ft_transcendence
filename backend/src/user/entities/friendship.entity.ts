@@ -7,18 +7,11 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
 } from "typeorm";
-import { UserEntity } from "src/user/entities/user.entity";
-import { CreateFriendDto } from "src/user/dto/friendship.dto";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { UserEntity } from "../../user/entities/user.entity";
+import { CreateFriendDto } from "../../user/dto/friendship.dto";
+import { BaseEntity } from "../../common/classes/base.entity";
 import { BlockEntity } from "./block.entity";
 import { FriendshipStatus } from "../enum/friendship-status.enum";
-
-/*export enum FriendshipStatus {
-	PENDING = "pending",
-	CONFIRMED = "confirmed",
-  REFUSED = "refused",
-  BLOCKED = "blocked"
-}*/
 
 @Entity({ name: 'friendship' })
 @Index(['senderId', 'receiverId'], { unique: true })
@@ -46,6 +39,7 @@ export class  FriendshipEntity extends BaseEntity {
     {
       cascade: true,
       eager: true,
+      onDelete: 'CASCADE'
     }
   )
   @JoinColumn({ name : 'sender_id' })
@@ -64,6 +58,7 @@ export class  FriendshipEntity extends BaseEntity {
     {
       cascade: true,
       eager: true,
+      onDelete: 'CASCADE'
     }
   )
   @JoinColumn({ name : 'receiver_id' })
@@ -74,8 +69,10 @@ export class  FriendshipEntity extends BaseEntity {
   })
   status: FriendshipStatus;
 
-  @OneToOne(() => BlockEntity, (block) => block.friendship, {
-    cascade: true
-  })
+  @OneToOne(
+    () => BlockEntity, 
+    (block: BlockEntity) => block.friendship, 
+    { cascade: true }
+  )
   block: BlockEntity
 }

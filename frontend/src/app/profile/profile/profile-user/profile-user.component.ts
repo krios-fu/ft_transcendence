@@ -120,7 +120,9 @@ export class ProfileUserComponent implements OnInit {
             this.chatService.createChat(this.user.id).subscribe((data : any) => this.id_chat = data.id );
 
           this.FRIENDS_USERS = [];
-          this.http.get<any>(this.urlApi + `users/me/friends/as_pendding?filter[nickName]=${id}`)
+          // change de icone visible add o remove 
+
+          this.http.get<any>(this.urlApi + `users/me/friends/as_pending?filter[nickName]=${id}`)
             .subscribe((friend: any) => {
               if (friend.length > 0) {
                 const { receiver } = friend[0];

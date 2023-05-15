@@ -1,16 +1,16 @@
-import { CreateRoomDto } from "src/room/dto/room.dto";
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToMany, OneToOne,
+import { CreateRoomDto } from "../../room/dto/room.dto";
+import {  
+    Column, 
+    Entity, 
+    JoinColumn, 
+    ManyToOne, 
+    OneToMany, 
     PrimaryGeneratedColumn
 } from "typeorm";
-import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
-import { UserEntity } from "src/user/entities/user.entity";
-import { BaseEntity } from "src/common/classes/base.entity";
-import {ChatEntity} from "../../chat/entities/chat.entity";
+import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
+import { UserEntity } from "../../user/entities/user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -49,26 +49,23 @@ export class RoomEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity, 
         { 
-            cascade: true,
-            eager: true
+            eager: true,
+            onDelete: 'CASCADE'
         }
     )
     @JoinColumn({ name: "owner_id" })
     owner!: UserEntity;
 
-    @OneToMany(() => RoomRolesEntity, (roomRole) => roomRole.roomId)
+    @OneToMany(
+        () => UserRoomEntity,
+        (userRoom: UserRoomEntity) => userRoom.room,
+        { cascade: true }
+    )
+    userRoom: UserRoomEntity[];
+
+    @OneToMany(
+        () => RoomRolesEntity,
+        (roomRole: RoomRolesEntity) => roomRole.room
+    )
     roomRole: RoomRolesEntity[];
-
-    @Column({ type: 'number', name: 'chat_id' })
-    chatId: number;
-    @OneToOne(
-        () => ChatEntity,
-        {
-            eager: true,
-            cascade: true,
-            onDelete: "CASCADE"
-        })
-    @JoinColumn({ name: 'chat_id' })
-    chat: ChatEntity;
-
 }

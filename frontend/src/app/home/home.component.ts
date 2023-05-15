@@ -61,6 +61,7 @@ export class HomeComponent implements OnInit {
           this.authService.setAuthInfo({
             "accessToken": res.body.accessToken,
             "username": res.body.username,
+            "id": res.body.id
           });
           this.usersService.getUser('me')
             .subscribe({
