@@ -130,6 +130,7 @@ export class GameAdminComponent implements OnInit {
     // esto seria roomService.getRoom(roomId);
     //this.roomId = this._route.snapshot.params['id'];
     console.log('calling room init');
+    this.view = 0;
     this._http.get<RoomDto>(`http://localhost:3000/room/${this.roomId}`)
       .subscribe({
         next: (room) => {
@@ -166,10 +167,8 @@ export class GameAdminComponent implements OnInit {
   
   }
 
-  test: number = 7;
-  showAvatarActions(value: any) {
-    console.log(`Recibimos de user: ${value}`);
-    console.log('hola');
-   this.test = 1;
+  view: number = 0;
+  switchView(viewId: number) {
+   this.view = viewId;
   }
 }

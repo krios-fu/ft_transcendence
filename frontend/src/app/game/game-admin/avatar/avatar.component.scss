@@ -4,14 +4,23 @@
     display: flex;
     flex-direction: column;
 }
+.avatar-actions {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 5px solid white;
+    margin: 40px;
+}
 .avatar-actions-menu {
+    width: 66%;
     display: flex;
     flex-direction: row;
-    border: 2px solid white;
     border-radius: 2px;
 }
 .avatar-img {
-    
+    width: 33%;
+    border-right: 5px solid white;
 }
 .avatar-img>img {
     position: relative;
@@ -20,4 +29,8 @@
     width: auto;
     border: 5px solid white;
     border-radius: 50%;
+    //filter: saturate(0) hue-rotate(240deg);
+    //filter: saturate(0) hue-rotate(240deg);
+    //filter: grayscale(100%) saturate(0) hue-rotate(180deg);
+    filter: sepia(100%) saturate(250%) hue-rotate(280deg) brightness(1);
 }

@@ -191,11 +191,12 @@
 
 <div id="bg">
     <div id="anim">
-    <ng-container [ngSwitch]="test">
-        <app-avatar *ngSwitchCase="1"></app-avatar>
-        <app-delete-room *ngSwitchCase="2"></app-delete-room>
-        <app-password *ngSwitchCase="3"></app-password>
+    <ng-container [ngSwitch]="view">
+        <app-avatar *ngSwitchCase="3"></app-avatar>
+        <app-delete-room *ngSwitchCase="5"></app-delete-room>
+        <app-password *ngSwitchCase="4"></app-password>
         <app-visibility *ngSwitchCase="4"></app-visibility>
+        
         <div *ngSwitchDefault id="container-admin">
            <div class="admin-header">
                <div>{{ room?.roomName || "undefined" }}</div>
@@ -204,11 +205,11 @@
             <div class="admin-actions">
                 <table>
                     <thead class="admin-actions-header">-- ROOM ACTIONS --</thead>
-                    <tr class="action-row">USER ACTIONS</tr>
-                    <tr class="action-row">ROOM INFO</tr>
-                    <tr class="action-row" (click)="showAvatarActions('bobo')">CHANGE AVATAR</tr>
-                    <tr class="action-row">CHANGE VISIBILITY</tr>
-                    <tr class="action-row">DESTROY ROOM</tr>
+                    <tr class="action-row" (click)="switchView(1)">USER ACTIONS</tr>
+                    <tr class="action-row" (click)="switchView(2)">ROOM INFO</tr>
+                    <tr class="action-row" (click)="switchView(3)">CHANGE AVATAR</tr>
+                    <tr class="action-row" (click)="switchView(4)">CHANGE VISIBILITY</tr>
+                    <tr class="action-row" (click)="switchView(5)">DESTROY ROOM</tr>
                 </table>
             </div>
             <div class="admin-date">{{ currentDate | date: 'mediumTime' }}</div>
