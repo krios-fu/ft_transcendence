@@ -18,7 +18,7 @@ export class OtpSessionComponent implements OnInit {
 
 
   confir(code: any): Observable<HttpResponse<any>> {
-    return this.http.post<any>('http://localhost:3000/auth/2fa/validate', { token: code }).pipe(
+    return this.http.post<any>('/auth/2fa/validate', { token: code }).pipe(
       tap( (res: any) => {
         this.authService.redirectHome();
       }),

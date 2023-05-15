@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable, tap } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class AuthService {
     ) { }
 
     authUser(authCode: string): Observable<HttpResponse<any>> {
-        const httpAuthGet = 'http://localhost:3000/auth/42';
+        const httpAuthGet = `${environment.apiUrl}auth/42`;
         const auth$ = this.http.get<any>
         (
             httpAuthGet, {

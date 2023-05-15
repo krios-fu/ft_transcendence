@@ -10,7 +10,10 @@ import { ChatMessageService } from './message/chat-message.service';
 
 @WebSocketGateway(3001, {
   namespace: 'private',
-  cors: { origin: '*' }
+  cors: { 
+    origin: process.env.WEBAPP_IP,
+    credentials: true
+  }
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 

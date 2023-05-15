@@ -36,7 +36,7 @@ import { GameRoomService } from './game.room.service';
 
 @WebSocketGateway(3001, {
     cors: {
-        origin: 'http://localhost:4200',
+        origin: process.env.WEBAPP_IP,
         credentials: true
     },
 })
