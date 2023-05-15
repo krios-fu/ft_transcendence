@@ -159,17 +159,15 @@ export class    ExtrapolationService {
     }
 
     private getTargetTime(aggressive: boolean,
-                            firstBufferTime: number,
-                            serverTime: number): number {
+                            firstBufferTime: number): number {
         if (!aggressive)
             return (firstBufferTime);
-        return (serverTime + this._snapshotInterval);
+        return (Date.now());
     }
 
     improveInterpol(buffer: IMatchData[], data: IExtrapolImproveData): void {
         let targetTime: number = this.getTargetTime(data.aggressive,
-                                                    buffer[0].when,
-                                                    data.serverSnapshot.when);
+                                                    buffer[0].when);
         let refSnapshot: IMatchData = Match.cloneMatchData(data.serverSnapshot);
         let genSnapshot: IMatchData;
 

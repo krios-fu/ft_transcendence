@@ -28,6 +28,7 @@ export class    ClassicPlayerScene extends MatchScene {
     }
 
     override update(time: number) {
+        const   currentTime: number = Date.now();
         let     input: number = 0;
     
         if (this.cursors?.up.isDown)
