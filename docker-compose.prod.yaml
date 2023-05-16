@@ -4,6 +4,8 @@ services:
     container_name: backend_prod
     build:
       target: prod
+    env_file: 
+      - .env.production
     entrypoint: ["npm", "run", "start:prod"]
     restart: always
 

@@ -1,7 +1,8 @@
 version: "3.9"
 services:
   backend:
-    env_file: .env
+    env_file: 
+      - .env.database
     build:
       context: ./backend/
     ports:
@@ -20,33 +21,15 @@ services:
   db:
     container_name: db
     image: postgres:14.2
+    env_file:
+      - .env.database
     ports:
       - 5432:5432
     networks:
       - webapp-network
     volumes:
       - dbdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWD}
     restart: unless-stopped
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    logging:
-      driver: none
-    restart: always
-    volumes:
-      - pgadmindata:/var/tmp/pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PG_MAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PG_PASSWD}
-    networks:
-      - webapp-network
-    ports:
-      - 5050:80
       
   frontend:
     container_name: frontend

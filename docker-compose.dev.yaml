@@ -3,6 +3,8 @@ services:
     container_name: backend_dev
     build:
       target: dev
+    env_file: 
+      - .env.development
     ports:
       - 9229:9229   # default debug port
     volumes:
@@ -19,3 +21,18 @@ services:
       - ./frontend/:/usr/src/
     entrypoint: ["npm", "run", "start"]
     restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    env_file:
+      - .env.database
+    logging:
+      driver: none
+    restart: always
+    volumes:
+      - pgadmindata:/var/tmp/pgadmin
+    networks:
+      - webapp-network
+    ports:
+      - 5050:80
