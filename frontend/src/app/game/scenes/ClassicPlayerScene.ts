@@ -34,13 +34,13 @@ export class    ClassicPlayerScene extends MatchScene {
         if (this.cursors?.up.isDown)
         {
             if (this.match)
-                this.socket.emit('paddleUp', this.match.snapshot.when);
+                this.socket.emit('paddleUp', currentTime);
             input = 2;
         }
         else if (this.cursors?.down.isDown)
         {
             if (this.match)
-                this.socket.emit('paddleDown', this.match.snapshot.when);
+                this.socket.emit('paddleDown', currentTime);
             input = 1;
         }
         if (input)
