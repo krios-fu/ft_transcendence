@@ -6,6 +6,7 @@ import {
     retry,
     throwError
 } from "rxjs";
+import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { AuthService } from "src/app/services/auth.service";
 
 export type    RoomRole = "public" | "private";
@@ -20,10 +21,6 @@ export interface    IRoom {
 export interface    IRoomUserCount {
     id: number;
     userCount: number;
-}
-
-export interface    IUserRoom {
-    userId: number;
 }
 
 @Injectable({
