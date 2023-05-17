@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
 import { AuthService } from '../services/auth.service';
 import { environment } from 'src/environments/environment';
 
@@ -10,7 +9,7 @@ import { environment } from 'src/environments/environment';
 })
 export class LoginComponent implements OnInit {
 
-  constructor( private http : HttpClient, private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
   ngOnInit(): void {
     if (this.authService.isAuthenticated())
       this.authService.redirectHome();
