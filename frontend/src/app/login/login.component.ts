@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { environment } from 'src/environments/environment';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-login',
@@ -22,8 +22,15 @@ export class LoginComponent implements OnInit {
   }
 
   testRedir() {
-    this._http.get('/api/auth/redirtest')
-      .subscribe();
+    this._http.get<any>('/api/auth/redirtest')
+      .subscribe({ next: (response: HttpResponse<any>) => {
+        if (response.status === 302) {
+          const redirectUrl = response.headers.get('Location');
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+          }
+      }
+    }
+      });
+    }
   }
-
-}

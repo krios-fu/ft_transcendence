@@ -11,6 +11,7 @@ import {
 import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
+import { Router } from '@angular/router';
 
 /* implementamos aqui la logica de refresco y redireccion,
     las peticiones de authentificacion deben pasar limpias */
@@ -22,6 +23,8 @@ export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
         private authService: AuthService,
+        private router: Router,
+
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
@@ -31,6 +34,11 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
+                    console.log('DEbugga ' + err.headers.get('Location'));
+                    console.log('DEbugga ' + err.headers);
+                    if (err.status === 401 && err.headers.get('Location') === '/otp_session') {
+                        this.router.navigateByUrl('/otp_session');
+                    }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
                     } else {
