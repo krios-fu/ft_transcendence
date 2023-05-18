@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Injectable, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -8,6 +8,13 @@ import { ChatService } from 'src/app/services/chat.service';
 import { AlertServices } from 'src/app/services/alert.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 
+
+
+
+@Injectable()
+export class SharedService {
+  public eventEmitter: EventEmitter<any> = new EventEmitter<any>();
+}
 
 @Component({
   selector: 'app-profile-user',
@@ -36,7 +43,8 @@ export class ProfileUserComponent implements OnInit {
     private chatService: ChatService,
     private alertService: AlertServices,
     private socketGameNotification : SocketNotificationService,
-    private userService : UsersService
+    private userService : UsersService,
+    private shareService : SharedService
   ) {
     this.user = undefined;
 
@@ -44,14 +52,23 @@ export class ProfileUserComponent implements OnInit {
 
   }
 
+  @Output() username = new EventEmitter();
 
   ngOnInit() {
     this.friend();
     this.userService.getUser('me')
-    .subscribe((user : UserDto[]) => {
-      this.me = user[0];
+    .subscribe((user : UserDto) => {
+      this.me = user;
+      this.shareService.eventEmitter.emit(this.me.username);
       this.socketGameNotification.joinRoomNotification(this.me.username);
     } )
+
+    this.route.params.subscribe(({ id }) => {
+      // this.username = id;
+      this.shareService.eventEmitter.emit(id);
+      console.log('PROFILE USER ID', id)
+
+    })
   }
 
 

@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { Payload, UserDto } from "../../../dtos/user.dto";
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
+import { SharedService } from '../../profile/profile-user/profile-user.component';
 
 @Component({
   selector: 'app-navheader',
@@ -23,7 +24,8 @@ export class NavHeaderComponent implements OnInit {
   constructor(private http: HttpClient,
     private usersService: UsersService,
     private authService: AuthService,
-    private gameNotification: SocketNotificationService
+    private gameNotification: SocketNotificationService,
+    private shareService : SharedService
 
   ) {
     this.user = undefined;
@@ -37,9 +39,11 @@ export class NavHeaderComponent implements OnInit {
   ngOnInit() {
 
     this.usersService.getUser('me')
-      .subscribe((user: UserDto[]) => {
-        this.user = user[0];
+      .subscribe((user: UserDto) => {
+        this.user = user;
+        console.log(user)
        this.gameNotification.joinRoomNotification(this.user.username);
+       this.shareService.eventEmitter.emit(this.user.username);
 
         this.color_icon = (this.user.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.user.defaultOffline) ? 'online_prediction' : 'online_prediction';

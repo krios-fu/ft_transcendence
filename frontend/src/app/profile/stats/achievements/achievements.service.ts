@@ -66,6 +66,7 @@ export class    AchievementsService {
     }
 
     private _getUser(username: string): Observable<UserDto[]> {
+        console.log('ACHIV --> USERNAME', username)
         return (
             this.httpService.get<UserDto[]>(
                 `${this._urlAuthority}/users?filter[username]=${username}`

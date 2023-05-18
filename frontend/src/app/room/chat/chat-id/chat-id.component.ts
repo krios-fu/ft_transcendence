@@ -62,8 +62,8 @@ export class ChatIdComponent implements OnInit, OnDestroy {
       this.chat.joinRoom(id);
       this.getMessageApi(id);
       this.userService.getUser('me')
-        .subscribe((user: UserDto[]) => {
-          this.me = user[0];
+        .subscribe((user: UserDto) => {
+          this.me = user;
           this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
           this.http.get(`http://localhost:3000/chat/${id}`)

@@ -1,7 +1,10 @@
 import {
     AfterViewInit,
     Component,
-    OnInit
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges
 } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { ActivatedRoute } from '@angular/router';
@@ -17,15 +20,15 @@ import {
     templateUrl: './match-history.component.html',
     styleUrls: ['./match-history.component.scss']
 })
-export class MatchHistoryComponent implements OnInit, AfterViewInit {
+export class MatchHistoryComponent implements OnInit, AfterViewInit, OnChanges {
 
     history: MatchHistoryData[];
     displayedColumns: string[];
     totalMatches: number;
     pageSize: number;
     pageIndex: number;
-    user: string;
-
+    @Input() username ?: string;
+ 
     constructor(
         private readonly matchHistoryService: MatchHistoryService,
         private readonly route: ActivatedRoute
@@ -42,7 +45,6 @@ export class MatchHistoryComponent implements OnInit, AfterViewInit {
         this.totalMatches = 0;
         this.pageSize = 10;
         this.pageIndex = 0;
-        this.user = this.route.snapshot.params['id'];
     }
 
     ngOnInit(): void {
@@ -50,14 +52,18 @@ export class MatchHistoryComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+    }
+    
+    ngOnChanges(): void {
         this.updateHistory();
+        
     }
 
     updateHistory(): void {
         this.matchHistoryService.getMatchHistory(
             this.pageSize,
             this.pageSize * this.pageIndex,
-            this.user
+            this.username as string
         ).subscribe({ // No need to unsubscribe. Only one next value
             next: (data: [UserHistory[], number]) => {
                 this.history = this.matchHistoryService.userToMatchHistory(

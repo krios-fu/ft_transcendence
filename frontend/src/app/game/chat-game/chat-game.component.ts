@@ -64,8 +64,8 @@ export class ChatGameComponent implements OnInit {
       this.chat.joinRoom( 'game' + id);
       this.getMessage();
       this.userService.getUser('me')
-        .subscribe((user: UserDto[]) => {
-          this.me = user[0];
+        .subscribe((user: UserDto) => {
+          this.me = user;
           this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
 

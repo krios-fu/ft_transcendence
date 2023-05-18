@@ -1,78 +1,89 @@
-<section style=" display: flex; 
+<section class="row">
+    <div class="column1 " style="border: outset 4px silver;">
+        <section style=" display: flex; 
             position: relative;
             align-items: center; 
             justify-content: center;
             padding: 0;
             position: relative;" *ngIf="user">
-    <img class="avatar" src={{getPhotoUrl()}} />
-</section>
-<section style="margin-top: 5px; display: flex; 
+            <img class="avatar" src={{getPhotoUrl()}} />
+        </section>
+        <section style="margin-top: 5px; display: flex; 
 position: relative; 
 align-items: center;  
 justify-content: space-around;
 " *ngIf="user">
-    <h1 style="font-size: 14px;">{{getNickName()}}</h1>
-</section>
-
-<div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px; ">
-    <span>
-        <mat-icon>emoji_events</mat-icon>
-        <h3 style="color : goldenrod;">42</h3>
-    </span>
-    <span>
-        <mat-icon>leaderboard</mat-icon>
-        <h3 style="color : rgb(0,149,255);">1</h3>
-    </span>
-    <span>
-        <mat-icon>trending_down</mat-icon>
-        <h3 style="color : rgb(255,0,47);">42</h3>
-    </span>
-</div>
-
-
-<section style="margin-top: 5px; display: flex; justify-content: space-between; align-items: center; padding: 21px; ;"
-    *ngIf="icon_activate">
-    <span>
-        <a mat-icon-button class="send_friendship" (click)="post_friendship()">
-            <mat-icon>{{this.icon_friend}}</mat-icon>
-        </a>
-    </span>
-    <span>
-        <a mat-icon-button class="send_friendship" [routerLink]="[ '/chat/',  get_chat_id() ]">
-            <mat-icon>chat</mat-icon>
-        </a>
-    </span>
-    <span>
-        <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship"
-            [routerLink]="[ '/', { outlets: {  game: 'room' } }]">
-            <mat-icon>videogame_asset</mat-icon>
-        </a>
-    </span>
-</section>
-
-
-
-<mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="primary" aria-label="primary" style="padding: 10px;">
-
-
-    <mat-tab label="FRIENDS {{FRIENDS_USERS.length}}">
-        <section
-            style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
-            <cdk-virtual-scroll-viewport class="efect" class="scroll_friend" itemSize="5">
-                <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
-                    <mat-chip class="tag_friend" [routerLink]="['/profile/', user.username]">
-                        <img class="avatar_friend_online" *ngIf="user.defaultOffline" style="padding-left:0;"
-                            src={{user.photoUrl}} alt={{user.nickName}} />
-                        <img class="avatar_friend" *ngIf="!user.defaultOffline" style="padding-left:0;"
-                            src={{user.photoUrl}} alt={{user.nickName}} />
-                        <span style="font-size: xx-small"> {{user.nickName}}</span>
-                    </mat-chip>
-                </mat-chip-list>
-            </cdk-virtual-scroll-viewport>
+            <h1 style="font-size: 14px;">{{getNickName()}}</h1>
         </section>
-    </mat-tab>
 
-    <mat-tab label="ROOM">
-    </mat-tab>
+        <div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px; ">
+            <span>
+                <mat-icon>emoji_events</mat-icon>
+                <h3 style="color : goldenrod;">42</h3>
+            </span>
+            <span>
+                <mat-icon>leaderboard</mat-icon>
+                <h3 style="color : rgb(0,149,255);">1</h3>
+            </span>
+            <span>
+                <mat-icon>trending_down</mat-icon>
+                <h3 style="color : rgb(255,0,47);">42</h3>
+            </span>
+        </div>
 
-</mat-tab-group>
+
+        <section
+            style="margin-top: 5px; display: flex; justify-content: space-between; align-items: center; padding: 21px; ;"
+            *ngIf="icon_activate">
+            <span>
+                <a mat-icon-button class="send_friendship" (click)="post_friendship()">
+                    <mat-icon>{{this.icon_friend}}</mat-icon>
+                </a>
+            </span>
+            <span>
+                <a mat-icon-button class="send_friendship" [routerLink]="[ '/chat/',  get_chat_id() ]">
+                    <mat-icon>chat</mat-icon>
+                </a>
+            </span>
+            <span>
+                <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship"
+                    [routerLink]="[ '/', { outlets: {  game: 'room' } }]">
+                    <mat-icon>videogame_asset</mat-icon>
+                </a>
+            </span>
+        </section>
+
+
+
+        <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="primary" aria-label="primary"
+            style="padding: 10px;">
+
+
+            <mat-tab label="FRIENDS {{FRIENDS_USERS.length}}">
+                <section
+                    style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
+                    <cdk-virtual-scroll-viewport class="efect" class="scroll_friend" itemSize="5">
+                        <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
+                            <mat-chip class="tag_friend" [routerLink]="['/profile/', user.username]">
+                                <img class="avatar_friend_online" *ngIf="user.defaultOffline" style="padding-left:0;"
+                                    src={{user.photoUrl}} alt={{user.nickName}} />
+                                <img class="avatar_friend" *ngIf="!user.defaultOffline" style="padding-left:0;"
+                                    src={{user.photoUrl}} alt={{user.nickName}} />
+                                <span style="font-size: xx-small"> {{user.nickName}}</span>
+                            </mat-chip>
+                        </mat-chip-list>
+                    </cdk-virtual-scroll-viewport>
+                </section>
+            </mat-tab>
+
+            <mat-tab label="ROOM">
+            </mat-tab>
+
+        </mat-tab-group>
+    </div>
+    <div class="column2" style="border: outset 4px silver;">
+        <!-- <app-room></app-room> -->
+        <app-stats *ngIf="this.user" [username]="this.user.username"></app-stats>
+    </div>
+
+</section>

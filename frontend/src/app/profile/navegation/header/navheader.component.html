@@ -1,3 +1,7 @@
+
+<section class="row">
+  <div class="column1 " style="border: outset 4px silver;">
+
 <section class="badge">
 
     <img class="avatar" src={{getPhotoUrl()}} />
@@ -35,4 +39,12 @@ align-items: center; justify-content: center;" *ngIf="user">
     <mat-icon style="font-size: 100px; padding: 0px">settings</mat-icon>
   </button> -->
 
+</section>
+
+  </div>
+
+  <div class="column2" style="border: outset 4px silver;">
+    <!-- <app-room></app-room> -->
+    <app-stats *ngIf="this.user" [username]="this.user.username"></app-stats>
+</div>
 </section>

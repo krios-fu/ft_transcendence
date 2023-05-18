@@ -97,8 +97,8 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
               });
 
               this.userService.getUser('me')
-              .subscribe((users : UserDto[]) => {
-                this.me = users[0];
+              .subscribe((users : UserDto) => {
+                this.me = users;
               })
           });        
     }

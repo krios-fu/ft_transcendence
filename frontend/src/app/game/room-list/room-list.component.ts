@@ -106,11 +106,7 @@ export class    RoomListComponent implements OnInit {
     }
 
     private _redirectToRoom(roomId: string): void {
-        this.router.navigate(['/', {
-            outlets: {
-                game: ['room', roomId]
-            }
-        }]);
+        this.router.navigate(['/game', roomId]);
     }
 
     private _initRegistry(userId: string, roomId: string,

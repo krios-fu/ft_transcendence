@@ -43,7 +43,7 @@ export class SettingComponent implements OnInit {
     this.usersService.getUser('me')
       .subscribe({
         next: (user) => {
-          this.user = user[0];
+          this.user = user;
 
           this.formGroup.get("doubleAuth")?.setValue(this.user.doubleAuth, { emitEvent: true });
           this.formGroup.get("acceptedTerms")?.setValue(this.user.acceptedTerms, { emitEvent: true });

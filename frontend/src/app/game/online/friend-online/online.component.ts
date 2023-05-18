@@ -42,8 +42,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
     private chatService: ChatService) {
 
     this.userService.getUser('me')
-      .subscribe((user: UserDto[]) => {
-        this.me = user[0];
+      .subscribe((user: UserDto) => {
+        this.me = user;
         this.socketGameNotification.getUserAll(this.me.username)
           .subscribe((payload: any) => {
             let data = Object.assign(payload);
@@ -91,8 +91,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
 
       this.userService.getUser('me')
-        .subscribe((user: UserDto[]) => {
-          this.me = user[0];
+        .subscribe((user: UserDto) => {
+          this.me = user;
           this.socketGameNotification.joinRoomNotification(this.me.username);
           this.socketGameNotification.joinRoomId(id, this.me);
           this.http.get(`http://localhost:3000/user_roles/users/${this.me.id}`)

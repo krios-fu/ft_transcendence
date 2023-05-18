@@ -53,8 +53,8 @@ export class RoomComponent implements AfterViewInit {
       });
 
     this.userServices.getUser('me')
-      .subscribe((user: UserDto[]) => {
-        this.me = user[0];
+      .subscribe((user: UserDto) => {
+        this.me = user;
         this.http.get(`http://localhost:3000/chat/me`)
           .subscribe(entity => {
             let data = Object.assign(entity);

@@ -16,7 +16,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FriendOnlineComponent } from './friend/friend-online/friend-online.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-import { ProfileUserComponent } from './profile/profile-user/profile-user.component';
+import { ProfileUserComponent, SharedService } from './profile/profile-user/profile-user.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips'
@@ -25,10 +25,10 @@ import { SocketNotificationService } from '../services/socket-notification.servi
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
-import { StatsComponent } from '../home/stats/stats.component';
-import { MatchHistoryComponent } from '../home/stats/match-history/match-history.component';
-import { RankingComponent } from '../home/stats/ranking/ranking.component';
-import { AchievementsComponent } from '../home/stats/achievements/achievements.component';
+import { StatsComponent } from './stats/stats.component';
+import { MatchHistoryComponent } from './stats/match-history/match-history.component';
+import { RankingComponent } from './stats/ranking/ranking.component';
+import { AchievementsComponent } from './stats/achievements/achievements.component';
 // import { MatDividerModule } from '@angular/material/divider';
 
 
@@ -56,7 +56,8 @@ import { AchievementsComponent } from '../home/stats/achievements/achievements.c
         useClass: AuthInterceptor,
         multi: true,
     },
-        SocketNotificationService
+        SocketNotificationService,
+        SharedService
     ],
     imports: [
         CommonModule,
