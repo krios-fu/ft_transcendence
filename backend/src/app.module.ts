@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import {ClassSerializerInterceptor, MiddlewareConsumer, Module} from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -24,6 +24,31 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
+
+import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
+
+import { Request, Response, NextFunction } from 'express';
+
+@Injectable()
+export class AppLoggerMiddleware implements NestMiddleware {
+    private logger = new Logger('HTTP');
+
+    use(request: Request, response: Response, next: NextFunction): void {
+        const { ip, method, path: url } = request;
+        const userAgent = request.get('user-agent') || '';
+
+        response.on('close', () => {
+            const { statusCode } = response;
+            const contentLength = response.get('content-length');
+
+            this.logger.log(
+                `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip}`
+            );
+        });
+
+        next();
+    }
+}
 
 @Module({
     imports: [
@@ -85,4 +110,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ],
     exports: []
 })
-export class AppModule { }
+export class AppModule {
+    configure(consumer: MiddlewareConsumer): void {
+        consumer.apply(AppLoggerMiddleware).forRoutes('*');
+    }
+}
