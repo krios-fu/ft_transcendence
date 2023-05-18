@@ -55,7 +55,7 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response
     ) {
         this.authLogger.log('Successful access to redirtest');
-        res.redirect(302, '/otp_session');
+        res.redirect(302, '/otp_session/');
     }
 
     @Public()
