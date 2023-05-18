@@ -1,11 +1,9 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { UserDto } from './dtos/user.dto';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
-import { HomeComponent } from './home/home.component';
-import { NavHeaderComponent } from './home/navegation/header/navheader.component';
-import { Subscription, filter } from 'rxjs';
-import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
+import { Subscription, filter, throwError } from 'rxjs';
+import { NavigationEnd, Router } from "@angular/router";
 
 
 @Component({
@@ -13,16 +11,17 @@ import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnInit {
 
   hiden = false;
   search = [] as UserDto[];
   public subscriber: Subscription;
 
 
-  constructor(private userService: UsersService,
-    private authService: AuthService,
+  constructor(
     private router: Router,
+      public usersService: UsersService,
+      private authService: AuthService,
   ) {
     this.checkLogin();
 
@@ -36,6 +35,13 @@ export class AppComponent implements AfterViewInit {
     });
 
   }
+
+
+  ngOnInit(): void {
+  
+  }
+
+
 
 
   checkLogin() {

@@ -1,0 +1,13 @@
+<div id="stats-container">
+    <mat-tab-group>
+        <mat-tab label="MATCHES">
+            <app-match-history></app-match-history>
+        </mat-tab>
+        <mat-tab label="RANKING">
+            <app-ranking></app-ranking>
+        </mat-tab>
+        <mat-tab label="ACHIEVEMENTS">
+            <app-achievements [username]="this.username"></app-achievements>
+        </mat-tab>
+    </mat-tab-group>
+</div>

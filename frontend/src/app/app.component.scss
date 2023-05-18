@@ -7,6 +7,7 @@
 	display: flex;
 	clear: both;
 	padding: 0;
+	margin: 0;
 	h1, h2 {
 	  font-weight: normal;
 	  font-size: 14px;
@@ -45,7 +46,7 @@
 	padding: 10px;
 	color: white;
 	// height: auto;
-	background: none;
+	background: inherit;
 	// overflow: hidden;
 	// border: 3px groove rgba(245, 245, 245, 0.29);
 	text-transform: uppercase;
@@ -115,8 +116,9 @@
   
   .column2 {
 	float: left;
-	width: 60%;
+	width: 80%;
 	padding: 0;
+	margin: 0;
 	position: relative;
 	border-left: none;
 	// background: repeating-linear-gradient(
@@ -127,7 +129,6 @@
     //     lighten(#212020, 3%) 4px,
     //     lighten(#000000, 3%) 4px
     // );
-  background-image: url("https://wallpaperaccess.com/full/7009391.jpg");
 
 	// background-image: url("https://images2.alphacoders.com/109/1092728.jpg");
 	// opacity: 0.4;

@@ -19,8 +19,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
+import { SocketNotificationService } from '../services/socket-notification.service';
+import { GamehomeComponent } from './gamehome/gamehome.component';
+import { ChatGameComponent } from './chat-game/chat-game.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import { Chat } from '../room/chat/chat';
 import { RoomCreationFormComponent } from './room-creation-form/room-creation-form.component';
-import { ReactiveFormsModule } from "@angular/forms";
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,6 +39,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     OnlineComponent,
     GameQueueComponent,
     RoomGameIdComponent,
+    GamehomeComponent,
+    ChatGameComponent,
     RoomCreationFormComponent,
     RoomListComponent
   ],
@@ -52,6 +58,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     FormsModule,
     MatIconModule,
     MatMenuModule,
+    ReactiveFormsModule,
+    
     MatInputModule,
     MatExpansionModule,
     MatButtonModule,
@@ -66,7 +74,10 @@ import { MatPaginatorModule } from '@angular/material/paginator';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
-  }
+  },
+  SocketNotificationService,
+  Chat
+
   ],
 })
 export class GameModule { }

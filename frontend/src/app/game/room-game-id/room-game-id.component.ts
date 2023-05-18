@@ -38,6 +38,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     user?: UserDto;
     room_id: string;
     room_dto? : RoomDto;
+    close = false;
     public formMessage = new FormGroup({
         message: new FormControl('')
       })
@@ -96,8 +97,8 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
               });
 
               this.userService.getUser('me')
-              .subscribe((users : UserDto[]) => {
-                this.me = users[0];
+              .subscribe((users : UserDto) => {
+                this.me = users;
               })
           });        
     }
@@ -158,6 +159,11 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
 
     leaveRoom(){
         this.gameServiceNoti.roomLeave(this.room_id, this.me);
+    }
+
+    open_chat(){
+        this.close = !this.close;
+        console.log(this.close);
     }
 
     ngOnDestroy(): void {
