@@ -21,11 +21,8 @@ export class AuthInterceptor implements HttpInterceptor {
     isRequestingNewCreds: boolean = false;
     newCredsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(
-        private authService: AuthService,
-        private router: Router,
-
-    ) { }
+    constructor(private authService: AuthService,
+                private router: Router) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
@@ -34,10 +31,9 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    console.log('DEbugga ' + err.headers.get('Location'));
-                    console.log('DEbugga ' + err.headers);
                     if (err.status === 401 && err.headers.get('Location') === '/otp_session') {
                         this.router.navigateByUrl('/otp_session');
+                        return throwError(() => err);
                     }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
@@ -56,8 +52,7 @@ export class AuthInterceptor implements HttpInterceptor {
             );
     }
 
-    private handleAuthError
-    (
+    private handleAuthError(
         req: HttpRequest<any>, 
         next: HttpHandler
     ): Observable<any> {

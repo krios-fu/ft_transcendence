@@ -49,16 +49,6 @@ export class AuthController {
     private readonly authLogger: Logger;
 
     @Public()
-    @Get('/redirtest')
-    public async redirtest
-    (
-        @Res({ passthrough: true }) res: Response
-    ) {
-        this.authLogger.log('Successful access to redirtest');
-        res.status(401).header('Location', '/otp_session').send();
-    }
-
-    @Public()
     @Get('42')
     @UseGuards(FortyTwoAuthGuard)
     public async authFromFT

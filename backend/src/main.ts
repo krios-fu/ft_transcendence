@@ -15,6 +15,14 @@ async function bootstrap() {
     app.enableCors({
         origin: [process.env.WEBAPP_IP],
         methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+        allowedHeaders: [
+            'Accept', 
+            'Authorization', 
+            'Accept-Language', 
+            'Content-Language',
+            'Location',
+            'Content-Type'
+        ],
         credentials: true,
     });
     app.useGlobalFilters(new NotValidatedExceptionFilter());

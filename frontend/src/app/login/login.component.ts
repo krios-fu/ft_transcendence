@@ -20,17 +20,4 @@ export class LoginComponent implements OnInit {
   login() {
     window.location.href=environment.redirectUri;
   }
-
-  testRedir() {
-    this._http.get<any>('/api/auth/redirtest')
-      .subscribe({ next: (response: HttpResponse<any>) => {
-        if (response.status === 302) {
-          const redirectUrl = response.headers.get('Location');
-          if (redirectUrl) {
-            window.location.href = redirectUrl;
-          }
-      }
-    }
-      });
-    }
-  }
+}
