@@ -1,24 +1,7 @@
-@property --rotate {
-    syntax: "<angle>";
-    initial-value: 132deg;
-    inherits: false;
-}
-
-@keyframes spin {
-    0% {
-        --rotate: 0deg;
-    }
-
-    100% {
-        --rotate: 360deg;
-    }
-
-
-}
 
 .avatar {
     position: relative;
-    left: 5px;
+    // left: 5px;
     border-radius: 50%;
     width: 100px;
     height: 100px;
@@ -141,7 +124,7 @@ a {
     margin: 0;
     padding: 0;
     border: 3px solid rgba(255, 255, 255, 0.24);
-    background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
+    background-image: linear-gradient(var(--rotate), #5ddcff, #3c3ce3 43%, #6700c2);
     animation: spin 2.5s linear infinite;
     img {
         width: 100%;
@@ -152,9 +135,6 @@ a {
 
 .avatar_friend {
     position: relative;
-    // background: lawngreen;
-    //z-index: 1;
-    // left: 5px;
     border-radius: 50%;
     width: 45px;
     height: 45px;
@@ -162,13 +142,6 @@ a {
     margin: 0;
     padding: 0;
     border: 3px solid rgba(255, 255, 255, 0.24);
-    // content: "";
-    // background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
-    // // top: -1%;
-    // // left: -2%;
-    // animation: spin 2.5s linear infinite;
-    //   }
-
     img {
         width: 100%;
         height: auto;
@@ -208,13 +181,6 @@ span {
     // font-size: xx-small;
 }
 
-::ng-deep .mat-icon {
-    color: white;
-}
-
-::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
-    color: white !important;
-}
 
 [aria-label=primary] {
 
@@ -227,26 +193,19 @@ span {
 
 }
 
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .row {
 	height: calc(100vh - 4rem);
 	display: flex;
 	clear: both;
 	padding: 0;
 	margin: 0;
-	h1, h2 {
-	  font-weight: normal;
-	  font-size: 14px;
-	  margin: 0;
-	  padding: 0;
-	}
-  
-	h2 {
-	  color: rgba(255, 255, 255, .5);
-	  font-size: 8px;
-	  letter-spacing: 1px;
-	}
-	// max-height: 100vh; /* Establece la altura máxima del div al 100% del alto de la ventana */
-	// overflow-y: auto;
   
   }
 
@@ -255,66 +214,21 @@ span {
 	width: 20%;
 	padding: 10px;
 	color: white;
-	// height: auto;
 	background: inherit;
-	// overflow: hidden;
-	// border: 3px groove rgba(245, 245, 245, 0.29);
 	text-transform: uppercase;
 	min-width: 21rem;
 	position: relative;
-  
-   
-  
-  
-   // min-height: 21rem;
-	//border-top: none;
-	//box-shadow: 0 10px 4px #818181;
-  
-  
 	a{
 	  color: white;
 	}
   
-  
-	
-	// .example-tree-invisible {
-	//   display: none;
-	// }
-  
-	.example-tree ul,
-	.example-tree li {
-	  margin-top: 0;
-	  margin-bottom: 0;
-	  list-style-type: none;
-	  //color: red;
-	}
-  
-	/*
-	 * This padding sets alignment of the nested nodes.
-	 */
-	.example-tree .mat-nested-tree-node div[role=group] {
-	  padding-left: 20px;
-	  //color: white;
-  
-	}
-  
-	/*
-	 * Padding for leaf nodes.
-	 * Leaf nodes need to have padding so as to align with other non-leaf nodes
-	 * under the same parent.
-	 */
-	.example-tree div[role=group] > .mat-tree-node {
-	  padding-left:20px;
-	}
-  
-  
   }
 
 
-  
   .column2 {
 	float: left;
 	width: 80%;
+    // height: 100%;
 	padding: 0;
 	margin: 0;
 	position: relative;
@@ -322,7 +236,6 @@ span {
 
 	background-position: center; /* Center the image */
   	background-size: cover;
-
-	// height: 75%;
+    
   
   }

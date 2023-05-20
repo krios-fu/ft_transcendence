@@ -47,7 +47,6 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
     declarations: [
         AppComponent,
         HeaderComponent,
-        SearchComponent,
         // OtpSessionComponent,
         PagenotfoundComponent,
         DialogNotification,

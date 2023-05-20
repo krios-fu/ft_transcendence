@@ -29,6 +29,7 @@ import { StatsComponent } from './stats/stats.component';
 import { MatchHistoryComponent } from './stats/match-history/match-history.component';
 import { RankingComponent } from './stats/ranking/ranking.component';
 import { AchievementsComponent } from './stats/achievements/achievements.component';
+import { SearchComponent } from '../search/search.component';
 // import { MatDividerModule } from '@angular/material/divider';
 
 
@@ -46,7 +47,9 @@ import { AchievementsComponent } from './stats/achievements/achievements.compone
         StatsComponent,
         MatchHistoryComponent,
         RankingComponent,
-        AchievementsComponent
+        AchievementsComponent,
+        SearchComponent,
+
 
     ],
     exports: [

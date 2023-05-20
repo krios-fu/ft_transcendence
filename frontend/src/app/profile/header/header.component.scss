@@ -13,27 +13,7 @@
   padding: 12px 15px 0 30px;
 
 
-  .search-box {
-    width: 20vw;
-    min-width: 20vh;
-    border: 1px solid rgba(245, 245, 245, 0.29);
-    padding: 14px;
-    border-radius:25px;
-    box-shadow: 0 10px 30px black;
-
-    & .search-input {
-      background: none;
-      border: none;
-      outline: none!important;
-      resize: none;
-      color: whitesmoke;
-      font-size: 14px;
-      margin: 0;
-    }
-    textarea:focus:-webkit-placeholder{
-      color: transparent;
-    }
-  }
+ 
 }
 
 .column3 {

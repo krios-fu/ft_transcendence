@@ -11,6 +11,7 @@ export class UserDto {
 	doubleAuth: boolean;
 	acceptedTerms: boolean;
 	defaultOffline: boolean;
+	ranking: number;
 	is_admin?: boolean; 
 
 	
@@ -27,6 +28,7 @@ export class UserDto {
 		doubleAuth: boolean,
 		acceptedTerms: boolean,
 		defaultOffline: boolean,
+		ranking: number,
 		is_admin?: boolean
 
 	) {
@@ -42,6 +44,7 @@ export class UserDto {
 		this.doubleAuth = doubleAuth;
 		this.defaultOffline = defaultOffline;
 		this.is_admin = is_admin;
+		this.ranking = ranking;
 	}
   }
   
