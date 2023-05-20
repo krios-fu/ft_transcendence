@@ -108,11 +108,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     private _redirectToRoomLists(): void {
-        this.router.navigate(['/', {
-            outlets: {
-                game: ['room']
-            }
-        }]);
+        this.router.navigateByUrl("/game");
     }
 
     private _checkUserInRoom(roomId: string): void {
