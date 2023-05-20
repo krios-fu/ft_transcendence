@@ -1,18 +1,15 @@
-<br>
-<mat-tab-group  mat-align-tabs="start" color="primary" aria-label="primary" mat-stretch-tabs="true" style="padding: 10px;">
+<mat-tab-group  mat-align-tabs="start" color="primary" aria-label="primary" mat-stretch-tabs="true" style="padding: 0; height: 100%">
 
   <mat-tab label="CHATS {{CHATS_USERS.length}}" >
-    <div style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
+    <div style=" padding: 20px; font-size:large; align-items: center; justify-content: center; align-items: center;">
       <cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="5" >
-        <mat-chip-list style="padding-top: 10px;" *ngFor="let user of CHATS_USERS">
-          <mat-chip class="tag" [routerLink]="[ '/', { outlets: {  chat: ['chat', user.nickName ] } }]">
-            <img class="avatar"  *ngIf="!user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}}
-              alt={{user.nickName}} />
-            <img class="avatar_online" *ngIf="user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}}
-              alt={{user.nickName}} />
-               
-               
-              <span> {{user.nickName}} </span>
+        <mat-chip-list style="padding-top: 10px;" *ngFor="let chat of CHATS_USERS">
+          <mat-chip class="tag" [routerLink]="[ '/', 'chat' ,chat.chat_id ]">
+            <img class="avatar"  *ngIf="!chat.user.defaultOffline" style="padding-left:0;" src={{chat.user.photoUrl}}
+              alt={{chat.user.nickName}} />
+            <img class="avatar_online" *ngIf="chat.user.defaultOffline" style="padding-left:0;" src={{chat.user.photoUrl}}
+              alt={{chat.user.nickName}} />
+              <span style="font-size: 30px;"> {{chat.user.nickName}} </span>
             </mat-chip>
         </mat-chip-list>
       </cdk-virtual-scroll-viewport>
@@ -26,7 +23,7 @@
       <mat-chip class="tag" [routerLink]="[ '/', { outlets: {  game: ['room', room.id ] } }]">
         <img class="avatar" style="padding-left:0;" src={{room.photoUrl}}
               alt={{room.roomName}} />
-        <span>{{room.roomName}}</span>
+        <span style="font-size: 30px;" >{{room.roomName}}</span>
       </mat-chip>
     </mat-chip-list>
 
@@ -40,12 +37,12 @@
       style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
       <cdk-virtual-scroll-viewport class="efect" class="scroll" itemSize="5">
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
-          <mat-chip class="tag" [routerLink]="['/home/profile/', user.username]">
+          <mat-chip class="tag" [routerLink]="['/profile/', user.username]">
             <img class="avatar_online" *ngIf="user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}}
               alt={{user.nickName}} />
             <img class="avatar" *ngIf="!user.defaultOffline" style="padding-left:0;" src={{user.photoUrl}}
               alt={{user.nickName}} />
-            <span> {{user.nickName}} </span>
+            <span style="font-size: 30px;"> {{user.nickName}} </span>
           </mat-chip>
 
         </mat-chip-list>

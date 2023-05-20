@@ -1,0 +1,31 @@
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem;
+  font-size: 10px;
+  color: white;
+  background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+  width: 100%;
+  flex: 0 1 45px;
+  position: relative;
+  padding: 12px 15px 0 30px;
+
+
+ 
+}
+
+.column3 {
+	float: right;
+	width: 20%;
+  
+	min-width: 21rem;
+	min-height: 21rem;
+	padding: 0;
+	background: inherit;
+	font-family: 'Press Start 2P', cursive;
+	border-left: none;
+	position: relative;
+  // z-index: 2;
+  }

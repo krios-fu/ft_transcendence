@@ -18,6 +18,16 @@
   
 	}
   }
+
+  .scroll {
+	height: 15vh;
+	position: relative;
+	color: white;
+	/* box-shadow: 0 0 4px 0 goldenrod; */
+	border-radius: 20px;
+	flex-direction: column-reverse;
+  
+  }
   
 //   div{
 // 	// border: 1px solid rgba(245, 245, 245, 0.29);

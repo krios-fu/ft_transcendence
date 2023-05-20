@@ -1,0 +1,37 @@
+<div style="color: #ffffff; 
+
+justify-content:space-around;
+
+display: flex;" >
+
+    <div>
+      <button mat-icon-button class="icon_logout" routerLink="/profile/me">
+        <mat-icon>person</mat-icon>
+      </button>
+    </div>
+    <div>
+      <!-- [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()"> -->
+
+      <a mat-icon-button class="icon_nav"  (click)="hello()">
+        <mat-icon matBadge="{{nPenddingFriends}}" matBadgeColor="warn" matBadgeSize="small">
+          people
+        </mat-icon>
+      </a>
+    </div>
+    <div>
+      <a mat-icon-button [routerLink]="[ '/', 'game']">
+        <mat-icon>videogame_asset</mat-icon>
+      </a>
+    </div>
+    <div>
+      <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/profile/me/setting">
+        <mat-icon>manage_accounts</mat-icon>
+      </a>
+    </div>
+    <!-- > -->
+    <div>
+      <a mat-icon-button class="icon_logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+      </a>
+    </div>
+  </div>

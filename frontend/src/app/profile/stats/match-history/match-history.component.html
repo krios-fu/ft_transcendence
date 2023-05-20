@@ -1,0 +1,43 @@
+<div id="match-history-container">
+    <table mat-table [dataSource]="history">
+        <ng-container matColumnDef="winner">
+            <th mat-header-cell *matHeaderCellDef> Winner </th>
+            <td mat-cell *matCellDef="let element"> {{element.winner}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="loser">
+            <th mat-header-cell *matHeaderCellDef> Loser </th>
+            <td mat-cell *matCellDef="let element"> {{element.loser}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="winScore">
+            <th mat-header-cell *matHeaderCellDef> WinScore </th>
+            <td mat-cell *matCellDef="let element"> {{element.winScore}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="loseScore">
+            <th mat-header-cell *matHeaderCellDef> LoseScore </th>
+            <td mat-cell *matCellDef="let element"> {{element.loseScore}} </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="official">
+            <th mat-header-cell *matHeaderCellDef> Type </th>
+            <td mat-cell *matCellDef="let element">
+                {{element.official === true ? "official" : "duel"}}
+            </td>
+        </ng-container>
+    
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef> Date </th>
+            <td mat-cell *matCellDef="let element"> {{element.date}} </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            [ngClass]="row.winner === username ? 'win': 'lose'"></tr>
+    </table>
+    <mat-paginator [pageSize]="pageSize"
+                    [length]="totalMatches"
+                    (page)="pageEventHandler($event)">
+    </mat-paginator>
+</div>  

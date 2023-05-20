@@ -1,76 +1,150 @@
 #container {
-    display: grid;
-    position: relative;
-    width: 100%;
-    padding-top: 25px;
-    place-items: center;
-    color: white;
+  display: grid;
+  position: relative;
+  width: 95%;
+  padding-top: 25px;
+  place-items: center;
+  color: white;
+  // max-height: 80vh; /* Establece la altura máxima del div al 100% del alto de la ventana */
+  overflow: none;
+  height: 85vh;
+
 }
 
-#container-sub {
-    width: 80%;
-    // height: 80vh;
-    // box-shadow: 10px 10px inset lightblue;
-}
+
 
 #container-title {
-    text-align: center;
+  text-align: center;
 
 }
 
-#container-title h1 {
-    display: grid;
-    padding: 0;
-    margin: 0;
-    // padding-top: 100px;
-}
+// #container-title h1 {
+//   // display: grid;
+//   padding: 0;
+//   margin: 0;
+//   // padding-top: 100px;
+// }
 
 footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
-span{
-    padding-left:10px;
-  }
-  
-  ::ng-deep .mat-icon {
-    color: white;
-  }
-  
-  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
-    color: white!important;
-  
-  }
+span {
+  padding-left: 10px;
+}
 
-  .avatar {
-    // position: absolute;
-  
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    // overflow: hidden;
+::ng-deep .mat-icon {
+  color: white;
+}
+
+::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+  color: white !important;
+
+}
+
+.avatar {
+  // position: absolute;
+
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  // overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border: 3px solid rgba(0, 0, 0, 0.24);
+
+
+  img {
+    //   margin-right: 10px;
+    width: 100%;
+    height: auto;
+
+  }
+}
+
+.row {
+  height: calc(100vh - 4rem);
+  display: flex;
+  clear: both;
+  padding: 0;
+  margin: 0;
+
+  h1,
+  h2 {
+    font-weight: normal;
+    font-size: 14px;
     margin: 0;
     padding: 0;
-    border: 3px solid rgba(0, 0, 0, 0.24);
-  
-  
-    img {
-    //   margin-right: 10px;
-      width: 100%;
-      height: auto;
-  
-    }
   }
 
-//   .mat-grid-tile .mat-grid-tile-content {
-//     // justify-content: flex-start;
-//     align-items: left;
-//     justify-content: left;
-//   }
+  h2 {
+    color: rgba(255, 255, 255, .5);
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
 
-// my-grid-list {
-    // padding-top: 24px !important;
-    // border: 4px !important; 
-// }
+}
+
+.column1 {
+  float: left;
+  width: 35%;
+  padding: 10px;
+  color: white;
+  background: inherit;
+  // display: grid;
+  border: 3px outset rgb(255, 255, 255);
+  justify-content: center;
+  align-items: center;
+
+  text-transform: uppercase;
+  min-width: 21rem;
+  position: relative;
+
+  a {
+    color: white;
+  }
+
+  .example-tree ul,
+  .example-tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+  }
+
+  /*
+       * This padding sets alignment of the nested nodes.
+       */
+  .example-tree .mat-nested-tree-node div[role=group] {
+    padding-left: 20px;
+
+  }
+
+
+  .example-tree div[role=group]>.mat-tree-node {
+    padding-left: 20px;
+  }
+
+
+}
+
+
+
+.column2 {
+  float: left;
+  width: 65%;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  border-left: none;
+
+  background-position: center;
+  /* Center the image */
+  background-size: cover;
+
+  max-height: 100vh;
+  /* Establece la altura máxima del div al 100% del alto de la ventana */
+  overflow-y: auto;
+
+}

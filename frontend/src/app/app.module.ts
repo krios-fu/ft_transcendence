@@ -13,13 +13,13 @@ import { CookieService } from 'ngx-cookie-service';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
-import { HeaderComponent } from './home/header/header.component';
+import { HeaderComponent } from './profile/header/header.component';
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { MatIconModule } from '@angular/material/icon';
 import { SearchComponent } from './search/search.component';
 import { MatChipList, MatChipsModule, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material/chips'
-import { MDCChipSet } from '@material/chips';
-import { GameModule } from "./game/game.module";
+import { MatTabsModule } from '@angular/material/tabs';
+
 import { OtpSessionComponent } from './login/otp-session/otp-session.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -30,6 +30,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatDividerModule } from '@angular/material/divider';
 import { GameNotificationComponent } from './services/dialog/notification/game-notification/game-notification.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MiniFooterComponent } from './profile/mini-footer/mini-footer.component';
+import { LoginModule } from './login/login.module';
+import { HomeComponent } from './home/home.component';
 import { MatchNotificationComponent } from './services/dialog/notification/match-notification/match-notification.component';
 import { GameInstructionsComponent } from './services/dialog/info/game-instructions/game-instructions.component';
 import { RoomPasswordInputComponent } from './services/dialog/input/room_password/room-password-input.component';
@@ -44,12 +47,14 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
     declarations: [
         AppComponent,
         HeaderComponent,
-        SearchComponent,
-        OtpSessionComponent,
+        // OtpSessionComponent,
         PagenotfoundComponent,
         DialogNotification,
         FriendNotificationComponent,
         GameNotificationComponent,
+        MiniFooterComponent,
+        HomeComponent,
+
         MatchNotificationComponent,
         GameInstructionsComponent,
         RoomPasswordInputComponent
@@ -81,6 +86,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         ScrollingModule,
         MatDividerModule,
         MatProgressBarModule,
+        MatTabsModule,
+        LoginModule,
         MatFormFieldModule,
         MatInputModule
     ],

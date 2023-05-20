@@ -1,24 +1,2 @@
-<app-header (searchUser)="getSearch($event)"></app-header>
-<section class="row" *ngIf="hiden">
-
-	<div class="column1 " style="
-  border: outset 4px silver;">
-
-		<router-outlet></router-outlet>
-	</div>
-	<div class="column2" style="border: outset 4px silver;">
-		<router-outlet name="game"></router-outlet>
-		<!-- <app-game></app-game> -->
-	</div>
-
-	<div class="column3" style="border: outset 4px silver;">
-		<div style="color: white">
-			<app-search *ngIf="this.search" [users]="this.search"></app-search>
-		</div>
-
-		<router-outlet name="chat"></router-outlet>
-		<!-- <div class="chat_ball"></div> -->
-	</div>
-</section>
-
-<router-outlet *ngIf="hiden === false"></router-outlet>
+<app-header *ngIf="hiden === true"></app-header>
+<router-outlet></router-outlet>

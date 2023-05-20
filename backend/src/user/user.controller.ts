@@ -32,6 +32,7 @@ import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config';
 import { Express } from 'express';
 import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
+import { UserCountData } from './types/user-count-data.type';
 
 @Controller('users')
 export class UserController {
@@ -57,7 +58,7 @@ export class UserController {
     */
 
     @Get()
-    async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[] | [UserEntity[], number]> {
+    async findAllUsers(@Query() queryParams: UserQueryDto): Promise<UserEntity[] | UserCountData> {
         if (queryParams.count)
             return await this.userService.findAndCountAllUsers(queryParams);
         return await this.userService.findAllUsers(queryParams);
@@ -291,6 +292,12 @@ export class UserController {
             throw new BadRequestException('resource not found in database');
         }
         return await this.friendshipService.getFriends(user.id);
+    }
+
+    @Get(':id/friends')
+    public async getUserFriends(@Param('id', ParseIntPipe) id: number): Promise<FriendshipEntity[]> {
+   
+        return await this.friendshipService.getFriends(id);
     }
     
     // @Get(':id/friends')
