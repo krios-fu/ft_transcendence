@@ -35,6 +35,7 @@ export class AppLoggerMiddleware implements NestMiddleware {
 
     use(request: Request, response: Response, next: NextFunction): void {
         const { ip, method, path: url } = request;
+        const { headers } = request;
         const userAgent = request.get('user-agent') || '';
 
         response.on('close', () => {
@@ -44,6 +45,8 @@ export class AppLoggerMiddleware implements NestMiddleware {
             this.logger.log(
                 `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip}`
             );
+            this.logger.log(`La chicha: REQUEST ${JSON.stringify(headers, null, 2)}`);
+            this.logger.log(`La chicha: RESPONSE: ${JSON.stringify(response.getHeaders(), null, 2)}`)
         });
 
         next();
