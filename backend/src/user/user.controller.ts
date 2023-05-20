@@ -293,6 +293,12 @@ export class UserController {
         }
         return await this.friendshipService.getFriends(user.id);
     }
+
+    @Get(':id/friends')
+    public async getUserFriends(@Param('id', ParseIntPipe) id: number): Promise<FriendshipEntity[]> {
+   
+        return await this.friendshipService.getFriends(id);
+    }
     
     // @Get(':id/friends')
     // public async getUserFriends(@Param('id', ParseIntPipe) userId: number,): Promise<FriendshipEntity[]> {

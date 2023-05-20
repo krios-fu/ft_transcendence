@@ -1,0 +1,50 @@
+
+<section class="row">
+  <div class="column1 " style="border: outset 4px silver;">
+
+<section class="badge">
+
+    <img class="avatar" src={{getPhotoUrl()}} />
+
+</section>
+<!-- </div> -->
+<section style="margin-top: 5px; display: flex; 
+align-items: center; justify-content: center;" *ngIf="user">
+  <h1 style="font-size: 25px;">
+    <mat-icon [ngStyle]="{'color': color_icon}" class="icon-display">{{online_icon}}</mat-icon>
+    {{getNickname()}}
+  </h1>
+</section>
+
+<div *ngIf="user" style="display: grid; justify-content: center; align-items: center; padding: 21px; margin: 50px">
+  <span>
+
+    <h3 style="color : goldenrod;"> <mat-icon>emoji_events</mat-icon> 42</h3>
+  </span>
+  <span>
+
+    <h3 style="color : rgb(0,149,255);"><mat-icon>leaderboard</mat-icon> 1</h3>
+  </span>
+  <span >
+
+    <h3 style="color : rgb(255,0,47);"> <mat-icon>trending_down</mat-icon> 42</h3>
+  </span>
+</div>
+
+
+<section *ngIf="user" style="display: grid; justify-content: space-between; align-items: center;">
+
+
+  <!-- <button style="padding: 100px;" mat-icon-button routerLink="/profile/setting">
+    <mat-icon style="font-size: 100px; padding: 0px">settings</mat-icon>
+  </button> -->
+
+</section>
+
+  </div>
+
+  <div class="column2" style="border: outset 4px silver;">
+    <!-- <app-room></app-room> -->
+    <app-stats *ngIf="this.user" [username]="this.user.username"></app-stats>
+</div>
+</section>

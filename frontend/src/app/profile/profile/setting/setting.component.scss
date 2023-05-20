@@ -1,0 +1,106 @@
+.head {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    overflow: initial;
+}
+
+.avatar {
+    position: relative;
+    left: 5px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    margin: 0;
+    border: 2px solid rgb(255, 255, 255);
+
+    img {
+        width: 100%;
+        // height: 100%;
+
+    }
+}
+
+div {
+    font-size: smaller;
+    border: outset 2px silver;
+    border-radius: 22px;
+
+}
+
+.example-form2 {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.example-full-width {
+    width: 100%;
+    color: white;
+    font-size: small;
+    margin-top: 10px;
+}
+
+.example-form mat-slide-toggle {
+    margin: 11px 0;
+    padding: 5px;
+    font-size: medium;
+    display: block;
+
+
+}
+
+:host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+    background-color: #0ad7ea;
+
+}
+
+:host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+    background-color: #ffffff;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    color: white;
+
+    // font-size: 50px;
+    &:hover {
+        color: rgb(10, 223, 17);
+    }
+}
+
+
+[aria-label=primary] {
+
+    // background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.103) 120%);
+    background: linear-gradient(90deg, rgba(222, 0, 174, 0.077) 0, rgba(12, 0, 81, 0.25) 100%);
+    font-size: large;
+    border: 3px outset rgba(255, 255, 255, 0.499);
+    font-family: 'Super Mario World Text Box', sans-serif;
+    border-radius: 22px;
+    color: white !important;
+
+}
+
+
+
+
+.mat-tab-group {
+    background-image: url("https://rare-gallery.com/uploads/posts/585963-retrowave-city.jpg");
+    color: white !important;
+    background-position: center;
+    /* Center the image */
+    background-size: cover;
+
+    // img{
+    //     width: 50%;
+    //     height: 150%;
+    // }
+
+}

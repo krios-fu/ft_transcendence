@@ -1,1 +1,204 @@
+.row {
+	height: calc(100vh - 4rem);
+	display: flex;
+	clear: both;
 
+	padding: 0;
+	margin: 0;
+  }
+
+  .column1  {
+	float: left;
+	width: 20%;
+	padding: 0;
+	padding-top: 2px;
+	color: white;
+	border: 3px groove rgba(245, 245, 245, 0.29);
+	text-transform: uppercase;
+	min-width: 21rem;
+	position: relative;
+
+  
+  }
+
+
+  
+  .column2 {
+	float: left;
+	width: 80%;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	border-left: none;
+
+	background-position: center; /* Center the image */
+	
+  
+	height: auto;
+  
+  }
+
+  .tree {
+	background: none;
+	// border: 1px solid rgba(245, 245, 245, 0.29);
+	font-family: 'Super Mario World Text Box', sans-serif;
+	font-size: 9px;
+  
+  }
+  
+  a {
+	text-decoration: none;
+	color: white;
+	font-size: 9px;
+  
+	&:hover {
+	  color: goldenrod;
+	}
+  }
+  
+  [aria-label=primary] {
+  
+	// background: linear-gradient(90deg, rgba(222, 0, 174, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
+  // test
+	// background: linear-gradient(90deg, rgba(3, 9, 73, 0.319) 0, rgba(61, 56, 85, 0.25) 100%);
+  
+	// border: 3px outset rgba(255, 255, 255, 0.499);
+	// font-family: 'Super Mario World Text Box', sans-serif;
+	font-size: 25px;
+	// border-radius: 22px;
+  
+  }
+  
+  
+  .effect {
+  
+	animation: bounce-in 2s ease;
+	animation: fade-in 2s linear both;
+  
+	@keyframes fade-in {
+	  from {
+		opacity: 0;
+	  }
+  
+	  to {
+		opacity: 1;
+	  }
+	}
+  }
+  
+  
+  .avatar {
+	position: relative;
+  
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	border: 3px solid rgba(255, 255, 255, 0.24);
+  
+  
+	img {
+	  width: 100%;
+	  height: auto;
+  
+	}
+  }
+  
+  .avatar_online {
+	position: relative;
+	border-radius: 50%;
+	width: 50px;
+	height: 50px;
+	overflow: hidden;
+	margin: 0;
+	// padding: 25;
+	border: 3px solid rgba(255, 255, 255, 0.24);
+	background-image: linear-gradient(var(--rotate), #5ddcff, #82e33c 43%, #6700c2);
+	animation: spin 2.5s linear infinite;
+	img {
+	  width: 100%;
+	  height: auto;
+  
+	}
+  
+  }
+  
+  .scroll {
+	height: 75vh;
+	position: relative;
+	color: white;
+	/* box-shadow: 0 0 4px 0 goldenrod; */
+	// border-radius: 20px;
+	flex-direction: column-reverse;
+  
+  }
+  
+  .tag {
+	padding: 15px;
+	// border-radius: 22px;
+	height: 70px;
+	// box-shadow: 10px rgb(255, 255, 255);
+	width: 80%;
+  
+	// background: linear-gradient(90deg, rgba(222, 0, 89, 0.25) 0, rgba(12, 0, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+
+  
+	color: white;
+	// border: outset 3px silver;
+	margin-top: 10px;
+  
+  
+  
+  }
+
+  .chat-title {
+	position: relative;
+	z-index: 10;
+	display: flex;
+	border-bottom: outset 3px silver;
+	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+
+	color: #fff;
+	text-transform: uppercase;
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	margin: 0;
+	height: 3rem;
+	display: flex;
+
+	h1{
+		padding: 0;
+		margin: 0;
+
+	}
+
+  }
+  
+  
+  
+  span {
+	padding-left: 10px;
+	font-size: xx-small;
+  }
+  
+  ::ng-deep .mat-icon {
+	color: white;
+  }
+  
+  ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+	color: white !important;
+  }
+  
+  
+  .visible {
+	visibility: hidden;
+  
+	&:hover {
+	  visibility: visible;
+	}
+  }

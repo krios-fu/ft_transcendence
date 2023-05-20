@@ -14,4 +14,6 @@ export class ChatService{
 			friendId : id_friend
 		})
 	}
+
+	
 }

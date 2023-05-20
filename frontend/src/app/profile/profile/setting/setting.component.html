@@ -1,0 +1,87 @@
+<section class="head">
+    <img class="avatar" src={{getPhoto()}} />
+</section>
+
+<section style="margin-top: 5px; display: flex; 
+            position: relative; 
+            align-items: center;  
+            justify-content: space-around;">
+    <h1 style="font-size: 14px;">setting</h1>
+</section>
+
+
+<form class="example-form" #form="ngForm" (ngSubmit)="alertFormValues(form.form, login.value)" *ngIf="this.user">
+
+    <section style="padding-top: 20px;">
+
+        <mat-tab-group mat-align-tabs="end" color="primary" aria-label="primary" style="padding: 10px;">
+            <mat-tab label="General">
+                <mat-divider></mat-divider>
+                <mat-form-field class="example-full-width">
+                    <mat-label style="color: red;">
+                        <h2>
+                            Change nickname<br> size min/max: 3/8 chararter
+                        </h2>
+                    </mat-label>
+                    <input #login ngModule name="nickName" style="color: white; font-size: large; margin-top: 40px;"
+                        matInput value={{this.user.nickName}}
+                        onKeyPress="if(event.keyCode == 13) event.returnValue = false;" (click)="changeDetected()">
+                </mat-form-field>
+                <mat-divider></mat-divider>
+
+                <input style="display: none;" type="file" (change)="onFile($event)" #fileInput>
+                <button style="justify-content: center; align-items: center; 
+                        display: flex;" (click)="fileInput.click()">
+                    <mat-icon style="margin: 5px;">upload_file</mat-icon> SELECT AVATAR<span
+                        style="margin-left: 5px; color: green">{{namePhoto}}</span>
+                </button>
+                <mat-divider></mat-divider>
+
+                <mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.acceptedTerms"
+                    name="acceptedTerms">
+                    Accept Terms of Service
+                </mat-slide-toggle>
+                <mat-divider></mat-divider>
+
+                <mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.defaultOffline"
+                    name="defaultOffline">
+                    Online</mat-slide-toggle>
+            </mat-tab>
+            <mat-tab label="OTP">
+                <section>
+                    <mat-divider></mat-divider>
+                    <mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.doubleAuth"
+                        name="doubleAuth">2FA Authentication
+                    </mat-slide-toggle>
+                    <mat-divider></mat-divider>
+                    <div *ngIf="qr_generate.length != 0"
+                        style=" display: flex; justify-content: space-around; align-content: center; background-color: white; position: relative;">
+                        <img src={{qr_generate}}>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-around; margin: 10px;"
+                        *ngIf="qr_generate.length != 0">
+                        <input type="text" style="margin: 0px;
+            padding: 8px 20px 5px 15px;
+            height: 40px;
+            width: 90%;
+            background-color: rgba(30,30,30,0.5);
+            color: #c7c7c7;
+            border: none;
+            font-size: 16px;
+            " #code placeholder=" Code generate by google auth" autofocus="autofocus">
+                        <button type="submit" value="send" (click)="confimateOtp(code.value)">
+                            <mat-icon>send</mat-icon>
+                        </button>
+                    </div>
+                </section>
+            </mat-tab>
+        </mat-tab-group>
+    </section>
+    <section style="padding-top: 20px;">
+        <section style="justify-content: center; align-items: center; display: flex; background-color: inherit;">
+            <button>
+                <mat-icon style="transform: scale(1.5); padding: 0px;">{{icon}}</mat-icon>
+            </button>
+        </section>
+    </section>
+</form>

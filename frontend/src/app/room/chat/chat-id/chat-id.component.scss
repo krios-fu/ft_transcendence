@@ -36,87 +36,27 @@ Mixins
 /*--------------------
   Chat
   --------------------*/
-.chat-min {
-	position: absolute;
-	width: 15rem;
-	float: left;
 
-	z-index: 2;
-	overflow: hidden;
-
-	border-radius: 20px;
-	// border: 1px solid rgba(245, 245, 245, 0.29);
-	border: outset 3px silver;
-	border-bottom: none;
-
-	box-shadow: 0 10px 30px black;
-	// right: -8vw;
-	right: 0;
-
-	// right: 1vw;
-
-	bottom: 1vh;
-	background: linear-gradient(180deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-
-	// &:hover{
-	// 	right: 1vw;
-	// 	animation: bounce-in 2s ease;
-
-	// }
-
-	animation: bounce-in 2s ease;
-
-	.icon {
-		display: flex;
-		z-index: 10;
-		padding: 0;
-	}
-
-	@keyframes bounce-in {
-		0% {
-			opacity: 0;
-			transform: scale(.3);
-		}
-
-		50% {
-			opacity: 1;
-			transform: scale(1.05);
-		}
-
-		70% {
-			transform: scale(.9);
-		}
-
-		100% {
-			transform: scale(1);
-		}
-	}
-
-	.message,
-	.message-box {
-
-		display: none;
-	}
-
-}
 
 
 .chat {
-	width: 72%;
-	height: 50%;
+	width: 100%;
+	height: 100%;
 	float: left;
 	display: flex;
 	position: absolute;
-	bottom: 0vh;
-	right: 0;
+	// bottom: 0vh;
+	// right: 0;
 	z-index: 2;
 	overflow: hidden;
-	border-radius: 22px;
-	box-shadow: 0 10px 30px black;
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-
+	// border-radius: 22px;
+	// box-shadow: 0 10px 30px black;
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	// background-image: url('https://wallpaperaccess.com/full/3739441.jpg');
 	// border: 1px solid rgba(245, 245, 245, 0.29);
+	background-size: cover; background-position: center;
 	border: outset 3px silver;
+	// background-color: rgba(0, 0, 0, 30);
 
 	flex-direction: column;
 	animation: fade-in 2s linear both;
@@ -142,6 +82,7 @@ Mixins
 	display: flex;
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-bottom: outset 3px silver;
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 
 	// border-top: none;
@@ -152,31 +93,8 @@ Mixins
 	align-items: center;
 	justify-content: space-between;
 	padding: 0;
+	margin-bottom: 10px;
 	height: 3rem;
-
-	h1,
-	h2,
-	span {
-		font-weight: normal;
-		font-size: 8px;
-		margin: 0;
-		padding: 0;
-	}
-
-	h2 {
-		color: rgba(255, 255, 255, .5);
-		font-size: 8px;
-		letter-spacing: 1px;
-	}
-
-	.badge {
-		display: flex;
-		align-items: center;
-		text-align: center;
-		padding: 0;
-		margin: 0;
-		position: relative;
-		overflow: initial;
 
 
 		.avatar {
@@ -193,7 +111,6 @@ Mixins
 				height: auto;
 			}
 		}
-	}
 
 }
 
@@ -227,42 +144,13 @@ Mixins
 		padding: 6px 10px 7px;
 		border-radius: 10px 10px 10px 0;
 		background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
-		font-size: 10px;
-		margin: 3px 0 3px 35px;
+		font-size: 1rem;
+		margin: 3px 0 3px ;
 		position: relative;
 		line-height: 2;
-		// max-width: 100px;
-		// width: 100px;
-		// white-space: break-word;
 		word-break:break-all;
 		text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 
-		.timestamp {
-			position: absolute;
-			bottom: -15px;
-			font-size: 9px;
-			color: rgba(255, 255, 255, .3);
-		}
-
-
-		.avatar {
-			position: absolute;
-			z-index: 1;
-			bottom: -15px;
-			left: -30px;
-			border-radius: 30px;
-			width: 30px;
-			height: 30px;
-			overflow: hidden;
-			margin: 0;
-			padding: 0;
-			border: 2px solid rgba(255, 255, 255, 0.24);
-
-			img {
-				width: 100%;
-				height: auto;
-			}
-		}
 
 		&.message-personal {
 			float: right;
@@ -270,23 +158,10 @@ Mixins
 			text-align: right;
 			border-radius: 10px 10px 0 10px;
 
-			&::before {
-				left: auto;
-				right: 0;
-				border-right: none;
-				border-left: 5px solid transparent;
-				border-top: 4px solid #04b5e6;
-				bottom: -4px;
-
-			}
-		}
-
-		&:last-child {
-			margin-bottom: 20px;
-			margin-top: 7px;
-		white-space: break-word;
 
 		}
+
+	
 
 		&.new {
 			transform: scale(0);
@@ -309,6 +184,7 @@ Mixins
 	//background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-top: outset 3px silver;
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 
 	padding: 10px;
