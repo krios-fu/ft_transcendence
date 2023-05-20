@@ -86,6 +86,15 @@ export class    GameMatchmakingService {
         );
     }
 
+    async emitQueuesInfo(gameId: string, emitTo: string,
+                            username: string): Promise<void> {
+        let userQueueUpdate: UserQueueUpdate;
+    
+        this.emitAllQueuesLength(gameId, emitTo);
+        userQueueUpdate = await this.queueService.findUser(username);
+        this._emitUserQueueUpdate(username, userQueueUpdate);
+    }
+
     isNextPlayer(username: string, roomId: string): boolean {
         const   nextPlayers: NextPlayerPair | undefined =
                             this.queueService.getNextPlayers(roomId);
@@ -165,7 +174,8 @@ export class    GameMatchmakingService {
     }
 
     async removeFromAllQueues(username: string): Promise<void> {
-        const   gameId: string = await this.queueService.findUser(username);
+        const   gameId: string =
+                    (await this.queueService.findUser(username)).roomId || "";
         let     lengthUpdate: [number, GameType] | undefined;
     
         if (!gameId)
@@ -408,14 +418,15 @@ export class    GameMatchmakingService {
 
     // Called when a player joins or leaves a game room.
     async updateNextPlayerRoom(username: string, gameId: string,
-                            join: boolean): Promise<void> {
+                                join: boolean): Promise<void> {
         const   nextPlayers: NextPlayerPair | undefined =
                             this.queueService.updateNextPlayerRoom(
                                                 username,
                                                 gameId,
                                                 join);
-        const   registeredRoom: string = await this.queueService.findUser(
-                                                                    username);
+        const   registeredRoom: string =
+                            (await this.queueService.findUser(username)).roomId
+                            || "";
 
         if (registeredRoom != gameId && join)
             await this.updateNextPlayerRoom(username, registeredRoom, false);

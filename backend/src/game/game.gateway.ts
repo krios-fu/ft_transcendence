@@ -94,6 +94,7 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() roomId: number
     ) {
         const   roomName: string = SocketHelper.roomIdToName(roomId);
+        const   username: string = client.data.username;
         const   [initScene, initData]: [string,
                                         IMenuInit |
                                         IGameClientStart |
@@ -102,18 +103,22 @@ export class    GameGateway implements OnGatewayInit,
                     this.updateService.getClientInitData(roomName);
     
         this.roomService.join(
-            client.data.username,
+            username,
             roomName
         );
-        this.matchMakingService.emitAllQueuesLength(roomName, client.id);
+        await this.matchMakingService.emitQueuesInfo(
+            roomName,
+            client.id,
+            username
+        );
         if (initScene && initData)
             client.emit(initScene, initData);
         await this.matchMakingService.updateNextPlayerRoom(
-            client.data.username,
+            username,
             roomName,
             true
         );
-        console.log(`${client.data.username} joined Game room ${roomName}`);
+        console.log(`${username} joined Game room ${roomName}`);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
