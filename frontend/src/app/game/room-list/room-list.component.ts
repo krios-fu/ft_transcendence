@@ -6,7 +6,6 @@ import {
 import {
     IRoom,
     IRoomUserCount,
-    IUserRoom,
     RoomListService,
     RoomRole
 } from './room-list.service';
@@ -14,6 +13,7 @@ import { AlertServices } from 'src/app/services/alert.service';
 import { PageEvent } from '@angular/material/paginator';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { IUserRoom } from 'src/app/interfaces/IUserRoom.interface';
 
 @Component({
     selector: 'app-room-list',

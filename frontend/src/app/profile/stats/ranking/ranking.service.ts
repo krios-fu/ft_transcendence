@@ -36,6 +36,9 @@ export interface   RankingData {
     username: string;
 }
 
+export type UserCountData = [UserRanking[], number]
+                                | [UserRanking[], number, number];
+
 @Injectable({
     providedIn: 'root'
 })
@@ -57,20 +60,43 @@ export class    RankingService {
         );
     }
 
+    private _execRankingRequest(url: string): Observable<UserCountData> {
+        return (
+            this.httpService.get<UserCountData>(url)
+            .pipe(
+                retry(3),
+                catchError(this._httpErrorHandler)
+            )
+        );
+    }
+
+    getInitialRankings(limit: number,
+                        targetUser: string)
+                            : Observable<UserCountData> {
+        return (
+            this._execRankingRequest(
+                `${this._urlAuthority}${this._urlPath}?`
+                + `orderDesc=ranking`
+                + `&orderDesc=username`
+                + `&limit=${limit}`
+                + `&target=${targetUser}`
+                + `&count=true`
+            )
+        );
+    }
+
     getRankings(limit: number,
-                    offset: number): Observable<[UserRanking[], number]> {
-        return (this.httpService.get<[UserRanking[], number]>(
-            `${this._urlAuthority}${this._urlPath}?`
-            + `orderDesc=ranking`
-            + `&orderDesc=username`
-            + `&limit=${limit}`
-            + `&offset=${offset}`
-            + `&count=true`
-        )
-        .pipe(
-            retry(3),
-            catchError(this._httpErrorHandler)
-        ));
+                    offset: number): Observable<UserCountData> {
+        return (
+            this._execRankingRequest(
+                `${this._urlAuthority}${this._urlPath}?`
+                + `orderDesc=ranking`
+                + `&orderDesc=username`
+                + `&limit=${limit}`
+                + `&offset=${offset}`
+                + `&count=true`
+            )
+        );
     }
 
     userToRanking(users: UserRanking[], initRank: number): RankingData[] {

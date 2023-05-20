@@ -4,6 +4,7 @@ import { UserService } from "../user/services/user.service";
 import { GameType } from "./elements/Game";
 import { Category } from "../user/enum/category.enum";
 import { sortedIndexBy } from "lodash";
+import { UserQueueUpdate } from "./game.matchmaking.service";
 
 export interface   IQueueElement
 {
@@ -356,11 +357,27 @@ export class    GameQueueService {
         return (queue.findIndex((elem) => elem.user.username === username));
     }
 
+    private _setUserQueueUpdate(queued: boolean, roomId?: string,
+                                    type?: GameType): UserQueueUpdate {
+        return ({
+            queued: queued,
+            roomId: roomId,
+            type: type
+        });
+    }
+
     /*
     **  Find user in any game queue.
-    **  Returns the game id where it was found.
+    **
+    **  Returns whether the user is queued, and the roomId and type
+    **  of queue if it is.
+    **
+    **  If the user has been selected as a nextPlayer, the type of queue
+    **  is not sent to the client to prevent unqueue requests at that
+    **  point, because a match invite has already been sent that can be
+    **  refused, which will unqueue the client as well.
     */
-    async findUser(username: string): Promise<string> {
+    async findUser(username: string): Promise<UserQueueUpdate> {
         let gameId: string;
         let queuesPartition: number = 0;
     
@@ -369,15 +386,15 @@ export class    GameQueueService {
             ++queuesPartition;
             gameId = queues[0];
             if (this._findByUsername(username, queues[1].classicQueue) != -1)
-                return (gameId);
+                return (this._setUserQueueUpdate(true, gameId, "classic"));
             if (this._findByUsername(username, queues[1].heroQueue) != -1)
-                return (gameId);
+                return (this._setUserQueueUpdate(true, gameId, "hero"));
             for (const nextPlayer of queues[1].nextPlayers)
             {
                 if (!nextPlayer)
                     continue ;
                 if (nextPlayer.queueElement.user.username === username)
-                    return (gameId);
+                    return (this._setUserQueueUpdate(true, gameId));
             }
             if (queuesPartition === 30)
             {
@@ -387,7 +404,7 @@ export class    GameQueueService {
                 queuesPartition = 0;
             }
         }
-        return ("");
+        return (this._setUserQueueUpdate(false));
     }
 
     async add(gameId: string, gameType: GameType,
@@ -403,7 +420,7 @@ export class    GameQueueService {
             this._setQueues(gameId);
             queue = this._getQueue(gameId, gameType);
         }
-        if (!(await this.findUser(username)))
+        if (!(await this.findUser(username)).queued)
         {
             queue.push({
                 user: userEntity,
