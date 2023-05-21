@@ -1,19 +1,9 @@
-# Tareas pendientes
-<hr>
-
-- [ ] Escenario de redirección desde backend (302) en producción, con back bajo proxy, levantando endpoints
-públicos
-
-#### Resultados
-
-<hr>
-
-- [ ] Escenario de redirección desde backend modificando nginx para eliminar el proxy a backend.
-
-#### Resultados
-
-<hr>
-
-- [ ] Monitorización de peticiones y respuestas en backend tanto en dev como en prod y comparación entre ellas.
-
-#### Resultados
+- [ ] Build de casi dos GB en front en produccion
+- [ ] Variables de entorno sin gestionar en issuer y provider de la configuracion de JWT
+- [ ] Carpeta app furtiva en front
+- [ ] Editar  el entorno en prod de angular en runtime para la pet. en login
+- [ ] Comprobar la eliminacion de la cookie
+- [ ] Capar refresco desde webapp sin usuario
+- [ ] No setear la cabecera de autorizacion si no hay token
+- [ ] Cabecera de allow headers repe
+- [ ] No meter la carpeta de config en dev
