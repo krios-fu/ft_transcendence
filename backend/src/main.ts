@@ -14,6 +14,7 @@ async function bootstrap() {
     }));
     app.enableCors({
         origin: [process.env.WEBAPP_IP],
+        allowedHeaders: ['Origin', 'Accept', 'Content-Type', 'Location', 'Authorization'],
         methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
         credentials: true,
     });
