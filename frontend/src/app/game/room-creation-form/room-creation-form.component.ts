@@ -106,11 +106,7 @@ export class RoomCreationFormComponent implements OnInit {
         )
         .subscribe({
             next: (roomData: IRoomData) => {
-                this.router.navigate(['/', {
-                    outlets: {
-                        game: ['room', roomData.id]
-                    }
-                }]);
+                this.router.navigate(['/game', roomData.id]);
             },
             error: (err: any) => {
                 console.error(err);

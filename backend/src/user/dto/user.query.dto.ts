@@ -69,4 +69,8 @@ export class UserQueryDto extends BaseQueryDto {
     @IsBoolean()
     @Transform(({ value} ) => value === 'true') //Strings !== 'true' are converted to false
     count?: boolean;
+
+    @IsOptional()
+    @IsString()
+    target?: string;
 }

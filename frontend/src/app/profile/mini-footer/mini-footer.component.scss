@@ -1,0 +1,30 @@
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+
+::ng-deep .mat-tab-label{
+	color: white;
+	font-size: smaller;
+  }
+  
+  
+  .cdk-virtual-scroll-viewport {
+  
+	color: #ffffff;
+	transition: color 0.2s linear;
+  
+	&:hover {
+	  color:#a44848
+	}
+  }
+  
+  *::-webkit-scrollbar {
+	width: 1px;
+  }
+  
+  *::-webkit-scrollbar-track {
+	background: mat-color(#ffffff, 100);
+  }
+  
+  *::-webkit-scrollbar-thumb {
+	box-shadow: inset 0 0 0 8px;
+  }

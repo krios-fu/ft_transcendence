@@ -11,45 +11,54 @@ import { ChatMessageRepository } from '../repository/chat-message.repository';
 
 @Injectable()
 export class ChatMessageService {
-	constructor(
-		@InjectRepository(ChatMessageEntity)
-		private messageRepository: ChatMessageRepository,
-		@InjectRepository(ChatUserEntity)
-		private chatUserRepository: Repository<ChatUserEntity>,
-		private userService : UserService,
-		private chatService : ChatService
-	)
-	{
-		console.log('message repo start')
-	}
+    constructor(
+        @InjectRepository(ChatMessageEntity)
+        private messageRepository: ChatMessageRepository,
+        @InjectRepository(ChatUserEntity)
+        private chatUserRepository: Repository<ChatUserEntity>,
+        private userService: UserService,
+        private chatService: ChatService
+    ) {
+        console.log('message repo start')
+    }
 
-	public async findMessages(): Promise<ChatMessageEntity[]>{
-		return await this.messageRepository.find()
-	}
+    public async findMessages(): Promise<ChatMessageEntity[]> {
+        return await this.messageRepository.find()
+    }
 
-	public async findOne(id: number): Promise<ChatMessageEntity>{
-		return await this.messageRepository.findOne({
-			where: {
-				id : id
-			}
-		})
-	}
+    public async findOne(id: number): Promise<ChatMessageEntity> {
+        return await this.messageRepository.findOne({
+            where: {
+                id: id
+            }
+        })
+    }
 
-	public async saveMessages(message : any ) : Promise<ChatMessageEntity>{
-		const receiver: UserEntity = await this.userService.findOneByUsername(message.receiver);
-		const author: UserEntity = await this.userService.findOneByUsername(message.sender);
-		const chat: ChatEntity = await (this.chatService.findChatsUsers(author.id, receiver.id))[0];
-		const chatUser: ChatUserEntity = await this.chatUserRepository.save(new ChatUserEntity({
-			'chatId': chat.id,
-			'userId': author.id
-		}));
-		const msg = new ChatMessageEntity({
-			'chatUserId': chatUser.id,
-			'content': message.content,
-		});
-		
-		await this.messageRepository.insert(msg)
-		return msg;
-	}
+
+
+    public async findMessageChats(id_chat: number): Promise<ChatMessageEntity[]> {
+        return (await this.messageRepository.createQueryBuilder('chat_messages'))
+            .leftJoinAndSelect('chat_messages.chatUser', 'chat_users')
+            .leftJoinAndSelect('chat_users.chat', 'chat')
+
+            .where('chat.id = :chatId', { 'chatId': id_chat })
+            // .andWhere('chat_user.userId= :user_id', { 'user_id': id_friend })
+            // .orderBy({ 'chat_user.messageId': 'ASC' })
+            .getMany();
+    }
+
+    public async saveMessages(message: any): Promise<ChatMessageEntity> {
+
+        const chatUser = await this.chatService.findChats_User(message.sender, message.id_chat);
+
+        const msg = new ChatMessageEntity({
+            'chatUserId': chatUser[0].id,
+            'content': message.content,
+        });
+
+        await this.messageRepository.save(msg)
+
+        return msg;
+    }
 
 }

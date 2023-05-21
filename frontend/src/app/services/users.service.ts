@@ -27,7 +27,11 @@ export class UsersService {
     // }
 
     getUser(user : string) {
-      return this.http.get<UserDto[]>(`http://localhost:3000/users/${user}`);
+      return this.http.get<UserDto>(`http://localhost:3000/users/${user}`);
+    }
+
+    getUserById(user_id : number) {
+      return this.http.get<UserDto>(`http://localhost:3000/users/${user_id}`);
     }
 
     getFriends(user: string){
