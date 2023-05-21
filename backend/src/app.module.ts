@@ -25,34 +25,6 @@ import { join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
-import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
-
-import { Request, Response, NextFunction } from 'express';
-
-@Injectable()
-export class AppLoggerMiddleware implements NestMiddleware {
-    private logger = new Logger('HTTP');
-
-    use(request: Request, response: Response, next: NextFunction): void {
-        const { ip, method, path: url } = request;
-        const { headers } = request;
-        const userAgent = request.get('user-agent') || '';
-
-        response.on('close', () => {
-            const { statusCode } = response;
-            const contentLength = response.get('content-length');
-
-            this.logger.log(
-                `${method} ${url} ${statusCode} ${contentLength} - ${userAgent} ${ip}`
-            );
-            this.logger.log(`La chicha: REQUEST ${JSON.stringify(headers, null, 2)}`);
-            this.logger.log(`La chicha: RESPONSE: ${JSON.stringify(response.getHeaders(), null, 2)}`)
-        });
-
-        next();
-    }
-}
-
 @Module({
     imports: [
         UserModule,
@@ -113,8 +85,4 @@ export class AppLoggerMiddleware implements NestMiddleware {
     ],
     exports: []
 })
-export class AppModule {
-    configure(consumer: MiddlewareConsumer): void {
-        consumer.apply(AppLoggerMiddleware).forRoutes('*');
-    }
-}
+export class AppModule { }
