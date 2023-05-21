@@ -11,6 +11,7 @@ import {
 import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
+import { Router } from '@angular/router';
 
 /* implementamos aqui la logica de refresco y redireccion,
     las peticiones de authentificacion deben pasar limpias */
@@ -20,9 +21,8 @@ export class AuthInterceptor implements HttpInterceptor {
     isRequestingNewCreds: boolean = false;
     newCredsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(
-        private authService: AuthService,
-    ) { }
+    constructor(private authService: AuthService,
+                private router: Router) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
@@ -31,6 +31,10 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
+                    if (err.status === 401 && err.headers.get('Location') === '/auth/2fa') {
+                        this.router.navigateByUrl('/auth/2fa');
+                        return throwError(() => err);
+                    }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
                     } else {
@@ -48,8 +52,7 @@ export class AuthInterceptor implements HttpInterceptor {
             );
     }
 
-    private handleAuthError
-    (
+    private handleAuthError(
         req: HttpRequest<any>, 
         next: HttpHandler
     ): Observable<any> {

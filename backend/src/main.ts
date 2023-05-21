@@ -16,6 +16,14 @@ async function bootstrap() {
         origin: [process.env.WEBAPP_IP],
         allowedHeaders: ['Origin', 'Accept', 'Content-Type', 'Location', 'Authorization'],
         methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+        allowedHeaders: [
+            'Accept', 
+            'Authorization', 
+            'Accept-Language', 
+            'Content-Language',
+            'Location',
+            'Content-Type'
+        ],
         credentials: true,
     });
     app.useGlobalFilters(new NotValidatedExceptionFilter());
