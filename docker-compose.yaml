@@ -41,7 +41,7 @@ services:
       - frontend_node_modules:/usr/src/node_modules
     depends_on:
       - backend
-    working_dir: /usr/src/app
+    working_dir: /usr/src/
 
 
 networks:

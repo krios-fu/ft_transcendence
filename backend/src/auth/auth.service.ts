@@ -29,6 +29,8 @@ export class AuthService {
                 username: username,
                 validated: true
             },
+            iss: 'http://localhost:3000',
+            aud: process.env.WEBAPP_IP
         });
     }
 
@@ -39,7 +41,9 @@ export class AuthService {
                 id: id,
                 username: username,
                 validated: false
-            }
+            },
+            iss: 'http://localhost:3000',
+            aud: process.env.WEBAPP_IP
         });
     }
 
