@@ -14,15 +14,15 @@ async function bootstrap() {
     }));
     app.enableCors({
         origin: [process.env.WEBAPP_IP],
-        allowedHeaders: ['Origin', 'Accept', 'Content-Type', 'Location', 'Authorization'],
         methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
         allowedHeaders: [
+            'Origin',
             'Accept', 
             'Authorization', 
             'Accept-Language', 
             'Content-Language',
-            'Location',
-            'Content-Type'
+            'Content-Type',
+            'Location'
         ],
         credentials: true,
     });
