@@ -15,7 +15,7 @@ interface chat_user {
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
- 
+
 })
 export class ChatComponent implements OnInit {
 
@@ -38,28 +38,25 @@ export class ChatComponent implements OnInit {
       .subscribe((user: UserDto) => {
         this.me = user;
         this.http.get(`http://localhost:3000/chat/me`)
-          .subscribe((entity : any) => {
+          .subscribe(entity => {
             let data = Object.assign(entity);
-            console.log('CHATS', data)
-
             for (let chat in data) {
               let { users } = data[chat];
               let { id } = data[chat];
-              console.log('USERS ME', users)
-
-              let chat_friend = users.filter((user: any) => user.userId != this.me?.id);
-              console.log(chat_friend)
-              this.userServices.getUserById(chat_friend[0].userId)
-                .subscribe((user: UserDto) => {
-                  this.CHATS_USERS.push({
-                    chat_id: id,
-                    user: user
+              console.log("usersss", users)
+              let chat_friend = users.filter((user: any) => { return user.userId != this.me?.id });
+              if (chat_friend.length != 0)
+                this.userServices.getUserById(chat_friend[0].userId)
+                  .subscribe((user: UserDto) => {
+                    this.CHATS_USERS.push({
+                      chat_id: id,
+                      user: user
+                    });
                   });
-                });
             }
           });
-  })
-}
+      })
+  }
 
-  
+
 }

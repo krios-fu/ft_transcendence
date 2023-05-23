@@ -5,6 +5,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { OtpSessionComponent } from './login/otp-session/otp-session.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { HomeComponent } from './home/home.component';
+import { RoomComponent } from './room/room.component';
 // import { LoginModule } from './login/login.module';
 
 const routes: Routes = [

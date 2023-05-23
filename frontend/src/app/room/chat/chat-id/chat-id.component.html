@@ -1,16 +1,16 @@
-<div class="chat" *ngIf="user && me">
+<section class="chat" *ngIf="user && me">
     <div class="chat-title">
 
-        <div
+        <section
             style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
 
             <img class="avatar" src={{user.photoUrl}} alt="krios-fu" />
 
             <span>{{user.nickName}}</span>
-        </div>
+        </section>
 
 
-        <div class="icon" style=" display: flex; color : #ffffff; align-items: center; align-content: center;">
+        <section class="icon" style=" display: flex; color : #ffffff; align-items: center; align-content: center;">
             <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
                 <mat-icon>more_vert</mat-icon>
             </button>
@@ -34,23 +34,24 @@
                     <span>Disable alerts</span>
                 </button>
             </mat-menu>
-        </div>
+        </section>
 
     </div>
 
     <div class="messages">
-        <div *ngFor="let msg of messages">
-            <div readonly *ngIf="msg.sender === this.me.id; else other" class="message message-personal new">
+        <section *ngFor="let msg of messages">
+            <section readonly *ngIf="msg.sender === this.me.id; else other" class="message message-personal new">
                 {{msg.content}}
-            </div>
+            </section>
             <ng-template #other>
-                <div class="message">
+                <section class="message">
                     <!-- <img class="avatar" src={{user.photoUrl}}> -->
                     {{msg.content}}
-                </div>
+                </section>
             </ng-template>
-        </div>
+        </section>
     </div>
+
     <div class="message-box">
         <form (ngSubmit)="sendMessage()" [formGroup]="formMessage">
             <textarea formControlName="message" type="submit" class="message-input"
@@ -58,4 +59,4 @@
             <button type="submit" class="message-submit">Send</button>
         </form>
     </div>
-</div>
+</section>
