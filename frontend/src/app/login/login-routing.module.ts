@@ -1,8 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import { LoginComponent } from "./login.component";
-import { OtpSessionComponent } from "./otp-session/otp-session.component";
-
+import { TwofaComponent } from "./2fa/2fa.component";
 
 const LoginRoutes: Routes = [
 
@@ -13,10 +12,8 @@ const LoginRoutes: Routes = [
 	},
 	{
 		path: '2fa',
-		component: OtpSessionComponent
+		component: TwofaComponent
 	}
-
-
 ]
 
 @NgModule({

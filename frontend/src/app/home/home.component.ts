@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { UsersService } from '../services/users.service';
-import { AuthService } from '../services/auth.service';
-import { ActivatedRoute } from '@angular/router';
-import { throwError } from 'rxjs';
-import { HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
-import { IAuthPayload } from '../interfaces/iauth-payload.interface';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
+import { HttpClient } from "@angular/common/http";
+import { Payload, UserDto } from '../dtos/user.dto';
+import { filter, Observable, Subscription } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
+import { UsersService } from 'src/app/services/users.service';
+import { AlertServices } from '../services/alert.service';
 
 @Component({
   selector: 'app-home',
@@ -13,74 +14,15 @@ import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 })
 export class HomeComponent implements OnInit {
 
-
-  constructor(
+  constructor(private route: ActivatedRoute,
     public usersService: UsersService,
     private authService: AuthService,
-    private activatedRoute: ActivatedRoute,
-  ) {
-
-  }
+  ) { }
 
   ngOnInit(): void {
-    let code: string | undefined;
-    let error: string | undefined;
-    this.activatedRoute.queryParams
-      .subscribe(params => {
-        code = params['code'];
-        error = params['error']
-      });
-    if (code !== undefined || error !== undefined) {
-      if (code === undefined) {
-        code = error as string;
-      }
-      this.loginUser(code);
-      return;
-    }
-    if (this.authService.isAuthenticated() === false) {
-      this.authService.redirectLogin();
-    }
+    this.usersService.getUser('me')
+      .subscribe((userDto: UserDto) => { /* ?? */ })
   }
 
-  loginUser(code: string) {
-    if (this.authService.isAuthenticated() === true) {
-      return;
-    }
-    this.authService.authUser(code)
-      .subscribe({
-        next: (res: HttpResponse<IAuthPayload>) => {
-          console.log('HTTP RESPON', res)
-          if (res.body === null) {
-
-            this.authService.redirectLogin()
-            throw new HttpErrorResponse({
-              statusText: 'successful login never returned credentials',
-              status: HttpStatusCode.InternalServerError,
-            })
-          }
-          this.authService.setAuthInfo({
-            "accessToken": res.body.accessToken,
-            "username": res.body.username,
-            "id": res.body.id
-          });
-          this.usersService.getUser('me')
-            .subscribe({
-              next: (userDto: any) => {
-                console.log("OTP SESSION", userDto)
-                console.log(userDto.doubleAuth)
-                if (userDto[0].doubleAuth === true) {
-                  this.authService.redirecOtpSesion()
-                }
-              },
-            });
-        },
-        error: (err: HttpErrorResponse) => {
-          if (err.status === 401 || err.status === 500) {
-            this.authService.logout();
-          }
-          return throwError(() => err);
-        }
-      });
-  }
-
+  logout() { this.authService.logout(); }
 }

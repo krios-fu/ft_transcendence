@@ -12,6 +12,7 @@ import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, t
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { Router } from '@angular/router';
+import {CookieService} from "ngx-cookie-service";
 
 /* implementamos aqui la logica de refresco y redireccion,
     las peticiones de authentificacion deben pasar limpias */
@@ -22,7 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
     newCredsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
     constructor(private authService: AuthService,
-                private router: Router) { }
+                private cookieService: CookieService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
@@ -32,7 +33,11 @@ export class AuthInterceptor implements HttpInterceptor {
             (
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401 && err.headers.get('Location') === '/auth/2fa') {
-                        this.router.navigateByUrl('/auth/2fa');
+                        this.authService.redirect2FA();
+                        return throwError(() => err);
+                    }
+                    if (!this.authService.getAuthUser() || !this.cookieService.get('auth_token')) {
+                        this.authService.logout();
                         return throwError(() => err);
                     }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
@@ -45,6 +50,9 @@ export class AuthInterceptor implements HttpInterceptor {
                                     statusText: 'Internal Server Error',
                                 });
                             }
+                            if (err.status === 401) {
+                                this.authService.logout();
+                            }
                             return err;
                         });
                     }
@@ -52,8 +60,9 @@ export class AuthInterceptor implements HttpInterceptor {
             );
     }
 
-    private handleAuthError(
-        req: HttpRequest<any>, 
+    private handleAuthError
+    (
+        req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<any> {
         if (this.isRequestingNewCreds == true) {
@@ -86,14 +95,16 @@ export class AuthInterceptor implements HttpInterceptor {
                         'username': res.body.username,
                         'id': res.body.id
                     });
+                    console.log(`DEBUG: status - ${res.status}, auth: ${res.body.accessToken}`);
                     return next.handle(this.setAuthHeaders(req));
                 }),
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401) {
-                        window.localStorage.removeItem('access_token');;
+                        /*window.localStorage.removeItem('access_token');;
                         window.localStorage.removeItem('username');
                         window.localStorage.removeItem('id');
-                        this.authService.redirectLogin();
+                        this.authService.redirectLogin();*/
+                        this.authService.logout();
                     }
                     return throwError(() => err);
                 }),

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { environment } from 'src/environments/environment';
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -11,13 +12,34 @@ import {HttpClient, HttpResponse} from "@angular/common/http";
 export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService,
-              private _http: HttpClient) { }
+              private activatedRoute: ActivatedRoute,
+              private http: HttpClient) { }
+
   ngOnInit(): void {
+    let code: string | undefined;
+    let error: string | undefined;
+
     if (this.authService.isAuthenticated())
       this.authService.redirectHome();
+    this.activatedRoute.queryParams
+      .subscribe(params => {
+        code = params['code'];
+        error = params['error'];
+        if (code === undefined && error === undefined) {
+          return ;
+        }
+        if (code === undefined) {
+          code = error as string;
+        }
+        this.loginUser(code);
+      })
   }
 
-  login() {
+  public login() {
     window.location.href=environment.redirectUri;
+  }
+
+  public loginUser(code: string) {
+    this.authService.authUser(code)
   }
 }
