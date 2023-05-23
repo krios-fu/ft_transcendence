@@ -52,6 +52,7 @@ export class AuthService {
               "username": res.body.username,
               "id": res.body.id
             });
+            this.redirectHome();
           },
           error: (err: HttpErrorResponse) => new HttpResponse({status: 200})
         });
@@ -105,12 +106,12 @@ export class AuthService {
 
     /* Solo permite ejecución a usuarios logeados */
     public logout(): void {
+      console.log('unsetting local storage!');
         this.cookies.delete('refresh_token', '/', 'localhost', true, 'None');
         localStorage.removeItem('access_token');
         localStorage.removeItem('username');
-        localStorage.removeItem('id');
+        localStorage.removeItem('user_id');
         this.redirectLogin();
-
     }
 
     public isAuthenticated(): boolean {
@@ -121,6 +122,7 @@ export class AuthService {
     }
 
     public setAuthInfo(authPayload: IAuthPayload) {
+      console.log('setting local storage!');
         localStorage.setItem('access_token', authPayload.accessToken);
         localStorage.setItem('username', authPayload.username);
         localStorage.setItem('user_id', String(authPayload.id));

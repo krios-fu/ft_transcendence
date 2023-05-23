@@ -11,7 +11,6 @@ import {
 import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
-import { Router } from '@angular/router';
 import {CookieService} from "ngx-cookie-service";
 
 /* implementamos aqui la logica de refresco y redireccion,
@@ -27,7 +26,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
-        const reqAuth = this.setAuthHeaders(req);
+        let reqAuth: HttpRequest<any> = req;
+        
+        if (this.authService.getAuthToken()) {
+            reqAuth = this.setAuthHeaders(req);
+        }
         return next.handle(reqAuth)
             .pipe
             (
@@ -36,7 +39,8 @@ export class AuthInterceptor implements HttpInterceptor {
                         this.authService.redirect2FA();
                         return throwError(() => err);
                     }
-                    if (!this.authService.getAuthUser() || !this.cookieService.get('auth_token')) {
+                    if (!this.authService.getAuthUser()) {
+                        console.log('No user to provide refresh token')
                         this.authService.logout();
                         return throwError(() => err);
                     }
@@ -100,10 +104,6 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401) {
-                        /*window.localStorage.removeItem('access_token');;
-                        window.localStorage.removeItem('username');
-                        window.localStorage.removeItem('id');
-                        this.authService.redirectLogin();*/
                         this.authService.logout();
                     }
                     return throwError(() => err);

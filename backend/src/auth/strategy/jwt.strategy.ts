@@ -21,8 +21,8 @@ constructor (
             ignoreExpiration: false,
             secretOrKey: process.env.FORTYTWO_APP_SECRET,
             algorithm: 'HS256',
-            issuer: process.env.WEBAPP_IP,
-            audience: 'http://localhost:3000',
+            issuer: 'http://localhost:3000',
+            audience: process.env.WEBAPP_IP
         });
         this.jwtLogger = new Logger(JwtStrategy.name);
     }

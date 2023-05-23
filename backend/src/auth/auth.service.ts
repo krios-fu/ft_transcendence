@@ -121,11 +121,9 @@ export class AuthService {
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
-            await this.refreshTokenRepository.delete(tokenEntity.token);
             throw TokenError.TOKEN_EXPIRED;
         }
-        const { token, authUser } = tokenEntity;
-        console.log(`user: ${authUser}`);
+        const { authUser } = tokenEntity;
         return {
             'accessToken': this.signJwt(authUser),
             'username': username,
@@ -138,11 +136,8 @@ export class AuthService {
 
         try {
             tokenEntity = await this.getTokenByUsername(username);
-        } catch(err) {
-            console.error(`Caught exception in logout: ${err} \
-                (user logged out without a valid session)`);
-        }
-        await this.refreshTokenRepository.delete(tokenEntity.token);
+            await this.refreshTokenRepository.delete(tokenEntity.token);
+        } catch(err) { }
         res.clearCookie('refresh_token');
     }
 

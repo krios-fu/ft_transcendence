@@ -136,7 +136,7 @@ export class AuthController {
             authPayload = await this.authService.refreshToken(refreshToken, authUser);
         } catch (err) {
             this.authLogger.error(`Caught exception in refreshToken controller: ${err}`);
-            res.clearCookie('refresh_cookie');
+            await this.authService.logout(authUser, res);
             throw new HttpException(err, HttpStatus.UNAUTHORIZED);
         }
         return authPayload;
@@ -145,10 +145,10 @@ export class AuthController {
     @Post('logout')
     public logout
         (
-            @Req() req: IRequestUser,
+            @UserCreds() userCreds: UserCredsDto,
             @Res({ passthrough: true }) res: Response
         ) {
-        const username = req.user.data.username;
+        const username: string = userCreds.username;
         this.authService.logout(username, res);
     }
 
