@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { environment } from "src/environments/environment";
 
 @Injectable({
 	providedIn: 'root'
@@ -10,7 +11,7 @@ export class ChatService{
 	){}
 
 	createChat(id_friend: number){
-		return this.http.post('http://localhost:3000/chat/me', {
+		return this.http.post(environment.apiUrl + '/chat/me', {
 			friendId : id_friend
 		})
 	}

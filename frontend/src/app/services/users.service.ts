@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserDto } from '../dtos/user.dto';
+import { environment } from 'src/environments/environment';
 
 export interface IUser {
   username: string;

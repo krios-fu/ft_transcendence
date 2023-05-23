@@ -1,13 +1,16 @@
-# ~~ dependencies ~~
-./node_modules/
-./dist/
+# ~ dependencies ~
+node_modules/
+dist/
 
-# ~~ git | metadata ~~
+# ~ git | metadata ~
 .git
 .gitignore
 .dockerignore
 .prettierrc
 
-# ~~ not needed in ctxt ~~
+# ~ not needed in ctxt ~
 Dockerfile
 .env
+
+# ~ cache ~
+.angular

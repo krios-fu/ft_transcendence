@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ProfileModule } from "./profile/profile.module";
 import { AuthGuard } from './guards/auth.guard';
-import { OtpSessionComponent } from './login/otp-session/otp-session.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { HomeComponent } from './home/home.component';
 // import { LoginModule } from './login/login.module';
