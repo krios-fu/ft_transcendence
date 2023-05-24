@@ -27,7 +27,7 @@ export class AuthInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
         let reqAuth: HttpRequest<any> = req;
-        
+
         if (this.authService.getAuthToken()) {
             reqAuth = this.setAuthHeaders(req);
         }
@@ -36,6 +36,7 @@ export class AuthInterceptor implements HttpInterceptor {
             (
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401 && err.headers.get('Location') === '/auth/2fa') {
+                        console.log('ping');
                         this.authService.redirect2FA();
                         return throwError(() => err);
                     }
@@ -69,12 +70,12 @@ export class AuthInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<any> {
-        if (this.isRequestingNewCreds == true) {
+        if (this.isRequestingNewCreds) {
             return this.newCredsSubject
                 .pipe
                 (
                     take(1),
-                    filter((state: boolean) => state == false),
+                    filter((state: boolean) => !state),
                     switchMap(() => {
                         return next.handle(this.setAuthHeaders(req));
                     })

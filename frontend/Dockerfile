@@ -7,6 +7,7 @@ WORKDIR /usr/src/
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN rm -rf /usr/src/config
 
 EXPOSE 4200
 
