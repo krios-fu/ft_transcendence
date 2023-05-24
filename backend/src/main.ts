@@ -24,6 +24,7 @@ async function bootstrap() {
             'Content-Type',
             'Location'
         ],
+        exposedHeaders: ['Location'],
         credentials: true,
     });
     app.useGlobalFilters(new NotValidatedExceptionFilter());

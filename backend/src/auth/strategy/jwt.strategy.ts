@@ -50,6 +50,7 @@ constructor (
             throw new UnauthorizedException();
         }
         if (jwtPayload.data?.validated !== true) {
+            console.log('2FA: entering validation login');
             throw new NotValidatedException('User needs validation for 2fa strategy');
         }
         return jwtPayload;

@@ -7,15 +7,12 @@ import { NotValidatedException } from '../classes/not-validated.exception';
 @Catch(NotValidatedException)
 export class NotValidatedExceptionFilter implements ExceptionFilter {
     catch(e: NotValidatedException, host: ArgumentsHost) { 
-        const resp: Response = host
+        const res: Response = host
             .switchToHttp()
             .getResponse<Response>();
-
-        resp
-            .json({
-                statusCode: 401,
-                timestamp: new Date().toISOString(),
-                path: '/login/2fa'
-            });
+        console.log('2FA: lanzando excepcion');
+        res.status(401)
+            .header('Location', '/login/2fa');
+        res.send();
     }
 }

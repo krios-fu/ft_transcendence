@@ -94,7 +94,7 @@ export class AuthService {
 
     public confirm2FA(code: string): void {
         this.http.post<IAuthPayload>(
-            environment.apiUrl + '/auth/2fa/validate',
+            environment.apiUrl + 'auth/2fa/validate',
             { token: code }
         )
             .subscribe({
@@ -108,7 +108,6 @@ export class AuthService {
                 },
                 error: (err: HttpErrorResponse) => {
                     alert('Invalid OTP code');  /* TODO: testear que no de problemas al esperar la resolución de la alerta */
-                    return err;
                 }
             });
     }

@@ -11,7 +11,6 @@ import {
 import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
-import {CookieService} from "ngx-cookie-service";
 
 /* implementamos aqui la logica de refresco y redireccion,
     las peticiones de authentificacion deben pasar limpias */
@@ -21,8 +20,7 @@ export class AuthInterceptor implements HttpInterceptor {
     isRequestingNewCreds: boolean = false;
     newCredsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(private authService: AuthService,
-                private cookieService: CookieService) { }
+    constructor(private authService: AuthService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
@@ -35,17 +33,20 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    if (err.status === 401 && err.headers.get('Location') === '/auth/2fa') {
-                        console.log('ping');
+                    console.log('ERROR: Se prendió la wea');
+                    console.log(`2FA: ${err.headers.get('Location')}`);
+                    if (err.status === 401 && err.headers.get('Location') === '/login/2fa') {
+                        console.log('2FA: OTP redirection route');
                         this.authService.redirect2FA();
                         return throwError(() => err);
                     }
                     if (!this.authService.getAuthUser()) {
-                        console.log('No user to provide refresh token')
+                        console.log('TOKEN: No user to provide refresh token')
                         this.authService.logout();
                         return throwError(() => err);
                     }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
+                        console.log('TOKEN: Authentication flow');
                         return this.handleAuthError(req, next);
                     } else {
                         return throwError(() => {
@@ -100,7 +101,7 @@ export class AuthInterceptor implements HttpInterceptor {
                         'username': res.body.username,
                         'id': res.body.id
                     });
-                    console.log(`DEBUG: status - ${res.status}, auth: ${res.body.accessToken}`);
+                    console.log(`TOKEN: status - ${res.status}, auth: ${res.body.accessToken}`);
                     return next.handle(this.setAuthHeaders(req));
                 }),
                 catchError((err: HttpErrorResponse) => {

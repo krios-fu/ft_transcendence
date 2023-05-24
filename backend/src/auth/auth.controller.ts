@@ -12,6 +12,7 @@ import {
     UnauthorizedException,
     ForbiddenException,
     UseGuards,
+    BadRequestException,
 } from '@nestjs/common';
 
 import { Public } from '../common/decorators/public.decorator';
@@ -79,6 +80,21 @@ export class AuthController {
         return  { "qr": await this.authService.generateNew2FASecret(user.username, user.id) } ;
     }
 
+    @Post('2fa/deactivate')
+    public async deactivate2FA(@UserCreds() userCreds: UserCredsDto) {
+        const { username } = userCreds;
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+
+        if (user === null) {
+            this.authLogger.error(`Request user ${username} not found in database`);
+            throw new UnauthorizedException();
+        }
+        return await this.userService.updateUser(user.id, { 
+            doubleAuth: false, 
+            doubleAuthSecret: null 
+        });
+    }
+
     @Post('/2fa/confirm')
     public async confirm2FAForUser
     (
@@ -110,6 +126,10 @@ export class AuthController {
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
+        }
+        if (!user.doubleAuth || !user.doubleAuthSecret) {
+            this.authLogger.error('User has not activated 2FA');
+            throw new BadRequestException();
         }
         return await this.authService.validate2FACode(otpPayload.token, user, res);
     }

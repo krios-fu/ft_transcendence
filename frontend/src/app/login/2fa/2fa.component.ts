@@ -2,8 +2,6 @@ import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/htt
 import { Component, OnInit } from '@angular/core';
 import { Observable, catchError, tap, throwError  } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
-import { environment } from 'src/environments/environment';
-import {IAuthPayload} from "../../interfaces/iauth-payload.interface";
 
 @Component({
   selector: 'app-2fa',
@@ -17,7 +15,6 @@ export class TwofaComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
     validate(code: string): void{
-        console.log('ping');
         this.authService.confirm2FA(code);
     }
 

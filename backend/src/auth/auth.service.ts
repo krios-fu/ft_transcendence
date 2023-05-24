@@ -23,6 +23,7 @@ export class AuthService {
 
     private signJwt(user: UserEntity): string {
         const { id, username } = user;
+        console.log('generando claves poderosas');
         return this.jwtService.sign({ 
             data: {
                 id: id,
@@ -36,6 +37,7 @@ export class AuthService {
 
     private signLowPrivJwt(user: UserEntity): string {
         const { id, username } = user;
+        console.log('generando claves chiquitas');
         return this.jwtService.sign({
             data: { 
                 id: id,
@@ -54,6 +56,7 @@ export class AuthService {
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
         }
+        console.log(JSON.stringify(loggedUser, null, 2));
         if (loggedUser.doubleAuth === true) {
             return {
                 'accessToken': this.signLowPrivJwt(loggedUser),
@@ -124,8 +127,11 @@ export class AuthService {
             throw TokenError.TOKEN_EXPIRED;
         }
         const { authUser } = tokenEntity;
+        const accessToken: string = (authUser.doubleAuth) ?
+            this.signLowPrivJwt(authUser) :
+            this.signJwt(authUser);
         return {
-            'accessToken': this.signJwt(authUser),
+            'accessToken': accessToken,
             'username': username,
             'id': authUser.id
         }
@@ -162,7 +168,8 @@ export class AuthService {
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {
         const { doubleAuthSecret: secret } = user;
         
-        if (authenticator.verify({ token, secret }) === false) {
+        console.log(`TROUBLESHOOT: ${secret}, ${token}`);
+        if (!authenticator.verify({ token, secret })) {
             throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);

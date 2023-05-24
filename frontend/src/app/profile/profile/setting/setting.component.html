@@ -50,8 +50,10 @@
             <mat-tab label="OTP">
                 <section>
                     <mat-divider></mat-divider>
-                    <mat-slide-toggle (change)="changeDetected()" [(ngModel)]="this.user.doubleAuth"
-                        name="doubleAuth">2FA Authentication
+                    <mat-slide-toggle (change)="changeDetected()" 
+                                      [(ngModel)]="this.user.doubleAuth"
+                                      name="doubleAuth">
+                    2FA Authentication
                     </mat-slide-toggle>
                     <mat-divider></mat-divider>
                     <div *ngIf="qr_generate.length != 0"
