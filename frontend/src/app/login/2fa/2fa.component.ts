@@ -14,39 +14,20 @@ export class TwofaComponent implements OnInit {
   maxCodeLength = 6;
   showButton = false;
 
-  constructor(private http: HttpClient,
-              private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
 
-  confirm(code: any): Observable<HttpResponse<any>> {
-    return this.http.post<any>(environment.apiUrl + '/auth/2fa/validate', { token: code })
-      .pipe(
-        tap( (res: HttpResponse<IAuthPayload>) => {
-            if (!res.body) {
-                return throwError(() => new HttpErrorResponse({status: 400}));
-            }
-            this.authService.setAuthInfo({
-                'accessToken': res.body.accessToken,
-                'username': res.body.username,
-                'id': res.body.id
-            });
-            this.authService.redirectHome();
-            return res;
-        }),
-        catchError((err: HttpErrorResponse) => {
-          alert("Code otp Error"); /* TODO: testear que no de problemas al esperar la resolución de la alerta */
-          return throwError(() => err);})
-      )
-  }
+    validate(code: string): void{
+        console.log('ping');
+        this.authService.confirm2FA(code);
+    }
 
-showSubmitButton(code: string) {
-  if (code.length === this.maxCodeLength) {
-    this.showButton = true;
-  } else {
-    this.showButton = false;
-  }
-}
+    showSubmitButton(code: string) {
+        if (code.length === this.maxCodeLength) {
+            this.showButton = true;
+        } else {
+            this.showButton = false;
+        }
+    }
 
-  ngOnInit(): void {
-  }
-
+    ngOnInit(): void { }
 }

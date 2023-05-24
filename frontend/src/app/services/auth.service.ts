@@ -92,6 +92,27 @@ export class AuthService {
         );
     }
 
+    public confirm2FA(code: string): void {
+        this.http.post<IAuthPayload>(
+            environment.apiUrl + '/auth/2fa/validate',
+            { token: code }
+        )
+            .subscribe({
+                next: (creds: IAuthPayload) => {
+                    this.setAuthInfo({
+                        'accessToken': creds.accessToken,
+                        'username': creds.username,
+                        'id': creds.id
+                    });
+                    this.redirectHome();
+                },
+                error: (err: HttpErrorResponse) => {
+                    alert('Invalid OTP code');  /* TODO: testear que no de problemas al esperar la resolución de la alerta */
+                    return err;
+                }
+            });
+    }
+
     public redirectHome(): void {
         this.router.navigate(['/profile/me']);
     }
@@ -122,7 +143,6 @@ export class AuthService {
     }
 
     public setAuthInfo(authPayload: IAuthPayload) {
-      console.log('setting local storage!');
         localStorage.setItem('access_token', authPayload.accessToken);
         localStorage.setItem('username', authPayload.username);
         localStorage.setItem('user_id', String(authPayload.id));
