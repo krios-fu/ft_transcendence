@@ -168,7 +168,6 @@ export class AuthService {
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {
         const { doubleAuthSecret: secret } = user;
         
-        console.log(`TROUBLESHOOT: ${secret}, ${token}`);
         if (!authenticator.verify({ token, secret })) {
             throw new BadRequestException();
         }
@@ -188,5 +187,15 @@ export class AuthService {
             result = undefined;
         }
         return (result);
+    }
+
+    public validate2FASession(req: Request): boolean {
+        const token: string | undefined = req.headers['authorization']
+            .split(' ')[1];
+        if (token === undefined) {
+            return false;
+        }
+        const payload: IJwtPayload | undefined = this.validateJWToken(token);
+        return payload !== undefined && payload.data.validated;
     }
 }
