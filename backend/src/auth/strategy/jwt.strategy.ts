@@ -43,14 +43,13 @@ constructor (
         }
         if (user.id !== id) {
             this.jwtLogger.error('Unauthorized login');
-            throw new UnauthorizedException;
+            throw new UnauthorizedException();
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.jwtLogger.error(`User ${username} is banned from the server`);
             throw new UnauthorizedException();
         }
         if (jwtPayload.data?.validated !== true) {
-            console.log('2FA: entering validation login');
             throw new NotValidatedException('User needs validation for 2fa strategy');
         }
         return jwtPayload;
