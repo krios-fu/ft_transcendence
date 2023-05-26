@@ -29,8 +29,6 @@ export class UserService {
         private userRepository: UserRepository,
     ) { }
 
-    public tmp() { console.log('hey'); }
-
     public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
         if (queryParams !== undefined) {
             return await this.userRepository.find(new QueryMapper(queryParams));

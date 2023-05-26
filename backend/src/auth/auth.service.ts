@@ -23,7 +23,6 @@ export class AuthService {
 
     private signJwt(user: UserEntity): string {
         const { id, username } = user;
-        console.log('generando claves poderosas');
         return this.jwtService.sign({ 
             data: {
                 id: id,
@@ -37,7 +36,6 @@ export class AuthService {
 
     private signLowPrivJwt(user: UserEntity): string {
         const { id, username } = user;
-        console.log('generando claves chiquitas');
         return this.jwtService.sign({
             data: { 
                 id: id,

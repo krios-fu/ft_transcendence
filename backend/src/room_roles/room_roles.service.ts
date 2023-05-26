@@ -155,8 +155,6 @@ export class RoomRolesService {
             }
         }
         if (['official', 'private'].indexOf(role) !== -1 && rolesInRoom.indexOf(this.inverseRoomRole(role)) !== -1) {
-            console.log('roles in room: ', rolesInRoom)
-            console.log('role: ', role);
             return {
                 'error': new ForbiddenException(''),
                 'logMessage': 'room cannot contains these two roles simultaneously: private, official'
