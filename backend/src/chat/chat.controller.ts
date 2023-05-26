@@ -95,13 +95,11 @@ export class ChatController {
         const { username } = userCreds;
         const user1: UserEntity = await this.userService.findOneByUsername(username);
 
-        console.log(user1); /* to remove */
         if (user1 === null) {
             this.chatLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
         const user2: UserEntity = await this.userService.findOne(payload.friendId);
-        console.log(user2) /* to remove */
         return await this.chatService.post(user1.id, user2.id);
     }
 

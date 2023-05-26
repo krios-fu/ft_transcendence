@@ -23,9 +23,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     constructor(private messageService : ChatMessageService){
 
   }
-  afterInit(Server: any) {
-    // console.log( this.server );
-  }
+  afterInit(Server: any) { }
 
 
   handleConnection(client: any, ...args): any {

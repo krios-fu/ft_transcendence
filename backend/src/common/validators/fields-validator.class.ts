@@ -7,7 +7,7 @@ export class HasValidFieldsConstraints implements ValidatorConstraintInterface {
         let cond: boolean = true;
 
         fields.forEach((field: string) => {
-            if (!!validFields.indexOf(field) === false) {
+            if (!validFields.includes(field)) {
                 cond = false;
             }
         });

@@ -38,8 +38,6 @@ export class UserRoomRolesController {
     @Get()
     public async findAllRoles(@Query() queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
         const test =  await this.userRoomRolesService.findAllRoles(queryParams);
-        console.log('got role: ', test[0]);
-        console.log('got query: ', queryParams);
         return test;
     }
 

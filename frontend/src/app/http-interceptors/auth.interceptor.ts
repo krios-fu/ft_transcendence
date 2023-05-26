@@ -33,20 +33,15 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    console.log('ERROR: Se prendió la wea');
-                    console.log(`2FA: ${err.headers.get('Location')}`);
                     if (err.status === 401 && err.headers.get('Location') === '/login/2fa') {
-                        console.log('2FA: OTP redirection route');
                         this.authService.redirect2FA();
                         return throwError(() => err);
                     }
                     if (!this.authService.getAuthUser()) {
-                        console.log('TOKEN: No user to provide refresh token')
                         this.authService.logout();
                         return throwError(() => err);
                     }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
-                        console.log('TOKEN: Authentication flow');
                         return this.handleAuthError(req, next);
                     } else {
                         return throwError(() => {
@@ -101,7 +96,6 @@ export class AuthInterceptor implements HttpInterceptor {
                         'username': res.body.username,
                         'id': res.body.id
                     });
-                    console.log(`TOKEN: status - ${res.status}, auth: ${res.body.accessToken}`);
                     return next.handle(this.setAuthHeaders(req));
                 }),
                 catchError((err: HttpErrorResponse) => {
