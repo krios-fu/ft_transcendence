@@ -5,7 +5,7 @@ import { QueryMapper } from '../common/mappers/query.mapper';
 import { RoomEntity } from '../room/entity/room.entity';
 import { RoomService } from '../room/room.service';
 import { RoomRolesService } from '../room_roles/room_roles.service';
-import { CreatePrivateUserRoomDto, CreateUserRoomDto } from './dto/user_room.dto';
+import { CreateUserRoomDto, UserRoomDto } from './dto/user_room.dto';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { UserRoomRepository } from './repository/user_room.repository';
@@ -84,7 +84,7 @@ export class UserRoomService {
         return rooms;
     }
 
-    public async create(dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {        
+    public async create(dto: UserRoomDto): Promise<UserRoomEntity> {        
         return await this.userRoomRepository.save(new UserRoomEntity(dto));
     }
 
@@ -106,7 +106,7 @@ export class UserRoomService {
         }
     }
 
-    public async validateUserPassword(dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<boolean> {
+    public async validateUserPassword(dto: CreateUserRoomDto): Promise<boolean> {
         const { roomId: room_id } = dto; 
         if ((await this.roomRolesService.isRole('private', room_id)) === true) {
             if ('password' in dto) {

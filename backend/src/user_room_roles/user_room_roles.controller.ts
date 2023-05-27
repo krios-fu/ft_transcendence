@@ -20,13 +20,14 @@ import { CreateUserRoomRolesDto, UserRoomRolesDto } from './dto/user_room_roles.
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
+import { UserCreds } from 'src/common/decorators/user-cred.decorator';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 @Controller('user_room_roles')
 export class UserRoomRolesController {
     constructor(
         private readonly userRoomRolesService: UserRoomRolesService,
         private readonly userRoomService: UserRoomService,
-        private readonly userService: UserService,
         private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { 
@@ -104,8 +105,12 @@ export class UserRoomRolesController {
     /* Create a new user with a role in a room */
     /* at least mod role required */
     @Post()
-    public async postRoleInRoom(@Body() dto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> {
-        const { userId, roomId, roleId } = dto;
+    public async postRoleInRoom(
+        @Body() dto: CreateUserRoomRolesDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<UserRoomRolesEntity> {
+        const { roomId, roleId } = dto;
+        const { id: userId } = userCreds;
         const userRoom: UserRoomEntity[] = await this.userRoomService.findAll({ 
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });

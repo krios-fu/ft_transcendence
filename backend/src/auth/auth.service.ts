@@ -54,7 +54,6 @@ export class AuthService {
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
         }
-        console.log(JSON.stringify(loggedUser, null, 2));
         if (loggedUser.doubleAuth === true) {
             return {
                 'accessToken': this.signLowPrivJwt(loggedUser),

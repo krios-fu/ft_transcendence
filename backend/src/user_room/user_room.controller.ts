@@ -13,7 +13,7 @@ import {
     BadRequestException,
     UseGuards } from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
-import { CreatePrivateUserRoomDto, CreateUserRoomDto } from './dto/user_room.dto';
+import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
 import { RoomEntity } from '../room/entity/room.entity';
 import { UserService } from '../user/services/user.service';
@@ -112,8 +112,13 @@ export class UserRoomController {
     //@UseGuards(IsPrivate) /*???*/
     //@UseGuards(userisme)
     @Post()
-    public async create(@Body() dto: CreateUserRoomDto | CreatePrivateUserRoomDto): Promise<UserRoomEntity> {
-        const { userId, roomId } = dto;
+    public async create(
+        @Body() dto: CreateUserRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<UserRoomEntity> {
+        const { roomId } = dto;
+        const { id: userId } = userCreds;
+
         if (await this.userService.findOne(userId) === null ||
             await this.roomService.findOne(roomId) === null) {
             this.userRoomLogger.error('Invalid creation payload received from request (no user or room present in database)');
@@ -128,7 +133,7 @@ export class UserRoomController {
                 this.userRoomLogger.error(`User with id ${userId} introduced wrong credentials`);
                 throw new ForbiddenException('invalid credentials');
         }
-        return await this.userRoomService.create(dto);
+        return await this.userRoomService.create({ userId: userId, roomId: roomId });
     }
 
     /* Remove an user from a room */
