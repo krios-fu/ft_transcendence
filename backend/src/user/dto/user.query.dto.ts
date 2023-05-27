@@ -1,5 +1,10 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEmail, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, 
+    IsBoolean, 
+    IsEmail, 
+    IsOptional, 
+    IsString, 
+    ValidateNested } from "class-validator";
 import { HasValidFields } from "src/common/decorators/order.decorator";
 import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
 import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
@@ -64,4 +69,8 @@ export class UserQueryDto extends BaseQueryDto {
     @IsBoolean()
     @Transform(({ value} ) => value === 'true') //Strings !== 'true' are converted to false
     count?: boolean;
+
+    @IsOptional()
+    @IsString()
+    target?: string;
 }

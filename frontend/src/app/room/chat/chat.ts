@@ -1,83 +1,61 @@
-import {Injectable, Input, OnInit} from "@angular/core";
-import {Socket} from "ngx-socket-io";
-import {HttpClient} from "@angular/common/http";
+import { Injectable, Input, OnInit } from "@angular/core";
+import { Socket } from "ngx-socket-io";
+import { HttpClient } from "@angular/common/http";
 
-import {map} from "rxjs";
-import {newArray} from "@angular/compiler/src/util";
+import { Observable, map } from "rxjs";
+import { newArray } from "@angular/compiler/src/util";
 import { AuthService } from "../../services/auth.service";
 
 export class message {
   content: string;
-  sender : string;
-  id_chat : string;
-  reciver : string;
+  sender: number;
+  id_chat?: number | string;
+  avatar ?: string;
 
-  constructor( chat : string, msg : string , sender : string, reciver : string) {
-    this.content = msg;
+  constructor(content: string, sender: number, chat?: number | string, avatar ?: string) {
+    this.content = content;
     this.sender = sender;
     this.id_chat = chat;
-    this.reciver = reciver;
+    this.avatar = avatar;
   }
 }
 
 @Injectable()
-export class Chat implements OnInit{
+export class Chat implements OnInit {
 
-  public msg : message [] = [];
-  public id = '**';
-  count_new_msg = 0;
-  @Input()
-  profile = {}
-
-
-
-  constructor( private socket : Socket, private http : HttpClient, private authService: AuthService  ) {
-
-
-    socket.fromEvent('new_message').subscribe((message: any) => {
-      let new_message = message as message;
-        this.count_new_msg += 1;
-        this.msg.unshift(new_message);
-    })
-  }
+  constructor(private socket: Socket) {}
 
   ngOnInit(): void {
   }
 
-  joinRoom(id_chat : string){
+  joinRoom(id_chat: string) {
     this.socket.emit('join_room', id_chat);
   }
 
-  sendMessage( txt : string, reciver : string )  {
-    const msg = new message(this.id, txt, `${this.authService.getAuthUser()}`, reciver);
+  sendMessage(txt: string, sender: number, id_chat?: number) {
+    const msg = new message(txt, sender, id_chat)
     this.socket.emit('message', msg);
   }
 
-  getSocketId(){
-    return this.authService.getAuthUser();
+
+  public getMessages(): Observable<message> {
+    return new Observable<message>(observer => {
+      this.socket.fromEvent('new_message').subscribe((message: any) => {
+        observer.next(message);
+      });
+    });
   }
 
-  resetChat(){
-    this.msg = [];
+  public getMessagesGame(): Observable<message> {
+    return new Observable<message>(observer => {
+      this.socket.fromEvent('new_message-game').subscribe((message: any) => {
+        observer.next(message);
+      });
+    });
+  }
+  sendMessageGame(txt: string, sender: number, id_chat?: number | string) {
+    const msg = new message(txt, sender, id_chat)
+    this.socket.emit('message-game', msg);
   }
 
-  getMessageApi(login : string){
-    this.http.get(`http://localhost:3000/users/me/chat/${login}`)
-    .subscribe((entity : any) => {
-      let data = Object.assign(entity); 
-      console.log('Chatt mesasge', data);
-      this.id = data[0].id;
-      this.socket.emit('join_room', this.id);
-      console.log(this.id);
-       const {messages} = data[0];
-        for(let msg in messages){
-          const msgs = new message(login, messages[msg].content, messages[msg].author.username, login)
-          this.msg.unshift(msgs);
-        }
-    })
-  }
-
-  getMessage() {
-    return this.msg;
-  }
 }

@@ -18,7 +18,7 @@ import {
 } from 'socket.io';
 import { IGameClientStart } from './elements/Game'
 import { IGameSelectionData } from './elements/GameSelection';
-import { GameQueueService } from './game.queueService';
+import { GameMatchmakingService } from './game.matchmaking.service';
 import { GameRecoveryService } from './game.recovery.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
@@ -29,12 +29,14 @@ import {
 import { GameAuthGuard } from './guards/game.auth.guard';
 import { GameRoomGuard } from './guards/game.room.guard';
 import { IMenuInit } from './interfaces/msg.interfaces';
+import { MatchInviteResponseDto } from './dtos/matchInviteResponse.dto';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
+import { GameRoomService } from './game.room.service';
 
 @WebSocketGateway(3001, {
     cors: {
-        origin: 'http://localhost:4200',
+        origin: process.env.WEBAPP_IP,
         credentials: true
     },
 })
@@ -45,10 +47,11 @@ export class    GameGateway implements OnGatewayInit,
 
     constructor(
         private readonly updateService: GameUpdateService,
-        private readonly queueService: GameQueueService,
+        private readonly matchMakingService: GameMatchmakingService,
         private readonly socketHelper: SocketHelper,
         private readonly recoveryService: GameRecoveryService,
-        private readonly socketAuthService: GameSocketAuthService
+        private readonly socketAuthService: GameSocketAuthService,
+        private readonly roomService: GameRoomService
     ) {}
   
     afterInit() {
@@ -77,7 +80,6 @@ export class    GameGateway implements OnGatewayInit,
         await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
         client.on("disconnecting", async () => {
-            await this.socketAuthService.removeUser(client, client.data.mockUser); //Provisional
             await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
@@ -85,24 +87,58 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
-    @UsePipes(StringValidator)
+    @UsePipes(NumberValidator)
     @SubscribeMessage("joinRoom")
     async joinRoom(
         @ConnectedSocket() client: Socket,
-        @MessageBody() roomId: string
+        @MessageBody() roomId: number
     ) {
+        const   roomName: string = SocketHelper.roomIdToName(roomId);
+        const   username: string = client.data.username;
         const   [initScene, initData]: [string,
                                         IMenuInit |
                                         IGameClientStart |
                                         IGameResultData |
                                         undefined] =
-                    this.updateService.getClientInitData(roomId);
+                    this.updateService.getClientInitData(roomName);
     
-        client.join(roomId);
-        this.queueService.clientInitQueuesLength(roomId, client.id);
+        this.roomService.join(
+            username,
+            roomName
+        );
+        await this.matchMakingService.emitQueuesInfo(
+            roomName,
+            client.id,
+            username
+        );
         if (initScene && initData)
             client.emit(initScene, initData);
-        console.log(`${client.data.username} joined Game room ${roomId}`);
+        await this.matchMakingService.updateNextPlayerRoom(
+            username,
+            roomName,
+            true
+        );
+        console.log(`${username} joined Game room ${roomName}`);
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(NumberValidator)
+    @SubscribeMessage("leaveRoom")
+    async leaveRoom(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: number
+    ) {
+        const   roomName: string = SocketHelper.roomIdToName(roomId);
+        this.roomService.leave(
+            client.data.username,
+            roomName
+        );
+        await this.matchMakingService.updateNextPlayerRoom(
+            client.data.username,
+            roomName,
+            false
+        );
+        console.log(`${client.data.username} left Game room ${roomName}`);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -112,12 +148,11 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        await this.queueService.add(
+        await this.matchMakingService.addToQueue(
             roomId,
-            false,
-            client.data.mockUser //Provisional
+            "classic",
+            client.data.username
         );
-        this.updateService.attemptGameInit(roomId);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -127,12 +162,53 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        await this.queueService.add(
+        await this.matchMakingService.addToQueue(
             roomId,
-            true,
-            client.data.mockUser // Provisional
+            "hero",
+            client.data.username
         );
-        this.updateService.attemptGameInit(roomId);
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage('removeFromGameQueue')
+    async removeFromGameQueue(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        await this.matchMakingService.removeFromQueue(
+            roomId,
+            "classic",
+            client.data.username
+        );
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage('removeFromGameHeroQueue')
+    async removeFromGameHeroQueue(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        await this.matchMakingService.removeFromQueue(
+            roomId,
+            "hero",
+            client.data.username
+        );
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(MatchInviteResponseDto)
+    @SubscribeMessage('matchInviteResponse')
+    async matchInviteResponse(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() invite: MatchInviteResponseDto
+    ) {
+        await this.matchMakingService.updateNextPlayerInvite(
+            client.data.username,
+            invite.roomId,
+            invite.accept
+        );
     }
 
     @SubscribeMessage('leftSelection')

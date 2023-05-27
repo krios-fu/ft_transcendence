@@ -5,7 +5,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { GameQueueComponent } from './game-queue/game-queue.component';
-import { SocketService } from './services/socket.service';
 import { QueueService } from './services/queue.service';
 import { GameRoutingModule } from './game-routing.module';
 import { RoomGameIdComponent } from './room-game-id/room-game-id.component';
@@ -20,21 +19,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-import { GameAdminComponent } from './game-admin/game-admin.component';
-import { MatButtonModule } from '@angular/material/button';
-import { AvatarDialogComponent } from './game-admin/avatar-dialog/avatar-dialog.component';
-import { PasswordDialogComponent } from './game-admin/password-dialog/password-dialog.component';
-import { PrivateDialogComponent } from './game-admin/private-dialog/private-dialog.component';
-import { DeleteDialogComponent } from './game-admin/delete-dialog/delete-dialog.component';
-import { GameAdminDetailComponent } from './game-admin/game-admin-detail/game-admin-detail.component';
+import { SocketNotificationService } from '../services/socket-notification.service';
+import { GamehomeComponent } from './gamehome/gamehome.component';
+import { ChatGameComponent } from './chat-game/chat-game.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import { Chat } from '../room/chat/chat';
+import { RoomCreationFormComponent } from './room-creation-form/room-creation-form.component';
 import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
-import { FilenamePipe } from '../common/pipes/filename.pipe';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
+import { RoomListComponent } from './room-list/room-list.component';
 import { MatListModule } from '@angular/material/list';
-import { AvatarComponent } from './game-admin/avatar/avatar.component';
-import { DeleteRoomComponent } from './game-admin/delete-room/delete-room.component';
-import { VisibilityComponent } from './game-admin/visibility/visibility.component';
-import { PasswordComponent } from './game-admin/password/password.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
+// import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -42,17 +39,10 @@ import { PasswordComponent } from './game-admin/password/password.component';
     OnlineComponent,
     GameQueueComponent,
     RoomGameIdComponent,
-    GameAdminComponent,
-    AvatarDialogComponent,
-    PasswordDialogComponent,
-    PrivateDialogComponent,
-    DeleteDialogComponent,
-    GameAdminDetailComponent,
-    FilenamePipe,
-    AvatarComponent,
-    DeleteRoomComponent,
-    VisibilityComponent,
-    PasswordComponent
+    GamehomeComponent,
+    ChatGameComponent,
+    RoomCreationFormComponent,
+    RoomListComponent
   ],
   imports: [
     ScrollingModule,
@@ -68,20 +58,26 @@ import { PasswordComponent } from './game-admin/password/password.component';
     FormsModule,
     MatIconModule,
     MatMenuModule,
-    MatButtonModule,
-    MatFormFieldModule,
+    ReactiveFormsModule,
+    
     MatInputModule,
-    MatCardModule,
-    MatListModule
+    MatExpansionModule,
+    MatButtonModule,
+    ReactiveFormsModule,
+    MatListModule,
+    MatPaginatorModule
+    // MatLabel
   ],
   providers: [
-    SocketService,
     QueueService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
-  }
+  },
+  SocketNotificationService,
+  Chat
+
   ],
 })
 export class GameModule { }

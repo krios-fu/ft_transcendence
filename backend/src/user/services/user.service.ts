@@ -7,14 +7,20 @@ import {
 } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/repositories/user.repository';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateResult } from 'typeorm';
+import { QueryRunner, UpdateResult } from 'typeorm';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import * as fs from 'fs';
-import { DEFAULT_AVATAR_PATH } from 'src/common/config/upload-avatar.config';
+import { DEFAULT_AVATAR_PATH } from '../../common/config/upload-avatar.config';
+import { UserCountData } from '../types/user-count-data.type';
 
 @Injectable()
 export class UserService {
@@ -30,8 +36,48 @@ export class UserService {
         return await this.userRepository.find();
     }
 
+    private async   _findUserRanking(queryParams: UserQueryDto)
+                                        : Promise<UserCountData> {
+        let queryMapper: QueryMapper;
+        let targetUser: UserEntity;
+        let result: UserCountData;
+    
+        queryParams.offset = 0;
+        while (true) {
+            queryMapper = new QueryMapper(queryParams);
+            result = await this.userRepository.findAndCount(queryMapper);
+            if (!result[0].length)
+                break ;
+            targetUser = result[0].find((user: UserEntity) => {
+                return (user.username === queryParams.target)
+            });
+            if (targetUser
+                    || !queryParams.limit)
+                break ;
+            queryParams.offset += queryParams.limit;
+        }
+        return ([result[0], result[1], queryParams.offset]);
+    }
+
     public async findAndCountAllUsers(queryParams?: UserQueryDto)
-                                        : Promise<[UserEntity[], number]> {
+                                        : Promise<UserCountData> {
+        let result: UserCountData;
+    
+        if (queryParams.orderDesc.includes('ranking')
+                && queryParams.target) {
+            try {
+                if (!await this.findOneByUsername(queryParams.target))
+                    result = [[], 0];
+                else
+                    result = await this._findUserRanking(queryParams);
+            } catch(err: any) {
+                console.error(err);
+                throw new InternalServerErrorException();
+            }
+            if (!result[0].length)
+                throw new BadRequestException("Target user data not found.");
+            return (result);
+        }
         return await this.userRepository.findAndCount(
             new QueryMapper(queryParams)
         );
@@ -68,9 +114,13 @@ export class UserService {
 
     public async updateUser(
         id: number, 
-        userInfo: UpdateUserDto | UserGameStats | SettingsPayloadDto | DoubleAuthPayload
+        userInfo: UpdateUserDto | UserGameStats | SettingsPayloadDto | DoubleAuthPayload,
+        qR?: QueryRunner
     ): Promise<UserEntity> {
-        await this.userRepository.update(id, userInfo);
+        if (qR)
+            await qR.manager.getRepository(UserEntity).update(id, userInfo);
+        else
+            await this.userRepository.update(id, userInfo);
         return await this.findOne(id);
     }
 

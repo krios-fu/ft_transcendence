@@ -4,8 +4,8 @@ import { BanController } from './ban.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BanEntity } from './entity/ban.entity';
 import { BanRepository } from './repository/ban.repository';
-import { UserModule } from 'src/user/user.module';
-import { RoomModule } from 'src/room/room.module';
+import { UserModule } from '../user/user.module';
+import { RoomModule } from '../room/room.module';
 
 @Module({
   imports: [ 

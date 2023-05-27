@@ -7,15 +7,21 @@ import { MatchModule } from 'src/match/match.module';
 import { WinnerModule } from 'src/match/winner/winner.module';
 import { UserModule } from 'src/user/user.module';
 import { GameAchievementsService } from './game.achievements.service';
+import { GameDataService } from './game.data.service';
 import { GameGateway } from './game.gateway';
+import { GameMatchmakingService } from './game.matchmaking.service';
 import { GameQueueService } from './game.queueService';
 import { GameRankingService } from './game.rankingService';
 import { GameReconciliationService } from './game.reconciliation.service';
 import { GameRecoveryService } from './game.recovery.service';
+import { GameRoomService } from './game.room.service';
 import { GameService } from './game.service';
 import { SocketHelper } from './game.socket.helper';
 import { GameSocketAuthService } from './game.socketAuth.service';
 import { GameUpdateService } from './game.updateService';
+import { UserRoomModule } from 'src/user_room/user_room.module';
+import { RoomModule } from 'src/room/room.module';
+import { RoomRolesModule } from 'src/room_roles/room_roles.module';
 
 @Module({
   imports: [
@@ -25,7 +31,10 @@ import { GameUpdateService } from './game.updateService';
     LoserModule,
     AuthModule,
     AchievementsModule,
-    AchievementsUserModule
+    AchievementsUserModule,
+    RoomModule,
+    UserRoomModule,
+    RoomRolesModule
   ],
   providers: [
     GameGateway,
@@ -37,7 +46,10 @@ import { GameUpdateService } from './game.updateService';
     SocketHelper,
     GameRecoveryService,
     GameSocketAuthService,
-    GameAchievementsService
+    GameAchievementsService,
+    GameDataService,
+    GameMatchmakingService,
+    GameRoomService
   ],
 })
 export class GameModule {}

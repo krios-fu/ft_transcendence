@@ -6,6 +6,8 @@ import { WinnerEntity } from "./winner.entity";
 export class    WinnerMapper {
     toEntity(winnerDto: WinnerDto, winnerEntity: WinnerEntity) {
         winnerEntity.user = winnerDto.user;
+        winnerEntity.ranking = winnerDto.ranking;
+        winnerEntity.category = winnerDto.category;
         winnerEntity.score = winnerDto.score;
     }
 }

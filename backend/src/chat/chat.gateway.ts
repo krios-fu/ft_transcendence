@@ -10,7 +10,10 @@ import { ChatMessageService } from './message/chat-message.service';
 
 @WebSocketGateway(3001, {
   namespace: 'private',
-  cors: { origin: '*' }
+  cors: { 
+    origin: process.env.WEBAPP_IP,
+    credentials: true
+  }
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
@@ -20,9 +23,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     constructor(private messageService : ChatMessageService){
 
   }
-  afterInit(Server: any) {
-    // console.log( this.server );
-  }
+  afterInit(Server: any) { }
 
 
   handleConnection(client: any, ...args): any {
@@ -46,11 +47,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('message')
   handleIncommingMessage(
     client: Socket,
-    payload: { id_chat: string, msg: string, sender: string, reciver: string; },
+    payload: {msg: string, sender: number,  id_chat: number },
   ) {
-    const { id_chat, msg, sender, reciver } = payload;
-    this.server.to(`room_${id_chat}`).emit('new_message', payload);
+    // const {  msg, sender, id_chat } = payload;
+    this.server.to(`room_${payload.id_chat}`).emit('new_message', payload);
+    console.log(payload);
     this.messageService.saveMessages(payload);
+  }
+
+  @SubscribeMessage('message-game')
+  gameMessage(
+    client: Socket,
+    payload: {msg: string, sender: number,  id_chat: number },
+  ) {
+    // const {  msg, sender, id_chat } = payload;
+    this.server.to(`room_${payload.id_chat}`).emit('new_message-game', payload);
   }
 
 
@@ -70,8 +81,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: {
       user: any,
-      dest: string
       msg: string
+      dest: string
     }) {
     console.log('PAYLOAD', payload)
     this.server.to(`notifications_${payload.dest}`).emit('notifications', payload)

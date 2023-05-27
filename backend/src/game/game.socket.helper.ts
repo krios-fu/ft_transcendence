@@ -15,15 +15,60 @@ export class    SocketHelper {
         this._server = undefined;
     }
 
+    static roomIdToName(roomId: number): string {
+        return (String(roomId));
+    }
+
+    static roomNameToId(roomName: string): number | undefined {
+        const   roomId: number = Number(roomName);
+
+        if (Number.isNaN(roomId))
+            return (undefined);
+        return (roomId);
+    }
+
+    static getUserRoomName(username: string): string {
+        return (`${username}-User`);
+    }
+
+    static isUserRoomName(roomId: string): boolean {
+        return (roomId.endsWith("-User"));
+    }
+
+    static getUserNameFromRoomName(roomId: string): string {
+        const   userSpecifier: string = "-User";
+    
+        if (!roomId.endsWith(userSpecifier))
+            return ("");
+        return (
+            roomId.slice(
+                0,
+                roomId.length - userSpecifier.length
+            )
+        );
+    }
+
     initServer(server: Server): void {
         this._server = server;
+    }
+
+    async getAllUserClients(username: string)
+                                    : Promise<RemoteSocket<DefaultEventsMap,
+                                                any>[]> {
+        return (
+            await this._server.in(
+                SocketHelper.getUserRoomName(username)
+            ).fetchSockets()
+        );
     }
 
     async addUserToRoom(username: string,
                             roomId: string): Promise<void> {
         let userSockets: RemoteSocket<DefaultEventsMap, any>[];
 
-        userSockets = await this._server.in(username).fetchSockets();
+        userSockets = await this._server.in(
+            SocketHelper.getUserRoomName(username)
+        ).fetchSockets();
         userSockets.forEach((sock) => {
             sock.join(roomId);
         });
@@ -70,6 +115,17 @@ export class    SocketHelper {
         return (
             (await this._server.in(roomId).fetchSockets()).length
         );
+    }
+
+    // All user sockets should be in the same game room at once.
+    async checkUserInRoom(username: string, roomId: string): Promise<boolean> {
+        const   userRoom: string = SocketHelper.getUserRoomName(username);
+        let     userSockets: RemoteSocket<DefaultEventsMap, any>[];
+
+        userSockets = await this._server.in(userRoom).fetchSockets();
+        if (!userSockets.length)
+            return ;
+        return (userSockets[0].rooms.has(roomId));
     }
 
 }

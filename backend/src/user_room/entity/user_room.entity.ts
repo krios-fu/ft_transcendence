@@ -1,5 +1,4 @@
 import { BaseEntity } from "src/common/classes/base.entity";
-import { RoomMessageEntity } from "src/room/entity/room-message.entity";
 import { RoomEntity } from "src/room/entity/room.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Column,
@@ -10,12 +9,12 @@ import { Column,
     OneToMany,
     PrimaryGeneratedColumn } from "typeorm";
 import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
-import { CreateUserRoomDto } from "../dto/user_room.dto";
+import { UserRoomDto } from "../dto/user_room.dto";
 
 @Entity({ name: 'users_room' })
 @Index(['userId', 'roomId'], {unique: true})
 export class UserRoomEntity extends BaseEntity {
-    constructor (dto: CreateUserRoomDto) {
+    constructor (dto: UserRoomDto) {
         super();
         if (dto !== undefined) {
             Object.assign(this, dto);
@@ -72,11 +71,4 @@ export class UserRoomEntity extends BaseEntity {
         { cascade: true }
     )
     userRoomRole: UserRoomRolesEntity[];
-
-    @OneToMany(
-        () => RoomMessageEntity,
-        (message: RoomMessageEntity) => message.userRoom,
-        { cascade: true }
-    )
-    messages: RoomMessageEntity[];
 }

@@ -2,7 +2,7 @@
 
 import { Type } from "class-transformer";
 import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
-import { CreateUserDto } from "src/user/dto/user.dto";
+import { CreateUserDto } from "../user/dto/user.dto";
 
 export class TokenCredentials {
     @IsNotEmpty()

@@ -1,7 +1,7 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, throwError } from 'rxjs';
 import { UserDto } from '../dtos/user.dto';
+import { environment } from 'src/environments/environment';
 
 export interface IUser {
   username: string;
@@ -20,17 +20,15 @@ export class UsersService {
       private http: HttpClient,
     ) { }
 
-    // getUser(): Observable<IUser> {
-      
-
-    //   return this.http.get<IUser>( 'http://localhost:3000/users/me');
-    // }
-
     getUser(user : string) {
-      return this.http.get<UserDto[]>(`http://localhost:3000/users/${user}`);
+      return this.http.get<UserDto>(environment.apiUrl + 'users/' + user);
     }
 
-    getFriends(user: string){
-      return this.http.get(`http://localhost:3000/users/${user}/friends/as_pending`)
+    getUserById(user_id : number) {
+      return this.http.get<UserDto>(environment.apiUrl + 'users/' + user_id);
+    }
+
+    getFriends(user: string) {
+      return this.http.get(environment.apiUrl + 'users/' + user + '/friends/as_pending');
     }
 }

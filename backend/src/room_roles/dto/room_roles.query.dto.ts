@@ -1,19 +1,19 @@
 import { Transform, Type } from "class-transformer";
-import { IsArray, IsOptional, ValidateNested } from "class-validator";
-import { HasValidFields } from "src/common/decorators/order.decorator";
-import { BaseQueryDto, BaseQueryFilterDto } from "src/common/dtos/base.query.dto";
-import { intoArrayOfParams } from "src/common/validators/fields-validator.class";
+import { IsArray, IsBoolean, IsOptional, ValidateNested } from "class-validator";
+import { HasValidFields } from "../../common/decorators/order.decorator";
+import { BaseQueryDto, BaseQueryFilterDto } from "../../common/dtos/base.query.dto";
+import { intoArrayOfParams } from "../../common/validators/fields-validator.class";
 
 class RoomRolesQueryFilterDto extends BaseQueryFilterDto {
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
-    roomId?: string[];
+    roomId?: number[];
 
     @IsOptional()
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
-    roleId?: string[];
+    roleId?: number[];
 }
 
 export class RoomRolesQueryDto extends BaseQueryDto {
@@ -29,4 +29,9 @@ export class RoomRolesQueryDto extends BaseQueryDto {
     })
     @Type(() => RoomRolesQueryFilterDto)
     filter?: RoomRolesQueryFilterDto;
+
+    @IsOptional()
+    @IsBoolean()
+    @Transform(({ value} ) => value === 'true') //Strings !== 'true' are converted to false
+    count?: boolean;
 }

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
+import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
 import { Repository } from "typeorm";
 
 @Injectable()

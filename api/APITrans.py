@@ -26,6 +26,7 @@ class APITrans():
         return self.__dict__[key]
 
     def __get_creds(self, user):
+        self.set_param('api_user', user)
         token_creds = {
                 'userProfile': {
                 'username': user,
@@ -51,29 +52,47 @@ class APITrans():
         token = r.json()['accessToken']
         self.set_param('auth_token', { 'Authorization': f'Bearer {token}' })
 
+    def set_user_creds(self, username):
+        try:
+            self.__request_get_wrapper(f'http://localhost:3000/users/{username}')
+        except requests.exceptions.HTTPError:
+            print(f'user {username} not found in database', file=sys.stderr)
+            return
+        self.__get_creds(username)
+
     def __request_get_wrapper(self, url):
         """ Requests entity detail view via ID. """
-        print(f'  [ GET: {url} ]') 
         try:
             r = requests.get(url, headers=self.get_param('auth_token'))
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
-            print(f'  [   ERROR: {r.text} ]')
+            print(f'  [ GET  ERROR: {r.text} ]')
             raise e
 
     def __request_post_wrapper(self, url, data):
-        print(f'  [ POST: {url} $ data {data}]')
         try:
             r = requests.post(url, data=data, headers=self.get_param('auth_token'))
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            print(f'  [   ERROR: {r.text} ]')
+            print(f'  [ POST  ERROR: {r.text} ]')
             raise e
         except requests.exceptions.ConnectionError as e:
             print('Error trying to establish a connection to API', file=sys.stderr)
             raise e
         return r.json()
+
+    def get_user(self, username):
+        url = f'http://localhost:3000/users/{username}'
+        return self.__request_get_wrapper(url)
+
+    def get_room(self, id):
+        url = f'http://localhost:3000/room/{id}'
+        return self.__request_get_wrapper(url)
+
+    def get_role(self, role):
+        url = f'http://localhost:3000/roles/{role}';
+        return self.__request_get_wrapper(url)
 
     def post_user(self, username):
         url = 'http://localhost:3000/users/'
@@ -92,13 +111,12 @@ class APITrans():
             user = self.__request_get_wrapper(f'{url}{data["username"]}')
         return user
 
-    def post_room(self, room_name, owner_id):
+    def post_room(self, room_name):
         """ Post a new room via room name and owner id """
 
         url = 'http://localhost:3000/room/'
         data = {
             'roomName': room_name,
-            'ownerId': owner_id
         }
         room = []
         try:
@@ -110,15 +128,29 @@ class APITrans():
     def post_role(self, role_name):
         """ Post a new role via role name """
 
-        url = 'http://localhost:3000/roles/';
+        url = 'http://localhost:3000/roles/'
         try:
             role = self.__request_post_wrapper(url, { 'role': role_name })
         except requests.exceptions.HTTPError:
             role = self.__request_get_wrapper(f'{url}{role_name}')
         return role
 
-    def post_user_room(self, room_id, user_id):
-        url = f'http://localhost:3000/user_room/'
+    def post_room_role(self, room_id, role_id, password=None):
+        """" Post a new role for a room using room and role ids. """
+
+        url = 'http://localhost:3000/room_roles'
+        if password is not None:
+            payload = { 'roomId': room_id, 'roleId': role_id, 'password': password }
+        else:
+            payload = { 'roomId': room_id, 'roleId': role_id }
+        try:
+            room_role = self.__request_post_wrapper(url, payload)
+        except requests.exceptions.HTTPError:
+            room_role = self.__request_get_wrapper(f'{url}/rooms/{room_id}/roles/{role_id}')
+        return room_role
+
+    def post_user_room(self, user_id, room_id):
+        url = 'http://localhost:3000/user_room/'
         data = {
             'userId': user_id,
             'roomId': room_id
@@ -128,6 +160,18 @@ class APITrans():
         except requests.exceptions.HTTPError:
             user_room = self.__request_get_wrapper(f'{url}users/{user_id}/rooms/{room_id}')
         return user_room
+
+    def post_user_role(self, user_id, role_id):
+        url = 'http://localhost:3000/user_roles'
+        data = {
+            'userId': user_id,
+            'roleId': role_id
+        }
+        try:
+            user_role = self.__request_post_wrapper(url, data)
+        except requests.exceptions.HTTPError:
+            user_role = self.__request_get_wrapper(f'{url}/users/{user_id}/roles/{role_id}')
+        return user_role
 
     def post_user_room_role(self, room_id, user_id, role_id):
         url = 'http://localhost:3000/user_room_roles/'

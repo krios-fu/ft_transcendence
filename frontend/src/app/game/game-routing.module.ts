@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { GameComponent } from './game.component';
 import { RoomGameIdComponent } from './room-game-id/room-game-id.component';
 import { AuthGuard } from '../guards/auth.guard';
-import { GameAdminComponent } from './game-admin/game-admin.component';
+import { GamehomeComponent } from './gamehome/gamehome.component';
 
 
 
@@ -12,22 +12,19 @@ const GameRoutes: Routes = [
 
   {
     path: '', 
-    component: GameComponent
+    component: GameComponent,
+    children: [
+      {
+        path: '',
+        component: GamehomeComponent
+      },
+      {
+        path: ':id',
+        component: RoomGameIdComponent
+      },
+    ]
+
   },
-  {
-    path: ':id',
-    component: RoomGameIdComponent
-  },
-  {
-    path: ':id/admin',
-    component: GameAdminComponent
-    // admin guard goes here
-  }
-  // {
-  //   path: 'chat',
-  //   loadChildren: () => import('../room/chat/chat.module').then(m => m.ChatModule), outlet: 'chat',
-  //   canActivate: [AuthGuard]
-  // }
 ]
 
 @NgModule({

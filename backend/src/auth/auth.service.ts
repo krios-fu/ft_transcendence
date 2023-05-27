@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '../user/services/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { CreateUserDto } from 'src/user/dto/user.dto';
+import { CreateUserDto } from '../user/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IAuthPayload } from 'src/common/interfaces/request-payload.interface';
 import { IJwtPayload } from 'src/common/interfaces/request-payload.interface';
 import { TokenError } from './enum/token-error.enum';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { authenticator } from 'otplib';
 import * as QRCode from 'qrcode';
 @Injectable()
@@ -21,42 +21,51 @@ export class AuthService {
         private readonly refreshTokenRepository: RefreshTokenRepository
     ) { }
 
-    private signJwt(username: string): string {
+    private signJwt(user: UserEntity): string {
+        const { id, username } = user;
         return this.jwtService.sign({ 
-            data: { 
+            data: {
+                id: id,
                 username: username,
                 validated: true
             },
+            iss: 'http://localhost:3000',
+            aud: process.env.WEBAPP_IP
         });
     }
 
-    private signLowPrivJwt(username: string): string {
+    private signLowPrivJwt(user: UserEntity): string {
+        const { id, username } = user;
         return this.jwtService.sign({
             data: { 
+                id: id,
                 username: username,
                 validated: false
-            }
-        })
+            },
+            iss: 'http://localhost:3000',
+            aud: process.env.WEBAPP_IP
+        });
     }
 
     public async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
-        const username: string = userProfile.username;
-        let   loggedUser: UserEntity;
+        const { username } = userProfile;
+        let loggedUser: UserEntity = await this.userService.findOneByUsername(username);
         
-        loggedUser = await this.userService.findOneByUsername(username);
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
         }
         if (loggedUser.doubleAuth === true) {
             return {
-                'accessToken': this.signLowPrivJwt(username),
-                'username': username
+                'accessToken': this.signLowPrivJwt(loggedUser),
+                'username': username,
+                'id': loggedUser.id
             }
         }
         return await this.authUserValidated(loggedUser, res);
     }
 
     private async authUserValidated(user: UserEntity, res: Response): Promise<IAuthPayload> {
+        const { id, username } = user;
         let   tokenEntity: RefreshTokenEntity;
 
         tokenEntity = await this.refreshTokenRepository.findOne({
@@ -80,8 +89,9 @@ export class AuthService {
             secure: true,
         });
         return {
-            'accessToken': this.signJwt(user.username),
-            'username': user.username,
+            'accessToken': this.signJwt(user),
+            'username': username,
+            'id': id
         };
     }
 
@@ -106,18 +116,21 @@ export class AuthService {
     }
 
     public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
-        let tokenEntity: RefreshTokenEntity;
+        let tokenEntity: RefreshTokenEntity = await this.getTokenByUsername(username);
   
-        tokenEntity = await this.getTokenByUsername(username);
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
-            await this.refreshTokenRepository.delete(tokenEntity.token);
             throw TokenError.TOKEN_EXPIRED;
         }
+        const { authUser } = tokenEntity;
+        const accessToken: string = (authUser.doubleAuth) ?
+            this.signLowPrivJwt(authUser) :
+            this.signJwt(authUser);
         return {
-            'accessToken': this.signJwt(username),
+            'accessToken': accessToken,
             'username': username,
+            'id': authUser.id
         }
     }
 
@@ -126,28 +139,17 @@ export class AuthService {
 
         try {
             tokenEntity = await this.getTokenByUsername(username);
-        } catch(err) {
-            console.error(`Caught exception in logout: ${err} \
-                (user logged out without a valid session)`);
-        }
-        await this.refreshTokenRepository.delete(tokenEntity.token);
+            await this.refreshTokenRepository.delete(tokenEntity.token);
+        } catch(err) { }
         res.clearCookie('refresh_token');
     }
 
     public async generateNew2FASecret(username: string, id: number): Promise<Object> {
         const userSecret = authenticator.generateSecret();
-        this.userService.updateUser(id, { 
-            /*doubleAuth: true,*/
+        this.userService.updateUser(id, {
             doubleAuthSecret: userSecret 
         });
-        const keyuri = authenticator.keyuri(username, 'ft_transcendence', userSecret);
-        /* 
-        **  For testing purposes:
-        **      print generated QR code in terminal
-        **/
-         const qr_img = await QRCode.toString(keyuri, { type: 'terminal' })
-         console.log(`QR generated: \n${qr_img}`);
-        /**/
+        const keyuri: string = authenticator.keyuri(username, 'ft_transcendence', userSecret);
         return { qr: await QRCode.toDataURL(keyuri) };
     }
 
@@ -163,7 +165,7 @@ export class AuthService {
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {
         const { doubleAuthSecret: secret } = user;
         
-        if (authenticator.verify({ token, secret }) === false) {
+        if (!authenticator.verify({ token, secret })) {
             throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);
@@ -182,5 +184,15 @@ export class AuthService {
             result = undefined;
         }
         return (result);
+    }
+
+    public validate2FASession(req: Request): boolean {
+        const token: string | undefined = req.headers['authorization']
+            .split(' ')[1];
+        if (token === undefined) {
+            return false;
+        }
+        const payload: IJwtPayload | undefined = this.validateJWToken(token);
+        return payload !== undefined && payload.data.validated;
     }
 }

@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserService } from '../user/services/user.service';
 import { Repository } from 'typeorm';
-import { Category, UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { GameQueueService } from './game.queueService';
+import { Category } from '../user/dto/user.dto';
 
 const   mockUsers: UserEntity[] = (() => {
     const   res: UserEntity[] = [

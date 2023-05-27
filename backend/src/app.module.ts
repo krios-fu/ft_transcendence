@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import {ClassSerializerInterceptor, MiddlewareConsumer, Module} from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -22,6 +22,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 @Module({
@@ -32,18 +33,18 @@ import { join } from 'path';
         MulterModule.register({
             dest: './static',
         }),
-        ThrottlerModule.forRoot({
-            ttl: 10, limit: 5
-        }),
+        //ThrottlerModule.forRoot({
+        //    ttl: 10, limit: 5
+        //}),
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: process.env.DB_HOST,
             port: 5432,
-            username: process.env.DB_USERNAME,
-            password: process.env.DB_PASSWD,
-            database: process.env.DB_NAME,
+            username: process.env.POSTGRES_USER,
+            password: process.env.POSTGRES_PASSWORD,
+            database: process.env.POSTGRES_DB,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true, // should be managed in dev only
+            synchronize: true, // should be managed in dev only,
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'static'),
@@ -52,6 +53,7 @@ import { join } from 'path';
                 index: false
             }
         }),
+        EventEmitterModule.forRoot(),
         RolesModule,
         RoomModule,
         UserRoomModule,
@@ -68,10 +70,10 @@ import { join } from 'path';
     ],
     controllers: [],
     providers: [
-        {
-            provide: APP_GUARD,
-            useClass: ThrottlerGuard
-        },
+        //{
+        //    provide: APP_GUARD,
+        //    useClass: ThrottlerGuard
+        //},
         {
             provide: APP_GUARD,
             useClass: JwtAuthGuard,

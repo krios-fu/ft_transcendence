@@ -1,0 +1,32 @@
+<div class="chat" *ngIf="me">
+    <div class="chat-title">
+
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
+
+            <h1 style="font-size: large; margin: 17px">CHAT</h1>
+        </div>
+
+    </div>
+
+    <div class="messages">
+        <div *ngFor="let msg of messages">
+            <div readonly *ngIf="msg.sender == this.me.id; else other" class="message message-personal new">
+                {{msg.content}}
+            </div>
+            <ng-template #other>
+                <div class="message">
+                        <img  class="avatar" src={{msg.avatar}}>
+                    {{msg.content}}
+                </div>
+            </ng-template>
+        </div>
+    </div>
+    <div class="message-box">
+        <form (ngSubmit)="sendMessage()" [formGroup]="formMessage">
+            <textarea formControlName="message" type="submit" class="message-input"
+                placeholder="Type message..."></textarea>
+            <button type="submit" class="message-submit">Send</button>
+        </form>
+    </div>
+</div>

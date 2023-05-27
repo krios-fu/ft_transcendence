@@ -20,13 +20,14 @@ import { CreateUserRoomRolesDto, UserRoomRolesDto } from './dto/user_room_roles.
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
+import { UserCreds } from 'src/common/decorators/user-cred.decorator';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 @Controller('user_room_roles')
 export class UserRoomRolesController {
     constructor(
         private readonly userRoomRolesService: UserRoomRolesService,
         private readonly userRoomService: UserRoomService,
-        private readonly userService: UserService,
         private readonly roomService: RoomService,
         private readonly rolesService: RolesService,
     ) { 
@@ -38,8 +39,6 @@ export class UserRoomRolesController {
     @Get()
     public async findAllRoles(@Query() queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
         const test =  await this.userRoomRolesService.findAllRoles(queryParams);
-        console.log('got role: ', test[0]);
-        console.log('got query: ', queryParams);
         return test;
     }
 
@@ -76,7 +75,7 @@ export class UserRoomRolesController {
             throw new NotFoundException('resource not found in database');
         }
         if (await this.rolesService.findOne(roleId) === null) {
-            this.userRoomRolesLogger.error('No role with id ' + roleId + ' present in database');
+            this.userRoomRolesLogger.error(`No role with id ${roleId} present in database`);
             throw new NotFoundException('resource not found in database');
         }
         return await this.userRoomRolesService.getUsersInRoomByRole(roomId, roleId);
@@ -95,21 +94,29 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error('user role in room not found in database');
             throw new NotFoundException('resource not found in database');
         }
-        /* resource NOT found */
-        return await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
+        const role: UserRoomRolesEntity = await this.userRoomRolesService.findRoleByAllIds(userId, roomId, roleId);
+        if (role === null) {
+            this.userRoomRolesLogger.error('user role in room not found in database');
+            throw new NotFoundException('resource not found in database');
+        }
+        return role;
     }
 
     /* Create a new user with a role in a room */
     /* at least mod role required */
     @Post()
-    public async postRoleInRoom(@Body() dto: CreateUserRoomRolesDto): Promise<UserRoomRolesEntity> {
-        const { userId, roomId, roleId } = dto;
+    public async postRoleInRoom(
+        @Body() dto: CreateUserRoomRolesDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<UserRoomRolesEntity> {
+        const { roomId, roleId } = dto;
+        const { id: userId } = userCreds;
         const userRoom: UserRoomEntity[] = await this.userRoomService.findAll({ 
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });
 
         if (!userRoom.length) {
-            this.userRoomRolesLogger.error(`No user ${userId} in room ${roomId} present in database`);
+            this.userRoomRolesLogger.error(`User ${userId} is not registered in room ${roomId}`);
             throw new BadRequestException('resource not found in database');
         }
         const userRoomId: number = userRoom[0].id;

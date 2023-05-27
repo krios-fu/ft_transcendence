@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryMapper } from 'src/common/mappers/query.mapper';
-import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/services/user.service';
+import { QueryMapper } from '../common/mappers/query.mapper';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserService } from '../user/services/user.service';
 import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';

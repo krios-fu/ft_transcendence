@@ -12,7 +12,7 @@
         <div style="font-size:5px; padding: 5px; ">{{player.username}}</div>
         <mat-menu  #menu="matMenu" >
             <!--disabled option -->
-            <button mat-menu-item [routerLink]="['/home/profile/', player.username]">
+            <button mat-menu-item [routerLink]="['/profile/', player.username]">
                 <mat-icon>person</mat-icon>
                 <span>Profile</span>
             </button>

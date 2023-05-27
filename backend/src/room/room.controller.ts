@@ -1,7 +1,7 @@
 import { RoomEntity } from "./entity/room.entity";
 import { RoomService } from "./room.service";
-import { UserEntity } from "src/user/entities/user.entity";
-import { CreateRoomDto, UpdateRoomDto } from "./dto/room.dto";
+import { UserEntity } from "../user/entities/user.entity";
+import { CreatePrivateRoomDto, CreateRoomDto } from "./dto/room.dto";
 import { UserService } from "src/user/services/user.service";
 import { BadRequestException, Body, 
     Controller, 
@@ -18,11 +18,14 @@ import { BadRequestException, Body,
     UseInterceptors
 } from "@nestjs/common";
 import { RoomQueryDto } from "./dto/room.query.dto";
-import { uploadRoomAvatarSettings } from "src/common/config/upload-avatar.config";
+import { uploadRoomAvatarSettings } from "../common/config/upload-avatar.config";
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FileTypeValidatorPipe } from "src/common/validators/filetype-validator.class";
+import { FileTypeValidatorPipe } from "../common/validators/filetype-validator.class";
 import * as fs from 'fs';
 import { Express } from 'express';
+import { UserCreds } from "src/common/decorators/user-cred.decorator";
+import { UserCredsDto } from "src/common/dtos/user.creds.dto";
+import { RoomUserCountQueryDto } from "./dto/room-user-count.query.dto";
 
 @Controller('room')
 export class RoomController {
@@ -35,8 +38,15 @@ export class RoomController {
     private readonly roomLogger: Logger;
 
     @Get()
-    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[]> {
+    public async findAllRooms(@Query() queryParams: RoomQueryDto): Promise<RoomEntity[] | [RoomEntity[], number]> {
+        if (queryParams.count)
+            return await this.roomService.findAndCountAllRooms(queryParams);
         return await this.roomService.findAllRooms(queryParams);
+    }
+
+    @Get('user_count')
+    public async findRoomUserCount(@Query() queryParams: RoomUserCountQueryDto): Promise<[RoomEntity[], number]> {
+        return await this.roomService.findAllRoomsUserCount(queryParams);
     }
 
     @Get(':room_id([0-9]+)')
@@ -110,18 +120,42 @@ export class RoomController {
     }
 
     @Post()
-    public async createRoom(@Body() dto: CreateRoomDto): Promise<RoomEntity> {
-        const { roomName, ownerId } = dto;
+    public async createRoom(
+        @Body() dto: CreateRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<RoomEntity> {
+        const { roomName } = dto;
+        
+        if (await this.roomService.findOneRoomByName(roomName) !== null) {
+            this.roomLogger.error(`room with name ${roomName} already in database`);
+            throw new BadRequestException('room cannot contain duplicate name');
+        }
+        return await this.roomService.createRoom({ 'ownerId': userCreds.id, 'roomName': roomName });
+    }
+
+    @Post('private')
+    public async createPrivateRoom(
+        @Body() dto: CreatePrivateRoomDto,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<RoomEntity> {
+        const { roomName, password } = dto;
+        const { id: ownerId } = userCreds;
 
         if (await this.userService.findOne(ownerId) === null) {
-            throw new BadRequestException('Resource not found');
+            this.roomLogger.error(`No user with id ${ownerId} found in database`);
+            throw new BadRequestException('user not found in database');
         }
         if (await this.roomService.findOneRoomByName(roomName) !== null) {
-            this.roomLogger.error(`Resource with name ${roomName} already exists`);
-            throw new BadRequestException('room already in db');
+            this.roomLogger.error(`Room with name ${roomName} already exists in database`);
+            throw new BadRequestException('room cannot contain duplicate name');
         }
-        return await this.roomService.createRoom(dto);
+        return await this.roomService.createPrivateRoom({ 
+            'ownerId': ownerId,
+            'roomName': roomName,
+            'password': password
+        });
     }
+
 
     /* required room owner || web admin */
     @Delete(':room_id')

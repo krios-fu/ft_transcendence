@@ -1,5 +1,5 @@
-import { WinnerEntity } from "src/match/winner/winner.entity";
-import { LoserEntity } from "src/match/loser/loser.entity";
+import { WinnerEntity } from "../match/winner/winner.entity";
+import { LoserEntity } from "../match/loser/loser.entity";
 import {
     Column,
     CreateDateColumn,
@@ -18,14 +18,14 @@ export class    MatchEntity {
     id: number;
 
     @OneToOne(() => WinnerEntity, (winner) => winner.match, {
-        cascade: true,
+        onDelete: 'CASCADE',
         eager: true
     })
     @JoinColumn()
     winner: WinnerEntity;
 
     @OneToOne(() => LoserEntity, (loser) => loser.match, {
-        cascade: true,
+        onDelete: 'CASCADE',
         eager: true
     })
     @JoinColumn()

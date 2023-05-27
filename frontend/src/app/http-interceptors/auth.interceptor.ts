@@ -20,17 +20,27 @@ export class AuthInterceptor implements HttpInterceptor {
     isRequestingNewCreds: boolean = false;
     newCredsSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-    constructor(
-        private authService: AuthService,
-    ) { }
+    constructor(private authService: AuthService) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler)
         : Observable<HttpEvent<any>> {
-        const reqAuth = this.setAuthHeaders(req);
+        let reqAuth: HttpRequest<any> = req;
+
+        if (this.authService.getAuthToken()) {
+            reqAuth = this.setAuthHeaders(req);
+        }
         return next.handle(reqAuth)
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
+                    if (err.status === 401 && err.headers.get('Location') === '/login/2fa') {
+                        this.authService.redirect2FA();
+                        return throwError(() => err);
+                    }
+                    if (!this.authService.getAuthUser()) {
+                        this.authService.logout();
+                        return throwError(() => err);
+                    }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);
                     } else {
@@ -41,6 +51,9 @@ export class AuthInterceptor implements HttpInterceptor {
                                     statusText: 'Internal Server Error',
                                 });
                             }
+                            if (err.status === 401) {
+                                this.authService.logout();
+                            }
                             return err;
                         });
                     }
@@ -50,15 +63,15 @@ export class AuthInterceptor implements HttpInterceptor {
 
     private handleAuthError
     (
-        req: HttpRequest<any>, 
+        req: HttpRequest<any>,
         next: HttpHandler
     ): Observable<any> {
-        if (this.isRequestingNewCreds == true) {
+        if (this.isRequestingNewCreds) {
             return this.newCredsSubject
                 .pipe
                 (
                     take(1),
-                    filter((state: boolean) => state == false),
+                    filter((state: boolean) => !state),
                     switchMap(() => {
                         return next.handle(this.setAuthHeaders(req));
                     })
@@ -80,15 +93,14 @@ export class AuthInterceptor implements HttpInterceptor {
                     }
                     this.authService.setAuthInfo({
                         'accessToken': res.body.accessToken,
-                        'username': res.body.username
+                        'username': res.body.username,
+                        'id': res.body.id
                     });
                     return next.handle(this.setAuthHeaders(req));
                 }),
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401) {
-                        window.localStorage.removeItem('access_token');;
-                        window.localStorage.removeItem('username');
-                        this.authService.redirectLogin();
+                        this.authService.logout();
                     }
                     return throwError(() => err);
                 }),

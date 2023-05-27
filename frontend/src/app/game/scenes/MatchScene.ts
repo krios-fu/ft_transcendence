@@ -7,7 +7,10 @@ import {
 import { SnapshotBuffer } from '../elements/SnapshotBuffer';
 import { LagCompensationService } from '../services/lag-compensation.service';
 import { LoadService } from '../services/load.service';
-import { GameRecoveryService } from '../services/recovery.service';
+import {
+    GameRecoveryService,
+    IMatchRecoveryData
+} from '../services/recovery.service';
 import {
     MatchSoundKeys,
     SoundService
@@ -17,6 +20,7 @@ import { BaseScene } from './BaseScene';
 export interface    IMatchSceneInit {
     role: string;
     matchData: IMatchInitData;
+    recover?: boolean;
 }
 
 export class    MatchScene extends BaseScene {
@@ -26,17 +30,19 @@ export class    MatchScene extends BaseScene {
     buffer?: SnapshotBuffer;
     queue: IMatchData[];
     lastServerUpdate: number;
+    
+    private _showInitCount: boolean = true;
 
     static readonly serverUpdateInterval = 50;
 
     constructor(
-        role: string, socket: SocketIO.Socket, room: string,
+        role: string, socket: SocketIO.Socket,
         readonly lagCompensator: LagCompensationService,
         readonly loadService: LoadService,
         readonly soundService: SoundService,
         readonly recoveryService: GameRecoveryService
     ) {
-        super(role, socket, room);
+        super(role, socket);
         this.queue = [];
         this.lastServerUpdate = Date.now();
     }
@@ -68,6 +74,8 @@ export class    MatchScene extends BaseScene {
     create() {
         if (!this.initData)
             return ;
+        if (this.initData.recover)
+            this._showInitCount = false;
         if (this.initData.matchData.stage != undefined
              && this.initData.matchData.playerA.hero
              && this.initData.matchData.playerB.hero)
@@ -86,10 +94,12 @@ export class    MatchScene extends BaseScene {
                 point: SoundService.matchOtherSoundKeys.point
             } as MatchSoundKeys);
             this.match = new Match(this, this.initData.matchData,
+                                    this._showInitCount,
                                     this.soundService);
         }
         else
-            this.match = new Match(this, this.initData.matchData);
+            this.match = new Match(this, this.initData.matchData,
+                                    this._showInitCount);
         this.buffer = new SnapshotBuffer(
             {
                 gameWidth: Number(this.game.config.width),
@@ -125,26 +135,33 @@ export class    MatchScene extends BaseScene {
         this.soundService.destroy();
     }
 
-    recover(data: IMatchInitData): void {
+    recover(data: IMatchRecoveryData): void {
         if (!this.match)
+        {
+            this.initData = {
+                role: data.role,
+                matchData: data.gameData,
+                recover: true
+            }
             return ;
+        }
         this.match.stopPointTitle();
-        if (data.playerA.nick != this.match.nickA
-            || data.playerB.nick != this.match.nickB
-            || data.stage != this.match.stage
-            || data.playerA.hero?.name != this.match.heroA
-            || data.playerB.hero?.name != this.match.heroB)
+        if (data.gameData.playerA.nick != this.match.nickA
+            || data.gameData.playerB.nick != this.match.nickB
+            || data.gameData.stage != this.match.stage
+            || data.gameData.playerA.hero?.name != this.match.heroA
+            || data.gameData.playerB.hero?.name != this.match.heroB)
         {
             this.destroy();
             this.init({
-                role: "Spectator", //Improve!!! It could have a different role
-                matchData: data
+                role: data.role,
+                matchData: data.gameData
             });
             this.preload();
             this.create();
             return ;
         }
-        this.match.update(Match.initToData(data));
+        this.match.update(Match.initToData(data.gameData));
         this.queue = [];
         this.buffer?.empty();
     }

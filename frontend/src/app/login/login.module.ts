@@ -2,17 +2,21 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login.component';
 import {RouterModule} from "@angular/router";
-import { OtpSessionComponent } from './otp-session/otp-session.component';
-
+import { TwofaComponent } from './2fa/2fa.component';
+import { LoginRoutingModule } from './login-routing.module';
+import { MatIconModule } from "@angular/material/icon";
 
 
 @NgModule({
   declarations: [
     LoginComponent,
+    TwofaComponent
   ],
   imports: [
     CommonModule,
-    // RouterModule
+    RouterModule,
+    LoginRoutingModule,
+    MatIconModule
   ]
 })
 export class LoginModule { }

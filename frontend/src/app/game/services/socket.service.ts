@@ -22,54 +22,35 @@ interface   SocketExceptionData {
 export class    SocketService {
 
     private _socket: SockIO.Socket;
+    private _connectAttempts: number;
     private _authAttempts: number;
     private _authenticating: boolean;
+    private _lastAuthSuccess: number;
     private _failedEvents: SocketExceptionData[];
-    private _room: string;
-    private _username?: string; //Provisional
 
     constructor(
         private readonly authService: AuthService
     ) {
-        this._socket = SockIO.io("ws://localhost:3001");
+        this._socket = SockIO.io("ws://localhost:3001", {
+            reconnectionAttempts: 3
+        });
         this._addConnectionEvents();
+        this._connectAttempts = 0;
         this._authAttempts = 0;
         this._authenticating = false;
+        this._lastAuthSuccess = 0;
         this._failedEvents = [];
-        this._room = "Game1"; //Provisional
-        this._socket.once("mockUser", (data: any) => {
-            this._username = data.mockUser;
-        }); //Provisional
-        //Authenticate through this event to register user in socket server
-        this.emit("authentication", this.authService.getAuthToken());
     }
 
     get socket(): SockIO.Socket {
         return (this._socket);
     }
 
-    get room(): string {
-        return (this._room);
-    }
-
-    get username(): string | undefined {
-        return (this._username);
-    }
-
     private _reconnect(): void {
+        if (this._connectAttempts >= 3)
+            return ;
+        ++this._connectAttempts;
         this._socket.connect();
-        //Authenticate through this event to register user in socket server
-        this.emit("authentication", this.authService.getAuthToken());
-    }
-
-    private _checkMaxAuthAttempts(): boolean {
-        if (this._authAttempts < 3)
-            return (false);
-        this._authAttempts = 0;
-        this._authenticating = false;
-        this._socket.disconnect();
-        this._reconnect();
-        return (true);
     }
 
     /*
@@ -80,8 +61,8 @@ export class    SocketService {
     **  the socket each time the token gets refreshed, as it would impact UX
     **  negatively.
     */
-    private _authenticateConnection(): void {
-        if (this._checkMaxAuthAttempts())
+    private _reAuthenticateConnection(): void {
+        if (this._authAttempts >= 3)
             return ;
         ++this._authAttempts;
         this.authService.directRefreshToken().subscribe(
@@ -101,8 +82,13 @@ export class    SocketService {
     }
 
     private _addConnectionEvents(): void {
+        this._socket.on("connect", () => {
+            this._connectAttempts = 0;
+            //Authenticate through this event to register user in socket server
+            this.emit("authentication", this.authService.getAuthToken());
+        });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
-            console.log("Exception: ", xcpt);
+            console.log("Websocket exception: ", xcpt);
             if (xcpt.cause != SocketException.Forbidden)
             {
                 if (xcpt.targetEvent != "authentication")
@@ -110,13 +96,19 @@ export class    SocketService {
                 if (this._authenticating)
                     return ;
                 this._authenticating = true;
-                this._authenticateConnection();
+                this._reAuthenticateConnection();
             }
         });
-        this.socket.on("authSuccess", () => {
+        this._socket.on("authSuccess", () => {
+            const   currentTime: number = Date.now();
+        
             this._authenticating = false;
             this._authAttempts = 0;
-            this._emitFailedEvents();
+            if (currentTime - this._lastAuthSuccess > 5000)
+                this._emitFailedEvents();
+            else
+                this._failedEvents = [];
+            this._lastAuthSuccess = currentTime;
         });
         this._socket.on("disconnect", () => {
             this._reconnect();

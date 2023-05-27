@@ -12,18 +12,21 @@ import {
     UnauthorizedException,
     ForbiddenException,
     UseGuards,
+    BadRequestException,
 } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decorator';
+
+import { Public } from '../common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
-import { CreateUserDto } from 'src/user/dto/user.dto';
-import { IAuthPayload, IRequestUser } from 'src/common/interfaces/request-payload.interface';
-import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { UserService } from 'src/user/services/user.service';
+import { CreateUserDto } from '../user/dto/user.dto';
+import { IAuthPayload, IRequestUser } from '../common/interfaces/request-payload.interface';
+import { UserCreds } from '../common/decorators/user-cred.decorator';
+import { UserService } from '../user/services/user.service';
 import { TokenCredentials } from './token-credentials.dto';
 import { IsNotEmpty, IsNumberString } from 'class-validator';
 import { TwoFactorAuthGuard } from './guard/twofactor-auth.guard';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
+import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 interface IRequestProfile extends Request {
     user: CreateUserDto;
@@ -66,8 +69,10 @@ export class AuthController {
     }
 
     @Post('/2fa/generate')
-    public async generateNew2FASecret(@UserCreds() username: string): Promise<Object> {
+    public async generateNew2FASecret(@UserCreds() userCreds: UserCredsDto): Promise<Object> {
+        const { username } = userCreds;
         const user = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -75,13 +80,30 @@ export class AuthController {
         return  { "qr": await this.authService.generateNew2FASecret(user.username, user.id) } ;
     }
 
+    @Post('2fa/deactivate')
+    public async deactivate2FA(@UserCreds() userCreds: UserCredsDto) {
+        const { username } = userCreds;
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+
+        if (user === null) {
+            this.authLogger.error(`Request user ${username} not found in database`);
+            throw new UnauthorizedException();
+        }
+        return await this.userService.updateUser(user.id, { 
+            doubleAuth: false, 
+            doubleAuthSecret: null 
+        });
+    }
+
     @Post('/2fa/confirm')
     public async confirm2FAForUser
     (
-        @UserCreds() username: string,
+        @UserCreds() userCreds: UserCredsDto,
         @Body() otpPayload: OtpPayload 
     ) {
+        const { username } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
@@ -94,14 +116,20 @@ export class AuthController {
     @Post('/2fa/validate')
     public async validate2FACode
         (
-            @UserCreds() username: string,
+            @UserCreds() userCreds: UserCredsDto,
             @Body() otpPayload: OtpPayload,
             @Res({ passthrough: true }) res: Response
         ): Promise<IAuthPayload> {
+        const { username } = userCreds;    
         const user = await this.userService.findOneByUsername(username);
+
         if (user === null) {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
+        }
+        if (!user.doubleAuth || !user.doubleAuthSecret) {
+            this.authLogger.error('User has not activated 2FA');
+            throw new BadRequestException();
         }
         return await this.authService.validate2FACode(otpPayload.token, user, res);
     }
@@ -128,7 +156,7 @@ export class AuthController {
             authPayload = await this.authService.refreshToken(refreshToken, authUser);
         } catch (err) {
             this.authLogger.error(`Caught exception in refreshToken controller: ${err}`);
-            res.clearCookie('refresh_cookie');
+            await this.authService.logout(authUser, res);
             throw new HttpException(err, HttpStatus.UNAUTHORIZED);
         }
         return authPayload;
@@ -137,10 +165,10 @@ export class AuthController {
     @Post('logout')
     public logout
         (
-            @Req() req: IRequestUser,
+            @UserCreds() userCreds: UserCredsDto,
             @Res({ passthrough: true }) res: Response
         ) {
-        const username = req.user.data.username;
+        const username: string = userCreds.username;
         this.authService.logout(username, res);
     }
 

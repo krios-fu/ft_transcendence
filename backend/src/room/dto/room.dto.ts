@@ -1,16 +1,20 @@
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsString, Length } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Length, Matches } from "class-validator";
 
 export class CreateRoomDto {
     @IsString()
     @Length(1, 15)
     @IsNotEmpty()
+    @Matches(/^\w+$/)
     roomName: string;
+}
 
-    @IsNumber()
-    @Type(() => Number)
+export class CreatePrivateRoomDto extends CreateRoomDto {
+    @IsString()
+    @Length(8, 15)
     @IsNotEmpty()
-    ownerId: number;
+    //@Matches(room password regex)
+    password: string;
 }
 
 export class UpdateRoomDto {
@@ -33,14 +37,4 @@ export class UpdateRoomOwnerDto {
 export class RoomMsgDto {
     @IsString() room: string;
     @IsString() message: string;
-}
-
-export class CreateRoomMessageDto {
-    @IsNumber()
-    @IsNotEmpty()
-    userRoomId: number;
-
-    @IsString()
-    @IsNotEmpty()
-    content: string;
 }
