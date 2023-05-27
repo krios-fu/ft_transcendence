@@ -133,7 +133,10 @@ export class RoomService {
                 .insert()
                 .into(RoomEntity)
                 .values([
-                    { roomName: roomName, ownerId: ownerId }
+                    { 
+                        roomName: roomName, 
+                        ownerId: ownerId
+                    }
                 ])
                 .execute());
             roomId = room['identifiers'][0]['id'];
@@ -152,6 +155,16 @@ export class RoomService {
                 .insert()
                 .into(RoomRolesEntity)
                 .values(role)
+                .execute();
+            const userRoom: UserRoomEntity = new UserRoomEntity({ 
+                userId: ownerId, 
+                roomId: roomId
+            });
+            await queryRunner.manager
+                .createQueryBuilder()
+                .insert()
+                .into(UserRoomEntity)
+                .values(userRoom)
                 .execute();
             await queryRunner.commitTransaction();
         } catch(err) {
