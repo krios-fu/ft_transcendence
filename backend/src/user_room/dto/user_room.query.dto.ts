@@ -23,7 +23,7 @@ export class UserRoomQueryDto {
     @IsArray()
     @Transform(({ value }) => value.split(','))
     @HasValidFields(['id', 'userId', 'roomId', 'createdAt'])
-    sort?: string[];
+    order?: string[];
 
     @IsOptional()
     @ValidateNested({
