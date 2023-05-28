@@ -8,12 +8,7 @@ export interface    IMenuInit {
     selection: IGameSelectionData;
 }
 
-export interface    IMenuInit {
-    role: GameRole;
-    selection: IGameSelectionData;
-}
-
 export interface   IMatchRecoverData {
     role: GameRole;
-    gameData: IGameClientStart;
+    matchData: IGameClientStart;
 }

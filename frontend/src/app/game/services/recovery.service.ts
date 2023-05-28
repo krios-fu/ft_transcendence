@@ -3,16 +3,15 @@ import { IMatchInitData } from "../elements/Match";
 import { IResultData } from "../elements/Result";
 import { BaseScene } from "../scenes/BaseScene";
 import { EndScene } from "../scenes/EndScene";
-import {
-    IMatchSceneInit,
-    MatchScene
-} from "../scenes/MatchScene";
+import { MatchScene } from "../scenes/MatchScene";
 import { MenuHeroScene } from "../scenes/MenuHeroScene";
-import {
-    IMenuInit,
-    MenuScene
-} from "../scenes/MenuScene";
+import { MenuScene } from "../scenes/MenuScene";
 import { StartScene } from "../scenes/StartScene";
+import {
+    GameRole,
+    IMatchSceneInit,
+    IMenuInit
+} from "../interfaces/scene.interfaces";
 
 export type SceneId = "start"
                         | "menuClassic"
@@ -26,7 +25,7 @@ export interface    IRecoverData {
 }
 
 export interface   IMatchRecoveryData {
-    role: string;
+    role: GameRole;
     gameData: IMatchInitData;
 }
 

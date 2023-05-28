@@ -3,7 +3,10 @@ import * as SocketIO from 'socket.io-client'
 import { IResultData } from '../elements/Result';
 import { Txt } from '../elements/Txt';
 import { IMatchRecoveryData } from '../services/recovery.service';
-import { IMenuInit } from './MenuScene';
+import {
+    GameScene,
+    IMenuInit
+} from '../interfaces/scene.interfaces';
 
 export abstract class    BaseScene extends Phaser.Scene {
 
@@ -11,9 +14,9 @@ export abstract class    BaseScene extends Phaser.Scene {
     initTxt?: Txt;
 
     constructor(
-        role: string, socket: SocketIO.Socket
+        scene: GameScene, socket: SocketIO.Socket
     ) {
-        super(role);
+        super(scene);
 
         this.socket = socket;
     }

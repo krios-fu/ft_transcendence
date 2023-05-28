@@ -5,7 +5,7 @@ import {
 } from '../elements/Result';
 import { GameRecoveryService } from '../services/recovery.service';
 import { BaseScene } from './BaseScene'
-import { IMenuInit } from './MenuScene';
+import { IMenuInit } from '../interfaces/scene.interfaces';
 
 export class    EndScene extends BaseScene {
 
