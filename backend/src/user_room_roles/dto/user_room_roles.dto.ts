@@ -6,6 +6,11 @@ export class CreateUserRoomRolesDto {
     @IsNotEmpty()
     @IsNumber()
     @Type(() => Number)
+    userId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    @Type(() => Number)
     roomId: number;
 
     @IsNotEmpty()

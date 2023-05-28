@@ -107,10 +107,8 @@ export class UserRoomRolesController {
     @Post()
     public async postRoleInRoom(
         @Body() dto: CreateUserRoomRolesDto,
-        @UserCreds() userCreds: UserCredsDto
     ): Promise<UserRoomRolesEntity> {
-        const { roomId, roleId } = dto;
-        const { id: userId } = userCreds;
+        const { userId, roomId, roleId } = dto;
         const userRoom: UserRoomEntity[] = await this.userRoomService.findAll({ 
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });
