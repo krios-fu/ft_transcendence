@@ -26,7 +26,7 @@ export interface    IRecoverData {
 
 export interface   IMatchRecoveryData {
     role: GameRole;
-    gameData: IMatchInitData;
+    matchData: IMatchInitData;
 }
 
 @Injectable({
@@ -63,17 +63,17 @@ export class    GameRecoveryService {
             {
                 scene.scene.start("Spectator", {
                     role: data.role,
-                    matchData: data.gameData,
+                    matchData: data.matchData,
                     recover: true
                 } as IMatchSceneInit);
             }
             else
             {
-                if (data.gameData.playerA.hero)
+                if (data.matchData.playerA.hero)
                 {
                     scene.scene.start("Player", {
                         role: data.role,
-                        matchData: data.gameData,
+                        matchData: data.matchData,
                         recover: true
                     } as IMatchSceneInit);
                 }
@@ -81,7 +81,7 @@ export class    GameRecoveryService {
                 {
                     scene.scene.start("ClassicPlayer", {
                         role: data.role,
-                        matchData: data.gameData,
+                        matchData: data.matchData,
                         recover: true
                     } as IMatchSceneInit);
                 }

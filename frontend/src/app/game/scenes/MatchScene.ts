@@ -137,28 +137,28 @@ export class    MatchScene extends BaseScene {
         {
             this.initData = {
                 role: data.role,
-                matchData: data.gameData,
+                matchData: data.matchData,
                 recover: true
             }
             return ;
         }
         this.match.stopPointTitle();
-        if (data.gameData.playerA.nick != this.match.nickA
-            || data.gameData.playerB.nick != this.match.nickB
-            || data.gameData.stage != this.match.stage
-            || data.gameData.playerA.hero?.name != this.match.heroA
-            || data.gameData.playerB.hero?.name != this.match.heroB)
+        if (data.matchData.playerA.nick != this.match.nickA
+            || data.matchData.playerB.nick != this.match.nickB
+            || data.matchData.stage != this.match.stage
+            || data.matchData.playerA.hero?.name != this.match.heroA
+            || data.matchData.playerB.hero?.name != this.match.heroB)
         {
             this.destroy();
             this.init({
                 role: data.role,
-                matchData: data.gameData
+                matchData: data.matchData
             });
             this.preload();
             this.create();
             return ;
         }
-        this.match.update(Match.initToData(data.gameData));
+        this.match.update(Match.initToData(data.matchData));
         this.queue = [];
         this.buffer?.empty();
     }
