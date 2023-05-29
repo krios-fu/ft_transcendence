@@ -86,9 +86,9 @@ export class SettingsPayloadDto {
     @IsNotEmpty()
     readonly defaultOffline?: boolean;
 
-    @IsBoolean()
-    @IsNotEmpty()
-    readonly acceptedTerms?: boolean;
+    // @IsBoolean()
+    // @IsNotEmpty()
+    // readonly acceptedTerms?: boolean;
 
     @IsString()
     @IsNotEmpty()

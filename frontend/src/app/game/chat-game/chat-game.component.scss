@@ -21,6 +21,11 @@ Mixins
 	animation: ball .45s cubic-bezier(0, 0, 0.15, 1) alternate infinite;
 }
 
+div {
+	border-radius: 22px;
+  
+  }
+  
 
 /*--------------------
   Body
@@ -103,13 +108,14 @@ Mixins
 
 .chat {
 	width: 97%;
-	height: 70%;
+	height: 67%;
+	// bottom: 10px;
 	display: flex;
 	position: absolute;
-	z-index: 2;
+	// z-index: 2;
 	overflow: hidden;
 	box-shadow: 0 10px 30px black;
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(28, 181, 224, 0.093) 0, rgba(0, 8, 81, 0.093) 100%);
 
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border: outset 3px silver;
@@ -138,7 +144,8 @@ Mixins
 	display: flex;
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-bottom: outset 3px silver;
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(28, 181, 224, 0.093) 0, rgba(0, 8, 81, 0.093) 100%);
+
 
 	// border-top: none;
 
@@ -295,7 +302,8 @@ Mixins
 	//background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-top: outset 3px silver;
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(28, 181, 224, 0.093) 0, rgba(0, 8, 81, 0.093) 100%);
+
 
 	padding: 10px;
 	position: relative;
