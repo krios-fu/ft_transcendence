@@ -45,11 +45,7 @@ export class    MatchNotificationComponent implements OnInit {
     }
 
     private _navigateToGameRoom(id: string): void {
-        this.router.navigate(['/', {
-            outlets: {
-                game: ['room', id]
-            }
-        }]);
+        this.router.navigate(['/game', id]);
     }
 
     setActions(roomId: string): void {
