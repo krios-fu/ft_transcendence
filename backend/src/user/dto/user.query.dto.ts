@@ -42,7 +42,7 @@ export class UserQueryDto extends BaseQueryDto {
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
     @HasValidFields(
-        ['id', 'username', 'firstName', 'lastName', 'email', 'nickName', 'creationDate', 'lastConnection']
+        ['id', 'username', 'firstName', 'lastName', 'email', 'nickName', 'creationDate', 'lastConnection', 'ranking']
     )
     order?: string[];
 
@@ -50,7 +50,7 @@ export class UserQueryDto extends BaseQueryDto {
     @IsArray()
     @Transform(({ value }) => intoArrayOfParams(value))
     @HasValidFields(
-        ['id', 'username', 'firstName', 'lastName', 'email', 'nickName', 'creationDate', 'lastConnection']
+        ['id', 'username', 'firstName', 'lastName', 'email', 'nickName', 'creationDate', 'lastConnection', 'ranking']
     )
     orderDesc?: string[];
 
