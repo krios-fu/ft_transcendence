@@ -37,6 +37,19 @@ export class    EndScene extends BaseScene {
         this.recoveryService.setUp(this);
     }
 
+    preload() {
+        if (!this.resultData)
+            return ;
+        if (!this.resultData.aAvatar)
+            this.resultData.aAvatar = "noUrl";
+        if (!this.resultData.bAvatar)
+            this.resultData.bAvatar = "noUrl";
+        this.load.image('playerA', this.resultData.aAvatar);
+        this.load.image('playerB', this.resultData.bAvatar);
+        this.resultData.aAvatar = 'playerA';
+        this.resultData.bAvatar = 'playerB';
+    }
+
     create() {
         if (this.resultData)
             this.result = new Result(this, this.resultData);
