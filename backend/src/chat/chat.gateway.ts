@@ -10,7 +10,10 @@ import { ChatMessageService } from './message/chat-message.service';
 
 @WebSocketGateway(3001, {
   namespace: 'private',
-  cors: { origin: '*' }
+  cors: { 
+    origin: process.env.WEBAPP_IP,
+    credentials: true
+  }
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
@@ -20,9 +23,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     constructor(private messageService : ChatMessageService){
 
   }
-  afterInit(Server: any) {
-    // console.log( this.server );
-  }
+  afterInit(Server: any) { }
 
 
   handleConnection(client: any, ...args): any {

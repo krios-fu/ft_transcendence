@@ -23,7 +23,7 @@ export class UserRolesQueryDto {
     @IsArray()
     @Transform(({ value }) => value.split(','))
     @HasValidFields(['id', 'userId', 'roleId', 'createdAt'])
-    sort?: string;
+    order?: string[];
 
     @IsOptional()
     @ValidateNested({

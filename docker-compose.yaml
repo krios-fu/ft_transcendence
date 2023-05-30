@@ -1,7 +1,8 @@
 version: "3.9"
 services:
   backend:
-    env_file: .env
+    env_file: 
+      - .env.database
     build:
       context: ./backend/
     ports:
@@ -10,7 +11,8 @@ services:
     networks:
       - webapp-network
     volumes:
-      - node_modules:/usr/src/app/node_modules
+      - backend_node_modules:/usr/src/app/node_modules
+      - ./backend/public:/usr/src/app/public/
     depends_on:
       - db
     working_dir: /usr/src/app
@@ -19,57 +21,28 @@ services:
   db:
     container_name: db
     image: postgres:14.2
+    env_file:
+      - .env.database
     ports:
       - 5432:5432
     networks:
       - webapp-network
     volumes:
       - dbdata:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWD}
     restart: unless-stopped
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    logging:
-      driver: none
-    restart: always
-    volumes:
-      - pgadmindata:/var/tmp/pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PG_MAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PG_PASSWD}
-    networks:
-      - webapp-network
-    ports:
-      - 5050:80
       
   frontend:
     container_name: frontend
-    image: node:18-alpine
-    ports:
-      - 4200:4200
+    build:
+      context: ./frontend/
     networks:
       - webapp-network
     volumes:
-      - ./frontend/:/usr/src/
-    depends_on:     # ???
+      - frontend_node_modules:/usr/src/node_modules
+    depends_on:
       - backend
     working_dir: /usr/src/
-    # The first time, we entered the empty image,
-    # installed angular cli, and generated new workspace with "ng new"
-    command: sh -c "npm install && npm start"
-    restart: unless-stopped
 
-#  frontend:
-#    container_name: frontend
-#    build: ./frontend-app/
-#    ports:
-#      - "8080:80"
-#      - "443:443"
 
 networks:
   webapp-network:
@@ -78,5 +51,6 @@ networks:
 volumes:
   dbdata: {}
   pgadmindata: {}
-  node_modules: {} # tmp definition
+  backend_node_modules: {}
+  frontend_node_modules: {}
 

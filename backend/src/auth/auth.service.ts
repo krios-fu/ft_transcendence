@@ -29,6 +29,8 @@ export class AuthService {
                 username: username,
                 validated: true
             },
+            iss: 'http://localhost:3000',
+            aud: process.env.WEBAPP_IP
         });
     }
 
@@ -39,7 +41,9 @@ export class AuthService {
                 id: id,
                 username: username,
                 validated: false
-            }
+            },
+            iss: 'http://localhost:3000',
+            aud: process.env.WEBAPP_IP
         });
     }
 
@@ -117,13 +121,14 @@ export class AuthService {
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {
-            await this.refreshTokenRepository.delete(tokenEntity.token);
             throw TokenError.TOKEN_EXPIRED;
         }
-        const { token, authUser } = tokenEntity;
-        console.log(`user: ${authUser}`);
+        const { authUser } = tokenEntity;
+        const accessToken: string = (authUser.doubleAuth) ?
+            this.signLowPrivJwt(authUser) :
+            this.signJwt(authUser);
         return {
-            'accessToken': this.signJwt(authUser),
+            'accessToken': accessToken,
             'username': username,
             'id': authUser.id
         }
@@ -134,28 +139,17 @@ export class AuthService {
 
         try {
             tokenEntity = await this.getTokenByUsername(username);
-        } catch(err) {
-            console.error(`Caught exception in logout: ${err} \
-                (user logged out without a valid session)`);
-        }
-        await this.refreshTokenRepository.delete(tokenEntity.token);
+            await this.refreshTokenRepository.delete(tokenEntity.token);
+        } catch(err) { }
         res.clearCookie('refresh_token');
     }
 
     public async generateNew2FASecret(username: string, id: number): Promise<Object> {
         const userSecret = authenticator.generateSecret();
-        this.userService.updateUser(id, { 
-            /*doubleAuth: true,*/
+        this.userService.updateUser(id, {
             doubleAuthSecret: userSecret 
         });
-        const keyuri = authenticator.keyuri(username, 'ft_transcendence', userSecret);
-        /* 
-        **  For testing purposes:
-        **      print generated QR code in terminal
-        **/
-         const qr_img = await QRCode.toString(keyuri, { type: 'terminal' })
-         console.log(`QR generated: \n${qr_img}`);
-        /**/
+        const keyuri: string = authenticator.keyuri(username, 'ft_transcendence', userSecret);
         return { qr: await QRCode.toDataURL(keyuri) };
     }
 
@@ -171,7 +165,7 @@ export class AuthService {
     public async validate2FACode(token: string, user: UserEntity, res: Response): Promise<IAuthPayload> {
         const { doubleAuthSecret: secret } = user;
         
-        if (authenticator.verify({ token, secret }) === false) {
+        if (!authenticator.verify({ token, secret })) {
             throw new BadRequestException();
         }
         return await this.authUserValidated(user, res);
@@ -190,5 +184,15 @@ export class AuthService {
             result = undefined;
         }
         return (result);
+    }
+
+    public validate2FASession(req: Request): boolean {
+        const token: string | undefined = req.headers['authorization']
+            .split(' ')[1];
+        if (token === undefined) {
+            return false;
+        }
+        const payload: IJwtPayload | undefined = this.validateJWToken(token);
+        return payload !== undefined && payload.data.validated;
     }
 }

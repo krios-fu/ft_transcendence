@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-// import {LoginModule} from "./login/login.module";
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from "@angular/router";
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './http-interceptors/auth.interceptor';
 import { CookieService } from 'ngx-cookie-service';
@@ -17,10 +14,8 @@ import { HeaderComponent } from './profile/header/header.component';
 import { ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { MatIconModule } from '@angular/material/icon';
 import { SearchComponent } from './search/search.component';
-import { MatChipList, MatChipsModule, MAT_CHIPS_DEFAULT_OPTIONS } from '@angular/material/chips'
+import { MatChipsModule } from '@angular/material/chips'
 import { MatTabsModule } from '@angular/material/tabs';
-
-import { OtpSessionComponent } from './login/otp-session/otp-session.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -47,7 +42,7 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
     declarations: [
         AppComponent,
         HeaderComponent,
-        // OtpSessionComponent,
+        SearchComponent,
         PagenotfoundComponent,
         DialogNotification,
         FriendNotificationComponent,
@@ -100,6 +95,5 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
       ]
 })
 export class AppModule {
-    constructor() {
-    }
+    constructor() { }
 }

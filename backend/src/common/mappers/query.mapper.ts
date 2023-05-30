@@ -35,7 +35,10 @@ export class QueryMapper {
             });
         }
         if (filter !== undefined) {
-            this.where = cartesian(...filterSetup(filter));
+            const fmtFilter = filterSetup(filter);
+            if (fmtFilter.length) {
+                this.where = cartesian(...filterSetup(filter));
+            }
         }
     } 
     take?: number;

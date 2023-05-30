@@ -13,6 +13,5 @@ export const UserCreds = createParamDecorator(
             throw new UnauthorizedException('Request user has not logged in');
         }
         return new UserCredsDto(username, id);
-        return { 'username': username, 'id': id };
     }
 )

@@ -12,6 +12,7 @@ import {
     UnauthorizedException,
     ForbiddenException,
     UseGuards,
+    BadRequestException,
 } from '@nestjs/common';
 
 import { Public } from '../common/decorators/public.decorator';
@@ -79,6 +80,21 @@ export class AuthController {
         return  { "qr": await this.authService.generateNew2FASecret(user.username, user.id) } ;
     }
 
+    @Post('2fa/deactivate')
+    public async deactivate2FA(@UserCreds() userCreds: UserCredsDto) {
+        const { username } = userCreds;
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+
+        if (user === null) {
+            this.authLogger.error(`Request user ${username} not found in database`);
+            throw new UnauthorizedException();
+        }
+        return await this.userService.updateUser(user.id, { 
+            doubleAuth: false, 
+            doubleAuthSecret: null 
+        });
+    }
+
     @Post('/2fa/confirm')
     public async confirm2FAForUser
     (
@@ -111,6 +127,10 @@ export class AuthController {
             this.authLogger.error(`Request user ${username} not found in database`);
             throw new UnauthorizedException();
         }
+        if (!user.doubleAuth || !user.doubleAuthSecret) {
+            this.authLogger.error('User has not activated 2FA');
+            throw new BadRequestException();
+        }
         return await this.authService.validate2FACode(otpPayload.token, user, res);
     }
 
@@ -136,7 +156,7 @@ export class AuthController {
             authPayload = await this.authService.refreshToken(refreshToken, authUser);
         } catch (err) {
             this.authLogger.error(`Caught exception in refreshToken controller: ${err}`);
-            res.clearCookie('refresh_cookie');
+            await this.authService.logout(authUser, res);
             throw new HttpException(err, HttpStatus.UNAUTHORIZED);
         }
         return authPayload;
@@ -145,10 +165,10 @@ export class AuthController {
     @Post('logout')
     public logout
         (
-            @Req() req: IRequestUser,
+            @UserCreds() userCreds: UserCredsDto,
             @Res({ passthrough: true }) res: Response
         ) {
-        const username = req.user.data.username;
+        const username: string = userCreds.username;
         this.authService.logout(username, res);
     }
 

@@ -1,41 +1,66 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpResponse,
+  HttpStatusCode
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {  
+export class AuthService {
     constructor(
         private http: HttpClient,
         private router: Router,
         private cookies: CookieService,
     ) { }
 
-    authUser(authCode: string): Observable<HttpResponse<any>> {
-        const httpAuthGet = 'http://localhost:3000/auth/42';
-        const auth$ = this.http.get<any>
-        (
-            httpAuthGet, {
-                params: {
-                    code: authCode,
-                },
-                observe: 'response',
-                responseType: 'json',
-                withCredentials: true,
-            }
-        );
+    private getUserCredentials(authCode: string): Observable<HttpResponse<any>> {
+      const httpAuthGet: string = environment.apiUrl + 'auth/42';
 
-        console.log('AUTH', auth$)
-        return auth$;
+      return this.http.get<any>
+      (
+        httpAuthGet, {
+          params: {
+            code: authCode,
+          },
+          observe: 'response',
+          responseType: 'json',
+          withCredentials: true,
+        }
+      );
     }
 
-    refreshToken(): Observable<HttpResponse<IAuthPayload>> {
-        const tokenEndpoint = 'http://localhost:3000/auth/token?user=' + this.getAuthUser();
-        const token$ = this.http.get<IAuthPayload>
+    public authUser(code: string) {
+      this.getUserCredentials(code)
+        .subscribe({
+          next: (res: HttpResponse<IAuthPayload>) => {
+            if (res.body === null) {
+              throw new HttpErrorResponse({
+                statusText: 'successful login never returned credentials',
+                status: HttpStatusCode.InternalServerError,
+              })
+            }
+            this.setAuthInfo({
+              "accessToken": res.body.accessToken,
+              "username": res.body.username,
+              "id": res.body.id
+            });
+            this.redirectHome();
+          },
+          error: (err: HttpErrorResponse) => new HttpResponse({status: 200})
+        });
+    }
+
+    public refreshToken(): Observable<HttpResponse<IAuthPayload>> {
+        const tokenEndpoint: string = environment.apiUrl + 'auth/token?user=' + this.getAuthUser();
+        return this.http.get<IAuthPayload>
         (
             tokenEndpoint, {
                 observe: 'response',
@@ -43,14 +68,12 @@ export class AuthService {
                 withCredentials: true,
             },
         );
-        return token$;
     }
 
-    directRefreshToken(): Observable<IAuthPayload | undefined> {
+    public directRefreshToken(): Observable<IAuthPayload | undefined> {
         return (
             new Observable((subscriber) => {
                 this.refreshToken().subscribe((data) => {
-                    console.log("Refresh data: ", data.body);
                     if (!data.body)
                         subscriber.next(undefined);
                     else
@@ -68,11 +91,31 @@ export class AuthService {
         );
     }
 
-    redirectHome(): void {
+    public confirm2FA(code: string): void {
+        this.http.post<IAuthPayload>(
+            environment.apiUrl + 'auth/2fa/validate',
+            { token: code }
+        )
+            .subscribe({
+                next: (creds: IAuthPayload) => {
+                    this.setAuthInfo({
+                        'accessToken': creds.accessToken,
+                        'username': creds.username,
+                        'id': creds.id
+                    });
+                    this.redirectHome();
+                },
+                error: (err: HttpErrorResponse) => {
+                    alert('Invalid OTP code');  /* TODO: testear que no de problemas al esperar la resolución de la alerta */
+                }
+            });
+    }
+
+    public redirectHome(): void {
         this.router.navigate(['/profile/me']);
     }
 
-    redirecOtpSesion(): void {
+    public redirect2FA(): void {
         this.router.navigate(['/login/2fa']);
     }
 
@@ -81,23 +124,22 @@ export class AuthService {
     }
 
     /* Solo permite ejecución a usuarios logeados */
-    logout(): void {
+    public logout(): void {
         this.cookies.delete('refresh_token', '/', 'localhost', true, 'None');
         localStorage.removeItem('access_token');
         localStorage.removeItem('username');
-        localStorage.removeItem('id');
-        this.router.navigateByUrl('/login');
-
+        localStorage.removeItem('user_id');
+        this.redirectLogin();
     }
 
-    isAuthenticated(): boolean {
+    public isAuthenticated(): boolean {
         return (
             this.getAuthToken() != null &&
             this.getAuthUser() != null
         );
     }
 
-    setAuthInfo(authPayload: IAuthPayload) {
+    public setAuthInfo(authPayload: IAuthPayload) {
         localStorage.setItem('access_token', authPayload.accessToken);
         localStorage.setItem('username', authPayload.username);
         localStorage.setItem('user_id', String(authPayload.id));

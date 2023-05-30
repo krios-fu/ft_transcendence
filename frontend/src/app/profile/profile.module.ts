@@ -48,7 +48,7 @@ import { SearchComponent } from '../search/search.component';
         MatchHistoryComponent,
         RankingComponent,
         AchievementsComponent,
-        SearchComponent,
+        // SearchComponent,
 
 
     ],

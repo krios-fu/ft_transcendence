@@ -18,9 +18,7 @@ export class ChatMessageService {
         private chatUserRepository: Repository<ChatUserEntity>,
         private userService: UserService,
         private chatService: ChatService
-    ) {
-        console.log('message repo start')
-    }
+    ) { }
 
     public async findMessages(): Promise<ChatMessageEntity[]> {
         return await this.messageRepository.find()
