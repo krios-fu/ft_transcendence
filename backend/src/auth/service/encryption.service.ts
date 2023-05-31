@@ -23,7 +23,7 @@ export class EncryptionService {
     }
 
     private _init(): void {
-        const   keyPass: string = "TestPass"; //Provisional. Use environment variable?
+        const   keyPass: string = process.env.FORTYTWO_APP_SECRET;
     
         this._iv = randomBytes(16);
         this._key = createHash('sha256').update(keyPass).digest('base64')
