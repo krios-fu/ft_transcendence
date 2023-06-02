@@ -1,4 +1,6 @@
 import { Component } from "@angular/core"
+import { AlertServices } from "../services/alert.service";
+import { SocketService } from "./services/socket.service";
 
 @Component({
     selector: 'app-game',
@@ -7,6 +9,29 @@ import { Component } from "@angular/core"
 })
 export class    GameComponent {
 
-    constructor() {}
+    constructor(
+        private readonly gameSocketService: SocketService,
+        private readonly alertService: AlertServices
+    ) {
+        this._setSubscriptions();
+    }
+
+    private _setSubscriptions(): void {
+        this.gameSocketService.getObservable<string>("playerExit")
+            .subscribe({
+                next: (roomName: string) => {
+                    console.log("Received playerExit message");
+                    this.alertService.openSnackBar(
+                        `Return to room ${roomName} in 15 secs, `
+                        + "or lose the match.",
+                        "OK"
+                    );
+                },
+                error: (err: any) => {
+                    console.error(err);
+                }
+            }
+        );
+    }
 
 }

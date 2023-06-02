@@ -3,28 +3,11 @@ import { IMatchInitData } from "../elements/Match";
 import { MenuRenderer } from "../elements/MenuRenderer";
 import { GameRecoveryService } from "../services/recovery.service";
 import { BaseScene } from "./BaseScene";
-
-export interface   ISelectionData {
-    nickPlayerA: string;
-    nickPlayerB: string;
-    categoryA: string;
-    categoryB: string;
-    avatarA: string;
-    avatarB: string;
-    heroA: number;
-    heroB: number;
-    heroAConfirmed: boolean;
-    heroBConfirmed: boolean;
-    stage: number;
-    timeoutDate: number;
-    status: number;
-}
-
-export interface   IMenuInit {
-    //PlayerA, PlayerB, Spectator
-    role: string;
-    selection: ISelectionData;
-}
+import {
+    GameScene,
+    IMenuInit,
+    ISelectionData
+} from "../interfaces/scene.interfaces";
 
 export class    MenuScene extends BaseScene {
 
@@ -35,7 +18,7 @@ export class    MenuScene extends BaseScene {
 
     constructor(sock: Socket,
                     readonly recoveryService: GameRecoveryService,
-                    sceneName: string = "Menu") {
+                    sceneName: GameScene = "Menu") {
         super(sceneName, sock);
         this.role = "";
     }

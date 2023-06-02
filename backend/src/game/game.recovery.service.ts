@@ -49,7 +49,7 @@ export class    GameRecoveryService {
                 data: IMenuInit | IMatchRecoverData
                         | IGameResultData | undefined): boolean {
         return (
-            (data as IMatchRecoverData).gameData !== undefined
+            (data as IMatchRecoverData).matchData !== undefined
         );
     }
 
@@ -69,13 +69,10 @@ export class    GameRecoveryService {
     }
 
     private _getRole(client: Socket): GameRole {
-        const   [, player]: [string | undefined, any] =
-                    this.socketHelper.getClientRoomPlayer(client); //Improve!! return GameRole or undefined in second value
-        let     role: GameRole = "Spectator";
-
-        if (player)
-            role = player;
-        return (role);
+        const   [, player]: [string | undefined, GameRole | undefined] =
+                    this.socketHelper.getClientRoomPlayer(client);
+    
+        return (player ? player : "Spectator");
     }
 
     private _getData(client: Socket, roomId: string): IMenuInit |
@@ -97,7 +94,7 @@ export class    GameRecoveryService {
         {
             return ({
                 role: this._getRole(client),
-                gameData: data
+                matchData: data
             });
         }
         data = this.updateService.getGameResult(roomId);

@@ -16,7 +16,6 @@ import {
     Server,
     Socket
 } from 'socket.io';
-import { IGameClientStart } from './elements/Game'
 import { IGameSelectionData } from './elements/GameSelection';
 import { GameMatchmakingService } from './game.matchmaking.service';
 import { GameRecoveryService } from './game.recovery.service';
@@ -28,7 +27,10 @@ import {
 } from './game.updateService';
 import { GameAuthGuard } from './guards/game.auth.guard';
 import { GameRoomGuard } from './guards/game.room.guard';
-import { IMenuInit } from './interfaces/msg.interfaces';
+import {
+    IMatchRecoverData,
+    IMenuInit
+} from './interfaces/msg.interfaces';
 import { MatchInviteResponseDto } from './dtos/matchInviteResponse.dto';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
@@ -97,10 +99,10 @@ export class    GameGateway implements OnGatewayInit,
         const   username: string = client.data.username;
         const   [initScene, initData]: [string,
                                         IMenuInit |
-                                        IGameClientStart |
+                                        IMatchRecoverData |
                                         IGameResultData |
                                         undefined] =
-                    this.updateService.getClientInitData(roomName);
+                    this.updateService.getClientInitData(roomName, client);
     
         this.roomService.join(
             username,
@@ -130,6 +132,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   roomName: string = SocketHelper.roomIdToName(roomId);
         this.roomService.leave(
+            client,
             client.data.username,
             roomName
         );

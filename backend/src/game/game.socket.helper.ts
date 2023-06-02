@@ -5,6 +5,7 @@ import {
     Socket
 } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { GameRole } from "./interfaces/msg.interfaces";
 
 @Injectable()
 export class    SocketHelper {
@@ -92,10 +93,11 @@ export class    SocketHelper {
     **  client.rooms returns a Set with the socket id as first element,
     **  and the next ones, the ids of the rooms it is currently in.
     */
-    getClientRoomPlayer(client: Socket): [string, string] {
+    getClientRoomPlayer(client: Socket): [string | undefined,
+                                            GameRole | undefined] {
         const   rooms: IterableIterator<string> = client.rooms.keys();
-        let     room: string = undefined;
-        let     player: string = undefined;
+        let     room: string | undefined = undefined;
+        let     player: string | GameRole | undefined = undefined;
         let     separatorPosition: number;
 
         for (const r of rooms)
@@ -108,7 +110,10 @@ export class    SocketHelper {
                 break ;
             }
         }
-        return ([room, player]);
+        return ([
+            room,
+            player != "PlayerA" && player != "PlayerB" ? undefined : player
+        ]);
     }
 
     async roomSocketLength(roomId: string): Promise<number> {
