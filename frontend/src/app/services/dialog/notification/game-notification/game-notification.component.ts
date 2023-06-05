@@ -38,8 +38,18 @@ export class GameNotificationComponent implements OnInit{
   }
 
 
+  sendResponse(){
+    this.dialogRef.afterClosed()
+    .subscribe( data => {
+      console.log(data)
+    })
+  }
+
+  
+
   ngOnInit(): void {
     this.startTimer(10);
+    this.sendResponse();
   }
 
 }

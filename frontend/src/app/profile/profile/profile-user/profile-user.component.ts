@@ -64,9 +64,7 @@ export class ProfileUserComponent implements OnInit {
       })
 
     this.route.params.subscribe(({ id }) => {
-      // this.username = id;
       this.shareService.eventEmitter.emit(id);
-      console.log('PROFILE USER ID', id)
 
     })
   }

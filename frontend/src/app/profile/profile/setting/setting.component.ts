@@ -76,12 +76,20 @@ export class SettingComponent implements OnInit {
   }
 
   auth2fa() {
+    if(this.user.doubleAuth)
+    this.http.post('http://localhost:3000/auth/2fa/deactivate', this.user.username,)
+    .subscribe((dta: any) => {
+      // this.qr_generate = dta.qr.qr;
+      console.log(dta);
+    })
+
     if (!this.user.doubleAuth && !this.qr_generate)
     this.http.post('http://localhost:3000/auth/2fa/generate', this.user.username,)
       .subscribe((dta: any) => {
         this.qr_generate = dta.qr.qr;
         console.log(dta);
       })
+
 
   }
 
