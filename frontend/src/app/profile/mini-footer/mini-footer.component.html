@@ -10,12 +10,15 @@ display: flex;" >
       </button>
     </div>
     <div>
-      <!-- [matBadgeHidden]="hidden" (click)="toggleBadgeVisibility()"> -->
-
-      <a mat-icon-button class="icon_nav"  (click)="hello()">
+      <a mat-icon-button class="icon_nav" (click)="hello()">
         <mat-icon matBadge="{{nPenddingFriends}}" matBadgeColor="warn" matBadgeSize="small">
           people
         </mat-icon>
+      </a>
+    </div>
+    <div>
+      <a mat-icon-button [routerLink]="[ '/', 'chat']">
+        <mat-icon>chat</mat-icon>
       </a>
     </div>
     <div>

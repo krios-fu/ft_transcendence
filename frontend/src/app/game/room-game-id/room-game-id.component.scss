@@ -101,6 +101,7 @@ span {
   text-transform: uppercase;
   min-width: 21rem;
   position: relative;
+  overflow-y: scroll;
 
   a {
     color: white;
@@ -130,6 +131,10 @@ span {
 }
 
 
+div {
+  border-radius: 22px;
+
+}
 
 .column2 {
   float: left;
@@ -145,6 +150,6 @@ span {
 
   max-height: 100vh;
   /* Establece la altura máxima del div al 100% del alto de la ventana */
-  overflow-y: auto;
+  // overflow-y: auto;
 
 }

@@ -9,12 +9,16 @@ interface chat_user {
 
 }
 
+
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss']
+  styleUrls: ['./chat.component.scss'],
+
 })
 export class ChatComponent implements OnInit {
+
 
   public CHATS_USERS = [] as chat_user[];
   me?: UserDto;
@@ -34,22 +38,25 @@ export class ChatComponent implements OnInit {
       .subscribe((user: UserDto) => {
         this.me = user;
         this.http.get(`http://localhost:3000/chat/me`)
-          .subscribe((entity : any) => {
+          .subscribe(entity => {
             let data = Object.assign(entity);
             for (let chat in data) {
               let { users } = data[chat];
               let { id } = data[chat];
-              let chat_friend = users.filter((user: any) => user.userId != this.me?.id);
-              this.userServices.getUserById(chat_friend[0].userId)
-                .subscribe((user: UserDto) => {
-                  this.CHATS_USERS.push({
-                    chat_id: id,
-                    user: user
+              console.log("usersss", users)
+              let chat_friend = users.filter((user: any) => { return user.userId != this.me?.id });
+              if (chat_friend.length != 0)
+                this.userServices.getUserById(chat_friend[0].userId)
+                  .subscribe((user: UserDto) => {
+                    this.CHATS_USERS.push({
+                      chat_id: id,
+                      user: user
+                    });
                   });
-                });
             }
           });
-  })
-}
+      })
+  }
+
 
 }

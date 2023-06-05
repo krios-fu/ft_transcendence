@@ -24,7 +24,6 @@ export class SettingComponent implements OnInit {
   urlPreview = ''
   formGroup = this._formBuilder.group({
     doubleAuth: false,
-    acceptedTerms: [false, Validators.requiredTrue],
     defaultOffline: false,
     nickName: ''
   });
@@ -46,13 +45,11 @@ export class SettingComponent implements OnInit {
           this.user = user;
 
           this.formGroup.get("doubleAuth")?.setValue(this.user.doubleAuth, { emitEvent: true });
-          this.formGroup.get("acceptedTerms")?.setValue(this.user.acceptedTerms, { emitEvent: true });
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });
           this.formGroup.get("nickName")?.setValue(this.user.nickName, { emitEvent: true });
           this.urlPreview = this.user?.photoUrl;
 
-          if (!this.user.doubleAuth)
-            this.auth2fa();
+
 
         }
       })
@@ -79,16 +76,26 @@ export class SettingComponent implements OnInit {
   }
 
   auth2fa() {
+    if(this.user.doubleAuth)
+    this.http.post('http://localhost:3000/auth/2fa/deactivate', this.user.username,)
+    .subscribe((dta: any) => {
+      // this.qr_generate = dta.qr.qr;
+      console.log(dta);
+    })
 
+    if (!this.user.doubleAuth && !this.qr_generate)
     this.http.post('http://localhost:3000/auth/2fa/generate', this.user.username,)
       .subscribe((dta: any) => {
         this.qr_generate = dta.qr.qr;
         console.log(dta);
       })
 
+
   }
 
   confir(code: any): Observable<HttpResponse<any>> {
+
+
     return this.http.post<any>('http://localhost:3000/auth/2fa/confirm', { token: code }).pipe(
       tap((res: any) => {
 
@@ -106,12 +113,13 @@ export class SettingComponent implements OnInit {
   confimateOtp(code: any) {
     // console.log("Code 2fa:", code);
 
+    if(code.length > 0)
     this.confir(code).subscribe(lol => {
-      console.log("ESTOY");
       console.log(lol)
     })
   }
 
+  
 
   changeDetected() {
     this.icon = 'lock_open';
@@ -128,7 +136,7 @@ export class SettingComponent implements OnInit {
     const form = formGroup.getRawValue();
 
 
-    if (this.icon === 'lock_open')
+    if (this.icon === 'lock_open' && (login) )
 
       this.http.patch('http://localhost:3000/users/me/settings', { ...form, nickName: nickname })
         .subscribe(

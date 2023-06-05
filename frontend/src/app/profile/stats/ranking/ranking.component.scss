@@ -14,7 +14,7 @@ table {
 }
 
 .mat-row {
-    height: 90px;
+    height: 40px;
     background-color: rgba($color: purple, $alpha: 0.7);
 }
 
@@ -36,10 +36,23 @@ table {
     background-color: rgba($color: deeppink, $alpha: 0.7);
 }
 
-.ranking-photo {
-    display:inline;
-    vertical-align: middle;
-    padding-right: 10px;
+.avatar {
+    position: relative;
+    // left: 5px;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    margin-top: 10px;
+    border: 3px solid rgb(255, 255, 255);
+
+    img {
+        width: 100%;
+        // height: 100%;
+
+    }
 }
 
 .ranking-photo img {

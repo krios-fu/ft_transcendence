@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { Payload, UserDto } from "../../../dtos/user.dto";
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { SharedService } from '../../profile/profile-user/profile-user.component';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-navheader',
@@ -17,18 +19,28 @@ export class NavHeaderComponent implements OnInit {
   plus_minus = "chevron_right";
 
   user: UserDto | undefined;
+  searching = [] as UserDto[];
+
 
   color_icon = '';
   online_icon = '';
+
+  @Output() searchUser = new EventEmitter();
+  public formMessage= new FormGroup({
+    message : new FormControl('')
+  })
 
   constructor(private http: HttpClient,
     private usersService: UsersService,
     private authService: AuthService,
     private gameNotification: SocketNotificationService,
-    private shareService : SharedService
+    private shareService : SharedService,
+    private route : ActivatedRoute,
 
   ) {
     this.user = undefined;
+    const room = this.route.snapshot.paramMap.get('id');
+    this.formMessage.patchValue({ room } );
   }
 
 
@@ -37,6 +49,8 @@ export class NavHeaderComponent implements OnInit {
   ** Red: '#ff0000'
   */
   ngOnInit() {
+    const room = this.route.snapshot.paramMap.get('id');
+    this.formMessage.patchValue({ room } );
 
     this.usersService.getUser('me')
       .subscribe((user: UserDto) => {
@@ -69,6 +83,26 @@ export class NavHeaderComponent implements OnInit {
     this.plus_minus = (this.status_room) ? "expand_more" : "chevron_right";
   }
 
+  search(){
+    const { message, room } = this.formMessage.value;
+    if( message.trim() == '' )
+      return false;
+      this.http.get<UserDto[]>(`http://localhost:3000/users/?filter[nickName]=${message}`)
+      .subscribe(
+       ( user : UserDto[]) => {
+          // this.searchUser.emit(user)
+          this.searching = user;
+          console.log('SERACH --->', user);
+        }
+      )
+    this.formMessage.controls['message'].reset();
+    return true;
+  }
+
+  getSearch(user: UserDto[]) {
+    console.log("APPCOMPONENT event serach", user);
+    this.searching = user;
+  }
 
 
 }

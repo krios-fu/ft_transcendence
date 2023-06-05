@@ -26,5 +26,8 @@ export class TwofaComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        // if (this.authService.isAuthenticated())
+        // this.authService.redirectHome();
+    }
 }

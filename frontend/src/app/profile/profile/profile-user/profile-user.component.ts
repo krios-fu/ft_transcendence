@@ -9,8 +9,6 @@ import { AlertServices } from 'src/app/services/alert.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 
 
-
-
 @Injectable()
 export class SharedService {
   public eventEmitter: EventEmitter<any> = new EventEmitter<any>();
@@ -27,6 +25,9 @@ export class ProfileUserComponent implements OnInit {
 
   icon_friend = 'person_add'
   icon_activate = true;
+  color_icon = '';
+  online_icon = '';
+
 
   id_friendship = -1
   id_chat = -1;
@@ -35,58 +36,50 @@ export class ProfileUserComponent implements OnInit {
 
   public FRIENDS_USERS = [] as UserDto[];
 
-  me : UserDto | undefined;
+  me: UserDto | undefined;
 
   constructor(private http: HttpClient,
     private authService: AuthService,
     private route: ActivatedRoute,
     private chatService: ChatService,
     private alertService: AlertServices,
-    private socketGameNotification : SocketNotificationService,
-    private userService : UsersService,
-    private shareService : SharedService
+    private socketGameNotification: SocketNotificationService,
+    private userService: UsersService,
+    private shareService: SharedService
   ) {
-    this.user = undefined;
-
-
-
-  }
+    this.user = undefined;  }
 
   @Output() username = new EventEmitter();
 
   ngOnInit() {
     this.friend();
     this.userService.getUser('me')
-    .subscribe((user : UserDto) => {
-      this.me = user;
-      this.shareService.eventEmitter.emit(this.me.username);
-      this.socketGameNotification.joinRoomNotification(this.me.username);
-    } )
+      .subscribe((user: UserDto) => {
+        this.me = user;
+        this.color_icon = (this.me.defaultOffline) ? '#49ff01' : '#ff0000';
+        this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
+
+        this.shareService.eventEmitter.emit(this.me.username);
+        this.socketGameNotification.joinRoomNotification(this.me.username);
+      })
 
     this.route.params.subscribe(({ id }) => {
-      // this.username = id;
       this.shareService.eventEmitter.emit(id);
-      console.log('PROFILE USER ID', id)
 
     })
   }
 
-
-
-
-
   getNickName() {
     return this.user?.nickName;
   }
-
 
   getPhotoUrl() {
     return this.user?.photoUrl;
   }
 
 
-  send_invitatiion_game(){
-    this.socketGameNotification.sendNotification({ user: this.me, dest : this.user?.username, title: 'INVITE GAME'});
+  send_invitatiion_game() {
+    this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
     this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
@@ -100,13 +93,13 @@ export class ProfileUserComponent implements OnInit {
         })
     }
     else if (this.icon_friend === 'person_remove') {
-      this.http.delete(`http://localhost:3000/users/me/friends/deleted/${this.id_friendship}`)
+      this.http.delete(`${this.urlApi}users/me/friends/deleted/${this.id_friendship}`)
         .subscribe(data => {
           this.icon_friend = 'person_add'
         })
     }
     else if (this.icon_friend === 'check')
-      this.http.patch(`http://localhost:3000/users/me/friends/accept`, {
+      this.http.patch(`${this.urlApi}users/me/friends/accept`, {
         id: this.user?.id
       })
         .subscribe(data => {
@@ -114,7 +107,7 @@ export class ProfileUserComponent implements OnInit {
         })
   }
 
-  get_chat_id(){
+  get_chat_id() {
     return this.id_chat;
   }
 
@@ -123,23 +116,22 @@ export class ProfileUserComponent implements OnInit {
       // this.formMessage.patchValue({ id });
       this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
-          if (user.length === 0)
-          {
+          if (user.length === 0) {
             this.alertService.openSnackBar('User not foud', 'OK')
             this.authService.redirectHome()
           }
           this.user = user[0];
           this.icon_activate = false;
 
-          if (this.user.username != this.authService.getAuthUser()){
+          if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
           }
-            this.chatService.createChat(this.user.id).subscribe((data : any) => this.id_chat = data.id );
+          this.chatService.createChat(this.user.id).subscribe((data: any) => this.id_chat = data.id);
 
           this.FRIENDS_USERS = [];
           // change de icone visible add o remove 
 
-          this.http.get<any>(this.urlApi + `users/me/friends/as_pending?filter[nickName]=${id}`)
+          this.http.get<any>(`${this.urlApi}users/me/friends/as_pending?filter[nickName]=${id}`)
             .subscribe((friend: any) => {
               if (friend.length > 0) {
                 const { receiver } = friend[0];
@@ -155,7 +147,7 @@ export class ProfileUserComponent implements OnInit {
                 this.id_friendship = friend.id
                 this.icon_friend = 'person_remove';
               }
-              this.http.get<any[]>(`http://localhost:3000/users/${this.user?.id}/friends`)
+              this.http.get<any[]>(`${this.urlApi}users/${this.user?.id}/friends`)
                 .subscribe((friends: any[]) => {
                   for (let friend in friends) {
                     const { receiver } = friends[friend];

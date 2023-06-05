@@ -14,7 +14,6 @@ import { NavigationEnd, Router } from "@angular/router";
 export class AppComponent implements AfterViewInit, OnInit {
 
   hiden = false;
-  search = [] as UserDto[];
   public subscriber: Subscription;
 
 
@@ -52,10 +51,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     this.authService.logout();
   }
 
-  getSearch(user: UserDto[]) {
-    console.log("APPCOMPONENT event serach", user);
-    this.search = user;
-  }
+
 
   ngAfterViewInit() {
   }

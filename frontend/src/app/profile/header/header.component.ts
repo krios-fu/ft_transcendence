@@ -1,8 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import {FormControl, FormGroup} from "@angular/forms";
-import {ActivatedRoute} from "@angular/router";
-import { UserDto } from 'src/app/dtos/user.dto';
+import { Component,  OnInit, } from '@angular/core';
+
 
 
 
@@ -13,35 +10,16 @@ import { UserDto } from 'src/app/dtos/user.dto';
 })
 export class HeaderComponent implements OnInit {
 
-  @Output() searchUser = new EventEmitter();
-  public formMessage= new FormGroup({
-    message : new FormControl('')
-  })
 
-  constructor( private route : ActivatedRoute,
-    private http: HttpClient ) {
-    const room = this.route.snapshot.paramMap.get('id');
-    this.formMessage.patchValue({ room } );
+
+  constructor(  ) {
+
   }
 
   ngOnInit(): void {
-    const room = this.route.snapshot.paramMap.get('id');
-    this.formMessage.patchValue({ room } );
+
 
   }
 
-  search(){
-    const { message, room } = this.formMessage.value;
-    if( message.trim() == '' )
-      return false;
-      this.http.get<UserDto[]>(`http://localhost:3000/users/?filter[nickName]=${message}`)
-      .subscribe(
-       ( user : UserDto[]) => {
-          this.searchUser.emit(user)
-          console.log('SERACH --->', user);
-        }
-      )
-    this.formMessage.controls['message'].reset();
-    return true;
-  }
+
 }

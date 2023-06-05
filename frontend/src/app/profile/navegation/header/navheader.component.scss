@@ -115,6 +115,11 @@ div {
   }
 }
 
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 
 .row {
@@ -135,9 +140,6 @@ div {
 	  font-size: 8px;
 	  letter-spacing: 1px;
 	}
-	// max-height: 100vh; /* Establece la altura máxima del div al 100% del alto de la ventana */
-	// overflow-y: auto;
-  
   }
 
   .column1  {
@@ -145,63 +147,37 @@ div {
 	width: 20%;
 	padding: 10px;
 	color: white;
-	// height: auto;
 	background: inherit;
-	// overflow: hidden;
-	// border: 3px groove rgba(245, 245, 245, 0.29);
 	text-transform: uppercase;
 	min-width: 21rem;
 	position: relative;
-  
-   
-  
-  
-   // min-height: 21rem;
-	//border-top: none;
-	//box-shadow: 0 10px 4px #818181;
-  
-  
 	a{
 	  color: white;
 	}
-  
-  
-	
-	// .example-tree-invisible {
-	//   display: none;
-	// }
-  
-	.example-tree ul,
-	.example-tree li {
-	  margin-top: 0;
-	  margin-bottom: 0;
-	  list-style-type: none;
-	  //color: red;
+
+}
+.search-box {
+	// width: 20vw;
+	// min-width: 20vh;
+	border: 1px solid rgba(245, 245, 245, 0.29);
+	padding: 14px;
+	border-radius:25px;
+	box-shadow: 0 10px 30px black;
+
+	& .search-input {
+	  background: none;
+	  border: none;
+	  outline: none!important;
+	  resize: none;
+	  color: whitesmoke;
+	  font-size: 14px;
+	  margin: 0;
 	}
-  
-	/*
-	 * This padding sets alignment of the nested nodes.
-	 */
-	.example-tree .mat-nested-tree-node div[role=group] {
-	  padding-left: 20px;
-	  //color: white;
-  
+	textarea:focus:-webkit-placeholder{
+	  color: transparent;
 	}
-  
-	/*
-	 * Padding for leaf nodes.
-	 * Leaf nodes need to have padding so as to align with other non-leaf nodes
-	 * under the same parent.
-	 */
-	.example-tree div[role=group] > .mat-tree-node {
-	  padding-left:20px;
-	}
-  
-  
   }
 
-
-  
   .column2 {
 	float: left;
 	width: 80%;
@@ -213,6 +189,5 @@ div {
 	background-position: center; /* Center the image */
   	background-size: cover;
 
-	// height: 75%;
-  
   }
+

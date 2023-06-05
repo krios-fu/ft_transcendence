@@ -21,6 +21,10 @@ Mixins
 	animation: ball .45s cubic-bezier(0, 0, 0.15, 1) alternate infinite;
 }
 
+div {
+    border: outset 2px silver;
+    border-radius: 22px;
+}
 
 /*--------------------
   Body
@@ -55,9 +59,9 @@ Mixins
 	// background-image: url('https://wallpaperaccess.com/full/3739441.jpg');
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	background-size: cover; background-position: center;
-	border: outset 3px silver;
+	// border: outset 3px silver;
 	// background-color: rgba(0, 0, 0, 30);
-
+	padding: 10px;
 	flex-direction: column;
 	animation: fade-in 2s linear both;
 
@@ -83,7 +87,7 @@ Mixins
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-bottom: outset 3px silver;
 	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(28, 221, 224, 0.25) 0, rgba(114, 244, 238, 0.25) 100%);
 
 	// border-top: none;
 
@@ -126,6 +130,8 @@ Mixins
 	overflow: scroll;
 	display: flex;
 	flex-direction: column-reverse;
+	// padding-bottom: 50px;
+	margin-bottom: 10px;
 
 
 	& .messages-content {
@@ -143,7 +149,7 @@ Mixins
 		float: left;
 		padding: 6px 10px 7px;
 		border-radius: 10px 10px 10px 0;
-		background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+		background: linear-gradient(90deg, #b34bb7 0%, #18483a 100%);
 		font-size: 1rem;
 		margin: 3px 0 3px ;
 		position: relative;
@@ -168,7 +174,7 @@ Mixins
 			transform-origin: 0 0;
 			animation: bounce 500ms linear both;
 			color: #fff;
-			background: linear-gradient(90deg, #0f1f32 0%, #3F5EFB 100%);
+			background: linear-gradient(90deg, #320f2c 0%, #7489f5 100%);
 		}
 	}
 }
@@ -185,7 +191,8 @@ Mixins
 	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-top: outset 3px silver;
 	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(224, 28, 201, 0.25) 0, rgba(244, 114, 209, 0.25) 100%);
 
 	padding: 10px;
 	position: relative;

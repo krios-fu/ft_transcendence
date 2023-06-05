@@ -24,6 +24,7 @@ export interface    UserRanking {
     photoUrl: string;
     ranking: number;
     category: Category;
+    username: string;
 }
 
 export interface   RankingData {
@@ -32,6 +33,7 @@ export interface   RankingData {
     photoUrl: string;
     rating: number;
     category: string;
+    username: string;
 }
 
 export type UserCountData = [UserRanking[], number]
@@ -104,6 +106,7 @@ export class    RankingService {
                 nickName: user.nickName,
                 photoUrl: user.photoUrl,
                 rating: user.ranking,
+                username: user.username,
                 category: Category[user.category] //Provisional Hack
             });
         }));
