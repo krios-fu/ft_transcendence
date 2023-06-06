@@ -39,7 +39,7 @@ export class RoomGateway implements
     }
 
     handleDisconnect(cl: Socket) {
-        this.logger.log(`Connection ${cl.id} closed`);0
+        this.logger.log(`Connection ${cl.id} closed`);
     }
 
     /*                         */
