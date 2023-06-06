@@ -15,7 +15,7 @@ import { RoomMsgDto } from '../room/dto/room.dto';
 
 @UseGuards(JwtAuthGuard)
 @WebSocketGateway({
-    namespace: 'room-chat',
+    // namespace: 'room-chat',
     cors: {
         origin: 'http://localhost:4200',
         credentials: true,
@@ -34,6 +34,7 @@ export class RoomGateway implements
         this.logger.log('RoomChatGateway initialized');
     }
 
+    @AuthGuard()
     handleConnection(cl: Socket) {
         this.logger.log(`New connection ${cl.id}`);
     }
@@ -42,12 +43,12 @@ export class RoomGateway implements
         this.logger.log(`Connection ${cl.id} closed`);
     }
 
-    /*                         */
-
     @WebSocketServer()
     private wss: Server;
 
+
     @SubscribeMessage('join-room')
+    @RoomRolesGuard()
     joinRoom(
         @ConnectedSocket() client: Socket,
         room: string
@@ -73,5 +74,13 @@ export class RoomGateway implements
         this.wss.to(room).emit("room-chat", message, (data: string) => {
             console.log("missatge: " + data); /* Error connection timed out */
         });
+    }
+
+    @SubscribeMessage('update-roles')
+    public updateRoles(
+        @ConnectedSocket() cli: Socket,
+        @MessageBody() msg
+    ): void {
+
     }
 }
