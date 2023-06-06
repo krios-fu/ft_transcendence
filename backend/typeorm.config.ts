@@ -8,5 +8,7 @@ export default new DataSource({
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
     entities: ["dist/**/*.entity{.ts,.js}"],
-    migrations: ['dist/migrations/*.js']
+    migrations: ['dist/migrations/*{.ts,.js}'],
+    synchronize: process.env.WEBAPP_IP.includes("localhost"),
+    migrationsRun: !process.env.WEBAPP_IP.includes("localhost")
 });
