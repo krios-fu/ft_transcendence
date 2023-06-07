@@ -2,20 +2,100 @@ import { Injectable, OnInit } from "@angular/core";
 import { Socket } from "ngx-socket-io";
 import { AlertServices } from 'src/app/services/alert.service';
 import { UserDto } from "../dtos/user.dto";
+import { UsersService } from "./users.service";
+import { Router } from '@angular/router';
+import { IRoomData, RoomCreationFormService } from "../game/room-creation-form/room-creation-form.service";
+import { RoomListService } from "../game/room-list/room-list.service";
+
 
 @Injectable()
 export class SocketNotificationService implements OnInit {
 
+    me?: UserDto;
     constructor(private socket: Socket,
-        private alertService: AlertServices) {
+        private alertService: AlertServices,
+        private userServices: UsersService,
+        private readonly router: Router,
+        private readonly roomCreationFormService: RoomCreationFormService,
+        private readonly roomListService: RoomListService ) {
 
-        socket.fromEvent('notifications')
-            .subscribe((payload: any) => {
-                console.log(payload)
-                this.alertService.openRequestGame(payload.user as UserDto, payload.title);
+        this.userServices.getUser('me')
+            .subscribe({
+                next: (me: UserDto) => {
+                    this.joinRoomNotification(me.username)
+                    socket.fromEvent('notifications')
+                        .subscribe({
+                            next: (payload: any) => {
+                                if (payload.title == 'ACCEPTED GAME'){
+                                    this.roomListService.registerUserToRoom(
+                                        me.username,
+                                        payload.room,
+                                    )
+                                    .subscribe({
+                                        next: () => {
+                                            this.router.navigate(['/game', payload.room]);
+                                        }})
+                                }
+                                if (payload.title == 'INVITE GAME')
+                                    this.alertService.openRequestGame(payload.user as UserDto, payload.title)
+                                        .subscribe({
+                                            next: (data: boolean) => {
+                                                if (data){
+                                                    this._postRoom(this.generateName())
+                                                    .subscribe({
+                                                        next: (roomData: IRoomData) => {
+                                                            this.sendNotification({
+                                                                user: me,
+                                                                dest: payload.user.username,
+                                                                room: roomData.id,
+                                                                title: 'ACCEPTED GAME'
+                                                            });
+                                                            this.router.navigate(['/game', roomData.id]);
+                                                        },
+                                                        error: (err: any) => {
+                                                            console.error(err);
+                                                            this._errorHandler(err);
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        })
+                            }
+                        })
+                }
             })
+    }
 
-     
+    generateName() : string {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nameLength = Math.floor(Math.random() * 7) + 4; // Genera una longitud aleatoria entre 4 y 7
+        let name = '';
+    
+        for (let i = 0; i < nameLength; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          name += characters[randomIndex];
+        }
+    
+        return name;
+      }
+
+    private _errorHandler(err: any): void {
+        let errorMsg: string;
+    
+        if (err.error
+                && err.error.message)
+            errorMsg = err.error.message;
+        else
+            errorMsg = "Room creation failed, try again later.";
+        this.alertService.openSnackBar(errorMsg, "OK");
+    }
+
+    private _postRoom(roomName: string, password?: string) {
+        return this.roomCreationFormService.postRoom(
+            roomName,
+            password
+        )
+        
     }
 
     ngOnInit(): void {
@@ -26,31 +106,30 @@ export class SocketNotificationService implements OnInit {
         this.socket.emit('join_room_notification', username);
     }
     sendNotification(payload: any) {
-        console.log("SEND NOTIFICATION", `notifications_${payload.dest}`, payload.title);
         this.socket.emit(`notifications`, payload)
     }
 
-    joinRoomId(_room: string, _user: UserDto){
-        this.socket.emit('join_room_game', {room: _room, user: _user});
+    joinRoomId(_room: string, _user: UserDto) {
+        this.socket.emit('join_room_game', { room: _room, user: _user });
     }
 
-    roomLeave(_room?: string, _user?: UserDto){
-        this.socket.emit('room_leave', {room: _room, user: _user});
+    roomLeave(_room?: string, _user?: UserDto) {
+        this.socket.emit('room_leave', { room: _room, user: _user });
     }
 
     sendConnetionRoomGameId(_room: string, _user: UserDto) {
-        this.socket.emit(`noti_game_room`, {room: _room, user: _user})
+        this.socket.emit(`noti_game_room`, { room: _room, user: _user })
     }
 
-    getUserAll(userName: string){
+    getUserAll(userName: string) {
         return this.socket.fromEvent(userName);
     }
 
-    getUserConnection(){
+    getUserConnection() {
         return this.socket.fromEvent('noti_game_room');
     }
 
-    userLeave(){
+    userLeave() {
         return this.socket.fromEvent('room_leave');
     }
 

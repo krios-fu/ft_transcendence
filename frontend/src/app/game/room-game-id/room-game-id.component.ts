@@ -99,7 +99,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.http.get<RoomDto>(`http://localhost:3000/room/${this.room_id}`)
         .subscribe((entity) => {
             this.room_dto = entity;
-            console.log(`ROOM_ID: ${this.room_id}`,this.room_dto);
         });
         this.userService.getUser('me')
         .subscribe((users : UserDto) => {
@@ -201,7 +200,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
 
     open_chat(){
         this.close = !this.close;
-        console.log(this.close);
     }
 
     ngOnDestroy(): void {

@@ -60,7 +60,7 @@ export class ProfileUserComponent implements OnInit {
         this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
 
         this.shareService.eventEmitter.emit(this.me.username);
-        this.socketGameNotification.joinRoomNotification(this.me.username);
+        // this.socketGameNotification.joinRoomNotification(this.me.username); //// ojoo
       })
 
     this.route.params.subscribe(({ id }) => {
@@ -80,7 +80,9 @@ export class ProfileUserComponent implements OnInit {
 
   send_invitatiion_game() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
+    this.alertService.openSnackBar('Game invitation sent', 'OK')
+
+    // this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
   post_friendship() {

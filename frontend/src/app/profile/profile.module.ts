@@ -59,7 +59,7 @@ import { SearchComponent } from '../search/search.component';
         useClass: AuthInterceptor,
         multi: true,
     },
-        SocketNotificationService,
+        // SocketNotificationService,
         SharedService
     ],
     imports: [

@@ -93,7 +93,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.socketGameNotification.joinRoomNotification(this.me.username);
+          // this.socketGameNotification.joinRoomNotification(this.me.username);
           this.socketGameNotification.joinRoomId(id, this.me);
           this.http.get(`http://localhost:3000/user_roles/users/${this.me.id}`)
             .subscribe((entity) => {
@@ -107,23 +107,23 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
 
 
-      this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`)
-        .subscribe((entity) => {
-          this.admins = Object.assign(entity);
-          // this.http.get(`http://localhost:3000/user_room/rooms/${this.id_room}/users`)
-          //   .subscribe((entity) => {
-          //     let data = Object.assign(entity);
-          //     for (let user in data) {
-          //       let player = data[user]['user'] as UserDto;
-          //       player.is_admin = false;
-          //       this.admins.forEach((element: any) => {
-          //         if (element.userId === player['id'])
-          //           player.is_admin = true;
-          //       });
-          //       this.players.push(player)
-          //     }
-          //   });
-        });
+      // this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`) // roles
+      //   .subscribe((entity) => {
+      //     this.admins = Object.assign(entity);
+      //     // this.http.get(`http://localhost:3000/user_room/rooms/${this.id_room}/users`)
+      //     //   .subscribe((entity) => {
+      //     //     let data = Object.assign(entity);
+      //     //     for (let user in data) {
+      //     //       let player = data[user]['user'] as UserDto;
+      //     //       player.is_admin = false;
+      //     //       this.admins.forEach((element: any) => {
+      //     //         if (element.userId === player['id'])
+      //     //           player.is_admin = true;
+      //     //       });
+      //     //       this.players.push(player)
+      //     //     }
+      //     //   });
+      //   });
     });
 
   }
@@ -135,7 +135,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   sendInvitationGame(user: UserDto) {
     this.socketGameNotification.sendNotification({ user: this.me, dest: user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(user as UserDto, 'SEND REQUEST GAME');
+    // this.alertService.openRequestGame(user as UserDto, 'SEND REQUEST GAME');
   }
 
   goTochat(player: UserDto) {

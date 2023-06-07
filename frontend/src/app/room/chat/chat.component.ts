@@ -43,7 +43,6 @@ export class ChatComponent implements OnInit {
             for (let chat in data) {
               let { users } = data[chat];
               let { id } = data[chat];
-              console.log("usersss", users)
               let chat_friend = users.filter((user: any) => { return user.userId != this.me?.id });
               if (chat_friend.length != 0)
                 this.userServices.getUserById(chat_friend[0].userId)

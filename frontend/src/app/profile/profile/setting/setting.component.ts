@@ -72,7 +72,6 @@ export class SettingComponent implements OnInit {
     reader.readAsDataURL(this.file as any);
     this.changeDetected();
 
-    console.log("file", this.file);
   }
 
   auth2fa() {
@@ -80,14 +79,12 @@ export class SettingComponent implements OnInit {
     this.http.post('http://localhost:3000/auth/2fa/deactivate', this.user.username,)
     .subscribe((dta: any) => {
       // this.qr_generate = dta.qr.qr;
-      console.log(dta);
     })
 
     if (!this.user.doubleAuth && !this.qr_generate)
     this.http.post('http://localhost:3000/auth/2fa/generate', this.user.username,)
       .subscribe((dta: any) => {
         this.qr_generate = dta.qr.qr;
-        console.log(dta);
       })
 
 
@@ -111,11 +108,8 @@ export class SettingComponent implements OnInit {
   }
 
   confimateOtp(code: any) {
-    // console.log("Code 2fa:", code);
-
     if(code.length > 0)
     this.confir(code).subscribe(lol => {
-      console.log(lol)
     })
   }
 
@@ -141,7 +135,6 @@ export class SettingComponent implements OnInit {
       this.http.patch('http://localhost:3000/users/me/settings', { ...form, nickName: nickname })
         .subscribe(
           data => {
-            console.log(data);
             this.icon = 'lock';
           });
 
@@ -153,7 +146,6 @@ export class SettingComponent implements OnInit {
       this.http.post('http://localhost:3000/users/me/avatar', formData)
         .subscribe(
           data => {
-            console.log(data);
             this.icon = 'lock';
           });
     }

@@ -64,7 +64,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
           this.http.get(`http://localhost:3000/chat/${id}`)
             .pipe(
@@ -115,7 +114,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
 
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
 
