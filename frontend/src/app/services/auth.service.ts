@@ -116,7 +116,7 @@ export class AuthService {
     }
 
     public redirectHome(): void {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/']);
     }
 
     public redirectSettings(): void {
