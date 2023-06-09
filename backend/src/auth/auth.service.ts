@@ -57,18 +57,26 @@ export class AuthService {
     public async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
         const { username } = userProfile;
         let loggedUser: UserEntity = await this.userService.findOneByUsername(username);
+        let authPayload: IAuthPayload;
+        let firstTimeFlag: boolean = false;
         
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
+            firstTimeFlag = true;
         }
         if (loggedUser.doubleAuth === true) {
-            return {
+            authPayload = {
                 'accessToken': this.signLowPrivJwt(loggedUser),
                 'username': username,
                 'id': loggedUser.id
             }
+        } else {
+            authPayload = await this.authUserValidated(loggedUser, res);
         }
-        return await this.authUserValidated(loggedUser, res);
+        if (firstTimeFlag) {
+            authPayload.firstTime = firstTimeFlag;
+        }
+        return authPayload;
     }
 
     private async authUserValidated(user: UserEntity, res: Response): Promise<IAuthPayload> {
