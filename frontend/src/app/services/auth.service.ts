@@ -52,7 +52,11 @@ export class AuthService {
               "username": res.body.username,
               "id": res.body.id
             });
-            this.redirectHome();
+            if (res.body.firstTime) {
+                this.redirectSettings()
+            } else {
+                this.redirectHome();
+            }
           },
           error: (err: HttpErrorResponse) => new HttpResponse({status: 200})
         });
@@ -112,14 +116,18 @@ export class AuthService {
     }
 
     public redirectHome(): void {
-        this.router.navigate(['/profile/me']);
+        this.router.navigate(['/home']);
+    }
+
+    public redirectSettings(): void {
+        this.router.navigate(['/profile/me/setting'])
     }
 
     public redirect2FA(): void {
         this.router.navigate(['/login/2fa']);
     }
 
-    redirectLogin(): void {
+    public redirectLogin(): void {
         this.router.navigateByUrl('/login');
     }
 
