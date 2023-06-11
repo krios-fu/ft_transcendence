@@ -17,7 +17,6 @@ export class initUsers1686412674045 implements MigrationInterface {
                 doubleAuth: true,
                 doubleAuthSecret: "", //variable de entorno
                 defaultOffline: true,
-                acceptedTerms: true,
                 ranking: 0,
                 category: Category.Iron
             }
