@@ -22,6 +22,7 @@ import { GameUpdateService } from './game.updateService';
 import { UserRoomModule } from 'src/user_room/user_room.module';
 import { RoomModule } from 'src/room/room.module';
 import { RoomRolesModule } from 'src/room_roles/room_roles.module';
+import { UserRolesModule } from 'src/user_roles/user_roles.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RoomRolesModule } from 'src/room_roles/room_roles.module';
     AchievementsUserModule,
     RoomModule,
     UserRoomModule,
+    UserRolesModule,
     RoomRolesModule
   ],
   providers: [

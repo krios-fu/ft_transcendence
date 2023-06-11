@@ -83,6 +83,7 @@ export class    SocketService {
 
     private _addConnectionEvents(): void {
         this._socket.on("connect", () => {
+            console.log('[ IN SOCKET.SERVICE ] connect ping!');
             this._connectAttempts = 0;
             //Authenticate through this event to register user in socket server
             this.emit("authentication", this.authService.getAuthToken());

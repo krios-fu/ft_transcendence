@@ -39,6 +39,14 @@ export class UserRolesService {
             where: { userId: userId },
         });
     }
+
+    public async getAllRolesFromUsername(username: string): Promise<UserRolesEntity[]> {
+        return await (this.userRolesRepository.createQueryBuilder('user_roles'))
+            .leftJoinAndSelect('user_roles.user', 'user')
+            .leftJoinAndSelect('user_roles.role', 'roles')
+            .where('user.username = :username', { 'username': username })
+            .getMany();
+    }
     
     /* from role id, return all users with this id */
     public async getUsersWithRole(roleId: number): Promise<UserRolesEntity[]> { 
@@ -50,7 +58,7 @@ export class UserRolesService {
 
     /* get user role with id :user_id and :room_id */
     public async getUserRoleByIds(userId: number, roleId: number): Promise<UserRolesEntity> {
-        return (await this.userRolesRepository.createQueryBuilder('user_roles'))
+        return await (this.userRolesRepository.createQueryBuilder('user_roles'))
             .leftJoinAndSelect('user_roles.user', 'user')
             .leftJoinAndSelect('user_roles.role', 'roles')
             .where('user_roles.userId = :user_id', { 'user_id': userId })

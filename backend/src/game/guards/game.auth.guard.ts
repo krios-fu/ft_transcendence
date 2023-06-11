@@ -12,6 +12,7 @@ import { BadRequestWsException } from "../exceptions/badRequest.wsException";
 import { UnauthorizedWsException } from "../exceptions/unauthorized.wsException";
 import { GameSocketAuthService } from "../game.socketAuth.service";
 import { EncryptionService } from "src/auth/service/encryption.service";
+import { ForbiddenWsException } from "../exceptions/forbidden.wsException";
 
 @Injectable()
 export class    GameAuthGuard implements CanActivate {
@@ -64,6 +65,26 @@ export class    GameAuthGuard implements CanActivate {
         const   handlerName: string = context.getHandler().name;
         const   token: string = this._getToken(client, handlerName, wsContext);
     
+        /* *** role checking guard *** */
+        console.log(`[ ON GAME.AUTH.GUARD ] ${handlerName}`);
+        console.log(`[ GAME.AUTH.GUARD ] data obj. received: ${JSON.stringify(client.data.roles, null, 2)}`);
+        if (handlerName === 'authentication') {
+            console.log('[ ON GAME.AUTH.GUARD ] ok');
+        }
+        if (handlerName !== 'authentication' &&
+            !client.data.roles['global']) {
+            throw new UnauthorizedWsException(
+                handlerName,
+                wsContext.getData()
+            );
+        }
+        if (client.data.roles['global'].includes('banned')) {
+            throw new ForbiddenWsException(
+                handlerName,
+                wsContext.getData()
+            )
+        }
+        /* ... */
         if (!token)
         {
             this.socketAuthService.addAuthTimeout(client);

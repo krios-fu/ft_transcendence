@@ -35,6 +35,8 @@ import { MatchInviteResponseDto } from './dtos/matchInviteResponse.dto';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
 import { GameRoomService } from './game.room.service';
+import { UserRolesService } from 'src/user_roles/user_roles.service';
+import { UserRolesEntity } from 'src/user_roles/entity/user_roles.entity';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -53,7 +55,8 @@ export class    GameGateway implements OnGatewayInit,
         private readonly socketHelper: SocketHelper,
         private readonly recoveryService: GameRecoveryService,
         private readonly socketAuthService: GameSocketAuthService,
-        private readonly roomService: GameRoomService
+        private readonly roomService: GameRoomService,
+        private readonly userRolesService: UserRolesService
     ) {}
   
     afterInit() {
@@ -62,7 +65,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        console.log(`Socket ${client.id} connected`);
+        console.log(`Socket ${client.id} connected in h*a*n*d*l*e*c*o*n*n*e*c*t*i*o*n`);
         this.socketAuthService.addAuthTimeout(client);
     }
 
@@ -77,7 +80,11 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   clientId: string = client.id;
         const   username: string = client.data.username;
+        const   globalRoles: string[] = (await this.userRolesService
+                    .getAllRolesFromUsername(username))
+                    .map((ur: UserRolesEntity) => ur.role.role);
     
+        console.log('[ ON AUTHENTICATION EVENT ]');
         this.socketAuthService.clearTimeout(clientId);
         await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
@@ -85,6 +92,13 @@ export class    GameGateway implements OnGatewayInit,
             await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
+        /* *** GLOBAL role setting *** */
+        if (!client.data.roles) {
+            client.data.roles = {};
+        }
+        client.data.roles['global'] = globalRoles;
+        console.log(`[ IN GAME.GATEWAY ] data obj.: ${JSON.stringify(client.data, null, 2)}`)
+        /* ***                     *** */
         client.emit("authSuccess");
     }
 
@@ -305,6 +319,10 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() roomId: string
     ) {
         this.recoveryService.recover(client, roomId);
+    }
+
+    public refreshToken(): void {
+        
     }
 
   }
