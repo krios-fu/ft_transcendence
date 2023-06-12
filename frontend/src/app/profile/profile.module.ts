@@ -80,8 +80,6 @@ import { SearchComponent } from '../search/search.component';
         MatTableModule,
         MatPaginatorModule,
         MatCardModule
-        // MatDividerModule,
-        // MatDialogModule,
 
     ],
 })

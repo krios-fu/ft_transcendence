@@ -34,6 +34,8 @@ import { RoomPasswordInputComponent } from './services/dialog/input/room_passwor
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SocketNotificationService } from './services/socket-notification.service';
+import { SharedService } from './profile/profile/profile-user/profile-user.component';
+import { RoomComponent } from './room/room.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {
     reconnectionAttempts: 3
@@ -62,6 +64,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
     },
         CookieService,
         SocketNotificationService,
+        SharedService,
+
 
     ],
     bootstrap: [AppComponent],

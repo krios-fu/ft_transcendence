@@ -47,7 +47,8 @@ export class ProfileUserComponent implements OnInit {
     private userService: UsersService,
     private shareService: SharedService
   ) {
-    this.user = undefined;  }
+    this.user = undefined;
+  }
 
   @Output() username = new EventEmitter();
 
@@ -113,6 +114,12 @@ export class ProfileUserComponent implements OnInit {
     return this.id_chat;
   }
 
+  view_chat(): boolean {
+    const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
+    return friend ? true : false;
+
+  }
+
   friend() {
     this.route.params.subscribe(({ id }) => {
       // this.formMessage.patchValue({ id });
@@ -124,12 +131,15 @@ export class ProfileUserComponent implements OnInit {
           }
           this.user = user[0];
           this.icon_activate = false;
+          this.id_chat = -1;
 
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
           }
-          this.chatService.createChat(this.user.id).subscribe((data: any) => this.id_chat = data.id);
+          this.chatService.createChat(this.user.id)
+          .subscribe((data: any) => {console.log("CHAT ID", data); this.id_chat = data.chatId});
 
+        
           this.FRIENDS_USERS = [];
           // change de icone visible add o remove 
 

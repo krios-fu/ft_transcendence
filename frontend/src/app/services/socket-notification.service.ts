@@ -36,6 +36,9 @@ export class SocketNotificationService implements OnInit {
                                             this.router.navigate(['/game', payload.room]);
                                         }})
                                 }
+                                if (payload.title == 'DECLINING INVITATION'){
+                                    this.alertService.openSnackBar(payload.user.nickName + ' DECLINING INVITATION','OK');
+                                }
                                 if (payload.title == 'INVITE GAME')
                                     this.alertService.openRequestGame(payload.user as UserDto, payload.title)
                                         .subscribe({
@@ -58,8 +61,17 @@ export class SocketNotificationService implements OnInit {
                                                         }
                                                     });
                                                 }
+                                                else{
+                                                    this.sendNotification({
+                                                        user: me,
+                                                        dest: payload.user.username,
+                                                        // room: roomData.id,
+                                                        title: 'DECLINING INVITATION'
+                                                    });
+                                                }
                                             }
                                         })
+
                             }
                         })
                 }

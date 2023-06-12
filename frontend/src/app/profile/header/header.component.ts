@@ -1,4 +1,6 @@
-import { Component,  OnInit, } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Router, NavigationEnd } from '@angular/router';
 
 
 
@@ -8,16 +10,31 @@ import { Component,  OnInit, } from '@angular/core';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
 
+  private routerSubscription: Subscription;
+  hiden = false;
 
+  constructor(
+    private router: Router
+  ) {
+  
+      this.routerSubscription = this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.hiden = (event.url === '/') ? true : false;
+        }
+      });
+    }
+    
 
-  constructor(  ) {
-
-  }
+  
 
   ngOnInit(): void {
 
+  }
+
+  ngOnDestroy(){
+    this.routerSubscription.unsubscribe();
 
   }
 

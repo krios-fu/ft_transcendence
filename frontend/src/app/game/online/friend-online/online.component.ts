@@ -135,6 +135,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   sendInvitationGame(user: UserDto) {
     this.socketGameNotification.sendNotification({ user: this.me, dest: user?.username, title: 'INVITE GAME' });
+    this.alertService.openSnackBar('Game invitation sent', 'OK')
+
     // this.alertService.openRequestGame(user as UserDto, 'SEND REQUEST GAME');
   }
 
