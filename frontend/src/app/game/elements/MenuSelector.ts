@@ -1,4 +1,4 @@
-import { ISelectionData } from "../scenes/MenuScene";
+import { ISelectionData } from "../interfaces/scene.interfaces";
 import { MenuHeroRenderer } from "./MenuHeroRenderer";
 
 enum    Hero {

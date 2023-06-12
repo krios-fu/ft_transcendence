@@ -7,11 +7,11 @@ import {
     SelectionSoundKeys,
     SoundService
 } from "../services/sound.service";
+import { MenuScene } from "./MenuScene";
 import {
     IMenuInit,
-    ISelectionData,
-    MenuScene
-} from "./MenuScene";
+    ISelectionData
+} from "../interfaces/scene.interfaces";
 
 export class    MenuHeroScene extends MenuScene {
 

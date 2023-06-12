@@ -11,26 +11,35 @@ import { IJwtPayload } from "src/common/interfaces/request-payload.interface";
 import { BadRequestWsException } from "../exceptions/badRequest.wsException";
 import { UnauthorizedWsException } from "../exceptions/unauthorized.wsException";
 import { GameSocketAuthService } from "../game.socketAuth.service";
+import { EncryptionService } from "src/auth/service/encryption.service";
 
 @Injectable()
 export class    GameAuthGuard implements CanActivate {
 
     constructor(
         private readonly authService: AuthService,
-        private readonly socketAuthService: GameSocketAuthService
+        private readonly socketAuthService: GameSocketAuthService,
+        private readonly encryptionService: EncryptionService
     ) {}
 
     private _getToken(client: Socket, handlerName: string,
                         ctx: WsArgumentsHost): string {
         let token: any;
-
+    
         if (handlerName === "authentication")
+        {
             token = ctx.getData();
+            if (!token || typeof token != "string")
+                return ("");
+            token = this.encryptionService.decrypt(token);
+        }
         else
+        {
             token = client.data.token;
-        if (!token || typeof token != "string")
-            return ("");
-        return (token as string);
+            if (!token)
+                return ("");
+        }
+        return (token);
     }
 
     // Validate JWT token and inject token and username into client.
@@ -53,7 +62,7 @@ export class    GameAuthGuard implements CanActivate {
         const   wsContext: WsArgumentsHost = context.switchToWs();
         const   client: Socket = wsContext.getClient<Socket>();
         const   handlerName: string = context.getHandler().name;
-        const   token = this._getToken(client, handlerName, wsContext);
+        const   token: string = this._getToken(client, handlerName, wsContext);
     
         if (!token)
         {

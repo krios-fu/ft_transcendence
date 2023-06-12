@@ -16,7 +16,10 @@ import {
 import { GameService } from "./game.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameReconciliationService } from "./game.reconciliation.service";
-import { IMenuInit } from "./interfaces/msg.interfaces";
+import {
+    IMatchRecoverData,
+    IMenuInit
+} from "./interfaces/msg.interfaces";
 import {
     GameDataService,
     Players,
@@ -26,6 +29,7 @@ import {
     EventEmitter2,
     OnEvent
 } from '@nestjs/event-emitter';
+import { Socket } from "socket.io";
 
 export interface    IGameResultData {
     aNick: string;
@@ -91,9 +95,9 @@ export class    GameUpdateService {
         return (this.gameDataService.getResult(roomId));
     }
 
-    getClientInitData(roomId: string)
+    getClientInitData(roomId: string, client: Socket)
                         : [string, IMenuInit |
-                                    IGameClientStart |
+                                    IMatchRecoverData |
                                     IGameResultData |
                                     undefined] {
         let data: IGameSelectionData | IGameClientStart |
@@ -109,7 +113,16 @@ export class    GameUpdateService {
         }
         data = this.getGameClientStartData(roomId);
         if (data)
-            return (["startMatch", data]);
+        {
+            return ([
+                "startMatch",
+                {
+                    role: this.socketHelper.getClientRoomPlayer(client)[1]
+                            || "Spectator",
+                    matchData: data
+                }
+            ]);
+        }
         data = this.getGameResult(roomId);
         if (data)
             return (["end", data]);

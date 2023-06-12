@@ -63,7 +63,8 @@ export class UserService {
                                         : Promise<UserCountData> {
         let result: UserCountData;
     
-        if (queryParams.orderDesc.includes('ranking')
+        if (queryParams.orderDesc
+                && queryParams.orderDesc.includes('ranking')
                 && queryParams.target) {
             try {
                 if (!await this.findOneByUsername(queryParams.target))

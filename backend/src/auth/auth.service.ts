@@ -12,18 +12,21 @@ import { TokenError } from './enum/token-error.enum';
 import { UserEntity } from '../user/entities/user.entity';
 import { authenticator } from 'otplib';
 import * as QRCode from 'qrcode';
+import { EncryptionService } from './service/encryption.service';
+
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         @InjectRepository(RefreshTokenEntity)
-        private readonly refreshTokenRepository: RefreshTokenRepository
+        private readonly refreshTokenRepository: RefreshTokenRepository,
+        private readonly encryptionService: EncryptionService
     ) { }
 
     private signJwt(user: UserEntity): string {
-        const { id, username } = user;
-        return this.jwtService.sign({ 
+        const   { id, username } = user;
+        const   token: string = this.jwtService.sign({
             data: {
                 id: id,
                 username: username,
@@ -32,11 +35,13 @@ export class AuthService {
             iss: 'http://localhost:3000',
             aud: process.env.WEBAPP_IP
         });
+    
+        return (this.encryptionService.encrypt(token));
     }
 
     private signLowPrivJwt(user: UserEntity): string {
-        const { id, username } = user;
-        return this.jwtService.sign({
+        const   { id, username } = user;
+        const   token: string = this.jwtService.sign({
             data: { 
                 id: id,
                 username: username,
@@ -45,23 +50,33 @@ export class AuthService {
             iss: 'http://localhost:3000',
             aud: process.env.WEBAPP_IP
         });
+
+        return (this.encryptionService.encrypt(token));
     }
 
     public async authUser(userProfile: CreateUserDto, res: Response): Promise<IAuthPayload> {
         const { username } = userProfile;
         let loggedUser: UserEntity = await this.userService.findOneByUsername(username);
+        let authPayload: IAuthPayload;
+        let firstTimeFlag: boolean = false;
         
         if (loggedUser === null) {
             loggedUser = await this.userService.postUser(userProfile);
+            firstTimeFlag = true;
         }
         if (loggedUser.doubleAuth === true) {
-            return {
+            authPayload = {
                 'accessToken': this.signLowPrivJwt(loggedUser),
                 'username': username,
                 'id': loggedUser.id
             }
+        } else {
+            authPayload = await this.authUserValidated(loggedUser, res);
         }
-        return await this.authUserValidated(loggedUser, res);
+        if (firstTimeFlag) {
+            authPayload.firstTime = firstTimeFlag;
+        }
+        return authPayload;
     }
 
     private async authUserValidated(user: UserEntity, res: Response): Promise<IAuthPayload> {

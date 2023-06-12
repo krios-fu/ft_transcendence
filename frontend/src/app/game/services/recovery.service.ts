@@ -3,16 +3,15 @@ import { IMatchInitData } from "../elements/Match";
 import { IResultData } from "../elements/Result";
 import { BaseScene } from "../scenes/BaseScene";
 import { EndScene } from "../scenes/EndScene";
-import {
-    IMatchSceneInit,
-    MatchScene
-} from "../scenes/MatchScene";
+import { MatchScene } from "../scenes/MatchScene";
 import { MenuHeroScene } from "../scenes/MenuHeroScene";
-import {
-    IMenuInit,
-    MenuScene
-} from "../scenes/MenuScene";
+import { MenuScene } from "../scenes/MenuScene";
 import { StartScene } from "../scenes/StartScene";
+import {
+    GameRole,
+    IMatchSceneInit,
+    IMenuInit
+} from "../interfaces/scene.interfaces";
 
 export type SceneId = "start"
                         | "menuClassic"
@@ -26,8 +25,8 @@ export interface    IRecoverData {
 }
 
 export interface   IMatchRecoveryData {
-    role: string;
-    gameData: IMatchInitData;
+    role: GameRole;
+    matchData: IMatchInitData;
 }
 
 @Injectable({
@@ -64,17 +63,17 @@ export class    GameRecoveryService {
             {
                 scene.scene.start("Spectator", {
                     role: data.role,
-                    matchData: data.gameData,
+                    matchData: data.matchData,
                     recover: true
                 } as IMatchSceneInit);
             }
             else
             {
-                if (data.gameData.playerA.hero)
+                if (data.matchData.playerA.hero)
                 {
                     scene.scene.start("Player", {
                         role: data.role,
-                        matchData: data.gameData,
+                        matchData: data.matchData,
                         recover: true
                     } as IMatchSceneInit);
                 }
@@ -82,7 +81,7 @@ export class    GameRecoveryService {
                 {
                     scene.scene.start("ClassicPlayer", {
                         role: data.role,
-                        matchData: data.gameData,
+                        matchData: data.matchData,
                         recover: true
                     } as IMatchSceneInit);
                 }
