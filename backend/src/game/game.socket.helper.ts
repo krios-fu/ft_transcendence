@@ -169,7 +169,7 @@ export class    SocketHelper {
             await this.urrService.getUserRolesInRoom(userId, roomId);
         let roles: string[] = [];
         let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
-            await this.getAllUserClients(username);
+            await this.getAllUserClients(userId);
         let roomKey: string = SocketHelper.roomIdToName(roomId);
 
         if (!query) {
