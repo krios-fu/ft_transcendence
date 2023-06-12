@@ -67,3 +67,6 @@ Añadimos los eventos de conexión, seteamos los parámetros de intentos de cone
 Comprobación de que los datos recibidos son válidos, y comprobación de que la room es válida.
 En validateRoom: si el evento es la subscripción a la sala, se busca si el usuario está registrado en la base de datos como usuario de la sala. Si es un evento de la propia sala, se comprueba si el socket del cliente se encuentra dentro de la sala.
 // en este apartado nos faltaría el hecho de que el usuario tiene los roles necesarios para emitir el evento //
+
+
+Temas de sockets en servidor: por qué remote sockets en vez de estructura de sockets, por qué default events map. 

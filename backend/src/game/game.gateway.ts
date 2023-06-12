@@ -55,8 +55,7 @@ export class    GameGateway implements OnGatewayInit,
         private readonly socketHelper: SocketHelper,
         private readonly recoveryService: GameRecoveryService,
         private readonly socketAuthService: GameSocketAuthService,
-        private readonly roomService: GameRoomService,
-        private readonly userRolesService: UserRolesService
+        private readonly roomService: GameRoomService
     ) {}
   
     afterInit() {
@@ -80,11 +79,7 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         const   clientId: string = client.id;
         const   username: string = client.data.username;
-        const   globalRoles: string[] = (await this.userRolesService
-                    .getAllRolesFromUsername(username))
-                    .map((ur: UserRolesEntity) => ur.role.role);
-    
-        console.log('[ ON AUTHENTICATION EVENT ]');
+
         this.socketAuthService.clearTimeout(clientId);
         await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
@@ -92,13 +87,6 @@ export class    GameGateway implements OnGatewayInit,
             await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
-        /* *** GLOBAL role setting *** */
-        if (!client.data.roles) {
-            client.data.roles = {};
-        }
-        client.data.roles['global'] = globalRoles;
-        console.log(`[ IN GAME.GATEWAY ] data obj.: ${JSON.stringify(client.data, null, 2)}`)
-        /* ***                     *** */
         client.emit("authSuccess");
     }
 

@@ -7,6 +7,7 @@ import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { UserRolesRepository } from './repository/user_roles.repository';
+import { SocketHelper } from 'src/game/game.socket.helper';
 
 @Injectable()
 export class UserRolesService {
@@ -14,6 +15,7 @@ export class UserRolesService {
         @InjectRepository(UserRolesEntity)
         private readonly userRolesRepository: UserRolesRepository,
         private readonly userService: UserService,
+        private readonly socketService: SocketHelper
     ) { }
     
     public async findAllUserRoles(queryParams: UserRolesQueryDto): Promise<UserRolesEntity[]> {
@@ -68,12 +70,16 @@ export class UserRolesService {
 
     /* Create a new role entity provided RoleUserDto { userId, roleId } */
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {
-        return await this.userRolesRepository.save(new UserRolesEntity(dto));
+        const role: UserRolesEntity = await this.userRolesRepository
+                                                .save(new UserRolesEntity(dto));
+        await this.socketService.refreshUserRoles({ userId: dto.userId }, 'global');
+        return role;
     }
 
     /* Remove role entity by id */
-    public async deleteRoleFromUser(id: number) { 
+    public async deleteRoleFromUser(id: number): Promise<void> { 
         await this.userRolesRepository.delete(id);
+        await this.socketService.refreshUserRoles({ userId: id }, 'global');
     }
 
     /* 

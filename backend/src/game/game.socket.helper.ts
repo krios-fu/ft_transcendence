@@ -6,13 +6,27 @@ import {
 } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { GameRole } from "./interfaces/msg.interfaces";
+import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
+import { UserRolesService } from "src/user_roles/user_roles.service";
+import { UserRoomRolesService } from "src/user_room_roles/user_room_roles.service";
+import { BanService } from "src/ban/ban.service";
+import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
+import { BanEntity } from "src/ban/entity/ban.entity";
+import { InternalServerErrorWsException } from "./exceptions/internalServerError.wsException";
+
+type RoleCreds = {
+    userId: number,
+    roomId?: number
+}
 
 @Injectable()
 export class    SocketHelper {
 
     private _server: Server;
 
-    constructor() {
+    constructor(private readonly urService: UserRolesService,
+                private readonly urrService: UserRoomRolesService,
+                private readonly banService: BanService) {
         this._server = undefined;
     }
 
@@ -133,4 +147,75 @@ export class    SocketHelper {
         return (userSockets[0].rooms.has(roomId));
     }
 
+    private async _refreshGlobalRoles(creds: RoleCreds) {
+        const { userId } = creds;
+        let query: UserRolesEntity[] = await this.urService.getAllRolesFromUser(userId);
+        let roles: string[] = [];
+        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
+            await this.getAllUserClients(username);
+
+        if (!query) {
+            throw new InternalServerErrorWsException('none', null);
+        }
+        roles = query.map((ur: UserRolesEntity) => ur.role.role);
+        for (let sck of userSockets) {
+            sck.data['globalRoles'] = roles;
+        }
+    }
+
+    private async _refreshRoomRoles(creds: RoleCreds): Promise<void> {
+        const { userId, roomId } = creds;
+        let query: UserRoomRolesEntity[] = 
+            await this.urrService.getUserRolesInRoom(userId, roomId);
+        let roles: string[] = [];
+        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
+            await this.getAllUserClients(username);
+        let roomKey: string = SocketHelper.roomIdToName(roomId);
+
+        if (!query) {
+            throw new InternalServerErrorWsException('none', null);
+        }
+        roles = query.map((ur: UserRoomRolesEntity) => ur.role.role);
+        for (let sck of userSockets) {
+            if (!sck.data[roomKey]) {
+                 sck.data[roomKey] = [];
+            }
+            sck.data[roomKey] = sck.data[roomKey].concat(roles).unique();
+            sck.data[roomKey] = sck.data[roomKey]
+                .filter((role: string) => roles.includes(role) || role === 'banned');
+        }
+    }
+
+    private async _refreshBannedRoles(creds: RoleCreds): Promise<void> {
+        const { userId, roomId } = creds;
+        const banned: BanEntity | null = await this.banService.findOneByIds(userId, roomId);
+        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
+            await this.getAllUserClients(userId);
+        let roomKey: string = SocketHelper.roomIdToName(roomId);
+
+        for (let sck of userSockets) {
+            if (!sck.data[roomKey]) {
+                sck.data[roomKey] = [];
+            }
+            sck.data[roomKey] = sck.data[roomKey]
+                .filter((role: string) => role != 'banned' || (role === 'banned' && (banned)));
+            if (!sck.data[roomKey].includes('banned') && (banned)) {
+                sck.data[roomKey].push('banned');
+            }
+        }
+    }
+
+    async refreshUserRoles(creds: RoleCreds,
+                           ctxName: string): Promise<void> {
+        switch (ctxName) {
+            case 'global':
+                return this._refreshGlobalRoles(creds);
+            case 'room':
+                return this._refreshRoomRoles(creds);
+            case 'banned':
+                return this._refreshBannedRoles(creds);
+            default:
+                return ;
+        }
+    }
 }

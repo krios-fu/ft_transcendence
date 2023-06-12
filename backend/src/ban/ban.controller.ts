@@ -61,7 +61,7 @@ export class BanController {
             this.banLogger.error('Room with id ' + roomId + ' not found in database');
             throw new HttpException('room not found in db', HttpStatus.NOT_FOUND);
         }
-        if (await this.banService.findOneByUserRoomIds(userId, roomId) !== null) {
+        if (await this.banService.findOneByIds(userId, roomId) !== null) {
             this.banLogger.error('Ban to user ' + userId + ' in room ' + roomId + ' already in db');
             throw new HttpException('ban already in db', HttpStatus.BAD_REQUEST);
         }

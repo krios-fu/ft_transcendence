@@ -7,7 +7,8 @@ import { AuthService } from 'src/app/services/auth.service';
 enum SocketException {
     Unauthorized = "unauthorized",
     Forbidden = "forbidden",
-    BadRequest = "badRequest"
+    BadRequest = "badRequest",
+    InternalServerError = "internalServerError"
 }
 
 interface   SocketExceptionData {
@@ -90,6 +91,10 @@ export class    SocketService {
         });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
             console.log("Websocket exception: ", xcpt);
+            if (xcpt.cause === SocketException.InternalServerError)
+            {
+                /* TODO: get internal server error exceptions */
+            }
             if (xcpt.cause != SocketException.Forbidden)
             {
                 if (xcpt.targetEvent != "authentication")

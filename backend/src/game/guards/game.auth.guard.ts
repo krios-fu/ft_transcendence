@@ -13,6 +13,8 @@ import { UnauthorizedWsException } from "../exceptions/unauthorized.wsException"
 import { GameSocketAuthService } from "../game.socketAuth.service";
 import { EncryptionService } from "src/auth/service/encryption.service";
 import { ForbiddenWsException } from "../exceptions/forbidden.wsException";
+import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
+import { UserRolesService } from "src/user_roles/user_roles.service";
 
 @Injectable()
 export class    GameAuthGuard implements CanActivate {
@@ -20,7 +22,8 @@ export class    GameAuthGuard implements CanActivate {
     constructor(
         private readonly authService: AuthService,
         private readonly socketAuthService: GameSocketAuthService,
-        private readonly encryptionService: EncryptionService
+        private readonly encryptionService: EncryptionService,
+        private readonly userRolesService: UserRolesService
     ) {}
 
     private _getToken(client: Socket, handlerName: string,
@@ -43,48 +46,47 @@ export class    GameAuthGuard implements CanActivate {
         return (token);
     }
 
+    private async _getRoles(username: string): Promise<string[]> {
+        let     roles: string[];
+        
+        roles = (await this.userRolesService.getAllRolesFromUsername(username))
+            .map((ur: UserRolesEntity) => ur.role.role);
+        if (!roles) {
+            return undefined;
+        }
+        return roles;
+    }
+
     // Validate JWT token and inject token and username into client.
-    private _identifyUser(client: Socket, handlerName: string,
-                            token: string): boolean {
+    private async _identifyUser(client: Socket, handlerName: string,
+                            token: string): Promise<boolean> {
         let payload: IJwtPayload | undefined;
+        let roles: string[] | undefined = client.data.globalRoles;
     
         payload = this.authService.validateJWToken(token);
         if (!payload)
             return (false);
-        if (!client.data.token
-                || handlerName === "authentication")
+        if (!client.data.token || handlerName == "authentication") {
+            roles = await this._getRoles(payload.data.username);
+            if (!roles) {
+                return (false);
+            }
             client.data.token = token;
+            client.data.globalRoles = this._getRoles(payload.data.username);
+        }
+        if (handlerName != "authentication" && !roles) {
+            return (false);
+        }
         client.data.username = payload.data.username;
         return (true);
     }
 
-    canActivate(context: ExecutionContext)
-                    : boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(context: ExecutionContext): Promise<boolean> {
         const   wsContext: WsArgumentsHost = context.switchToWs();
         const   client: Socket = wsContext.getClient<Socket>();
         const   handlerName: string = context.getHandler().name;
         const   token: string = this._getToken(client, handlerName, wsContext);
-    
-        /* *** role checking guard *** */
-        console.log(`[ ON GAME.AUTH.GUARD ] ${handlerName}`);
-        console.log(`[ GAME.AUTH.GUARD ] data obj. received: ${JSON.stringify(client.data.roles, null, 2)}`);
-        if (handlerName === 'authentication') {
-            console.log('[ ON GAME.AUTH.GUARD ] ok');
-        }
-        if (handlerName !== 'authentication' &&
-            !client.data.roles['global']) {
-            throw new UnauthorizedWsException(
-                handlerName,
-                wsContext.getData()
-            );
-        }
-        if (client.data.roles['global'].includes('banned')) {
-            throw new ForbiddenWsException(
-                handlerName,
-                wsContext.getData()
-            )
-        }
-        /* ... */
+
         if (!token)
         {
             this.socketAuthService.addAuthTimeout(client);

@@ -63,6 +63,20 @@ export class UserRoomRolesService {
         return users;
     }
 
+    public async getUserRolesInRoom(
+        userId: number,
+        roomId: number
+    ): Promise<UserRoomRolesEntity[]> {
+        return await this.userRoomRolesRepository
+            .createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .leftJoinAndSelect('user_room.user', 'user')
+            .leftJoinAndSelect('user_room.room', 'room')
+            .where('user.id = :username', { 'username': userId })
+            .where('room.id = :roomName', { 'roomName': roomId })
+            .getMany();
+    }
+
     public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
         return await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
