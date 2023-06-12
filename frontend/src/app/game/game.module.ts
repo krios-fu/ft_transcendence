@@ -19,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-import { SocketNotificationService } from '../services/socket-notification.service';
+// import { SocketNotificationService } from '../services/socket-notification.service';
 import { GamehomeComponent } from './gamehome/gamehome.component';
 import { ChatGameComponent } from './chat-game/chat-game.component';
 import {ReactiveFormsModule} from "@angular/forms";
@@ -75,7 +75,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
       useClass: AuthInterceptor,
       multi: true,
   },
-  SocketNotificationService,
+  // SocketNotificationService,
   Chat
 
   ],

@@ -15,7 +15,10 @@
       <mat-grid-list cols="3" rowHeight="60px">
         <mat-grid-tile-header>
           <mat-grid-tile>
-          <img class="avatar" src={{this.room_dto?.photoUrl}} alt={{this.room_dto?.roomName}} />
+          <img class="avatar" *ngIf="this.room_dto?.photoUrl" src={{this.room_dto?.photoUrl}} alt={{this.room_dto?.roomName}} />
+          <img class="avatar" *ngIf="!this.room_dto?.photoUrl" src="https://www.pngall.com/wp-content/uploads/2016/05/Ping-Pong-Download-PNG.png" alt={{this.room_dto?.roomName}} />
+
+          <!-- <mat-icon mat-list-icon *ngIf="!this.room_dto?.photoUrl">groups</mat-icon> -->
           </mat-grid-tile>
         </mat-grid-tile-header>
         <mat-grid-tile>

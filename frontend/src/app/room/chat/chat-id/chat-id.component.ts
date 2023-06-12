@@ -64,8 +64,8 @@ export class ChatIdComponent implements OnInit, OnDestroy {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
+
           this.http.get(`http://localhost:3000/chat/${id}`)
             .pipe(
               catchError(error => {
@@ -76,6 +76,7 @@ export class ChatIdComponent implements OnInit, OnDestroy {
             )
             .subscribe((entity) => {
               let chats = Object.assign(entity);
+              console.log(chats)
               let id_friend = (chats[0].users[0].userId == this.me?.id) ? chats[0].users[1].userId : chats[0].users[0].userId;
 
               this.userService.getUserById(id_friend)
@@ -91,6 +92,7 @@ export class ChatIdComponent implements OnInit, OnDestroy {
 
 
   getMessageApi(id_chat: string) {
+    console.log("component chatId id: ", id_chat)
     this.http.get(`http://localhost:3000/message/chat/${id_chat}`)
       .subscribe((entity: any) => {
         let data = Object.assign(entity);
@@ -115,7 +117,8 @@ export class ChatIdComponent implements OnInit, OnDestroy {
 
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
+    this.alertService.openSnackBar('Game invitation sent', 'OK')
+
   }
 
 

@@ -32,8 +32,6 @@ export class NavHeaderComponent implements OnInit {
 
   constructor(private http: HttpClient,
     private usersService: UsersService,
-    private authService: AuthService,
-    private gameNotification: SocketNotificationService,
     private shareService : SharedService,
     private route : ActivatedRoute,
 
@@ -55,8 +53,7 @@ export class NavHeaderComponent implements OnInit {
     this.usersService.getUser('me')
       .subscribe((user: UserDto) => {
         this.user = user;
-        console.log(user)
-       this.gameNotification.joinRoomNotification(this.user.username);
+      //  this.gameNotification.joinRoomNotification(this.user.username);
        this.shareService.eventEmitter.emit(this.user.username);
 
         this.color_icon = (this.user.defaultOffline) ? '#49ff01' : '#ff0000';
@@ -92,7 +89,6 @@ export class NavHeaderComponent implements OnInit {
        ( user : UserDto[]) => {
           // this.searchUser.emit(user)
           this.searching = user;
-          console.log('SERACH --->', user);
         }
       )
     this.formMessage.controls['message'].reset();
@@ -100,7 +96,6 @@ export class NavHeaderComponent implements OnInit {
   }
 
   getSearch(user: UserDto[]) {
-    console.log("APPCOMPONENT event serach", user);
     this.searching = user;
   }
 

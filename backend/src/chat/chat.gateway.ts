@@ -60,7 +60,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: {msg: string, sender: number,  id_chat: number },
   ) {
-    // const {  msg, sender, id_chat } = payload;
     this.server.to(`room_${payload.id_chat}`).emit('new_message-game', payload);
   }
 

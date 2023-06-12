@@ -37,7 +37,7 @@ export class    RoomListComponent implements OnInit {
     ) {
         this.rooms = [];
         this.totalRooms = 0;
-        this.pageSize = 10;
+        this.pageSize = 8;
         this.pageIndex = 0;
         this.roomPrivacy = "public";
     }
@@ -91,7 +91,6 @@ export class    RoomListComponent implements OnInit {
                 }
                 for (const [id, room] of roomUserCount.entries())
                 {
-                    this.rooms[id].userCount = room.userCount;
                 }
             },
             error: (err: any) => {

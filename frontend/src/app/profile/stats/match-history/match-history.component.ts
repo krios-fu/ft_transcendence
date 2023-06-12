@@ -48,7 +48,6 @@ export class MatchHistoryComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     ngOnInit(): void {
-        console.log("Initiated Match history");
     }
 
     ngAfterViewInit(): void {

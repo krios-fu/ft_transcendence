@@ -59,7 +59,7 @@ import { SearchComponent } from '../search/search.component';
         useClass: AuthInterceptor,
         multi: true,
     },
-        SocketNotificationService,
+        // SocketNotificationService,
         SharedService
     ],
     imports: [
@@ -80,8 +80,6 @@ import { SearchComponent } from '../search/search.component';
         MatTableModule,
         MatPaginatorModule,
         MatCardModule
-        // MatDividerModule,
-        // MatDialogModule,
 
     ],
 })

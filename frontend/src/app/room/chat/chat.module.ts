@@ -50,7 +50,8 @@ import { MatChipsModule } from '@angular/material/chips'
     useClass: AuthInterceptor,
     multi: true,
 },
-    SocketNotificationService, Chat
+    // SocketNotificationService,
+    Chat
 ],
   exports: [
     // ChatComponent,

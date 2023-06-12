@@ -13,7 +13,6 @@ export class FriendOnlineComponent implements OnInit {
 
   urlApi = 'http://localhost:3000/'
   constructor(private http: HttpClient) {
-    console.log("CONSTRUCTOR APP-FRIEND-ONLINE")
   }
 
   ngOnInit(): void {
@@ -30,7 +29,6 @@ export class FriendOnlineComponent implements OnInit {
 
       this.http.get<any[]>(this.urlApi + 'users/me/friends/as_pending')
       .subscribe((friends: any[]) => {
-        console.log("frinedd pending", friends)
         for (let friend in friends) {
           const { receiver } = friends[friend];
           const { sender } = friends[friend];

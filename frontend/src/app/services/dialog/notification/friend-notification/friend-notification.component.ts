@@ -36,8 +36,6 @@ export class FriendNotificationComponent implements OnInit {
         const user = (receiver) ? receiver : sender;
         if (sender && (sender.username !== user_sesion) )
             this.FRIENDS_USERS_PENDDING.push(user);
-          
-        console.log("FRIEND NOTIF", this.FRIENDS_USERS_PENDDING)
       }
     })
   }

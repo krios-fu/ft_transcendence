@@ -23,8 +23,8 @@ export class ChatMessageController {
 	@Get('chat/:chat_id')
 	@Public()
 	async findMessageChat(@Param('chat_id', ParseIntPipe) id : number) : Promise<ChatMessageEntity[]>{
-		const lol = await this.messageService.findMessageChats(id);
-		console.log('MESSAGE', lol);
-		return lol
+		const messages = await this.messageService.findMessageChats(id);
+		console.log('MESSAGE', messages);
+		return messages
 	}
 }

@@ -51,7 +51,6 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
         this.usersService.getFriends('me')
         .subscribe((data: any) => {
           let friends_pending = Object.assign(data);
-          console.log("PENDING", user.username)
             this.nPenddingFriends = (friends_pending.filter((friend: any) => friend['sender'] && friend['sender'].username != user.username)).length;
           })
       })

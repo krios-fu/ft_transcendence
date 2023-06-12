@@ -66,7 +66,7 @@ export class ChatGameComponent implements OnInit {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.socketGameNotification.joinRoomNotification(this.me.username);
+          // this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
 
         });
@@ -89,7 +89,6 @@ export class ChatGameComponent implements OnInit {
 
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
-    console.log(message, room)
     if (!message || message.trim() == '')
       return false;
     this.chat.sendMessageGame(message, this.me?.id as number, 'game' + this.id);
@@ -99,7 +98,7 @@ export class ChatGameComponent implements OnInit {
 
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
+    // this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
 
