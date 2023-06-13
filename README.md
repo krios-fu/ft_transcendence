@@ -7,6 +7,7 @@ FORTYTWO_APP_ID=${your app id}
 FORTYTWO_APP_SECRET=${your app secret}
 WEBAPP_IP=http://localhost:4200
 CALLBACK_URL=${yout callback URL from your app}
+SERVER_URL=${your server url} example: "http://localhost:3000"
 ```
 ### .env.production
 ```
@@ -14,6 +15,7 @@ FORTYTWO_APP_ID=${your app id}
 FORTYTWO_APP_SECRET=${your app secret}
 WEBAPP_IP=${your prod. ip}
 CALLBACK_URL=${your callback URL from your app}
+SERVER_URL=${your server url} example: "http://localhost:3000"
 ```
 ### .env.database
 ```

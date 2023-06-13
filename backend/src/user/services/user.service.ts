@@ -21,6 +21,8 @@ import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
 import * as fs from 'fs';
 import { DEFAULT_AVATAR_PATH } from '../../common/config/upload-avatar.config';
 import { UserCountData } from '../types/user-count-data.type';
+import { extname } from 'path';
+import { StaticDir } from '../../common/constants/static-dir.const';
 
 @Injectable()
 export class UserService {
@@ -123,6 +125,18 @@ export class UserService {
         else
             await this.userRepository.update(id, userInfo);
         return await this.findOne(id);
+    }
+
+    public async    removeAvatarFile(username: string,
+                                        avatarUrl: string): Promise<void> {
+        let filePath: string;
+    
+        if (!username
+                || !avatarUrl)
+            return ;
+        filePath = StaticDir.Users + username + extname(avatarUrl);
+        if (!!(await fs.promises.stat(filePath).catch(() => false)))
+            fs.promises.unlink(filePath);
     }
 
     /*
