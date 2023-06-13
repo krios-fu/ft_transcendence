@@ -6,6 +6,7 @@ import { BanEntity } from './entity/ban.entity';
 import { BanRepository } from './repository/ban.repository';
 import { UserModule } from '../user/user.module';
 import { RoomModule } from '../room/room.module';
+import {SocketHelper} from "../game/game.socket.helper";
 
 @Module({
   imports: [ 
@@ -14,6 +15,7 @@ import { RoomModule } from '../room/room.module';
     RoomModule,
   ],
   providers: [
+    SocketHelper,
     BanService,
     BanRepository,
   ],

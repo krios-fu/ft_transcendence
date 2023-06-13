@@ -87,6 +87,7 @@ export class    GameAuthGuard implements CanActivate {
         const   handlerName: string = context.getHandler().name;
         const   token: string = this._getToken(client, handlerName, wsContext);
 
+        console.log(`Data obj: ${JSON.stringify(client.data, null, 2)}`);
         if (!token)
         {
             this.socketAuthService.addAuthTimeout(client);

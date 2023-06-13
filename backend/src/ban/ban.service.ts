@@ -57,12 +57,13 @@ export class BanService {
     public async createBan(dto: CreateBanDto): Promise<BanEntity> {
         const ban: BanEntity = await this.banRepository.save(new BanEntity(dto));
 
-        await this.socketService.refreshUserRoles(dto);
+        await this.socketService.refreshUserRoles(dto, 'banned');
         return ban;
     }
 
-    public async deleteBan(ban_id: number): Promise<void> {
-        this.banRepository.delete(ban_id);
+    public async deleteBan(banId: number): Promise<void> {
+        await this.banRepository.delete(banId);
+        //await this.socketService.refreshUserRoles(dto, 'banned');
     }
 
     public async findOneByIds(

@@ -13,6 +13,8 @@ import { BanService } from "src/ban/ban.service";
 import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
 import { BanEntity } from "src/ban/entity/ban.entity";
 import { InternalServerErrorWsException } from "./exceptions/internalServerError.wsException";
+import {UserService} from "../user/services/user.service";
+import {UserEntity} from "../user/entities/user.entity";
 
 type RoleCreds = {
     userId: number,
@@ -24,7 +26,8 @@ export class    SocketHelper {
 
     private _server: Server;
 
-    constructor(private readonly urService: UserRolesService,
+    constructor(private readonly userService: UserService,
+                private readonly urService: UserRolesService,
                 private readonly urrService: UserRoomRolesService,
                 private readonly banService: BanService) {
         this._server = undefined;
@@ -66,6 +69,8 @@ export class    SocketHelper {
     initServer(server: Server): void {
         this._server = server;
     }
+
+
 
     async getAllUserClients(username: string)
                                     : Promise<RemoteSocket<DefaultEventsMap,
@@ -147,12 +152,14 @@ export class    SocketHelper {
         return (userSockets[0].rooms.has(roomId));
     }
 
-    private async _refreshGlobalRoles(creds: RoleCreds) {
+    private async _refreshGlobalRoles(creds: RoleCreds, username: string) {
         const { userId } = creds;
         let query: UserRolesEntity[] = await this.urService.getAllRolesFromUser(userId);
         let roles: string[] = [];
-        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
-            await this.getAllUserClients(username);
+        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] =
+            await this.getAllUserClients(
+                SocketHelper.getUserRoomName(username)
+            );
 
         if (!query) {
             throw new InternalServerErrorWsException('none', null);
@@ -163,13 +170,15 @@ export class    SocketHelper {
         }
     }
 
-    private async _refreshRoomRoles(creds: RoleCreds): Promise<void> {
+    private async _refreshRoomRoles(creds: RoleCreds, username: string): Promise<void> {
         const { userId, roomId } = creds;
         let query: UserRoomRolesEntity[] = 
             await this.urrService.getUserRolesInRoom(userId, roomId);
         let roles: string[] = [];
-        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
-            await this.getAllUserClients(userId);
+        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] =
+            await this.getAllUserClients(
+                SocketHelper.getUserRoomName(username)
+            );
         let roomKey: string = SocketHelper.roomIdToName(roomId);
 
         if (!query) {
@@ -186,11 +195,13 @@ export class    SocketHelper {
         }
     }
 
-    private async _refreshBannedRoles(creds: RoleCreds): Promise<void> {
+    private async _refreshBannedRoles(creds: RoleCreds, username: string): Promise<void> {
         const { userId, roomId } = creds;
         const banned: BanEntity | null = await this.banService.findOneByIds(userId, roomId);
         let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
-            await this.getAllUserClients(userId);
+            await this.getAllUserClients(
+                SocketHelper.getUserRoomName(username)
+            );
         let roomKey: string = SocketHelper.roomIdToName(roomId);
 
         for (let sck of userSockets) {
@@ -207,13 +218,18 @@ export class    SocketHelper {
 
     async refreshUserRoles(creds: RoleCreds,
                            ctxName: string): Promise<void> {
+        const user: UserEntity = await this.userService.findOne(creds.userId);
+
+        if (!user) {
+            throw new InternalServerErrorWsException('none', null);
+        }
         switch (ctxName) {
             case 'global':
-                return this._refreshGlobalRoles(creds);
+                return this._refreshGlobalRoles(creds, user.username);
             case 'room':
-                return this._refreshRoomRoles(creds);
+                return this._refreshRoomRoles(creds, user.username);
             case 'banned':
-                return this._refreshBannedRoles(creds);
+                return this._refreshBannedRoles(creds, user.username);
             default:
                 return ;
         }

@@ -71,7 +71,7 @@ export class BanController {
     /* Delete a ban */
     //@UseGuards(AtLeastRoomOwner)
     @Delete(':ban_id')
-    async deleteBan(@Param('ban_id', ParseIntPipe) ban_id: number): Promise<void> {
-        return await this.banService.deleteBan(ban_id);
+    async deleteBan(@Param('banId', ParseIntPipe) banId: number): Promise<void> {
+        return await this.banService.deleteBan(banId);
     }
 }

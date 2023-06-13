@@ -53,5 +53,8 @@ import { UserRolesModule } from 'src/user_roles/user_roles.module';
     GameMatchmakingService,
     GameRoomService
   ],
+  exports: [
+      SocketHelper
+  ]
 })
 export class GameModule {}
