@@ -21,7 +21,7 @@ export class SharedService {
 })
 export class ProfileUserComponent implements OnInit {
 
-  user: UserDto | undefined;
+  user?: UserDto;
 
   icon_friend = 'person_add'
   icon_activate = true;
@@ -47,7 +47,7 @@ export class ProfileUserComponent implements OnInit {
     private userService: UsersService,
     private shareService: SharedService
   ) {
-    this.user = undefined;
+    // this.user = undefined;
   }
 
   @Output() username = new EventEmitter();
@@ -126,7 +126,7 @@ export class ProfileUserComponent implements OnInit {
       this.http.get<UserDto[]>(`${this.urlApi}users?filter[nickName]=${id}`)
         .subscribe((user: UserDto[]) => {
           if (user.length === 0) {
-            this.alertService.openSnackBar('User not foud', 'OK')
+            this.alertService.openSnackBar('USER NOT FOUND', 'OK')
             this.authService.redirectHome()
           }
           this.user = user[0];
@@ -136,10 +136,11 @@ export class ProfileUserComponent implements OnInit {
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
           }
-          this.chatService.createChat(this.user.id)
-          .subscribe((data: any) => {console.log("CHAT ID", data); this.id_chat = data.chatId});
+          if (this.icon_activate)
+          this.chatService.createChat(this.user.id )
+            .subscribe((data: any) => { this.id_chat = data.chatId });
 
-        
+
           this.FRIENDS_USERS = [];
           // change de icone visible add o remove 
 
@@ -156,6 +157,7 @@ export class ProfileUserComponent implements OnInit {
           this.http.get<any>(this.urlApi + 'users/me/friends/' + this.user?.id)
             .subscribe((friend: any) => {
               if (friend) {
+
                 this.id_friendship = friend.id
                 this.icon_friend = 'person_remove';
               }

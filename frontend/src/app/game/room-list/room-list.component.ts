@@ -37,7 +37,7 @@ export class    RoomListComponent implements OnInit {
     ) {
         this.rooms = [];
         this.totalRooms = 0;
-        this.pageSize = 8;
+        this.pageSize = 7;
         this.pageIndex = 0;
         this.roomPrivacy = "public";
     }

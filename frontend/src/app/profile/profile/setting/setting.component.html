@@ -1,15 +1,16 @@
 <div class="background">
 
+<div class="content">
+    <section style=" display: flex; 
+            position: relative; 
+            align-items: center;  
+            justify-content: space-around;">
+        <h1 style="font-size: 25px; color:white">SETTING</h1>
+    </section>
     <section class="head">
         <img class="avatar" src={{getPhoto()}} />
     </section>
 
-    <section style="margin-top: 5px; display: flex; 
-            position: relative; 
-            align-items: center;  
-            justify-content: space-around;">
-        <h1 style="font-size: 25px; color:white">setting</h1>
-    </section>
 
     <section class="center">
         <form class="example-form" #form="ngForm" (ngSubmit)="alertFormValues(form.form, login.value)"
@@ -88,6 +89,7 @@
 
 
     </section>
+</div>
 </div>
 
 
