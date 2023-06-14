@@ -88,10 +88,11 @@ export class UserRoomRolesService {
         const role: UserRoomRolesEntity = await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
         );
+const userRoom: UserRoomEntity = (await this.findOne(role.id)).userRoom;
 
-        console.log(`ROLE QUERIED: ${JSON.stringify(role, null, 2)}`);
+        console.log(`ROLE QUERIED: ${JSON.stringify(userRoom, null, 2)}`);
         if (role) {
-            const { userId, roomId } = role.userRoom;
+            const { userId, roomId } = userRoom;
             this.eventEmitter.emit('update.roles',
                 {
                     userId: userId,
