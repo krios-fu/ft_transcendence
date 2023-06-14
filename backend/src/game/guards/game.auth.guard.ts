@@ -71,8 +71,9 @@ export class    GameAuthGuard implements CanActivate {
             if (!roles) {
                 return (false);
             }
+            client.data.id = payload.data.id;
             client.data.token = token;
-            client.data.globalRoles = this._getRoles(payload.data.username);
+            client.data.globalRoles = roles;
         }
         if (handlerName != "authentication" && !roles) {
             return (false);

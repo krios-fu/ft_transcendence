@@ -79,6 +79,14 @@ export class    SocketHelper {
         );
     }
 
+    async getAllUsersInRoom(roomId: number)
+        : Promise<RemoteSocket<DefaultEventsMap, any>[]> {
+        return (await this._server
+            .in(SocketHelper
+                .roomIdToName(roomId))
+            .fetchSockets())
+    }
+
     async addUserToRoom(username: string,
                             roomId: string): Promise<void> {
         let userSockets: RemoteSocket<DefaultEventsMap, any>[];
@@ -217,9 +225,9 @@ export class    SocketHelper {
         const user: UserEntity = await this.userService.findOne(creds.userId);
 
         console.log(`GOTTEN CREDS: ${creds}`);
-        if (!user) {
+        /*if (!user) {
             throw new InternalServerErrorWsException('none', null);
-        }
+        }*/
         switch (creds.ctxName) {
             case 'global':
                 return this._refreshGlobalRoles(creds, user.username);

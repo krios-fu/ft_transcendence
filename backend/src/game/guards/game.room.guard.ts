@@ -34,8 +34,12 @@ export class    GameRoomGuard implements CanActivate {
         return (true);
     }
 
-    private async _checkRoomJoin(roomId: number,
-                                    username: string): Promise<boolean> {    
+    private async _checkRoomJoin(client: Socket,
+                                 roomId: number,
+                                 username: string): Promise<boolean> {
+        if (client[SocketHelper.roomIdToName(roomId)].includes('banned')) {
+            return (false);
+        }
         try {
             const   userEntity: Promise<UserEntity> =
                             this.userService.findOneByUsername(username);
@@ -61,7 +65,7 @@ export class    GameRoomGuard implements CanActivate {
         const   username: string = client.data.username;
     
         if (handlerName === "joinRoom")
-            return (await this._checkRoomJoin(data, username));
+            return (await this._checkRoomJoin(client, data, username));
         else if (handlerName === "matchInviteResponse")
         {
             return (

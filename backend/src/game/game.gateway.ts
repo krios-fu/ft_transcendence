@@ -37,6 +37,8 @@ import { StringValidator } from './validators/string.validator';
 import { GameRoomService } from './game.room.service';
 import { UserRolesService } from 'src/user_roles/user_roles.service';
 import { UserRolesEntity } from 'src/user_roles/entity/user_roles.entity';
+import {UserRoomRolesService} from "../user_room_roles/user_room_roles.service";
+import {UserRoomRolesEntity} from "../user_room_roles/entity/user_room_roles.entity";
 
 @WebSocketGateway(3001, {
     cors: {
@@ -55,9 +57,11 @@ export class    GameGateway implements OnGatewayInit,
         private readonly socketHelper: SocketHelper,
         private readonly recoveryService: GameRecoveryService,
         private readonly socketAuthService: GameSocketAuthService,
-        private readonly roomService: GameRoomService
-    ) {}
-  
+        private readonly roomService: GameRoomService,
+        private readonly rolesService: UserRoomRolesService
+    ) {
+    }
+
     afterInit() {
         this.socketHelper.initServer(this.server);
         console.log("Game Gateway initiated");
@@ -77,8 +81,8 @@ export class    GameGateway implements OnGatewayInit,
     async authentication(
         @ConnectedSocket() client: Socket
     ) {
-        const   clientId: string = client.id;
-        const   username: string = client.data.username;
+        const clientId: string = client.id;
+        const username: string = client.data.username;
 
         this.socketAuthService.clearTimeout(clientId);
         await this.socketAuthService.registerUser(client, username);
@@ -97,15 +101,16 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: number
     ) {
-        const   roomName: string = SocketHelper.roomIdToName(roomId);
-        const   username: string = client.data.username;
-        const   [initScene, initData]: [string,
-                                        IMenuInit |
-                                        IMatchRecoverData |
-                                        IGameResultData |
-                                        undefined] =
-                    this.updateService.getClientInitData(roomName, client);
-    
+        const roomName: string = SocketHelper.roomIdToName(roomId);
+        const username: string = client.data.username;
+        const userId: number = client.data.id;
+        const [initScene, initData]: [string,
+                IMenuInit |
+                IMatchRecoverData |
+                IGameResultData |
+                undefined] =
+            this.updateService.getClientInitData(roomName, client);
+
         this.roomService.join(
             username,
             roomName
@@ -122,7 +127,11 @@ export class    GameGateway implements OnGatewayInit,
             roomName,
             true
         );
+        client.data[roomName] = (await this.rolesService
+            .getUserRolesInRoom(userId, roomId))
+            .map((role: UserRoomRolesEntity) => role.role.role);
         console.log(`${username} joined Game room ${roomName}`);
+        client.emit('updateRoomUsers', (await this.socketHelper.getAllUsersInRoom(roomId)).length);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -132,7 +141,7 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: number
     ) {
-        const   roomName: string = SocketHelper.roomIdToName(roomId);
+        const roomName: string = SocketHelper.roomIdToName(roomId);
         this.roomService.leave(
             client,
             client.data.username,
@@ -144,6 +153,7 @@ export class    GameGateway implements OnGatewayInit,
             false
         );
         console.log(`${client.data.username} left Game room ${roomName}`);
+        /* emit event to room actualize event */
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -220,8 +230,8 @@ export class    GameGateway implements OnGatewayInit,
     leftSelection(
         @ConnectedSocket() client: Socket
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        let     selectionData: IGameSelectionData;
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        let selectionData: IGameSelectionData;
 
         selectionData = this.updateService.selectionInput(room, player, 0);
         if (selectionData)
@@ -232,8 +242,8 @@ export class    GameGateway implements OnGatewayInit,
     rightSelection(
         @ConnectedSocket() client: Socket
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        let     selectionData: IGameSelectionData;
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        let selectionData: IGameSelectionData;
 
         selectionData = this.updateService.selectionInput(room, player, 1);
         if (selectionData)
@@ -244,12 +254,11 @@ export class    GameGateway implements OnGatewayInit,
     confirmSelection(
         @ConnectedSocket() client: Socket
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        let     selectionData: IGameSelectionData;
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        let selectionData: IGameSelectionData;
 
         selectionData = this.updateService.selectionInput(room, player, 2);
-        if (selectionData)
-        {
+        if (selectionData) {
             client.to(room).emit('confirmSelection', selectionData);
             this.updateService.attemptSelectionFinish(room);
         }
@@ -261,8 +270,8 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() when: number
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
+
         this.updateService.paddleInput(room, player, true, when);
     }
 
@@ -272,8 +281,8 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() when: number
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
-        
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
+
         this.updateService.paddleInput(room, player, false, when);
     }
 
@@ -283,7 +292,7 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() when: number
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
         this.updateService.heroInput(room, player, true, when);
     }
@@ -294,7 +303,7 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() when: number
     ) {
-        const   [room, player] = this.socketHelper.getClientRoomPlayer(client);
+        const [room, player] = this.socketHelper.getClientRoomPlayer(client);
 
         this.updateService.heroInput(room, player, false, when);
     }
@@ -309,8 +318,16 @@ export class    GameGateway implements OnGatewayInit,
         this.recoveryService.recover(client, roomId);
     }
 
-    public refreshToken(): void {
-        
-    }
+    /*@UseGuards(GameAuthGuard, GameRoomGuard, UserRoomGuard)
+    @AllowedRoles(['admin'])
+    @UsePipes(StringValidator)
+    @SubscribeMessage('kickUser')
+    kickUser(
+        @ConnectedSocket() cliente: Socket,
+        @MessageBody() userId: string
+    ) {
+        // find client in room
+        // disconnect (user should be redirected when disconnected from room
+    }*/
 
-  }
+}
