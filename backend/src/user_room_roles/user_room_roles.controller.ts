@@ -38,8 +38,7 @@ export class UserRoomRolesController {
     /* get all users in room with roles */
     @Get()
     public async findAllRoles(@Query() queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
-        const test =  await this.userRoomRolesService.findAllRoles(queryParams);
-        return test;
+        return await this.userRoomRolesService.findAllRoles(queryParams);
     }
 
     /* Get user with role in a room */
@@ -138,10 +137,12 @@ export class UserRoomRolesController {
     /* at least mod role required */
     @Delete(':id')
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        if (await this.userRoomRolesService.findRole(id) === null) {
+        const role: UserRoomRolesEntity = await this.userRoomRolesService.findRole(id);
+
+        if (!role) {
             this.userRoomRolesLogger.error(`No user role in room with id ${id} present in database`);
             throw new NotFoundException('resource not found in database');
         }
-        return await this.remove(id);
+        return await this.userRoomRolesService.remove(role);
     }
 }

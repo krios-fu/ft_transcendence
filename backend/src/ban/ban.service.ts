@@ -7,14 +7,15 @@ import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
 import { BanRepository } from './repository/ban.repository';
-import { SocketHelper } from 'src/game/game.socket.helper';
+import {EventEmitter2} from "@nestjs/event-emitter";
+import {DeleteResult} from "typeorm";
 
 @Injectable()
 export class BanService {
     constructor (
         @InjectRepository(BanEntity)
         private readonly banRepository: BanRepository,
-        private readonly socketService: SocketHelper
+        private readonly eventEmitter: EventEmitter2
     ) { }
 
     public async findAllBans(queryParams: BanQueryDto): Promise<BanEntity[]> {
@@ -56,14 +57,27 @@ export class BanService {
 
     public async createBan(dto: CreateBanDto): Promise<BanEntity> {
         const ban: BanEntity = await this.banRepository.save(new BanEntity(dto));
-
-        await this.socketService.refreshUserRoles(dto, 'banned');
+        this.eventEmitter.emit('update.roles',
+            {
+                userId: dto.userId,
+                roomId: dto.roomId,
+                ctxName: 'banned'
+            });
         return ban;
     }
 
-    public async deleteBan(banId: number): Promise<void> {
-        await this.banRepository.delete(banId);
-        //await this.socketService.refreshUserRoles(dto, 'banned');
+    public async deleteBan(ban: BanEntity): Promise<void> {
+        const { id, userId, roomId } = ban;
+
+        const delRes: DeleteResult = await this.banRepository.delete(id);
+        if (delRes) {
+            this.eventEmitter.emit('update.roles',
+                {
+                    userId: userId,
+                    roomId: roomId,
+                    ctxName: 'banned'
+                });
+        }
     }
 
     public async findOneByIds(

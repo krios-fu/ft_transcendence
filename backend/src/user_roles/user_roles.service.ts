@@ -8,6 +8,8 @@ import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { UserRolesRepository } from './repository/user_roles.repository';
 import { SocketHelper } from 'src/game/game.socket.helper';
+import {EventEmitter2} from "@nestjs/event-emitter";
+import {DeleteResult} from "typeorm";
 
 @Injectable()
 export class UserRolesService {
@@ -15,7 +17,7 @@ export class UserRolesService {
         @InjectRepository(UserRolesEntity)
         private readonly userRolesRepository: UserRolesRepository,
         private readonly userService: UserService,
-        private readonly socketService: SocketHelper
+        private readonly eventEmitter: EventEmitter2
     ) { }
     
     public async findAllUserRoles(queryParams: UserRolesQueryDto): Promise<UserRolesEntity[]> {
@@ -72,21 +74,30 @@ export class UserRolesService {
     public async assignRoleToUser(dto: CreateUserRolesDto): Promise<UserRolesEntity> {
         const role: UserRolesEntity = await this.userRolesRepository
                                                 .save(new UserRolesEntity(dto));
-        await this.socketService.refreshUserRoles({ userId: dto.userId }, 'global');
+
+        if (role) {
+            this.eventEmitter.emit('update.roles',
+                {
+                    userId: dto.userId,
+                    ctxName: 'global'
+                });
+        }
         return role;
     }
 
     /* Remove role entity by id */
-    public async deleteRoleFromUser(id: number): Promise<void> { 
-        await this.userRolesRepository.delete(id);
-        await this.socketService.refreshUserRoles({ userId: id }, 'global');
-    }
+    public async deleteRoleFromUser(role: UserRolesEntity): Promise<void> {
+        const { id, userId } = role;
+        const delRes: DeleteResult = await this.userRolesRepository.delete(id);
 
-    /* 
-    **  ~~  [ Validation guard services ]  ~~
-    **
-    **
-    */
+        if (delRes) {
+            this.eventEmitter.emit('update.roles',
+                {
+                    userId: userId,
+                    ctxName: 'global'
+                });
+        }
+    }
 
     public async validateGlobalRole(username: string, roles: string[]): Promise<boolean> {
         const user: UserEntity = await this.userService.findOneByUsername(username)

@@ -7,6 +7,9 @@ import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
+import {EventEmitter2} from "@nestjs/event-emitter";
+import {UserRoomRolesModule} from "./user_room_roles.module";
+import {DeleteResult} from "typeorm";
 
 @Injectable()
 export class UserRoomRolesService {
@@ -14,6 +17,7 @@ export class UserRoomRolesService {
         @InjectRepository(UserRoomRolesEntity)
         private readonly userRoomRolesRepository: UserRoomRolesRepository,
         private readonly userService: UserService,
+        private readonly eventEmitter: EventEmitter2
     ) { }
 
     public async findAllRoles(queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
@@ -54,13 +58,16 @@ export class UserRoomRolesService {
                 userRoom: { roomId: roomId }
             },
         });
-        let users: UserEntity[] = [];
+        let users: UserEntity[] = await Promise.all(rolesInRoom
+            .map(async (role: UserRoomRolesEntity) => await this.userService
+                .findOne(role.userRoom.userId)))
 
-        rolesInRoom.forEach(async (role) => {
+        return users;
+        /*rolesInRoom.forEach(async (role) => {
             const user = await this.userService.findOne(role.userRoom.userId);
             users.push(user);
         });
-        return users;
+        return users;*/
     }
 
     public async getUserRolesInRoom(
@@ -78,13 +85,34 @@ export class UserRoomRolesService {
     }
 
     public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
-        return await this.userRoomRolesRepository.save(
+        const role: UserRoomRolesEntity = await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
         );
+
+        if (role) {
+            const { userId, roomId } = role.userRoom;
+            this.eventEmitter.emit('update.roles',
+                {
+                    userId: userId,
+                    roomId: roomId
+                });
+        }
+        return role;
     }
 
-    public async remove(id: number): Promise<void> {
-        await this.userRoomRolesRepository.delete(id);
+    public async remove(role: UserRoomRolesEntity): Promise<void> {
+        const { id } = role;
+        const { userId, roomId } = role.userRoom;
+        const delRes: DeleteResult = await this.userRoomRolesRepository.delete(id);
+
+        if (delRes) {
+            this.eventEmitter.emit('updateRoles',
+                {
+                    userId: userId,
+                    roomId: roomId,
+                    ctxName: 'room'
+            });
+        }
     }
 
     public async findRoleByIds(userRoomId: number, roleId: number): Promise<UserRoomRolesEntity> {

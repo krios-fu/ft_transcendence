@@ -13,13 +13,10 @@ import { BanService } from "src/ban/ban.service";
 import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
 import { BanEntity } from "src/ban/entity/ban.entity";
 import { InternalServerErrorWsException } from "./exceptions/internalServerError.wsException";
-import {UserService} from "../user/services/user.service";
-import {UserEntity} from "../user/entities/user.entity";
-
-type RoleCreds = {
-    userId: number,
-    roomId?: number
-}
+import { UserService } from "../user/services/user.service";
+import { UserEntity } from "../user/entities/user.entity";
+import { OnEvent } from "@nestjs/event-emitter";
+import { RoleCredentials } from "../common/events/update.role.event";
 
 @Injectable()
 export class    SocketHelper {
@@ -152,7 +149,7 @@ export class    SocketHelper {
         return (userSockets[0].rooms.has(roomId));
     }
 
-    private async _refreshGlobalRoles(creds: RoleCreds, username: string) {
+    private async _refreshGlobalRoles(creds: RoleCredentials, username: string) {
         const { userId } = creds;
         let query: UserRolesEntity[] = await this.urService.getAllRolesFromUser(userId);
         let roles: string[] = [];
@@ -170,7 +167,7 @@ export class    SocketHelper {
         }
     }
 
-    private async _refreshRoomRoles(creds: RoleCreds, username: string): Promise<void> {
+    private async _refreshRoomRoles(creds: RoleCredentials, username: string): Promise<void> {
         const { userId, roomId } = creds;
         let query: UserRoomRolesEntity[] = 
             await this.urrService.getUserRolesInRoom(userId, roomId);
@@ -195,7 +192,7 @@ export class    SocketHelper {
         }
     }
 
-    private async _refreshBannedRoles(creds: RoleCreds, username: string): Promise<void> {
+    private async _refreshBannedRoles(creds: RoleCredentials, username: string): Promise<void> {
         const { userId, roomId } = creds;
         const banned: BanEntity | null = await this.banService.findOneByIds(userId, roomId);
         let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
@@ -215,15 +212,15 @@ export class    SocketHelper {
             }
         }
     }
-
-    async refreshUserRoles(creds: RoleCreds,
-                           ctxName: string): Promise<void> {
+    @OnEvent('update.roles')
+    async refreshUserRoles(creds: RoleCredentials): Promise<void> {
         const user: UserEntity = await this.userService.findOne(creds.userId);
 
+        console.log(`GOTTEN CREDS: ${creds}`);
         if (!user) {
             throw new InternalServerErrorWsException('none', null);
         }
-        switch (ctxName) {
+        switch (creds.ctxName) {
             case 'global':
                 return this._refreshGlobalRoles(creds, user.username);
             case 'room':

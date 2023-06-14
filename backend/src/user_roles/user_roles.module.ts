@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { RolesModule } from '../roles/roles.module';
-import {SocketHelper} from "../game/game.socket.helper";
 
 ;
 
@@ -17,7 +16,6 @@ import {SocketHelper} from "../game/game.socket.helper";
     ],
     controllers: [UserRolesController],
     providers: [
-        SocketHelper,
         UserRolesService,
     ],
     exports: [UserRolesService],

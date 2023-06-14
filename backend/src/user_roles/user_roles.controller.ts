@@ -100,11 +100,12 @@ export class UserRolesController {
     /* Remove a role from a user */
     @UseGuards(SiteAdminGuard)
     @Delete(':id')
-    public async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> { 
-        if (await this.userRolesService.findOne(id) === null) {
+    public async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        const role: UserRolesEntity = await this.userRolesService.findOne(id);
+        if (!role) {
             this.userRolesLogger.error(`No user role with id ${id} found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        await this.userRolesService.deleteRoleFromUser(id);
+        await this.userRolesService.deleteRoleFromUser(role);
     }
 }
