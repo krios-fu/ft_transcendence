@@ -37,7 +37,7 @@ export class UserRoomRolesController {
 
     /* get all users in room with roles */
     @Get()
-    public async findAllRoles(@Query() queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
+    public async findAllRoles(@Query() queryParams?: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
         return await this.userRoomRolesService.findAllRoles(queryParams);
     }
 
@@ -112,6 +112,9 @@ export class UserRoomRolesController {
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });
 
+        console.log(`User room returned: ${userRoom}, with user: ${userId} and room ${roomId}`)
+        console.log(`... ${JSON.stringify(await this.userRoomService.findUserRoomIds(userId, roomId), null, 2)}`);
+        console.log(`... ${JSON.stringify(await this.userRoomService.findAll(), null, 2)}`);
         if (!userRoom.length) {
             this.userRoomRolesLogger.error(`User ${userId} is not registered in room ${roomId}`);
             throw new BadRequestException('resource not found in database');

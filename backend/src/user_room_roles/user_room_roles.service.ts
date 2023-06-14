@@ -89,6 +89,7 @@ export class UserRoomRolesService {
             new UserRoomRolesEntity(dto)
         );
 
+        console.log(`ROLE QUERIED: ${JSON.stringify(role, null, 2)}`);
         if (role) {
             const { userId, roomId } = role.userRoom;
             this.eventEmitter.emit('update.roles',
