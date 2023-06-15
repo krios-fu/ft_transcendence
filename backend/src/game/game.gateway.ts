@@ -39,6 +39,7 @@ import { UserRolesService } from 'src/user_roles/user_roles.service';
 import { UserRolesEntity } from 'src/user_roles/entity/user_roles.entity';
 import {UserRoomRolesService} from "../user_room_roles/user_room_roles.service";
 import {UserRoomRolesEntity} from "../user_room_roles/entity/user_room_roles.entity";
+import {GameRolesGuard} from "./guards/game.roles.guard";
 
 @WebSocketGateway(3001, {
     cors: {
@@ -94,7 +95,7 @@ export class    GameGateway implements OnGatewayInit,
         client.emit("authSuccess");
     }
 
-    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard) /* pa testeo, borrar luego */
     @UsePipes(NumberValidator)
     @SubscribeMessage("joinRoom")
     async joinRoom(
@@ -318,12 +319,12 @@ export class    GameGateway implements OnGatewayInit,
         this.recoveryService.recover(client, roomId);
     }
 
-    /*@UseGuards(GameAuthGuard, GameRoomGuard, UserRoomGuard)
+    /*@UseGuards(GameAuthGuard, GameRoomGuard)
     @AllowedRoles(['admin'])
     @UsePipes(StringValidator)
     @SubscribeMessage('kickUser')
     kickUser(
-        @ConnectedSocket() cliente: Socket,
+        @ConnectedSocket() client: Socket,
         @MessageBody() userId: string
     ) {
         // find client in room
