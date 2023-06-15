@@ -1,6 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Observable, catchError, tap, throwError  } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -26,8 +24,5 @@ export class TwofaComponent implements OnInit {
         }
     }
 
-    ngOnInit(): void {
-        // if (this.authService.isAuthenticated())
-        // this.authService.redirectHome();
-    }
+    ngOnInit(): void { }
 }

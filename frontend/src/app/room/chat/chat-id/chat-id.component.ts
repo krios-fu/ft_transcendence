@@ -1,17 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Chat } from '../chat';
 import { FormControl, FormGroup } from '@angular/forms'; //
 import { UserDto } from 'src/app/dtos/user.dto';
-import { IUser, UsersService } from 'src/app/services/users.service';
-import { ChatService } from 'src/app/services/chat.service';
+import { UsersService } from 'src/app/services/users.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { AlertServices } from 'src/app/services/alert.service';
-import { Location } from '@angular/common';
 import { message } from '../chat';
 import { catchError, throwError } from 'rxjs';
-
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-chat-id',
@@ -20,38 +18,24 @@ import { catchError, throwError } from 'rxjs';
 })
 export class ChatIdComponent implements OnInit, OnDestroy {
 
-
   unfold: string;
   hidden = true;
-
   login?= ''
-
   user?: UserDto;
   me?: UserDto;
   id?: number;
-
   public messages: message[] = [];
-
-
   public formMessage = new FormGroup({
     message: new FormControl('')
   })
 
-
   constructor(public chat: Chat,
     private route: ActivatedRoute,
-    private chatService: ChatService,
     private http: HttpClient,
     private socketGameNotification: SocketNotificationService,
     private userService: UsersService,
     private alertService: AlertServices,
-    private router: Router
-
-
-  ) {
-
-    this.unfold = 'unfold_less';
-  }
+  ) { this.unfold = 'unfold_less'; }
 
   ngOnInit(): void {
 
@@ -65,8 +49,7 @@ export class ChatIdComponent implements OnInit, OnDestroy {
         .subscribe((user: UserDto) => {
           this.me = user;
           delete this.user;
-
-          this.http.get(`http://localhost:3000/chat/${id}`)
+          this.http.get(`${environment.apiUrl}chat/${id}`)
             .pipe(
               catchError(error => {
                 this.alertService.openSnackBar('CHAT NO FOUND', 'OK')
@@ -93,7 +76,7 @@ export class ChatIdComponent implements OnInit, OnDestroy {
 
   getMessageApi(id_chat: string) {
     console.log("component chatId id: ", id_chat)
-    this.http.get(`http://localhost:3000/message/chat/${id_chat}`)
+    this.http.get(`${environment.apiUrl}message/chat/${id_chat}`)
       .subscribe((entity: any) => {
         let data = Object.assign(entity);
         for (let msg in data) {
@@ -118,23 +101,11 @@ export class ChatIdComponent implements OnInit, OnDestroy {
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
     this.alertService.openSnackBar('Game invitation sent', 'OK')
-
   }
 
+  getMeId() { return this.me?.id as number }
 
+  toggleBadgeVisibility() { this.hidden = !this.hidden; }
 
-  getMeId() {
-    return this.me?.id as number
-  }
-
-
-
-  toggleBadgeVisibility() {
-    this.hidden = !this.hidden;
-
-  }
-
-  ngOnDestroy(): void {
-
-  }
+  ngOnDestroy(): void { }
 }

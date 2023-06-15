@@ -10,6 +10,9 @@ import {
     throwError
 } from "rxjs";
 
+import { environment } from 'src/environments/environment';
+
+
 export interface    ICreateRoom {
     roomName: string;
     password?: string;
@@ -25,8 +28,8 @@ export interface    IRoomData {
 })
 export class   RoomCreationFormService {
 
-    private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _path: string = "/room";
+    // private readonly _urlAuthority: string = "http://localhost:3000";
+    private readonly _path: string = "room";
     private readonly _pathPrivate: string = this._path + '/private';
 
 
@@ -44,7 +47,7 @@ export class   RoomCreationFormService {
     
         return (
             this.httpService.post<IRoomData>(
-                this._urlAuthority + path,
+                environment.apiUrl + path,
                 roomData
             )
             .pipe(

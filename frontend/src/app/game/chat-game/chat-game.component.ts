@@ -1,16 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-// import { Chat } from '../../chat';
 import { FormControl, FormGroup } from '@angular/forms'; //
 import { UserDto } from 'src/app/dtos/user.dto';
-import { IUser, UsersService } from 'src/app/services/users.service';
+import { UsersService } from 'src/app/services/users.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { AlertServices } from 'src/app/services/alert.service';
-import { Location } from '@angular/common';
 import { message } from 'src/app/room/chat/chat';
-import { catchError, throwError } from 'rxjs';
 import { Chat } from 'src/app/room/chat/chat';
 
 
