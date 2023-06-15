@@ -53,8 +53,8 @@ export class   SnapshotBuffer {
     **  Otherwise, generates new snapshots based on the buffer's snapshot,
     **  if any.
     */
-    fill(updateQueue: IMatchData[], currentSnapshot: IMatchData): void {
-        const   serverSnapshot: IMatchData | undefined = updateQueue.shift();
+    fill(matchData: IMatchData): void {
+        /*const   serverSnapshot: IMatchData | undefined = updateQueue.shift();
 
         if (serverSnapshot)
         {
@@ -65,7 +65,8 @@ export class   SnapshotBuffer {
             );
         }
         else
-            this.lagCompensator.autoFill(this._buffer);
+            this.lagCompensator.autoFill(this._buffer);*/
+        this._buffer.push(matchData);
     }
 
     input(paddleMove: number, heroMove: number,

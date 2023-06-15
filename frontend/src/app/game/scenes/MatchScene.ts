@@ -26,7 +26,6 @@ export class    MatchScene extends BaseScene {
     match?: Match;
     buffer?: SnapshotBuffer;
     queue: IMatchData[];
-    lastServerUpdate: number;
     
     private _showInitCount: boolean = true;
 
@@ -41,7 +40,6 @@ export class    MatchScene extends BaseScene {
     ) {
         super(scene, socket);
         this.queue = [];
-        this.lastServerUpdate = Date.now();
     }
 
     /*  Called when a scene starts
@@ -55,7 +53,7 @@ export class    MatchScene extends BaseScene {
             this.scene.start("End", data);
         });
         this.socket.on("matchUpdate", (snapshot: IMatchData) => {
-            this.queue.push(snapshot);
+            this.buffer?.fill(snapshot);
         });
         this.recoveryService.setUp(this);
     }
@@ -110,19 +108,16 @@ export class    MatchScene extends BaseScene {
         this.initData = undefined;
     }
 
-    override update(time: number) {    
+    override update() {    
         if (!this.match || !this.buffer)
             return ;
         this.match.update(
             this.buffer.getSnapshot()
         );
-        if (time - this.lastServerUpdate
-                >= MatchScene.serverUpdateInterval
-            || this.buffer.size <= 1)
+        /*if (this.buffer.size <= 1)
         {
             this.buffer.fill(this.queue, this.match.snapshot);
-            this.lastServerUpdate = time;
-        }
+        }*/
     }
 
     destroy(): void {
