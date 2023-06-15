@@ -1,20 +1,22 @@
-<div style="padding-bottom: 50px;">
+<div class="main">
     
-    <div class="master">
-        <h1 style="color: rgb(242, 242, 242);">VIEW PANEL</h1>
+    <!-- <div class="master">
+        <h1 style="color: rgb(242, 242, 242);">ROOMS</h1>
+    </div> -->
+    <div class="content">
+        <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="warn" aria-label="primary">
+            <mat-tab label="PUBLIC">
+                <app-room-list roomPrivacy="public"></app-room-list>
+            </mat-tab>
+            <mat-tab label="PRIVATE">
+                <app-room-list roomPrivacy="private"></app-room-list>
+            </mat-tab>
+            <mat-tab label="NEW">
+                <app-room-creation-form></app-room-creation-form>
+            </mat-tab>
+            
+        </mat-tab-group>
     </div>
-    <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="warn" aria-label="primary">
-        <mat-tab label="PUBLIC">
-            <app-room-list roomPrivacy="public"></app-room-list>
-        </mat-tab>
-        <mat-tab label="PRIVATE">
-            <app-room-list roomPrivacy="private"></app-room-list>
-        </mat-tab>
-        <mat-tab label="NEW">
-            <app-room-creation-form></app-room-creation-form>
-        </mat-tab>
-        
-    </mat-tab-group>
     
   
 </div>

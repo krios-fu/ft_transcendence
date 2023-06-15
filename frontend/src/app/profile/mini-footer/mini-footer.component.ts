@@ -17,26 +17,23 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
   nPenddingFriends = 0;
   public subscriber: Subscription;
 
-
-
-  constructor(private authService : AuthService,
+  constructor(private authService: AuthService,
     private alertService: AlertServices,
     private router: Router,
     public usersService: UsersService,
 
-     ) {
-      this.subscriber = this.router.events.pipe(
-        filter(event => event instanceof NavigationEnd)
-      ).subscribe((event) => {
-        if (this.authService.isAuthenticated() === true) {
-          // this.ngOnInit();
-          this.getPenddingFriends();
-        }
-      });
-    }
-
-  ngOnInit(): void {
+  ) {
+    this.subscriber = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event) => {
+      if (this.authService.isAuthenticated() === true) {
+        // this.ngOnInit();
+        this.getPenddingFriends();
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   logout() { this.authService.logout(); }
 
@@ -49,15 +46,15 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
     this.usersService.getUser('me')
       .subscribe((user: UserDto) => {
         this.usersService.getFriends('me')
-        .subscribe((data: any) => {
-          let friends_pending = Object.assign(data);
+          .subscribe((data: any) => {
+            let friends_pending = Object.assign(data);
             this.nPenddingFriends = (friends_pending.filter((friend: any) => friend['sender'] && friend['sender'].username != user.username)).length;
           })
       })
   }
 
   ngOnDestroy(): void {
-      
+
     this.subscriber?.unsubscribe();
   }
 

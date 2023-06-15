@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RoomDto } from 'src/app/dtos/room.dto';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AlertServices } from 'src/app/services/alert.service';
-import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { UsersService } from 'src/app/services/users.service';
+import { environment } from 'src/environments/environment';
+
 
 enum role {
   Admin = 1
@@ -95,7 +95,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
           this.me = user;
           // this.socketGameNotification.joinRoomNotification(this.me.username);
           this.socketGameNotification.joinRoomId(id, this.me);
-          this.http.get(`http://localhost:3000/user_roles/users/${this.me.id}`)
+          this.http.get(`${environment.apiUrl}user_roles/users/${this.me.id}`)
             .subscribe((entity) => {
               let data = Object.assign(entity);
               if (data.length && data[0]['roleId'] == role.Admin)
