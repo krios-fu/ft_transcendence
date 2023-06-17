@@ -169,7 +169,7 @@ export class    MenuSelector {
         }
     }
 
-    serverUpdate(data: ISelectionData, role?: string): void {
+    serverUpdate(data: ISelectionData, role: string): void {
         if (this._status === SelectionStatus.Hero)
         {
             this.updateHeroes(data);
