@@ -2,14 +2,14 @@
 <section mat-dialog-content class="notification" >
   <div class="badge">
 
-    <figure class="avatar">
-      <img src={{data.user.photoUrl}} />
+    <figure >
+      <img class="avatar" src={{data.user.photoUrl}} />
     </figure>
     <h5 style="color: aliceblue;">{{data.user.nickName.toUpperCase()}}</h5>
   </div>
 </section>
 <mat-progress-bar mode="determinate" [value]="progressbarValue"></mat-progress-bar>
 <section style="color: rgb(84, 16, 230)" mat-dialog-actions>
-  <button mat-button mat-dialog-close> close</button>
-  <button mat-button mat-dialog-close cdkFocusInitial>Ok</button>
+  <button mat-button mat-dialog-close [mat-dialog-close]="false"> close</button>
+  <button mat-button mat-dialog-close cdkFocusInitial [mat-dialog-close]="true">Ok</button>
 </section>

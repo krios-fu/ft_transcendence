@@ -5,7 +5,7 @@ import {
 } from '../elements/Result';
 import { GameRecoveryService } from '../services/recovery.service';
 import { BaseScene } from './BaseScene'
-import { IMenuInit } from './MenuScene';
+import { IMenuInit } from '../interfaces/scene.interfaces';
 
 export class    EndScene extends BaseScene {
 
@@ -35,6 +35,19 @@ export class    EndScene extends BaseScene {
             this.scene.start("Start");
         }, 15000);
         this.recoveryService.setUp(this);
+    }
+
+    preload() {
+        if (!this.resultData)
+            return ;
+        if (!this.resultData.aAvatar)
+            this.resultData.aAvatar = "noUrl";
+        if (!this.resultData.bAvatar)
+            this.resultData.bAvatar = "noUrl";
+        this.load.image('playerA', this.resultData.aAvatar);
+        this.load.image('playerB', this.resultData.bAvatar);
+        this.resultData.aAvatar = 'playerA';
+        this.resultData.bAvatar = 'playerB';
     }
 
     create() {

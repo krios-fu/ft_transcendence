@@ -29,8 +29,6 @@ export class UserService {
         private userRepository: UserRepository,
     ) { }
 
-    public tmp() { console.log('hey'); }
-
     public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
         if (queryParams !== undefined) {
             return await this.userRepository.find(new QueryMapper(queryParams));
@@ -65,7 +63,8 @@ export class UserService {
                                         : Promise<UserCountData> {
         let result: UserCountData;
     
-        if (queryParams.orderDesc.includes('ranking')
+        if (queryParams.orderDesc
+                && queryParams.orderDesc.includes('ranking')
                 && queryParams.target) {
             try {
                 if (!await this.findOneByUsername(queryParams.target))

@@ -7,6 +7,8 @@ import {
     throwError
 } from "rxjs";
 import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
+import { environment } from 'src/environments/environment';
+
 
 @Injectable({
     providedIn: 'root'
@@ -14,8 +16,8 @@ import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 export class    RoomGameIdService {
 
     // Store common urls in separate file to avoid duplication
-    private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _urlPathUserRoom: string = "/user_room";
+    // private readonly _urlAuthority: string = "http://localhost:3000";
+    // private readonly _urlPathUserRoom: string = "/user_room";
 
     constructor(
         private readonly httpService: HttpClient
@@ -24,10 +26,7 @@ export class    RoomGameIdService {
     getUserInRoom(userId: string, roomId: string): Observable<IUserRoom> {
         return (
             this.httpService.get<IUserRoom>(
-                this._urlAuthority
-                + this._urlPathUserRoom
-                + `/users/${userId}`
-                + `/rooms/${roomId}`
+                `${environment.apiUrl}user_room/users/${userId}/rooms/${roomId}`
             )
             .pipe(
                 retry(3),

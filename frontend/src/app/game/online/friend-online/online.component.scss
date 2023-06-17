@@ -33,32 +33,40 @@
 		margin: 0;
 		padding: 0;
 		border: 4px solid rgba(255, 255, 255, 0.24);
-		// transform: scale(0.8);
-
-
-		// &:hover{
 		content: "";
-		// width: 104%;
-		// height: 102%;
-		// border-radius: 10px;
-		// border-;
 		background-image: linear-gradient(var(--rotate), #3c4f55, #a8a8a8 43%, #d1d1d1);
-		//   position: absolute;
-		//   z-index: -1;
 		top: -1%;
 		left: -2%;
 		animation: spin 2.5s linear infinite;
-		//   }
 
 		img {
 			width: 100%;
-			//   height: auto;
 			height: 100%;
+		}
 
-			//scale gray
-			//   -webkit-filter: grayscale(100%);
-			//   filter: grayscale(100%);
+	}
 
+	.online {
+		position: relative;
+		background: greenyellow;
+		//z-index: 1;
+		left: 5px;
+		border-radius: 50%;
+		width: 50px;
+		height: 50px;
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+		border: 4px solid rgba(69, 236, 13, 0.676);
+		content: "";
+		background-image: linear-gradient(var(--rotate), #aec3ad, #a8a8a8 43%, #d1d1d179);
+		top: -1%;
+		left: -2%;
+		animation: spin 2.5s linear infinite;
+
+		img {
+			width: 100%;
+			height: 100%;
 		}
 
 	}

@@ -3,10 +3,13 @@
     width: 100%;
     height: 100%;
     place-items: center;
+    justify-content: center;
+    align-items: center;
 }
 
 #form-container {
-    width: 80%;
+    width: 100%;
+    height: 55vh;
     max-width: 500px;
     margin-top: 2rem;
     padding: 0 1rem 1rem 1rem;
@@ -14,7 +17,7 @@
     font-size: initial;
     color: white;
     border: 4px solid white;
-    border-radius: 25px;
+    // border-radius: 25px;
     background-color: rgba($color: indigo, $alpha: 0.7);
 }
 

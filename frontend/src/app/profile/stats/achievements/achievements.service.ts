@@ -11,6 +11,8 @@ import {
     throwError
 } from "rxjs";
 import { UserDto } from "src/app/dtos/user.dto";
+import { environment } from 'src/environments/environment';
+
 
 export interface    AchievementData {
     name: string;
@@ -36,8 +38,8 @@ export interface   UserAchievement {
 })
 export class    AchievementsService {
 
-    private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _urlPath: string = "/achievements_user";
+    // private readonly _urlAuthority: string = "http://localhost:3000";
+    // private readonly _urlPath: string = "/achievements_user";
 
     constructor(
         private readonly httpService: HttpClient
@@ -56,7 +58,7 @@ export class    AchievementsService {
     private _getUserAchievements(userId: number)
                                     : Observable<UserAchievement[]> {
         return (this.httpService.get<UserAchievement[]>(
-            `${this._urlAuthority}${this._urlPath}?`
+            `${environment.apiUrl}achievements_user?`
             + `filter[userId]=${userId}`
         )
         .pipe(
@@ -66,10 +68,9 @@ export class    AchievementsService {
     }
 
     private _getUser(username: string): Observable<UserDto[]> {
-        console.log('ACHIV --> USERNAME', username)
         return (
             this.httpService.get<UserDto[]>(
-                `${this._urlAuthority}/users?filter[username]=${username}`
+                `${environment.apiUrl}users?filter[username]=${username}`
             ).pipe(
                 retry(3),
                 catchError(this._httpErrorHandler)

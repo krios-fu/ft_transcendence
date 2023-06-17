@@ -70,6 +70,9 @@ span {
   clear: both;
   padding: 0;
   margin: 0;
+  background: black;
+
+
 
   h1,
   h2 {
@@ -101,6 +104,13 @@ span {
   text-transform: uppercase;
   min-width: 21rem;
   position: relative;
+  overflow-y: scroll;
+
+  background: url("https://i.pinimg.com/originals/f2/94/1f/f2941ffb60c9a8c61b85d114fff5b11c.gif");
+
+
+
+  
 
   a {
     color: white;
@@ -130,6 +140,10 @@ span {
 }
 
 
+div {
+  border-radius: 22px;
+
+}
 
 .column2 {
   float: left;
@@ -145,6 +159,6 @@ span {
 
   max-height: 100vh;
   /* Establece la altura máxima del div al 100% del alto de la ventana */
-  overflow-y: auto;
+  // overflow-y: auto;
 
 }

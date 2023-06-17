@@ -1,30 +1,62 @@
-
 /* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 
-::ng-deep .mat-tab-label{
+::ng-deep .mat-tab-label {
 	color: white;
 	font-size: smaller;
-  }
-  
-  
-  .cdk-virtual-scroll-viewport {
-  
+}
+
+
+.cdk-virtual-scroll-viewport {
+
 	color: #ffffff;
 	transition: color 0.2s linear;
-  
+
 	&:hover {
-	  color:#a44848
+		color: #a44848
 	}
-  }
-  
-  *::-webkit-scrollbar {
+}
+
+*::-webkit-scrollbar {
 	width: 1px;
-  }
-  
-  *::-webkit-scrollbar-track {
+}
+
+*::-webkit-scrollbar-track {
 	background: mat-color(#ffffff, 100);
-  }
-  
-  *::-webkit-scrollbar-thumb {
+}
+
+*::-webkit-scrollbar-thumb {
 	box-shadow: inset 0 0 0 8px;
-  }
+}
+
+::ng-deep .mat-icon-button {
+
+	color: white;
+	// font-size: 100px;
+	&:hover {
+		color: #dbca5b;
+		// font-size: 100px;
+	}
+}
+
+.close {
+	justify-content: right;
+	color: white;
+}
+
+
+.effect {
+	color: #ffffff;
+	justify-content: space-around;
+	display: flex;
+	animation: fade-in 2s linear both;
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+}

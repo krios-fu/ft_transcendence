@@ -9,12 +9,12 @@ import { Column,
     OneToMany,
     PrimaryGeneratedColumn } from "typeorm";
 import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
-import { CreateUserRoomDto } from "../dto/user_room.dto";
+import { UserRoomDto } from "../dto/user_room.dto";
 
 @Entity({ name: 'users_room' })
 @Index(['userId', 'roomId'], {unique: true})
 export class UserRoomEntity extends BaseEntity {
-    constructor (dto: CreateUserRoomDto) {
+    constructor (dto: UserRoomDto) {
         super();
         if (dto !== undefined) {
             Object.assign(this, dto);

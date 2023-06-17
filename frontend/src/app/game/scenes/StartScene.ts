@@ -1,10 +1,13 @@
-import * as SocketIO from 'socket.io-client'
-import { IMatchInitData } from '../elements/Match';
+import * as SocketIO from 'socket.io-client';
 import { IResultData } from '../elements/Result';
 import { StartTitles } from '../elements/StartTitles';
 import { GameRecoveryService } from '../services/recovery.service';
-import { BaseScene } from './BaseScene'
-import { IMenuInit } from './MenuScene';
+import { BaseScene } from './BaseScene';
+import {
+    GameScene,
+    IMatchSceneInit,
+    IMenuInit
+} from '../interfaces/scene.interfaces';
 
 export class    StartScene extends BaseScene {
 
@@ -25,11 +28,16 @@ export class    StartScene extends BaseScene {
             else
                 this.scene.start("Menu", data);
         });
-        this.socket.once("startMatch", (gameData: IMatchInitData) => {
+        this.socket.once("startMatch", (data: IMatchSceneInit) => {
+            let scene: GameScene = "Spectator";
+        
             this.destroy();
-            this.scene.start("Spectator", {
-                role: "Spectator",
-                matchData: gameData
+            if (data.role != "Spectator")
+                scene = data.matchData.playerA.hero ? "Player"
+                                                            : "ClassicPlayer";            
+            this.scene.start(scene, {
+                role: data.role,
+                matchData: data.matchData
             });
         });
         this.socket.once("end", (data: IResultData) => {

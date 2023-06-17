@@ -3,9 +3,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { interval } from 'rxjs';
 import { UserDto } from 'src/app/dtos/user.dto';
 
-interface dialogGame{
-  user : UserDto,
-  title : string
+interface dialogGame {
+  user: UserDto,
+  title: string
 }
 
 @Component({
@@ -14,7 +14,7 @@ interface dialogGame{
   styleUrls: ['./game-notification.component.scss']
 })
 
-export class GameNotificationComponent implements OnInit{
+export class GameNotificationComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<GameNotificationComponent>,
     @Inject(MAT_DIALOG_DATA) public data: dialogGame) { }
@@ -40,6 +40,7 @@ export class GameNotificationComponent implements OnInit{
 
   ngOnInit(): void {
     this.startTimer(10);
+    // this.sendResponse();
   }
 
 }

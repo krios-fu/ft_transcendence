@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RoomDto } from 'src/app/dtos/room.dto';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AlertServices } from 'src/app/services/alert.service';
-import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { UsersService } from 'src/app/services/users.service';
+import { environment } from 'src/environments/environment';
+
 
 enum role {
   Admin = 1
@@ -25,7 +25,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
   room_id?: string;
 
   players = [] as UserDto[];
-  @Input() id_room?: string = '';
   is_admin = false;
   admins = []
 
@@ -41,41 +40,41 @@ export class OnlineComponent implements OnInit, OnDestroy {
     private alertService: AlertServices,
     private chatService: ChatService) {
 
-    this.userService.getUser('me')
-      .subscribe((user: UserDto) => {
-        this.me = user;
-        this.socketGameNotification.getUserAll(this.me.username)
-          .subscribe((payload: any) => {
-            let data = Object.assign(payload);
-            for (let user in data) {
-              let player = data[user] as UserDto;
-              player.is_admin = false;
-              this.admins.forEach((element: any) => {
-                if (element.userId === player['id'])
-                  player.is_admin = true;
-              });
-              if (!(this.players.find((element: UserDto) => player.id == element.id)))
-                this.players.push(player)
-            }
-          })
-      });
-
     this.socketGameNotification.getUserConnection()
       .subscribe((payload: any) => {
-        this.admins.forEach((element: any) => {
-          if (element.userId === payload.user.id)
-            payload.user.is_admin = true;
-        });
+        payload.forEach((online: UserDto) => {
 
-        if (!(this.players.find((player: UserDto) => player.id == payload.user.id)))
-          this.players.push(payload.user)
+          this.admins.forEach((element: any) => {
+            if (element.userId === online.id)
+              online.is_admin = true;
+          });
+
+          this.players.map((user: UserDto) => {
+            if (user.id === online.id)
+              user.defaultOffline = true
+          })
+
+          this.players.sort((user_a: any, user_b: any) => {
+            return user_b.defaultOffline - user_a.defaultOffline;
+          })
+          this.players.sort((user_a: any, user_b: any) => {
+            return user_b.is_admin - user_a.is_admin;
+          })
+        })
       })
 
     this.socketGameNotification.userLeave()
       .subscribe((payload: any) => {
-        this.players = this.players.filter((player: UserDto) =>
-          player.id != payload.user.id
-        )
+        this.players.map((user: UserDto) => {
+          if (user.id === payload.user.id)
+            user.defaultOffline = false
+        })
+        this.players.sort((user_a: any, user_b: any) => {
+          return user_b.defaultOffline - user_a.defaultOffline;
+        })
+        this.players.sort((user_a: any, user_b: any) => {
+          return user_b.is_admin - user_a.is_admin;
+        })
       })
   }
 
@@ -87,42 +86,36 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.admins = []
       this.players = []
 
-      let user: UserDto;
-
-
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.socketGameNotification.joinRoomNotification(this.me.username);
-          this.socketGameNotification.joinRoomId(id, this.me);
-          this.http.get(`http://localhost:3000/user_roles/users/${this.me.id}`)
+          // this.socketGameNotification.joinRoomNotification(this.me.username);
+          this.socketGameNotification.joinRoomId(this.room_id as string, this.me);
+          this.http.get(`${environment.apiUrl}user_roles/users/${this.me.id}`)
             .subscribe((entity) => {
               let data = Object.assign(entity);
               if (data.length && data[0]['roleId'] == role.Admin)
                 this.is_admin = true;
-
             });
         });
 
 
-
-
-      this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`)
+      this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`) // roles
         .subscribe((entity) => {
           this.admins = Object.assign(entity);
-          // this.http.get(`http://localhost:3000/user_room/rooms/${this.id_room}/users`)
-          //   .subscribe((entity) => {
-          //     let data = Object.assign(entity);
-          //     for (let user in data) {
-          //       let player = data[user]['user'] as UserDto;
-          //       player.is_admin = false;
-          //       this.admins.forEach((element: any) => {
-          //         if (element.userId === player['id'])
-          //           player.is_admin = true;
-          //       });
-          //       this.players.push(player)
-          //     }
-          //   });
+          this.http.get(`http://localhost:3000/user_room/rooms/${this.room_id}/users`)
+            .subscribe((entity) => {
+              let data = Object.assign(entity);
+              for (let user in data) {
+                let player = data[user]['user'] as UserDto;
+                player.is_admin = false;
+                this.admins.forEach((element: any) => {
+                  if (element.userId === player['id'])
+                    player.is_admin = true;
+                });
+                this.players.push(player)
+              }
+            });
         });
     });
 
@@ -135,12 +128,14 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   sendInvitationGame(user: UserDto) {
     this.socketGameNotification.sendNotification({ user: this.me, dest: user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(user as UserDto, 'SEND REQUEST GAME');
+    this.alertService.openSnackBar('Game invitation sent', 'OK')
+
+    // this.alertService.openRequestGame(user as UserDto, 'SEND REQUEST GAME');
   }
 
   goTochat(player: UserDto) {
     this.chatService.createChat(player.id)
-      .subscribe((data : any) => {
+      .subscribe((data: any) => {
         this.router.navigate(['/chat/', data.id])
       })
   }

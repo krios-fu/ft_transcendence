@@ -3,8 +3,8 @@
         <section style=" display: grid; 
             align-items: center; 
             justify-content: center;" *ngIf="user">
-            <figure>
-                <img class="avatar" src={{getPhotoUrl()}} />
+            <figure >
+                <img  class="avatar" src={{getPhotoUrl()}} />
             </figure>
             <h1 style="font-size: 20px;">
                 <mat-icon [ngStyle]="{'color': color_icon}">{{online_icon}}</mat-icon>
@@ -30,7 +30,7 @@
 
 
         <section
-            style="margin-top: 5px; display: flex; justify-content: space-between; align-items: center; padding: 21px; ;"
+            style="margin-top: 5px; display: flex; justify-content: space-around; align-items: center; padding: 21px; ;"
             *ngIf="icon_activate">
             <span>
                 <a mat-icon-button class="send_friendship" (click)="post_friendship()">
@@ -38,14 +38,13 @@
                 </a>
             </span>
             <span>
-                <a mat-icon-button class="send_friendship" [routerLink]="[ '/chat/',  get_chat_id() ]">
-                    <mat-icon>chat</mat-icon>
+                <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship">
+                    <mat-icon>videogame_asset</mat-icon>
                 </a>
             </span>
-            <span>
-                <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship"
-                    [routerLink]="[ '/', { outlets: {  game: 'room' } }]">
-                    <mat-icon>videogame_asset</mat-icon>
+            <span *ngIf="view">
+                <a mat-icon-button class="send_friendship" [routerLink]="[ '/chat/',  get_chat_id() ]">
+                    <mat-icon>chat</mat-icon>
                 </a>
             </span>
         </section>

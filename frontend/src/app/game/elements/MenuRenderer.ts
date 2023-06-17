@@ -1,7 +1,5 @@
-import {
-    ISelectionData,
-    MenuScene
-} from "../scenes/MenuScene";
+import { ISelectionData } from "../interfaces/scene.interfaces";
+import { MenuScene } from "../scenes/MenuScene";
 import { PlayerInfo } from "./PlayerInfo";
 import { Txt } from "./Txt";
 

@@ -18,9 +18,7 @@ export class ChatMessageService {
         private chatUserRepository: Repository<ChatUserEntity>,
         private userService: UserService,
         private chatService: ChatService
-    ) {
-        console.log('message repo start')
-    }
+    ) { }
 
     public async findMessages(): Promise<ChatMessageEntity[]> {
         return await this.messageRepository.find()
@@ -43,16 +41,16 @@ export class ChatMessageService {
 
             .where('chat.id = :chatId', { 'chatId': id_chat })
             // .andWhere('chat_user.userId= :user_id', { 'user_id': id_friend })
-            // .orderBy({ 'chat_user.messageId': 'ASC' })
+            .orderBy({ 'chat_messages.Id': 'ASC' })
             .getMany();
     }
 
     public async saveMessages(message: any): Promise<ChatMessageEntity> {
 
-        const chatUser = await this.chatService.findChats_User(message.sender, message.id_chat);
+        const chats = await this.chatService.findChatMe(message.sender, message.id_chat);
 
         const msg = new ChatMessageEntity({
-            'chatUserId': chatUser[0].id,
+            'chatUserId': chats[0].users[0].id,
             'content': message.content,
         });
 

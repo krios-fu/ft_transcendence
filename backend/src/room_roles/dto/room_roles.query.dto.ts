@@ -21,7 +21,7 @@ export class RoomRolesQueryDto extends BaseQueryDto {
     @IsArray()
     @Transform(({ value }) => value.split(','))
     @HasValidFields(['id', 'roomId', 'roleId', 'createdAt'])
-    sort?: string[];
+    order?: string[];
 
     @IsOptional()
     @ValidateNested({

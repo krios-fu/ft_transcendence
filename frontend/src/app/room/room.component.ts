@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { UserDto } from '../dtos/user.dto';
 import { RoomDto } from '../dtos/room.dto';
 import { UsersService } from '../services/users.service';
+import { environment } from 'src/environments/environment';
+
 
 
 interface chat_user {
@@ -24,7 +25,6 @@ export class RoomComponent implements AfterViewInit {
   public ROOM_USER = [] as RoomDto[];
   public FRIENDS_USERS = [] as UserDto[];
 
-  // @ViewChild(ChatIdComponent) chatuser ?: chat_user;
 
   count_message = [] as chat_user[];
 
@@ -33,7 +33,6 @@ export class RoomComponent implements AfterViewInit {
   me?: UserDto;
 
   constructor(private http: HttpClient,
-    private authService: AuthService,
     public router: Router,
     private userServices: UsersService
   ) {
@@ -44,7 +43,7 @@ export class RoomComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
 
-    this.http.get<RoomDto[]>(`http://localhost:3000/user_room/me/rooms`)
+    this.http.get<RoomDto[]>(`${environment.apiUrl}user_room/me/rooms`)
       .subscribe((entity) => {
         let data = Object.assign(entity);
         for (let room in data) {
@@ -55,7 +54,7 @@ export class RoomComponent implements AfterViewInit {
     this.userServices.getUser('me')
       .subscribe((user: UserDto) => {
         this.me = user;
-        this.http.get(`http://localhost:3000/chat/me`)
+        this.http.get(`${environment.apiUrl}chat/me`)
           .subscribe(entity => {
             let data = Object.assign(entity);
             for (let chat in data) {
@@ -72,7 +71,7 @@ export class RoomComponent implements AfterViewInit {
             }
           });
 
-        this.http.get<any[]>(`http://localhost:3000/users/me/friends`)
+        this.http.get<any[]>(`${environment.apiUrl}users/me/friends`)
           .subscribe((friends: any[]) => {
             for (let friend in friends) {
               const { receiver } = friends[friend];

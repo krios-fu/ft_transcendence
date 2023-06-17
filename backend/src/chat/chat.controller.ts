@@ -1,4 +1,5 @@
-import { Controller,
+import {
+    Controller,
     Get,
     NotFoundException,
     BadRequestException,
@@ -6,7 +7,8 @@ import { Controller,
     Logger,
     Post,
     Body,
-    ParseIntPipe} from '@nestjs/common';
+    ParseIntPipe
+} from '@nestjs/common';
 import { ChatService } from "./chat.service";
 import { Public } from "src/common/decorators/public.decorator";
 import { ChatEntity } from "./entities/chat.entity";
@@ -19,9 +21,9 @@ import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 @Controller('chat')
 export class ChatController {
     constructor(
-     private chatService: ChatService,
-     private userService: UserService,
-    ){
+        private chatService: ChatService,
+        private userService: UserService,
+    ) {
         this.chatLogger = new Logger(ChatController.name);
     }
     private readonly chatLogger: Logger;
@@ -29,7 +31,7 @@ export class ChatController {
     @Get()
     @Public()
     async findAll(): Promise<ChatEntity[]> {
-        return  this.chatService.findChats();
+        return this.chatService.findChats();
     }
 
     // @Get(':id')
@@ -52,21 +54,24 @@ export class ChatController {
             this.chatLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        
+
         let lol = await this.chatService.findChatsUser(user.id);
+        console.log("CHAT -->", lol)
         return lol;
     }
-    
-        @Get(':id')
-        @Public()
-        async findChat(@Param('id', ParseIntPipe) id: number): Promise<ChatEntity[]>{
-            const chats: ChatEntity[]  = await this.chatService.findOne(id);
-            if (chats.length === 0) {
-                this.chatLogger.error(`Chat with ${id} is not present in database`);
-                throw new NotFoundException('resource not found in database');
-            }
-            return chats;
+
+    @Get(':id')
+    async findChat(@UserCreds() userCreds: UserCredsDto, @Param('id', ParseIntPipe) id: number): Promise<ChatEntity[]> {
+        const { username } = userCreds;
+        const user = await this.userService.findOneByUsername(username);
+
+        const chats: ChatEntity[] = await this.chatService.findChats_User(user.id, id);
+        if (chats.length === 0) {
+            this.chatLogger.error(`Chat with ${id} is not present in database`);
+            throw new NotFoundException('resource not found in database');
         }
+        return chats;
+    }
 
     @Get('me/:nick_friend')
     async findChatWithFriend(
@@ -95,13 +100,15 @@ export class ChatController {
         const { username } = userCreds;
         const user1: UserEntity = await this.userService.findOneByUsername(username);
 
-        console.log(user1); /* to remove */
         if (user1 === null) {
             this.chatLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
         const user2: UserEntity = await this.userService.findOne(payload.friendId);
-        console.log(user2) /* to remove */
+        if (user2 === null) {
+            this.chatLogger.error(`User with login ${username} not present in database`);
+            throw new BadRequestException('resource not found in database');
+        }
         return await this.chatService.post(user1.id, user2.id);
     }
 

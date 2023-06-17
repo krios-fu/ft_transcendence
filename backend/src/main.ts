@@ -13,7 +13,18 @@ async function bootstrap() {
         validateCustomDecorators: true
     }));
     app.enableCors({
-        origin: ['http://localhost:4200'],
+        origin: [process.env.WEBAPP_IP],
+        methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+        allowedHeaders: [
+            'Origin',
+            'Accept', 
+            'Authorization', 
+            'Accept-Language', 
+            'Content-Language',
+            'Content-Type',
+            'Location'
+        ],
+        exposedHeaders: ['Location'],
         credentials: true,
     });
     app.useGlobalFilters(new NotValidatedExceptionFilter());

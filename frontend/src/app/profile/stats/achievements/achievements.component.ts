@@ -37,15 +37,10 @@ export class AchievementsComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     ngOnInit(): void {
-        // this.route.params.subscribe(({ id }) => {
-
-        //     this._username = id;
-        //     console.log(id, 'ACHIVE COMP')
-        // })
+ 
     }
 
     ngAfterViewInit(): void {
-        // this.getAchievements();
     }
 
     ngOnChanges(): void {
@@ -53,7 +48,6 @@ export class AchievementsComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     getAchievements(): void {
-        console.log("GET ACHIEVEMENTS --->", this.username)
         this.achievementsService.getAchievements(this.username as string)
         .subscribe({
             next: (userAchievements: UserAchievement[]) => {

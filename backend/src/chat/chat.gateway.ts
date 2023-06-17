@@ -10,9 +10,13 @@ import { ChatMessageService } from './message/chat-message.service';
 
 @WebSocketGateway(3001, {
   namespace: 'private',
-  cors: { origin: '*' }
+  cors: { 
+    origin: process.env.WEBAPP_IP,
+    credentials: true
+  }
 })
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+
 
   @WebSocketServer()
   server: Server;
@@ -20,9 +24,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     constructor(private messageService : ChatMessageService){
 
   }
-  afterInit(Server: any) {
-    // console.log( this.server );
-  }
+  afterInit(Server: any) { }
 
 
   handleConnection(client: any, ...args): any {
@@ -59,7 +61,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: {msg: string, sender: number,  id_chat: number },
   ) {
-    // const {  msg, sender, id_chat } = payload;
     this.server.to(`room_${payload.id_chat}`).emit('new_message-game', payload);
   }
 
@@ -92,8 +93,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: { room: string, user: any }) {
 
-    let users_send = [];
     client.data = payload.user;
+    let users_send = [];
+
     client.join(`noti_roomGame_${payload.room}`);
     client.join(payload.user.username);
     let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
@@ -105,14 +107,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
     // send all user in room
     this.server.to(payload.user.username).emit(payload.user.username, users_send);
-    this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', payload);
+    this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', users_send);
   }
 
   @SubscribeMessage('room_leave')
   leaveRoomGame(
     client: Socket,
     payload: { room: string, user: any }) {
-    console.log("ROOM LEAVE:", payload)
     this.server.to(`noti_roomGame_${payload.room}`).emit('room_leave', payload)
     client.leave(`noti_roomGame_${payload.room}`);
   }
@@ -122,7 +123,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   notificationRoomGame(
     client: Socket,
     payload: { room: string, user: any }) {
-    console.log('PAYLOAD', payload)
     this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', payload)
   }
 }

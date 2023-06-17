@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-friend-online',
@@ -11,13 +13,11 @@ export class FriendOnlineComponent implements OnInit {
 
   friends = [] as UserDto[];
 
-  urlApi = 'http://localhost:3000/'
   constructor(private http: HttpClient) {
-    console.log("CONSTRUCTOR APP-FRIEND-ONLINE")
   }
 
   ngOnInit(): void {
-    this.http.get<any[]>(this.urlApi + 'users/me/friends')
+    this.http.get<any[]>(`${environment.apiUrl}users/me/friends`)
       .subscribe((friends: any[]) => {
         for (let friend in friends) {
           const { receiver } = friends[friend];
@@ -28,9 +28,8 @@ export class FriendOnlineComponent implements OnInit {
         }
       })
 
-      this.http.get<any[]>(this.urlApi + 'users/me/friends/as_pending')
+    this.http.get<any[]>(`${environment.apiUrl}users/me/friends/as_pending`)
       .subscribe((friends: any[]) => {
-        console.log("frinedd pending", friends)
         for (let friend in friends) {
           const { receiver } = friends[friend];
           const { sender } = friends[friend];

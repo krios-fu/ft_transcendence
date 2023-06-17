@@ -21,8 +21,8 @@ constructor (
             ignoreExpiration: false,
             secretOrKey: process.env.FORTYTWO_APP_SECRET,
             algorithm: 'HS256',
-        //    issuer: 'http://localhost:4200',   /* dev */
-        //    audience: 'http://localhost:3000', /* dev */
+            issuer: 'http://localhost:3000',
+            audience: process.env.WEBAPP_IP
         });
         this.jwtLogger = new Logger(JwtStrategy.name);
     }
@@ -43,7 +43,7 @@ constructor (
         }
         if (user.id !== id) {
             this.jwtLogger.error('Unauthorized login');
-            throw new UnauthorizedException;
+            throw new UnauthorizedException();
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.jwtLogger.error(`User ${username} is banned from the server`);

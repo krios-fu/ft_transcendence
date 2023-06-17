@@ -6,6 +6,7 @@ import { RoomEntity } from './entity/room.entity';
 import { RoomRepository } from './repository/room.repository';
 import { UserModule } from '../user/user.module';
 import { RoomGateway } from './room.gateway';
+import { EncryptionService } from 'src/auth/service/encryption.service';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { RoomGateway } from './room.gateway';
   providers: [
     RoomService,
     RoomRepository,
-    RoomGateway
+    RoomGateway,
+    EncryptionService
   ],
   exports: [RoomService]
 })

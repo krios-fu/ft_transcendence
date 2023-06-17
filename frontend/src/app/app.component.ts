@@ -6,6 +6,8 @@ import { Subscription, filter, throwError } from 'rxjs';
 import { NavigationEnd, Router } from "@angular/router";
 
 
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -27,7 +29,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     this.subscriber = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      if (event.url === '/login' || event.url === '/otp_session')
+      if (event.url === '/login' || event.url === '/login/2fa')
         this.hiden = false;
       else
         this.hiden = true;

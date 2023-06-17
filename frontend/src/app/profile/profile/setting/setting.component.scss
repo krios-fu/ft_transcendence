@@ -5,17 +5,24 @@
     justify-content: center;
     padding: 0;
     margin: 0;
+    // margin-top: 50px;
     position: relative;
     overflow: initial;
+}
+
+a{
+    &:hover{
+        color: #eae30a;
+    }
 }
 
 .avatar {
     position: relative;
     left: 5px;
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
-    overflow: hidden;
+    width: 200px;
+    height: 200px;
+    // overflow: hidden;
     margin: 0;
     border: 2px solid rgb(255, 255, 255);
 
@@ -25,13 +32,55 @@
 
     }
 }
-
-div {
-    font-size: smaller;
-    border: outset 2px silver;
-    border-radius: 22px;
-
+.background{
+    background-image: url("https://cdna.artstation.com/p/assets/images/images/060/460/880/original/pixel-jeff-chill-mario-2023-2.gif?1678633376");
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+    position: relative;
+    overflow: auto;
+    display: grid;
+    justify-content: center;
+    // align-items: center;
+    
+    // &::before{
+    //         content: "";
+    //         background-color: rgba(0, 0, 0, 0.5); /* Opacidad mate: 0.5 */
+    //         position: absolute;
+    //         top: 0;
+    //         left: 0;
+    //         width: 100%;
+    //         height: 100%;
+    // }
 }
+
+
+
+.content {
+	width: 50vw;
+	height: 90vh;
+	margin-top: 10px;
+	background-color: rgba(0, 0, 0, 0.647);
+	border: outset 2px silver;
+    border-radius: 22px;
+	animation: fade-in 2s linear both;
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+  }
+
+// div {
+//     font-size: smaller;
+//     border: outset 2px silver;
+//     border-radius: 22px;
+
+// }
 
 .example-form2 {
     min-width: 150px;
@@ -50,9 +99,16 @@ div {
     margin: 11px 0;
     padding: 5px;
     font-size: medium;
-    display: block;
+ 
 
 
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
 
 :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
@@ -92,15 +148,14 @@ button {
 
 
 .mat-tab-group {
-    background-image: url("https://rare-gallery.com/uploads/posts/585963-retrowave-city.jpg");
+    // background-image: url("https://rare-gallery.com/uploads/posts/585963-retrowave-city.jpg");
+    background-color: rgb(123, 45, 218);
     color: white !important;
     background-position: center;
     /* Center the image */
     background-size: cover;
+    // width: 50%;
 
-    // img{
-    //     width: 50%;
-    //     height: 150%;
-    // }
+
 
 }

@@ -28,6 +28,8 @@ import { BaseScene } from "../scenes/BaseScene";
 import { RoomGameIdService } from "./room-game-id.service";
 import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { AuthService } from "src/app/services/auth.service";
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-room-game-id',
@@ -96,10 +98,9 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.room_id = roomId;
         this._initGame(roomId);
         delete this.room_dto;
-        this.http.get<RoomDto>(`http://localhost:3000/room/${this.room_id}`)
+        this.http.get<RoomDto>(`${environment.apiUrl}room/${this.room_id}`)
         .subscribe((entity) => {
             this.room_dto = entity;
-            console.log(`ROOM_ID: ${this.room_id}`,this.room_dto);
         });
         this.userService.getUser('me')
         .subscribe((users : UserDto) => {
@@ -201,7 +202,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
 
     open_chat(){
         this.close = !this.close;
-        console.log(this.close);
     }
 
     ngOnDestroy(): void {

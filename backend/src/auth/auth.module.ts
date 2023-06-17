@@ -11,6 +11,7 @@ import { RefreshTokenEntity } from './entity/refresh-token.entity';
 import { RefreshTokenRepository } from './repository/refresh-token.repository';
 import { TwoFactorStrategy } from './strategy/two-factor.strategy';
 import { UserRolesModule } from '../user_roles/user_roles.module';
+import { EncryptionService } from './service/encryption.service';
 
 @Module({
     imports: [
@@ -35,11 +36,13 @@ import { UserRolesModule } from '../user_roles/user_roles.module';
         FortyTwoStrategy,
         RefreshTokenRepository,
         Logger,
+        EncryptionService
     ],
     exports: [
         PassportModule,
         JwtModule,
-        AuthService
+        AuthService,
+        EncryptionService
     ],
 })
 export class AuthModule { }

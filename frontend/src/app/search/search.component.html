@@ -1,23 +1,15 @@
 <div *ngIf="users.length != 0"
 	style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
-		<cdk-virtual-scroll-viewport class="efecct" class="scroll" itemSize="1" >
+		<cdk-virtual-scroll-viewport class="scroll" itemSize="1" >
 			<mat-chip-list style="padding-top: 10px;" *ngFor="let user of users">
-				<mat-chip style="
-				padding-left:0;  height: 50px;
-				border-radius: 22px;
-				float: left;
-				box-shadow: 10px rgb(255, 255, 255);
-				
-				background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-				color: white;
-				border: outset 3px silver; margin-top: 10px;" [routerLink]="['/profile/', user.username]" (click)="clearUser()">
+				<mat-chip class="tag" [routerLink]="['/profile/', user.username]" (click)="clearUser()">
 				
 				<img class="avatar" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
 				<span style="padding-left:10px;"> {{user.nickName}} </span>
 			</mat-chip>
 		</mat-chip-list>
 	</cdk-virtual-scroll-viewport>
-	<button mat-icon-button class="icon_logout" (click)="clearUser()">
+	<!-- <button mat-icon-button class="icon_logout" (click)="clearUser()">
 		<mat-icon>arrow_back</mat-icon>
-	</button>
+	</button> -->
 </div>
