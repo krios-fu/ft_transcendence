@@ -25,7 +25,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
   room_id?: string;
 
   players = [] as UserDto[];
-  @Input() id_room?: string = '';
   is_admin = false;
   admins = []
 
@@ -41,41 +40,41 @@ export class OnlineComponent implements OnInit, OnDestroy {
     private alertService: AlertServices,
     private chatService: ChatService) {
 
-    this.userService.getUser('me')
-      .subscribe((user: UserDto) => {
-        this.me = user;
-        this.socketGameNotification.getUserAll(this.me.username)
-          .subscribe((payload: any) => {
-            let data = Object.assign(payload);
-            for (let user in data) {
-              let player = data[user] as UserDto;
-              player.is_admin = false;
-              this.admins.forEach((element: any) => {
-                if (element.userId === player['id'])
-                  player.is_admin = true;
-              });
-              if (!(this.players.find((element: UserDto) => player.id == element.id)))
-                this.players.push(player)
-            }
-          })
-      });
-
     this.socketGameNotification.getUserConnection()
       .subscribe((payload: any) => {
-        this.admins.forEach((element: any) => {
-          if (element.userId === payload.user.id)
-            payload.user.is_admin = true;
-        });
+        payload.forEach((online: UserDto) => {
 
-        if (!(this.players.find((player: UserDto) => player.id == payload.user.id)))
-          this.players.push(payload.user)
+          this.admins.forEach((element: any) => {
+            if (element.userId === online.id)
+              online.is_admin = true;
+          });
+
+          this.players.map((user: UserDto) => {
+            if (user.id === online.id)
+              user.defaultOffline = true
+          })
+
+          this.players.sort((user_a: any, user_b: any) => {
+            return user_b.defaultOffline - user_a.defaultOffline;
+          })
+          this.players.sort((user_a: any, user_b: any) => {
+            return user_b.is_admin - user_a.is_admin;
+          })
+        })
       })
 
     this.socketGameNotification.userLeave()
       .subscribe((payload: any) => {
-        this.players = this.players.filter((player: UserDto) =>
-          player.id != payload.user.id
-        )
+        this.players.map((user: UserDto) => {
+          if (user.id === payload.user.id)
+            user.defaultOffline = false
+        })
+        this.players.sort((user_a: any, user_b: any) => {
+          return user_b.defaultOffline - user_a.defaultOffline;
+        })
+        this.players.sort((user_a: any, user_b: any) => {
+          return user_b.is_admin - user_a.is_admin;
+        })
       })
   }
 
@@ -87,43 +86,37 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.admins = []
       this.players = []
 
-      let user: UserDto;
-
-
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
           // this.socketGameNotification.joinRoomNotification(this.me.username);
-          this.socketGameNotification.joinRoomId(id, this.me);
+          this.socketGameNotification.joinRoomId(this.room_id as string, this.me);
           this.http.get(`${environment.apiUrl}user_roles/users/${this.me.id}`)
             .subscribe((entity) => {
               let data = Object.assign(entity);
               if (data.length && data[0]['roleId'] == role.Admin)
                 this.is_admin = true;
-
             });
         });
 
 
-
-
-      // this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`) // roles
-      //   .subscribe((entity) => {
-      //     this.admins = Object.assign(entity);
-      //     // this.http.get(`http://localhost:3000/user_room/rooms/${this.id_room}/users`)
-      //     //   .subscribe((entity) => {
-      //     //     let data = Object.assign(entity);
-      //     //     for (let user in data) {
-      //     //       let player = data[user]['user'] as UserDto;
-      //     //       player.is_admin = false;
-      //     //       this.admins.forEach((element: any) => {
-      //     //         if (element.userId === player['id'])
-      //     //           player.is_admin = true;
-      //     //       });
-      //     //       this.players.push(player)
-      //     //     }
-      //     //   });
-      //   });
+      this.http.get(`http://localhost:3000/user_roles/roles/${role.Admin}`) // roles
+        .subscribe((entity) => {
+          this.admins = Object.assign(entity);
+          this.http.get(`http://localhost:3000/user_room/rooms/${this.room_id}/users`)
+            .subscribe((entity) => {
+              let data = Object.assign(entity);
+              for (let user in data) {
+                let player = data[user]['user'] as UserDto;
+                player.is_admin = false;
+                this.admins.forEach((element: any) => {
+                  if (element.userId === player['id'])
+                    player.is_admin = true;
+                });
+                this.players.push(player)
+              }
+            });
+        });
     });
 
   }
@@ -142,7 +135,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   goTochat(player: UserDto) {
     this.chatService.createChat(player.id)
-      .subscribe((data : any) => {
+      .subscribe((data: any) => {
         this.router.navigate(['/chat/', data.id])
       })
   }

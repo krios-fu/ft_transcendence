@@ -3,13 +3,16 @@
         style="margin: 10px; display:grid; align-items: center; justify-content: center;" [matMenuTriggerFor]="menu"
         aria-label="options">
         <div class="badge">
-            <figure class="avatar">
+            <figure class="avatar" *ngIf="!player.defaultOffline">
+                <img src={{player.photoUrl}} alt={{player.username}} />
+            </figure>
+            <figure class="online" *ngIf="player.defaultOffline">
                 <img src={{player.photoUrl}} alt={{player.username}} />
             </figure>
             <mat-icon *ngIf="player.is_admin" [ngStyle]="{'color': 'yellow'}" class="icon-display"
                 style="position: absolute; bottom: -5px;">auto_awesome</mat-icon>
         </div>
-        <div style="font-size:5px; padding: 5px; ">{{player.username}}</div>
+        <div style="font-size:5px; padding: 5px; ">{{player.nickName}}</div>
         <mat-menu  #menu="matMenu" >
             <!--disabled option -->
             <button mat-menu-item [routerLink]="['/profile/', player.username]">

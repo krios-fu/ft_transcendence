@@ -31,6 +31,7 @@ export class ProfileUserComponent implements OnInit {
   online_icon = '';
   id_friendship = -1
   id_chat = -1;
+  view = false;
 
   public FRIENDS_USERS = [] as UserDto[];
 
@@ -89,6 +90,8 @@ export class ProfileUserComponent implements OnInit {
       this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${this.id_friendship}`)
         .subscribe(data => {
           this.icon_friend = 'person_add'
+          // this.get_friend(this.user?.id)
+          this.friend()
         })
     }
     else if (this.icon_friend === 'check')
@@ -97,14 +100,17 @@ export class ProfileUserComponent implements OnInit {
       })
         .subscribe(data => {
           this.icon_friend = 'person_remove'
+          // this.get_friend(this.user?.id)
+          this.friend()
         })
   }
 
   get_chat_id() { return this.id_chat; }
 
-  view_chat(): boolean {
-    const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
-    return friend ? true : false;
+  view_chat(){
+  const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
+
+   this.view = friend ? true : false;
   }
 
   friend() {
@@ -119,47 +125,56 @@ export class ProfileUserComponent implements OnInit {
           this.user = user[0];
           this.icon_activate = false;
           this.id_chat = -1;
+          this.view = false;
+          this.icon_friend = 'person_add'
+          this.FRIENDS_USERS = [];
+
+
 
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
           }
           if (this.icon_activate)
-          this.chatService.createChat(this.user.id )
-            .subscribe((data: any) => { this.id_chat = data.chatId });
+            this.chatService.createChat(this.user.id)
+              .subscribe((data: any) => { this.id_chat = data.chatId });
 
-          this.FRIENDS_USERS = [];
           // change de icone visible add o remove 
 
-          this.http.get<any>(`${environment.apiUrl}users/me/friends/as_pending?filter[nickName]=${id}`)
+          this.http.get<any>(`${environment.apiUrl}users/me/friends/as_pending`)
             .subscribe((friend: any) => {
-              if (friend.length > 0) {
-                const { receiver } = friend[0];
-                if (receiver && this.user?.username == receiver.username)
-                  this.icon_friend = 'pending';
-                else
-                  this.icon_friend = 'check';
-              }
+              let pending = friend.find((user: any) => user.senderId == this.me?.id && user.receiverId == this.user?.id)
+              let check = friend.find((user: any) => user.senderId == this.user?.id && user.receiverId == this.me?.id)
+              if (pending)
+                this.icon_friend = 'pending';
+              if (check)
+                this.icon_friend = 'check';
             });
           this.http.get<any>(`${environment.apiUrl}users/me/friends/${this.user?.id}`)
             .subscribe((friend: any) => {
               if (friend) {
-
                 this.id_friendship = friend.id
                 this.icon_friend = 'person_remove';
               }
-              this.http.get<any[]>(`${environment.apiUrl}users/${this.user?.id}/friends`)
-                .subscribe((friends: any[]) => {
-                  for (let friend in friends) {
-                    const { receiver } = friends[friend];
-                    const { sender } = friends[friend];
-                    const user = (receiver) ? receiver : sender;
-                    if (user)
-                      this.FRIENDS_USERS.push(user);
-                  }
-                })
+              this.get_friend(this.user?.id)
             })
         });
     });
+  }
+
+
+  get_friend(id ?: number){
+    this.FRIENDS_USERS = [];
+    this.http.get<any[]>(`${environment.apiUrl}users/${id}/friends`)
+    .subscribe((friends: any[]) => {
+      for (let friend in friends) {
+        const { receiver } = friends[friend];
+        const { sender } = friends[friend];
+        const user = (receiver) ? receiver : sender;
+        if (user)
+          this.FRIENDS_USERS.push(user);
+      }
+      this.view_chat();
+    })
   }
 
 }
