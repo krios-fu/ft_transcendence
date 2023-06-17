@@ -12,6 +12,8 @@ export class UserDto {
 	defaultOffline: boolean;
 	ranking: number;
 	is_admin?: boolean; 
+	achievementUser ?: []
+
 
 	
   
@@ -27,7 +29,8 @@ export class UserDto {
 		doubleAuth: boolean,
 		defaultOffline: boolean,
 		ranking: number,
-		is_admin?: boolean
+		is_admin?: boolean,
+		achievementUser ?: []
 
 	) {
 		this.id = id;
@@ -42,6 +45,7 @@ export class UserDto {
 		this.defaultOffline = defaultOffline;
 		this.is_admin = is_admin;
 		this.ranking = ranking;
+		this.achievementUser = achievementUser;
 	}
   }
   
