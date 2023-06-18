@@ -56,11 +56,6 @@ export class UpdateUserDto {
 
     @IsBoolean()
     @IsNotEmpty()
-    acceptedTerms?: boolean;
-
-
-    @IsBoolean()
-    @IsNotEmpty()
     defaultOffline?: boolean;
 
     @IsOptional()
@@ -85,10 +80,6 @@ export class SettingsPayloadDto {
     @IsBoolean()
     @IsNotEmpty()
     readonly defaultOffline?: boolean;
-
-    // @IsBoolean()
-    // @IsNotEmpty()
-    // readonly acceptedTerms?: boolean;
 
     @IsString()
     @IsNotEmpty()

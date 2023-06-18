@@ -16,8 +16,7 @@
             </button>
             <mat-menu #menu="matMenu">
                 <!--disabled option -->
-                <button mat-menu-item (click)="sendInvitationGame()"
-                    [routerLink]="[ '/', { outlets: {  game: ['room', user.username] } }]">
+                <button mat-menu-item (click)="sendInvitationGame()"x>
                     <mat-icon>videogame_asset</mat-icon>
                     <span>Game</span>
                 </button>

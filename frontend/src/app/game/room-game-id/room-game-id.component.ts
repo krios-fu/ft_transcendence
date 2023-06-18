@@ -28,6 +28,9 @@ import { BaseScene } from "../scenes/BaseScene";
 import { RoomGameIdService } from "./room-game-id.service";
 import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { AuthService } from "src/app/services/auth.service";
+import { environment } from 'src/environments/environment';
+import { AlertServices } from "../../services/alert.service";
+
 
 @Component({
   selector: 'app-room-game-id',
@@ -62,7 +65,8 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         private http: HttpClient,
         private readonly router: Router,
         private readonly authService: AuthService,
-        private readonly roomGameIdService: RoomGameIdService
+        private readonly roomGameIdService: RoomGameIdService,
+        private readonly alertService: AlertServices
     ) {
         this.config = {
             type: Phaser.CANVAS,
@@ -96,10 +100,9 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.room_id = roomId;
         this._initGame(roomId);
         delete this.room_dto;
-        this.http.get<RoomDto>(`http://localhost:3000/room/${this.room_id}`)
+        this.http.get<RoomDto>(`${environment.apiUrl}room/${this.room_id}`)
         .subscribe((entity) => {
             this.room_dto = entity;
-            console.log(`ROOM_ID: ${this.room_id}`,this.room_dto);
         });
         this.userService.getUser('me')
         .subscribe((users : UserDto) => {
@@ -195,13 +198,38 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         });
     }
 
+    /*'leaveRoom' event is emitted at ngOnDestroy when user is redirected.*/
     leaveRoom(){
+        const   userId: string | null = this.authService.getAuthId();
+    
+        if (!userId)
+        {
+            this.router.navigateByUrl("/login");
+            return ;
+        }
         this.gameServiceNoti.roomLeave(this.room_id, this.me);
+        this.roomGameIdService.unregisterFromRoom(userId, this.room_id)
+            .subscribe({
+                next: () => {
+                    this._redirectToRoomLists();
+                },
+                error: (err: any) => {
+                    let errorMsg: string;
+    
+                    if (err.error
+                            && err.error.message)
+                        errorMsg = err.error.message;
+                    else
+                        errorMsg = "Cannot unregister owner"
+                                    + " from non-empty room.";
+                    this.alertService.openSnackBar(errorMsg, "Ok");
+                    this._redirectToRoomLists();
+                }
+            });
     }
 
     open_chat(){
         this.close = !this.close;
-        console.log(this.close);
     }
 
     ngOnDestroy(): void {

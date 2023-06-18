@@ -1,16 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-// import { Chat } from '../../chat';
 import { FormControl, FormGroup } from '@angular/forms'; //
 import { UserDto } from 'src/app/dtos/user.dto';
-import { IUser, UsersService } from 'src/app/services/users.service';
+import { UsersService } from 'src/app/services/users.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { AlertServices } from 'src/app/services/alert.service';
-import { Location } from '@angular/common';
 import { message } from 'src/app/room/chat/chat';
-import { catchError, throwError } from 'rxjs';
 import { Chat } from 'src/app/room/chat/chat';
 
 
@@ -66,7 +63,7 @@ export class ChatGameComponent implements OnInit {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.socketGameNotification.joinRoomNotification(this.me.username);
+          // this.socketGameNotification.joinRoomNotification(this.me.username);
           delete this.user;
 
         });
@@ -89,7 +86,6 @@ export class ChatGameComponent implements OnInit {
 
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
-    console.log(message, room)
     if (!message || message.trim() == '')
       return false;
     this.chat.sendMessageGame(message, this.me?.id as number, 'game' + this.id);
@@ -99,7 +95,7 @@ export class ChatGameComponent implements OnInit {
 
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
+    // this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
 

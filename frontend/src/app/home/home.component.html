@@ -1,1 +1,15 @@
-<p>home works!</p>
+<div class="container">
+	<app-mini-footer></app-mini-footer>
+	
+	<div class="search-box">
+		<form (ngSubmit)="search()" [formGroup]="formMessage">
+			<input formControlName="message" type="text" class="search-input" placeholder="Search people">
+		</form>
+	</div>
+	<div *ngIf="this.searching.length > 0" class="content">
+		<button  mat-icon-button class="close" (click)="clearSearch()">
+			<mat-icon>close</mat-icon>
+		  </button>
+		<app-search [users]="searching" ></app-search>
+	</div>
+</div>

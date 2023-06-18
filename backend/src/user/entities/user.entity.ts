@@ -102,12 +102,6 @@ export class UserEntity extends BaseEntity {
 	})
 	defaultOffline: boolean;
 
-	@Column({ 
-		type: 'boolean',
-		default: false
-	})
-	acceptedTerms: boolean;
-
 	@Column({
 		default: 1500
 	})

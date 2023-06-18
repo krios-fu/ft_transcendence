@@ -15,7 +15,10 @@
       <mat-grid-list cols="3" rowHeight="60px">
         <mat-grid-tile-header>
           <mat-grid-tile>
-          <img class="avatar" src={{this.room_dto?.photoUrl}} alt={{this.room_dto?.roomName}} />
+          <img class="avatar" *ngIf="this.room_dto?.photoUrl" src={{this.room_dto?.photoUrl}} alt={{this.room_dto?.roomName}} />
+          <img class="avatar" *ngIf="!this.room_dto?.photoUrl" src="https://www.pngall.com/wp-content/uploads/2016/05/Ping-Pong-Download-PNG.png" alt={{this.room_dto?.roomName}} />
+
+          <!-- <mat-icon mat-list-icon *ngIf="!this.room_dto?.photoUrl">groups</mat-icon> -->
           </mat-grid-tile>
         </mat-grid-tile-header>
         <mat-grid-tile>
@@ -38,7 +41,7 @@
 
       <cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"
         style=" height: 10vh; position: relative; color: white;" itemSize="5">
-        <app-online *ngIf="room_id?.length" [id_room]="room_id"></app-online>
+        <app-online *ngIf="room_id?.length" ></app-online>
       </cdk-virtual-scroll-viewport>
       <app-chat-game></app-chat-game>
     </section>

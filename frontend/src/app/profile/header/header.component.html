@@ -1,12 +1,12 @@
 
 <nav class="header" >
   <div class="logo" style="right: 0; min-width: 21rem">
-    <a [routerLink]="'/home'">
+    <a style="text-decoration: none;" [routerLink]="'/'">
       <h1 >
         <span>PING PONG</span>
         <span>PING PONG</span>
       </h1>
     </a>
   </div>
-<app-mini-footer></app-mini-footer>
+<app-mini-footer *ngIf="!hiden"></app-mini-footer>
 </nav>

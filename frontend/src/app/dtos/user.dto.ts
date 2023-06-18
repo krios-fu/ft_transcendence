@@ -9,10 +9,11 @@ export class UserDto {
 	email: string;
 	photoUrl: string;
 	doubleAuth: boolean;
-	acceptedTerms: boolean;
 	defaultOffline: boolean;
 	ranking: number;
 	is_admin?: boolean; 
+	achievementUser ?: []
+
 
 	
   
@@ -26,10 +27,10 @@ export class UserDto {
 		email:string,
 		photoUrl:string,
 		doubleAuth: boolean,
-		acceptedTerms: boolean,
 		defaultOffline: boolean,
 		ranking: number,
-		is_admin?: boolean
+		is_admin?: boolean,
+		achievementUser ?: []
 
 	) {
 		this.id = id;
@@ -40,11 +41,11 @@ export class UserDto {
 		this.profileUrl = profileUrl;
 		this.email = email;
 		this.photoUrl = photoUrl;
-		this.acceptedTerms = acceptedTerms;
 		this.doubleAuth = doubleAuth;
 		this.defaultOffline = defaultOffline;
 		this.is_admin = is_admin;
 		this.ranking = ranking;
+		this.achievementUser = achievementUser;
 	}
   }
   

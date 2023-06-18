@@ -1,14 +1,14 @@
-import { HttpClient, HttpErrorResponse, HttpResponse, HttpStatusCode } from '@angular/common/http';
-import { Component, ErrorHandler, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Data } from 'phaser';
 import { Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
 import { AlertServices } from 'src/app/services/alert.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogNotification } from 'src/app/services/dialog/dialog.notification';
+import { environment } from 'src/environments/environment';
+
 
 @Component({
   selector: 'app-setting',
@@ -72,22 +72,19 @@ export class SettingComponent implements OnInit {
     reader.readAsDataURL(this.file as any);
     this.changeDetected();
 
-    console.log("file", this.file);
   }
 
   auth2fa() {
     if(this.user.doubleAuth)
-    this.http.post('http://localhost:3000/auth/2fa/deactivate', this.user.username,)
+    this.http.post(`${environment.apiUrl}auth/2fa/deactivate`, this.user.username,)
     .subscribe((dta: any) => {
       // this.qr_generate = dta.qr.qr;
-      console.log(dta);
     })
 
     if (!this.user.doubleAuth && !this.qr_generate)
-    this.http.post('http://localhost:3000/auth/2fa/generate', this.user.username,)
+    this.http.post(`${environment.apiUrl}auth/2fa/generate`, this.user.username,)
       .subscribe((dta: any) => {
         this.qr_generate = dta.qr.qr;
-        console.log(dta);
       })
 
 
@@ -96,7 +93,7 @@ export class SettingComponent implements OnInit {
   confir(code: any): Observable<HttpResponse<any>> {
 
 
-    return this.http.post<any>('http://localhost:3000/auth/2fa/confirm', { token: code }).pipe(
+    return this.http.post<any>(`${environment.apiUrl}auth/2fa/confirm`, { token: code }).pipe(
       tap((res: any) => {
 
         this.user.doubleAuth = true;
@@ -111,11 +108,8 @@ export class SettingComponent implements OnInit {
   }
 
   confimateOtp(code: any) {
-    // console.log("Code 2fa:", code);
-
     if(code.length > 0)
     this.confir(code).subscribe(lol => {
-      console.log(lol)
     })
   }
 
@@ -135,25 +129,20 @@ export class SettingComponent implements OnInit {
     }
     const form = formGroup.getRawValue();
 
-
     if (this.icon === 'lock_open' && (login) )
-
-      this.http.patch('http://localhost:3000/users/me/settings', { ...form, nickName: nickname })
+      this.http.patch(`${environment.apiUrl}users/me/settings`, { ...form, nickName: nickname })
         .subscribe(
           data => {
-            console.log(data);
             this.icon = 'lock';
           });
-
     if (this.file) {
       const formData = new FormData();
 
       formData.append("avatar", this.file);
 
-      this.http.post('http://localhost:3000/users/me/avatar', formData)
+      this.http.post(`${environment.apiUrl}users/me/avatar`, formData)
         .subscribe(
           data => {
-            console.log(data);
             this.icon = 'lock';
           });
     }
@@ -161,20 +150,8 @@ export class SettingComponent implements OnInit {
     this.alertServices.openSnackBar("Changes saved", "Close");
   }
 
-  getPhoto(): string {
-    return this.urlPreview;
-  }
-
+  getPhoto(): string { return this.urlPreview; }
 
   logout() { this.authService.logout(); }
 
-
-  // getPhoto() {
-  //   try {
-  //     const pp = this.profile as UserDto;
-  //     return pp.photoUrl;
-  //   }
-  //   catch {}
-  //   return "https://ih1.redbubble.net/image.1849186021.6993/flat,750x,075,f-pad,750x1000,f8f8f8.jpg";
-  // }
 }

@@ -9,6 +9,8 @@ import {
     retry,
     throwError
 } from "rxjs";
+import { environment } from 'src/environments/environment';
+
 
 export interface    MatchHistoryData {
     winner: string;
@@ -44,8 +46,8 @@ export interface   UserHistory {
 export class    MatchHistoryService {
 
     // Store common urls in separate file to avoid duplication
-    private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _urlPath: string = "/match";
+    // private readonly _urlAuthority: string = "http://localhost:3000";
+    // private readonly _urlPath: string = "/match";
 
     constructor(
         private readonly httpService: HttpClient
@@ -63,7 +65,7 @@ export class    MatchHistoryService {
                     offset: number,
                     username: string): Observable<[UserHistory[], number]> {
         return (this.httpService.get<[UserHistory[], number]>(
-            `${this._urlAuthority}${this._urlPath}?`
+            `${environment.apiUrl}match?`
             + `limit=${limit}`
             + `&offset=${offset}`
             + `&username=${username}`
