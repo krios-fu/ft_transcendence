@@ -160,36 +160,35 @@ export class    SocketHelper {
 
     private async _refreshGlobalRoles(creds: RoleCredentials, username: string) {
         const { userId } = creds;
-        let query: UserRolesEntity[] = await this.urService.getAllRolesFromUser(userId);
-        let roles: string[] = [];
-        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] =
+        const query: UserRolesEntity[] = await this.urService.getAllRolesFromUser(userId);
+        const sockets: RemoteSocket<DefaultEventsMap, any[]>[] =
             await this.getAllUserClients(username);
+        let roles: string[] = [];
 
         roles = query.map((ur: UserRolesEntity) => ur.role.role);
-        for (let sck of userSockets) {
-            sck.data['globalRoles'] = roles;
-            console.log(`Setted: ${JSON.stringify(sck.data), null, 2}`)
+        for (let socket of sockets) {
+            socket.data['globalRoles'] = roles;
         }
     }
 
     private async _refreshRoomRoles(creds: RoleCredentials, username: string): Promise<void> {
         const { userId, roomId } = creds;
-        let query: UserRoomRolesEntity[] = 
+        const query: UserRoomRolesEntity[] = 
             await this.urrService.getUserRolesInRoom(userId, roomId);
-        let roles: string[] = [];
         const sockets: RemoteSocket<DefaultEventsMap, any[]>[] =
             await this.getAllUserClients(username);
         const roomKey: string = SocketHelper.roomIdToName(roomId);
+        let roles: string[] = [];
 
         roles = query.map((ur: UserRoomRolesEntity) => ur.role.role);
         for (let socket of sockets) {
             if (!socket.data[roomKey]) {
                  socket.data[roomKey] = [];
             }
-            socket.data[roomKey] = socket.data[roomKey].concat(roles).unique();
+            socket.data[roomKey] = socket.data[roomKey].concat(roles);
+            socket.data[roomKey].unique(); /* unique is not a function */
             socket.data[roomKey] = socket.data[roomKey]
                 .filter((role: string) => roles.includes(role) || role === 'banned');
-            console.log(`Setted: ${JSON.stringify(socket.data), null, 2}`)
         }
     }
 
@@ -216,19 +215,40 @@ export class    SocketHelper {
     async refreshUserRoles(creds: RoleCredentials): Promise<void> {
         const user: UserEntity = await this.userService.findOne(creds.userId);
 
-        console.log(`GOTTEN CREDS: ${JSON.stringify(creds, null, 2)}`);
-        /*if (!user) {
-            throw new InternalServerErrorWsException('none', null);
-        }*/
+        if (!user) {
+            return ; /* desconexion en verdad */
+        }
+        // switch (creds.ctxName) {
+        //     case 'global':
+        //         return this._refreshGlobalRoles(creds, user.username);
+        //     case 'room':
+        //         return this._refreshRoomRoles(creds, user.username);
+        //     case 'banned':
+        //         return this._refreshBannedRoles(creds, user.username);
+        //     default:
+        //         return ;
+        // }
+
         switch (creds.ctxName) {
             case 'global':
-                return this._refreshGlobalRoles(creds, user.username);
+                this._refreshGlobalRoles(creds, user.username);
+                break;
             case 'room':
-                return this._refreshRoomRoles(creds, user.username);
+                this._refreshRoomRoles(creds, user.username);
+                break;
             case 'banned':
-                return this._refreshBannedRoles(creds, user.username);
+                this._refreshBannedRoles(creds, user.username);
+                break;
             default:
                 return ;
+        }
+        const sockets = await this.getAllUserClients(user.username);
+        for (let socket of sockets) {
+            console.log(`[ refreshUserRoles ${creds.ctxName}]`);
+            console.log(`   -> rooms: `);
+            for (let room of socket.rooms) {
+                console.log(`       -> room: ${room}`);
+            }
         }
     }
 }

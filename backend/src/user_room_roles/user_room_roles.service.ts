@@ -77,6 +77,7 @@ export class UserRoomRolesService {
     ): Promise<UserRoomRolesEntity[]> {
         return await this.userRoomRolesRepository
             .createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.role', 'role')
             .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
             .leftJoinAndSelect('user_room.user', 'user')
             .leftJoinAndSelect('user_room.room', 'room')
@@ -96,7 +97,8 @@ export class UserRoomRolesService {
             this.eventEmitter.emit('update.roles',
                 {
                     userId: userId,
-                    roomId: roomId
+                    roomId: roomId,
+                    ctxName: 'room'
                 });
         }
         return role;

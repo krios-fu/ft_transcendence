@@ -64,7 +64,6 @@ export class    GameAuthGuard implements CanActivate {
         let roles: string[] | undefined = client.data.globalRoles;
     
         payload = this.authService.validateJWToken(token);
-        console.log(`PAYLOAD: ${JSON.stringify(payload)}, token: ${token}`)
         if (!payload)
             return (false);
         if (!client.data.token || handlerName == "authentication") {
@@ -79,7 +78,6 @@ export class    GameAuthGuard implements CanActivate {
         if (handlerName != "authentication" && !roles) {
             return (false);
         }
-        console.log(`In auth: ${JSON.stringify(client.data, null, 2)}`);
         client.data.username = payload.data.username;
         return (true);
     }
@@ -90,19 +88,16 @@ export class    GameAuthGuard implements CanActivate {
         const   handlerName: string = context.getHandler().name;
         const   token: string = this._getToken(client, handlerName, wsContext);
 
-        console.log(`Data obj: ${JSON.stringify(client.data, null, 2)}`);
         if (!token)
         {
-            console.log(`AUTH FAILED by absence of valid token`);
             this.socketAuthService.addAuthTimeout(client);
             throw new BadRequestWsException(
                 handlerName, //Handlers must have same name as event
                 wsContext.getData()
             );
         }
-        if (!this._identifyUser(client, handlerName, token))
+        if (!(await this._identifyUser(client, handlerName, token)))
         {
-            console.log(`AUTH FAILED by invalid user authentication`);
             this.socketAuthService.addAuthTimeout(client);
             throw new UnauthorizedWsException(
                 handlerName, //Handlers must have same name as event
