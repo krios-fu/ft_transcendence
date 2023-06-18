@@ -37,7 +37,8 @@ export class    GameRoomGuard implements CanActivate {
     private async _checkRoomJoin(client: Socket,
                                  roomId: number,
                                  username: string): Promise<boolean> {
-        if (client[SocketHelper.roomIdToName(roomId)].includes('banned')) {
+        if (client[SocketHelper.roomIdToName(roomId)] &&
+            client[SocketHelper.roomIdToName(roomId)].includes('banned')) {
             return (false);
         }
         try {

@@ -15,14 +15,14 @@ export class GameRolesGuard implements CanActivate {
 
         console.log(`DATA FROM CONTEXT: ${JSON.stringify(data, null, 2)}`);
         console.log(`DATA FROM CLIENT: ${JSON.stringify(cli_data, null, 2)}`);
-        return true;
 
         const allowedRoles: string[] = this.reflector.get<string[]>(
             'roles',
             context.getHandler()
         );
+        return true;
         console.log(`CONTEXT DATA: ${allowedRoles}`)
         // required roles, unauthorized roles, double assertion
-        return ();
+//        return ();
     }
 }

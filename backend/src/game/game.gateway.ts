@@ -40,6 +40,7 @@ import { UserRolesEntity } from 'src/user_roles/entity/user_roles.entity';
 import {UserRoomRolesService} from "../user_room_roles/user_room_roles.service";
 import {UserRoomRolesEntity} from "../user_room_roles/entity/user_room_roles.entity";
 import {GameRolesGuard} from "./guards/game.roles.guard";
+import { RequiredRoles } from 'src/common/decorators/required.roles.decorator';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -65,11 +66,9 @@ export class    GameGateway implements OnGatewayInit,
 
     afterInit() {
         this.socketHelper.initServer(this.server);
-        console.log("Game Gateway initiated");
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        console.log(`Socket ${client.id} connected in h*a*n*d*l*e*c*o*n*n*e*c*t*i*o*n`);
         this.socketAuthService.addAuthTimeout(client);
     }
 
@@ -85,6 +84,7 @@ export class    GameGateway implements OnGatewayInit,
         const clientId: string = client.id;
         const username: string = client.data.username;
 
+        console.log('[ AUTHENTICATION ]');
         this.socketAuthService.clearTimeout(clientId);
         await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
@@ -96,6 +96,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard) /* pa testeo, borrar luego */
+    @RequiredRoles('test', 'test2')
     @UsePipes(NumberValidator)
     @SubscribeMessage("joinRoom")
     async joinRoom(

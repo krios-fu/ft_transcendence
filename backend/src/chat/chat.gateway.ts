@@ -113,7 +113,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   leaveRoomGame(
     client: Socket,
     payload: { room: string, user: any }) {
-    console.log("ROOM LEAVE:", payload)
     this.server.to(`noti_roomGame_${payload.room}`).emit('room_leave', payload)
     client.leave(`noti_roomGame_${payload.room}`);
   }

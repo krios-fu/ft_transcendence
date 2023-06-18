@@ -109,6 +109,7 @@ export class    GameRoomService {
     
         for (const client of clients)
         {
+            console.log(`LEAVE CALL: ${roomId}`);
             client.leave(roomId);
         }
         playerLeaveResult = this._playerLeave(roomId, client);

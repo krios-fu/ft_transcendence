@@ -1,5 +1,6 @@
 from api.APITrans import APITrans as Api
 import requests
+import json
 
 # set roles
 # set roles for default user
@@ -7,6 +8,9 @@ import requests
 # set rooms
 base_url = 'http://localhost:3000'
 user = 'danrodri'
+
+def pretty_print(fmt):
+    print(json.dumps(fmt, indent=2))
 
 def clean_state(api):
     users = requests.get(base_url + '/users/', headers=api.get_param('auth_token')).json()
@@ -28,44 +32,64 @@ if __name__ == "__main__":
     roles = [ api.post_role(role) for role in ['hola', 'que', 'tal', 'banned']]
     rooms = [ api.post_room(room) for room in ['elromo', 'elromodue', 'elromotre'] ]
     id = requests.get(base_url + '/users/danrodri/', headers=api.get_param('auth_token')).json()['id']
-    ''' add a global role { 'global': ['hola'] } '''
 
-    gr1 = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[0]['id']}, headers=api.get_param('auth_token'))
-    ''' add a room role { 'global': ['hola'], 'elromo-Room': ['hola']'} '''
+    print('\n\t ~~ [ add a global role ] ~~')
+    gr1 = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[0]['id']}, headers=api.get_param('auth_token')).json()
+    pretty_print(gr1)
+    input()
 
+    print('\n\t ~~ [ add a room role ] ~~')
     api.set_user_creds('danrodri')
-    rol = requests.post(base_url + '/user_room', {'roomId': rooms[0]['id']}, headers=api.get_param('auth_token'))
+    rol = requests.post(base_url + '/user_room', {'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
     ur = requests.post(base_url + '/user_room_roles', {'userId': id, 'roleId': roles[0]['id'], 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
-    ''' add a banned role { 'global': ['hola'], 'elromo-Room': ['hola', 'banned']'} '''
+    pretty_print(ur)
+    input()
 
-    print(f'Control de existencias: {ur}, {rol.json()}')
-    br1 = requests.post(base_url + '/ban', {'userId': id, 'roleId': roles[0]['id']}, headers=api.get_param('auth_token'))
-    ''' remove a room role { 'global': ['hola'], 'elromo-Room': ['banned']'} '''
+    print('\n\t ~~ [ add a banned role ] ~~')
+    br1 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
+    pretty_print(br1)
+    input()    
 
-    dr1 = requests.delete(base_url + f'/user_roles/{ur["id"]}', headers=api.get_param('auth_token'))
-    ''' add a banned role { 'global': ['hola'], 'elromo-Room': ['banned'] } '''
+    print('\n\t ~~ [ remove a room role ] ~~')
+    dr1 = requests.delete(base_url + f'/user_roles/{ur["id"]}', headers=api.get_param('auth_token')).json()
+    pretty_print(dr1)
+    input()    
 
-    r = requests.post(base_url + '/ban', {'userId': id, 'roleId': roles[0]['id']}, headers=api.get_param('auth_token'))
-    ''' add two global roles { 'global': ['hola', 'que', 'tal'], 'elromo-Room': ['banned'] } '''
+    print('\n\t ~~ [ add a banned role ] ~~')
+    br2 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[1]['id']}, headers=api.get_param('auth_token')).json()
+    pretty_print(br2)
+    input()    
 
-    r = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[1]['id']}, headers=api.get_param('auth_token'))
-    r = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[2]['id']}, headers=api.get_param('auth_token'))
+    print('\n\t ~~ [ add two global roles ] ~~')
+    gr2 = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[1]['id']}, headers=api.get_param('auth_token')).json()
+    gr3 = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[2]['id']}, headers=api.get_param('auth_token')).json()
+    pretty_print(gr2)
+    pretty_print(gr3)
+    input()    
+
     ''' remove every role '''
+    print('\n\t ~~ [ remove every role ] ~~')
 
     ## purge user roles
-    global_roles = requests.get(base_url + '/user_roles/', api.get_param('auth_token')).json()
+    print('\n\t ~~ [ purging user roles... ] ~~')
+    global_roles = requests.get(base_url + '/user_roles/', headers=api.get_param('auth_token')).json()
+    pretty_print(global_roles)
     for role in global_roles:
-        requests.delete(base_url + f'/user_roles/{role["id"]}', api.get_param('auth_token')).json()
+        requests.delete(base_url + f'/user_roles/{role["id"]}', headers=api.get_param('auth_token'))
 
     ## purge user room roles
-    room_roles = requests.get(base_url + '/user_room_roles/', api.get_param('auth_token')).json()
+    print('\n\t ~~ [ purging user room roles... ] ~~')    
+    room_roles = requests.get(base_url + '/user_room_roles/', headers=api.get_param('auth_token')).json()
+    pretty_print(room_roles)    
     for role in room_roles:
-        requests.delete(base_url + f'/user_room_roles/{role["id"]}', api.get_param('auth_token')).json()
+        requests.delete(base_url + f'/user_room_roles/{role["id"]}', headers=api.get_param('auth_token'))
 
     ## purge ban roles
-    bans = requests.get(base_url + '/ban/', api.get_param('auth_token')).json()
+    print('\n\t ~~ [ purging ban roles... ] ~~')    
+    bans = requests.get(base_url + '/ban/', headers=api.get_param('auth_token')).json()
+    pretty_print(bans)
     for ban in bans:
-        requests.delete(base_url + f'/ban/{ban["id"]}', api.get_param('auth_token')).json()
+        requests.delete(base_url + f'/ban/{ban["id"]}', headers=api.get_param('auth_token'))
 
 
 

@@ -10,6 +10,7 @@ import { UserRoomRolesRepository } from './repository/user_room_roles.repository
 import {EventEmitter2} from "@nestjs/event-emitter";
 import {UserRoomRolesModule} from "./user_room_roles.module";
 import {DeleteResult} from "typeorm";
+import { UserRoomEntity } from 'src/user_room/entity/user_room.entity';
 
 @Injectable()
 export class UserRoomRolesService {
@@ -88,9 +89,8 @@ export class UserRoomRolesService {
         const role: UserRoomRolesEntity = await this.userRoomRolesRepository.save(
             new UserRoomRolesEntity(dto)
         );
-const userRoom: UserRoomEntity = (await this.findOne(role.id)).userRoom;
+        const userRoom: UserRoomEntity = (await this.findRole(role.id)).userRoom;
 
-        console.log(`ROLE QUERIED: ${JSON.stringify(userRoom, null, 2)}`);
         if (role) {
             const { userId, roomId } = userRoom;
             this.eventEmitter.emit('update.roles',

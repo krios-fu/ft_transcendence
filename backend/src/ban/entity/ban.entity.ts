@@ -49,7 +49,7 @@ export class BanEntity extends BaseEntity {
     roomId: number;
 
     @ManyToOne(
-        () => UserEntity,
+        () => RoomEntity,
         {
             cascade: true,
             eager: true,

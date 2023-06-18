@@ -109,6 +109,7 @@ export class    SocketHelper {
 
         roomSockets = await this._server.in(roomId).fetchSockets();
         roomSockets.forEach((sock) => {
+            console.log(`LEAVE CALL: ${roomId}`);
             sock.leave(roomId);
         });
     }
@@ -162,16 +163,12 @@ export class    SocketHelper {
         let query: UserRolesEntity[] = await this.urService.getAllRolesFromUser(userId);
         let roles: string[] = [];
         let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] =
-            await this.getAllUserClients(
-                SocketHelper.getUserRoomName(username)
-            );
+            await this.getAllUserClients(username);
 
-        if (!query) {
-            throw new InternalServerErrorWsException('none', null);
-        }
         roles = query.map((ur: UserRolesEntity) => ur.role.role);
         for (let sck of userSockets) {
             sck.data['globalRoles'] = roles;
+            console.log(`Setted: ${JSON.stringify(sck.data), null, 2}`)
         }
     }
 
@@ -180,51 +177,46 @@ export class    SocketHelper {
         let query: UserRoomRolesEntity[] = 
             await this.urrService.getUserRolesInRoom(userId, roomId);
         let roles: string[] = [];
-        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] =
-            await this.getAllUserClients(
-                SocketHelper.getUserRoomName(username)
-            );
-        let roomKey: string = SocketHelper.roomIdToName(roomId);
+        const sockets: RemoteSocket<DefaultEventsMap, any[]>[] =
+            await this.getAllUserClients(username);
+        const roomKey: string = SocketHelper.roomIdToName(roomId);
 
-        if (!query) {
-            throw new InternalServerErrorWsException('none', null);
-        }
         roles = query.map((ur: UserRoomRolesEntity) => ur.role.role);
-        for (let sck of userSockets) {
-            if (!sck.data[roomKey]) {
-                 sck.data[roomKey] = [];
+        for (let socket of sockets) {
+            if (!socket.data[roomKey]) {
+                 socket.data[roomKey] = [];
             }
-            sck.data[roomKey] = sck.data[roomKey].concat(roles).unique();
-            sck.data[roomKey] = sck.data[roomKey]
+            socket.data[roomKey] = socket.data[roomKey].concat(roles).unique();
+            socket.data[roomKey] = socket.data[roomKey]
                 .filter((role: string) => roles.includes(role) || role === 'banned');
+            console.log(`Setted: ${JSON.stringify(socket.data), null, 2}`)
         }
     }
 
     private async _refreshBannedRoles(creds: RoleCredentials, username: string): Promise<void> {
         const { userId, roomId } = creds;
         const banned: BanEntity | null = await this.banService.findOneByIds(userId, roomId);
-        let userSockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
-            await this.getAllUserClients(
-                SocketHelper.getUserRoomName(username)
-            );
-        let roomKey: string = SocketHelper.roomIdToName(roomId);
+        const sockets: RemoteSocket<DefaultEventsMap, any[]>[] = 
+            await this.getAllUserClients(username);
+        const roomKey: string = SocketHelper.roomIdToName(roomId);
 
-        for (let sck of userSockets) {
-            if (!sck.data[roomKey]) {
-                sck.data[roomKey] = [];
+        for (let socket of sockets) {
+            if (!socket.data[roomKey]) {
+                socket.data[roomKey] = [];
             }
-            sck.data[roomKey] = sck.data[roomKey]
+            socket.data[roomKey] = socket.data[roomKey]
                 .filter((role: string) => role != 'banned' || (role === 'banned' && (banned)));
-            if (!sck.data[roomKey].includes('banned') && (banned)) {
-                sck.data[roomKey].push('banned');
+            if (!socket.data[roomKey].includes('banned') && (banned)) {
+                socket.data[roomKey].push('banned');
             }
         }
     }
+
     @OnEvent('update.roles')
     async refreshUserRoles(creds: RoleCredentials): Promise<void> {
         const user: UserEntity = await this.userService.findOne(creds.userId);
 
-        console.log(`GOTTEN CREDS: ${creds}`);
+        console.log(`GOTTEN CREDS: ${JSON.stringify(creds, null, 2)}`);
         /*if (!user) {
             throw new InternalServerErrorWsException('none', null);
         }*/

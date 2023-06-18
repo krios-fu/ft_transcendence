@@ -133,7 +133,6 @@ export class UserRoomController {
                 this.userRoomLogger.error(`User with id ${userId} introduced wrong credentials`);
                 throw new ForbiddenException('invalid credentials');
         }
-        console.log('ping')
         return await this.userRoomService.create({ userId: userId, roomId: roomId });
     }
 

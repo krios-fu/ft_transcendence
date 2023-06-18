@@ -67,6 +67,7 @@ export class BanController {
     @Post()
     async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
         const { userId, roomId } = dto;
+        
         if (await this.userService.findOne(userId) === null) {
             this.banLogger.error(`User with id ${userId} not found in database`);
             throw new NotFoundException('user not found in db');
