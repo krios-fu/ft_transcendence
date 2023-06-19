@@ -185,8 +185,9 @@ export class    SocketHelper {
             if (!socket.data[roomKey]) {
                  socket.data[roomKey] = [];
             }
-            socket.data[roomKey] = socket.data[roomKey].concat(roles);
-            socket.data[roomKey].unique(); /* unique is not a function */
+            socket.data[roomKey] = socket.data[roomKey]
+                .concat(roles)
+                .filter((role: string, i: number, roles: string[]) => roles.indexOf(role) === i);
             socket.data[roomKey] = socket.data[roomKey]
                 .filter((role: string) => roles.includes(role) || role === 'banned');
         }
@@ -246,6 +247,7 @@ export class    SocketHelper {
         for (let socket of sockets) {
             console.log(`[ refreshUserRoles ${creds.ctxName}]`);
             console.log(`   -> rooms: `);
+            console.log(`   -> data: ${socket.data}`)
             for (let room of socket.rooms) {
                 console.log(`       -> room: ${room}`);
             }

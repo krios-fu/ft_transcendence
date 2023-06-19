@@ -84,7 +84,6 @@ export class    GameGateway implements OnGatewayInit,
         const clientId: string = client.id;
         const username: string = client.data.username;
 
-        console.log('[ AUTHENTICATION ]');
         this.socketAuthService.clearTimeout(clientId);
         await this.socketAuthService.registerUser(client, username);
         client.removeAllListeners("disconnecting");
