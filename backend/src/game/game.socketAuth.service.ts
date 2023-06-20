@@ -74,10 +74,6 @@ export class    GameSocketAuthService {
                 await this.removeUser(client, username);
         }
         await client.join(SocketHelper.getUserRoomName(username));
-        console.log(`[ REGISTER USER ] Rooms with client: ${client.rooms.size}`);
-        for (let room of client.rooms) {
-            console.log(`ROOM: ${room}`)
-        }
     }
 
     private async _removePlayer(playerRoom: string): Promise<void> {
@@ -106,7 +102,6 @@ export class    GameSocketAuthService {
             else if (room.includes("Player"))
                 await this._removePlayer(room);
             client.leave(room);
-            console.log(`LEAVE CALL: ${room}`);
         }
     }
 

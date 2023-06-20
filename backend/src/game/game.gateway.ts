@@ -318,17 +318,4 @@ export class    GameGateway implements OnGatewayInit,
     ) {
         this.recoveryService.recover(client, roomId);
     }
-
-    /*@UseGuards(GameAuthGuard, GameRoomGuard)
-    @AllowedRoles(['admin'])
-    @UsePipes(StringValidator)
-    @SubscribeMessage('kickUser')
-    kickUser(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() userId: string
-    ) {
-        // find client in room
-        // disconnect (user should be redirected when disconnected from room
-    }*/
-
 }

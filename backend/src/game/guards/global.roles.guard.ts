@@ -2,12 +2,12 @@ import {CanActivate, ExecutionContext, Injectable} from "@nestjs/common";
 import {Observable} from "rxjs";
 import {Reflector} from "@nestjs/core";
 import {WsArgumentsHost} from "@nestjs/common/interfaces";
-import { UnauthorizedWsException } from "../exceptions/unauthorized.wsException";
+import {UnauthorizedWsException} from "../exceptions/unauthorized.wsException";
 import {ForbiddenWsException} from "../exceptions/forbidden.wsException";
 
 
 @Injectable()
-export class GameRolesGuard implements CanActivate {
+export class GlobalRolesGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) { }
 
     private _compliesWithRequiredRoles(constrains: string[], roles: string[]): boolean {
@@ -27,12 +27,9 @@ export class GameRolesGuard implements CanActivate {
             (role: string) => constrains.includes(role)
         ));
     }
-
-    canActivate(ctx: ExecutionContext): boolean{
+    canActivate(ctx: ExecutionContext): boolean {
         const wsCtx: WsArgumentsHost = ctx.switchToWs();
-        const roomId: string = wsCtx.getData();
-        const roles: string[] = wsCtx.getClient()
-            .data[roomId];
+        const globalRoles: string[] = wsCtx.getClient().data['???'];
         const handlerName: string = ctx.getHandler().name;
         const requiredRoles: string[] = this.reflector.get<string[]>(
             'requiredRoles',
@@ -41,17 +38,16 @@ export class GameRolesGuard implements CanActivate {
         const forbiddenRoles: string[] = this.reflector.get<string[]>(
             'forbiddenRoles',
             ctx.getHandler()
-        );
+        )
 
-
-        if (!roles) {
+        if (!globalRoles) {
             throw new UnauthorizedWsException(
                 handlerName,
                 wsCtx.getData()
             );
         }
-        if (!this._compliesWithRequiredRoles(requiredRoles, roles) ||
-            !this._compliesWithForbiddenRoles(forbiddenRoles, roles)) {
+        if (!this._compliesWithRequiredRoles(requiredRoles, globalRoles) ||
+            !this._compliesWithForbiddenRoles(forbiddenRoles, globalRoles)) {
             throw new ForbiddenWsException(
                 handlerName,
                 wsCtx.getData()
