@@ -286,6 +286,11 @@ export class   Game {
         {
             this._playerA.updateHero(secondsElapsed);
             this._playerB.updateHero(secondsElapsed);
+            if (this._pointTransition)
+            {
+                this._playerA.hero.resetInvocation();
+                this._playerB.hero.resetInvocation();
+            }
         }
     }
 
