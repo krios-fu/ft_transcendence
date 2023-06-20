@@ -22,7 +22,7 @@ export class    RoomGameIdService {
         private readonly httpService: HttpClient
     ) {}
 
-    getUserInRoom(userId: string, roomId: string): Observable<IUserRoom> {
+    getUserInRoom(userId: string | number, roomId: string): Observable<IUserRoom> {
         return (
             this.httpService.get<IUserRoom>(
                 `${environment.apiUrl}${this._pathUserRoom}`
@@ -36,6 +36,7 @@ export class    RoomGameIdService {
             )
         );
     }
+
 
     private _unregisterCall(userRoomId: number): Observable<void> {
         return (
@@ -51,7 +52,7 @@ export class    RoomGameIdService {
         );
     }
 
-    unregisterFromRoom(userId: string, roomId: string): Observable<void> {
+    unregisterFromRoom(userId: string | number, roomId: string): Observable<void> {
         return (
             this.getUserInRoom(userId, roomId)
             .pipe(

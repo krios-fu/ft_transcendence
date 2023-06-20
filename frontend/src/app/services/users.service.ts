@@ -31,4 +31,5 @@ export class UsersService {
     getFriends(user: string) {
       return this.http.get(environment.apiUrl + 'users/' + user + '/friends/as_pending');
     }
+
 }

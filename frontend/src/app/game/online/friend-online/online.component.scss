@@ -5,14 +5,27 @@
 }
 
 
+::ng-deep .mat-menu-panel {
+	background-color: #6f15e5;
+	// width: 5vw;
+	justify-content: center;
+	display: grid;
+	align-items: center;
 
+  }
 
+  span{
+	color: white;
+  }
 
+  ::ng-deep .mat-menu-item{
+	color: rgb(245, 245, 245);
+  }
 
 .badge {
 
 
-	display: flex;
+	display: grid;
 	position: relative;
 	align-items: center;
 	justify-content: center;
@@ -27,17 +40,17 @@
 		//z-index: 1;
 		left: 5px;
 		border-radius: 50%;
-		width: 50px;
-		height: 50px;
+		width: 60px;
+		height: 60px;
 		overflow: hidden;
 		margin: 0;
 		padding: 0;
 		border: 4px solid rgba(255, 255, 255, 0.24);
 		content: "";
 		background-image: linear-gradient(var(--rotate), #3c4f55, #a8a8a8 43%, #d1d1d1);
+		animation: spin 2.5s linear infinite;
 		top: -1%;
 		left: -2%;
-		animation: spin 2.5s linear infinite;
 
 		img {
 			width: 100%;
@@ -52,14 +65,17 @@
 		//z-index: 1;
 		left: 5px;
 		border-radius: 50%;
-		width: 50px;
-		height: 50px;
+		width: 80px;
+		height: 80px;
 		overflow: hidden;
 		margin: 0;
 		padding: 0;
-		border: 4px solid rgba(69, 236, 13, 0.676);
+		border: 4px solid rgba(13, 24, 236, 0.24);
+		// border: 4px solid #f400e3;
+
+		
 		content: "";
-		background-image: linear-gradient(var(--rotate), #aec3ad, #a8a8a8 43%, #d1d1d179);
+		background-image: linear-gradient(var(--rotate), #11c4d8, #750ec9 43%, #ea0a7a79);
 		top: -1%;
 		left: -2%;
 		animation: spin 2.5s linear infinite;

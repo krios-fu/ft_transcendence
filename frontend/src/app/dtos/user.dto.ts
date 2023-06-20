@@ -11,7 +11,9 @@ export class UserDto {
 	doubleAuth: boolean;
 	defaultOffline: boolean;
 	ranking: number;
-	is_admin?: boolean; 
+	is_admin?: boolean;
+	is_owner?: boolean;
+	is_owner_room? : boolean;
 	achievementUser ?: []
 
 
@@ -30,6 +32,10 @@ export class UserDto {
 		defaultOffline: boolean,
 		ranking: number,
 		is_admin?: boolean,
+		is_owner?: boolean,
+		is_owner_room? : boolean,
+
+
 		achievementUser ?: []
 
 	) {
@@ -46,6 +52,8 @@ export class UserDto {
 		this.is_admin = is_admin;
 		this.ranking = ranking;
 		this.achievementUser = achievementUser;
+		this.is_owner = is_owner;
+		this.is_owner_room = is_owner_room;
 	}
   }
   

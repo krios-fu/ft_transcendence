@@ -10,6 +10,9 @@ import { SocketNotificationService } from 'src/app/services/socket-notification.
 import { environment } from 'src/environments/environment';
 
 
+enum role {
+  owner = 1
+}
 
 @Injectable()
 export class SharedService {
@@ -35,7 +38,7 @@ export class ProfileUserComponent implements OnInit {
 
   public FRIENDS_USERS = [] as UserDto[];
 
-  me: UserDto | undefined;
+  me?: UserDto;
 
   constructor(private http: HttpClient,
     private authService: AuthService,
@@ -55,6 +58,15 @@ export class ProfileUserComponent implements OnInit {
     this.friend();
     this.userService.getUser('me')
       .subscribe((user: UserDto) => {
+
+        this.http.get(`${environment.apiUrl}user_roles/roles/${role.owner}`)
+        .subscribe((payload)=>{
+          const owners = Object.assign(payload);
+          owners.forEach((user_roles: any) => {
+            if (user_roles.userId === user.id)
+                user.is_owner = true
+          })
+        })
         this.me = user;
         this.color_icon = (this.me.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
@@ -66,6 +78,7 @@ export class ProfileUserComponent implements OnInit {
 
     })
   }
+
 
   getNickName() { return this.user?.nickName; }
 
