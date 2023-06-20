@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as SockIO from 'socket.io-client';
 import { IAuthPayload } from 'src/app/interfaces/iauth-payload.interface';
+import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 
 enum SocketException {
@@ -30,7 +31,8 @@ export class    SocketService {
     private _failedEvents: SocketExceptionData[];
 
     constructor(
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly alertService: AlertServices
     ) {
         this._socket = SockIO.io("ws://localhost:3001", {
             reconnectionAttempts: 3
@@ -84,7 +86,6 @@ export class    SocketService {
 
     private _addConnectionEvents(): void {
         this._socket.on("connect", () => {
-            console.log('[ IN SOCKET.SERVICE ] connect ping!');
             this._connectAttempts = 0;
             //Authenticate through this event to register user in socket server
             this.emit("authentication", this.authService.getAuthToken());
@@ -99,6 +100,10 @@ export class    SocketService {
                     return ;
                 this._authenticating = true;
                 this._reAuthenticateConnection();
+            }
+            if (xcpt.cause === SocketException.Forbidden){
+                this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+                this.authService.redirectHome();
             }
         });
         this._socket.on("authSuccess", () => {

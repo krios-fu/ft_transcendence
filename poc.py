@@ -29,7 +29,7 @@ def clean_state(api):
 if __name__ == "__main__":
     api = Api()
     clean_state(api)
-    roles = [ api.post_role(role) for role in ['hola', 'que', 'tal', 'banned']]
+    roles = [ api.post_role(role) for role in ['hola', 'l', 'tal', 'banned']]
     rooms = [ api.post_room(room) for room in ['elromo', 'elromodue', 'elromotre'] ]
     id = requests.get(base_url + '/users/danrodri/', headers=api.get_param('auth_token')).json()['id']
 

@@ -41,6 +41,7 @@ import {UserRoomRolesService} from "../user_room_roles/user_room_roles.service";
 import {UserRoomRolesEntity} from "../user_room_roles/entity/user_room_roles.entity";
 import {GameRolesGuard} from "./guards/game.roles.guard";
 import { RequiredRoles } from 'src/common/decorators/required.roles.decorator';
+import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
 
 @WebSocketGateway(3001, {
     cors: {
@@ -94,8 +95,8 @@ export class    GameGateway implements OnGatewayInit,
         client.emit("authSuccess");
     }
 
-    @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard) /* pa testeo, borrar luego */
-    @RequiredRoles('test', 'test2')
+    @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard)
+    @ForbiddenRoles('banned')
     @UsePipes(NumberValidator)
     @SubscribeMessage("joinRoom")
     async joinRoom(

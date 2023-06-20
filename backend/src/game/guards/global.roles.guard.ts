@@ -14,7 +14,7 @@ export class GlobalRolesGuard implements CanActivate {
         if (!constrains || !constrains.length) {
             return true;
         }
-        return (roles.every(
+        return (roles.length && roles.every(
             (role: string) => constrains.includes(role)
         ));
     }
@@ -27,6 +27,7 @@ export class GlobalRolesGuard implements CanActivate {
             (role: string) => constrains.includes(role)
         ));
     }
+
     canActivate(ctx: ExecutionContext): boolean {
         const wsCtx: WsArgumentsHost = ctx.switchToWs();
         const globalRoles: string[] = wsCtx.getClient().data['???'];
