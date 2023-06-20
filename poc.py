@@ -33,6 +33,14 @@ if __name__ == "__main__":
     rooms = [ api.post_room(room) for room in ['elromo', 'elromodue', 'elromotre'] ]
     id = requests.get(base_url + '/users/danrodri/', headers=api.get_param('auth_token')).json()['id']
 
+    #print('\n\t ~~ [ ban from room ] ~~')
+    #br1 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
+
+    print(' ~~ [ global ban ] ~~ ')
+    coso = requests.post(base_url + '/user_roles/', {'userId':id, 'roleId': roles[3]["id"]})
+    print(f'coso: {coso}')
+    input()
+
     print('\n\t ~~ [ add a global role ] ~~')
     gr1 = requests.post(base_url + '/user_roles', {'userId': id, 'roleId': roles[0]['id']}, headers=api.get_param('auth_token')).json()
     pretty_print(gr1)

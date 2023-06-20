@@ -84,6 +84,25 @@ export class    SocketService {
         this._failedEvents = [];
     }
 
+    private _banFromRoomEvent(): void {
+        console.log('estoy escuchando');
+        this._socket.on("banFromRoom", () => {
+            this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+            this.authService.redirectHome();
+        });
+    }
+
+    private _banFromAppEvent():void {
+        console.log('estoy escuchando');
+        this._socket.on("banFromApp", () => {
+            this.authService.redirectBan();
+        });
+    }
+
+    /* diseño de gestion de eventos: 
+    roles: silenciado, baneado, admin 
+    */
+
     private _addConnectionEvents(): void {
         this._socket.on("connect", () => {
             this._connectAttempts = 0;
@@ -117,6 +136,7 @@ export class    SocketService {
                 this._failedEvents = [];
             this._lastAuthSuccess = currentTime;
         });
+        this._banFromRoomEvent();
         this._socket.on("disconnect", () => {
             this._reconnect();
         });

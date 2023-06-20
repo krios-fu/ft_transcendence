@@ -131,6 +131,10 @@ export class AuthService {
         this.router.navigateByUrl('/login');
     }
 
+    public redirectBan(): void {
+        this.router.navigateByUrl('/wtf');
+    }
+
     /* Solo permite ejecución a usuarios logeados */
     public logout(): void {
         this.cookies.delete('refresh_token', '/', 'localhost', true, 'None');

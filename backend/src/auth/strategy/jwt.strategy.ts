@@ -3,7 +3,7 @@ import {
     Strategy,
     ExtractJwt,
 } from 'passport-jwt';
-import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
 import { UserService } from '../../user/services/user.service';
 import { NotValidatedException } from '../../common/classes/not-validated.exception';
@@ -47,7 +47,7 @@ constructor (
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.jwtLogger.error(`User ${username} is banned from the server`);
-            throw new UnauthorizedException();
+            throw new ForbiddenException(); /* tal */
         }
         if (jwtPayload.data?.validated !== true) {
             throw new NotValidatedException('User needs validation for 2fa strategy');

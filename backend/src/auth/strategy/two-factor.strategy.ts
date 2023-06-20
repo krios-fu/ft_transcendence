@@ -46,7 +46,7 @@ constructor (
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.twoFactorLogger.error(`User ${username} is banned from the server`);
-            throw new UnauthorizedException();
+            throw new ForbiddenException(); /* tal */
         }
         if (jwtPayload.data.validated === true || user.doubleAuth === false || user.doubleAuthSecret === null) {
             throw new ForbiddenException('user is already validated with 2fa strategy or does not need it');

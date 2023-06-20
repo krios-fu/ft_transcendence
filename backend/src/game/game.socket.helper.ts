@@ -168,6 +168,9 @@ export class    SocketHelper {
         roles = query.map((ur: UserRolesEntity) => ur.role.role);
         for (let socket of sockets) {
             socket.data['globalRoles'] = roles;
+            if (roles.includes('banned')) {
+                socket.emit('banFromApp');
+            }
         }
     }
 
@@ -208,6 +211,10 @@ export class    SocketHelper {
                 .filter((role: string) => role != 'banned' || (role === 'banned' && (banned)));
             if (!socket.data[roomKey].includes('banned') && (banned)) {
                 socket.data[roomKey].push('banned');
+            }
+            if (banned) {
+                socket.leave(roomKey);
+                socket.emit("banFromRoom");
             }
         }
     }
