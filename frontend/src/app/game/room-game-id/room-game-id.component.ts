@@ -111,7 +111,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     private _redirectToRoomLists(): void {
-        this.router.navigateByUrl("/game");
+    this.router.navigate(['/game']);
     }
 
     private _checkUserInRoom(roomId: string): void {
@@ -208,6 +208,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             return ;
         }
         this.gameServiceNoti.roomLeave(this.room_id, this.me);
+        console.log('LEAVE', userId)
         this.roomGameIdService.unregisterFromRoom(userId, this.room_id)
             .subscribe({
                 next: () => {
@@ -227,6 +228,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                 }
             });
     }
+
 
     open_chat(){
         this.close = !this.close;

@@ -1,17 +1,19 @@
 <section class="row">
     <div class="column1 " style="border: outset 4px silver;">
+
+
+
         <section style=" display: grid; 
-            align-items: center; 
-            justify-content: center;" *ngIf="user">
-            <figure >
-                <img  class="avatar" src={{getPhotoUrl()}} />
+        align-items: center; 
+        justify-content: center;" *ngIf="user">
+            <figure>
+                <img class="avatar" src={{getPhotoUrl()}} />
             </figure>
             <h1 style="font-size: 20px;">
                 <mat-icon [ngStyle]="{'color': color_icon}">{{online_icon}}</mat-icon>
                 {{getNickName()}}
             </h1>
         </section>
-
 
         <div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px; ">
             <span>
@@ -46,6 +48,19 @@
                 <a mat-icon-button class="send_friendship" [routerLink]="[ '/chat/',  get_chat_id() ]">
                     <mat-icon>chat</mat-icon>
                 </a>
+            </span>
+
+            <span *ngIf="this.me?.is_owner">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
+                    <mat-icon>admin_panel_settings</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item [routerLink]="['/profile', user?.username]">
+                        <mat-icon>do_not_disturb_off</mat-icon>
+                        <span style="color:red">BAN</span>
+                    </button>
+
+                </mat-menu>
             </span>
         </section>
 
