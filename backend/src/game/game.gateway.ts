@@ -35,14 +35,14 @@ import { MatchInviteResponseDto } from './dtos/matchInviteResponse.dto';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
 import { GameRoomService } from './game.room.service';
-import { UserRolesService } from 'src/user_roles/user_roles.service';
-import { UserRolesEntity } from 'src/user_roles/entity/user_roles.entity';
 import {UserRoomRolesService} from "../user_room_roles/user_room_roles.service";
 import {UserRoomRolesEntity} from "../user_room_roles/entity/user_room_roles.entity";
 import {GameRolesGuard} from "./guards/game.roles.guard";
-import { RequiredRoles } from 'src/common/decorators/required.roles.decorator';
 import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
+import { GlobalRolesGuard } from './guards/global.roles.guard';
 
+@UseGuards(GlobalRolesGuard) // esto es mentira
+@ForbiddenRoles('banned')
 @WebSocketGateway(3001, {
     cors: {
         origin: process.env.WEBAPP_IP,

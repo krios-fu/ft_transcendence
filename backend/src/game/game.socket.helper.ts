@@ -165,11 +165,14 @@ export class    SocketHelper {
             await this.getAllUserClients(username);
         let roles: string[] = [];
 
+        console.log('[ refreshGlobalRoles ] caught a new global role...');
         roles = query.map((ur: UserRolesEntity) => ur.role.role);
         for (let socket of sockets) {
             socket.data['globalRoles'] = roles;
+            console.log(`Roles comprobados: ${JSON.stringify(roles, null, 2)}, aserción: ${roles.includes('banned')}`);
             if (roles.includes('banned')) {
-                socket.emit('banFromApp');
+                console.log('emitiendo a banFromApp');
+                socket.emit('banned', 'global');
             }
         }
     }
@@ -214,7 +217,7 @@ export class    SocketHelper {
             }
             if (banned) {
                 socket.leave(roomKey);
-                socket.emit("banFromRoom");
+                socket.emit("banned", "room");
             }
         }
     }

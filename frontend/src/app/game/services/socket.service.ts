@@ -84,18 +84,16 @@ export class    SocketService {
         this._failedEvents = [];
     }
 
-    private _banFromRoomEvent(): void {
+    private _bannedEvent(): void {
         console.log('estoy escuchando');
-        this._socket.on("banFromRoom", () => {
-            this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
-            this.authService.redirectHome();
-        });
-    }
-
-    private _banFromAppEvent():void {
-        console.log('estoy escuchando');
-        this._socket.on("banFromApp", () => {
-            this.authService.redirectBan();
+        this._socket.on("banned", (banCtx: string) => {
+            console.log('taggeado en banned events');
+            if (banCtx === 'room') {
+                this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+                this.authService.redirectHome();
+            } else if (banCtx === 'global'){
+                this.authService.redirectBan();
+            }
         });
     }
 
@@ -110,7 +108,6 @@ export class    SocketService {
             this.emit("authentication", this.authService.getAuthToken());
         });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
-            console.log("Websocket exception: ", xcpt);
             if (xcpt.cause != SocketException.Forbidden)
             {
                 if (xcpt.targetEvent != "authentication")
@@ -121,8 +118,12 @@ export class    SocketService {
                 this._reAuthenticateConnection();
             }
             if (xcpt.cause === SocketException.Forbidden){
-                this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
-                this.authService.redirectHome();
+                if (xcpt.data.forbiddenCtx === 'global') {
+                    this.authService.redirectBan();
+                } else if (xcpt.data.forbiddenCtx === 'room') {
+                    this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+                    this.authService.redirectHome();
+                }
             }
         });
         this._socket.on("authSuccess", () => {
@@ -136,7 +137,7 @@ export class    SocketService {
                 this._failedEvents = [];
             this._lastAuthSuccess = currentTime;
         });
-        this._banFromRoomEvent();
+        this._bannedEvent();
         this._socket.on("disconnect", () => {
             this._reconnect();
         });

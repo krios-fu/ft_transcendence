@@ -9,6 +9,7 @@ import { UserService } from '../../user/services/user.service';
 import { NotValidatedException } from '../../common/classes/not-validated.exception';
 import { UserRolesService } from '../../user_roles/user_roles.service';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { BannedException } from 'src/common/classes/banned.exception';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -47,7 +48,7 @@ constructor (
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.jwtLogger.error(`User ${username} is banned from the server`);
-            throw new ForbiddenException(); /* tal */
+            throw new BannedException();
         }
         if (jwtPayload.data?.validated !== true) {
             throw new NotValidatedException('User needs validation for 2fa strategy');

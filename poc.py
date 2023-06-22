@@ -29,6 +29,8 @@ def clean_state(api):
 if __name__ == "__main__":
     api = Api()
     clean_state(api)
+    print('[ cleaning state ]')
+    input()
     roles = [ api.post_role(role) for role in ['hola', 'l', 'tal', 'banned']]
     rooms = [ api.post_room(room) for room in ['elromo', 'elromodue', 'elromotre'] ]
     id = requests.get(base_url + '/users/danrodri/', headers=api.get_param('auth_token')).json()['id']
@@ -37,8 +39,8 @@ if __name__ == "__main__":
     #br1 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
 
     print(' ~~ [ global ban ] ~~ ')
-    coso = requests.post(base_url + '/user_roles/', {'userId':id, 'roleId': roles[3]["id"]})
-    print(f'coso: {coso}')
+    coso = requests.post(base_url + '/user_roles/', {'userId':id, 'roleId': roles[3]["id"]}, headers=api.get_param('auth_token'))
+    print(f'what we got: {coso.json()}')
     input()
 
     print('\n\t ~~ [ add a global role ] ~~')

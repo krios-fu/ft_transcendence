@@ -51,7 +51,7 @@ export class GlobalRolesGuard implements CanActivate {
             !this._compliesWithForbiddenRoles(forbiddenRoles, globalRoles)) {
             throw new ForbiddenWsException(
                 handlerName,
-                wsCtx.getData()
+                {'forbiddenCtx': 'global'}
             )
         }
         return true;

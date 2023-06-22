@@ -8,6 +8,7 @@ import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
 import { UserService } from '../../user/services/user.service';
 import { UserRolesService } from '../../user_roles/user_roles.service';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { BannedException } from 'src/common/classes/banned.exception';
 
 @Injectable()
 export class TwoFactorStrategy extends PassportStrategy(Strategy, 'two-factor') {
@@ -38,7 +39,7 @@ constructor (
         const user: UserEntity = await this.userService.findOneByUsername(username);
         if (user.id !== id) {
             this.twoFactorLogger.error('Unauthorized login');
-            throw new UnauthorizedException;
+            throw new UnauthorizedException();
         }
         if (user === undefined) {
             this.twoFactorLogger.error(`User ${username} validated by jwt not found in database`);
@@ -46,7 +47,7 @@ constructor (
         }
         if (await this.userRolesService.validateGlobalRole(user.username, ['banned']) === true) {
             this.twoFactorLogger.error(`User ${username} is banned from the server`);
-            throw new ForbiddenException(); /* tal */
+            throw new BannedException();
         }
         if (jwtPayload.data.validated === true || user.doubleAuth === false || user.doubleAuthSecret === null) {
             throw new ForbiddenException('user is already validated with 2fa strategy or does not need it');

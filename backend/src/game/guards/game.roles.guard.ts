@@ -50,15 +50,11 @@ export class GameRolesGuard implements CanActivate {
         const roles: string[] = wsCtx.getClient()
             .data[roomId];
 
-        console.log(`My roles: ${JSON.stringify(roles, null, 2)}`);
-        console.log(`Required roles: ${JSON.stringify(requiredRoles, null, 2)}`);
-        console.log(`Forbidden roles: ${JSON.stringify(forbiddenRoles, null, 2)}`)
-
         if (!this._compliesWithRequiredRoles(requiredRoles, roles) ||
             !this._compliesWithForbiddenRoles(forbiddenRoles, roles)) {
             throw new ForbiddenWsException(
                 handlerName,
-                wsCtx.getData()
+                {'forbiddenCtx': 'room'}
             )
         }
         return true;
