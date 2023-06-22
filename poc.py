@@ -38,6 +38,10 @@ if __name__ == "__main__":
     #print('\n\t ~~ [ ban from room ] ~~')
     #br1 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
 
+    print(' ~~ [ global role testing ] ~~')
+    r_grTest = requests.post(base_url + '/user_roles/', {'userId':id, 'roleId':roles[2]["id"]}, headers=api.get_param('auth_token'))
+    input()
+
     print(' ~~ [ global ban ] ~~ ')
     coso = requests.post(base_url + '/user_roles/', {'userId':id, 'roleId': roles[3]["id"]}, headers=api.get_param('auth_token'))
     print(f'what we got: {coso.json()}')

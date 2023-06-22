@@ -12,7 +12,6 @@ import { UserRoomRolesService } from "src/user_room_roles/user_room_roles.servic
 import { BanService } from "src/ban/ban.service";
 import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
 import { BanEntity } from "src/ban/entity/ban.entity";
-import { InternalServerErrorWsException } from "./exceptions/internalServerError.wsException";
 import { UserService } from "../user/services/user.service";
 import { UserEntity } from "../user/entities/user.entity";
 import { OnEvent } from "@nestjs/event-emitter";
@@ -166,6 +165,7 @@ export class    SocketHelper {
         let roles: string[] = [];
 
         console.log('[ refreshGlobalRoles ] caught a new global role...');
+        console.log(`[ refreshGlobalRoles ] socket set length: ${sockets.length}`);
         roles = query.map((ur: UserRolesEntity) => ur.role.role);
         for (let socket of sockets) {
             socket.data['globalRoles'] = roles;
