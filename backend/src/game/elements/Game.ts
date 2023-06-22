@@ -149,8 +149,7 @@ export class   Game {
 
     serveBall(): void {    
         this._ball.serve();
-        this._lastUpdate = this._lastUpdate
-                            + GameUpdateService.updateTimeInterval / 2;
+        this._lastUpdate = Date.now();
         this._buffer.addSnapshot(this.data());
     }
 
@@ -419,24 +418,8 @@ export class   Game {
         return (false);
     }
 
-    private getUpdateTime(): number {
-        const   lastBufferSnapshot: IGameData =
-                    this._buffer.snapshots[this._buffer.snapshots.length];
-        if (lastBufferSnapshot
-            && lastBufferSnapshot.when + GameUpdateService.updateTimeInterval
-                != this._lastUpdate)
-        {
-            if (lastBufferSnapshot.ball.xVel === 0)
-            {// The current snapshot is a ball serve one
-                return (lastBufferSnapshot.when
-                            + GameUpdateService.updateTimeInterval);
-            }
-        }
-        return (this._lastUpdate + GameUpdateService.updateTimeInterval);
-    }
-
     update(): GameUpdateResult {
-        const   currentTime: number = this.getUpdateTime();
+        const   currentTime: number = Date.now();
     
         this._pointTransition = false;
         if (this.processInput())
