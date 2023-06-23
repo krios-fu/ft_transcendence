@@ -4,11 +4,15 @@ import {Reflector} from "@nestjs/core";
 import {WsArgumentsHost} from "@nestjs/common/interfaces";
 import {UnauthorizedWsException} from "../exceptions/unauthorized.wsException";
 import {ForbiddenWsException} from "../exceptions/forbidden.wsException";
+import { Socket } from "socket.io";
+import { UserRolesService } from "src/user_roles/user_roles.service";
+import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 
 
 @Injectable()
 export class GlobalRolesGuard implements CanActivate {
-    constructor(private readonly reflector: Reflector) { }
+    constructor(private readonly reflector: Reflector,
+                private readonly userRolesService: UserRolesService) { }
 
     private _compliesWithRequiredRoles(constrains: string[], roles: string[]): boolean {
         if (!constrains || !constrains.length) {
@@ -28,9 +32,28 @@ export class GlobalRolesGuard implements CanActivate {
         ));
     }
 
-    canActivate(ctx: ExecutionContext): boolean {
+    private async _getRoles(wsCtx: WsArgumentsHost, handlerName: string): Promise<string[]> {
+        const client: Socket = wsCtx.getClient<Socket>();
+        const username: string = client.data.username;
+        let   roles: string[] = client.data.globalRoles;
+
+        if (!roles && handlerName === 'authentication') {
+            roles = (await this.userRolesService
+                .getAllRolesFromUsername(username))
+                .map((userRole: UserRolesEntity) => userRole.role.role);
+            client.data.globalRoles = roles;
+        }
+        if (!roles && handlerName !== 'authentication') {
+            throw new UnauthorizedWsException(
+                handlerName,
+                wsCtx.getData()
+            );
+        }
+        return roles;
+    }
+
+    async canActivate(ctx: ExecutionContext): Promise<boolean> {
         const wsCtx: WsArgumentsHost = ctx.switchToWs();
-        const globalRoles: string[] = wsCtx.getClient().data['???'];
         const handlerName: string = ctx.getHandler().name;
         const requiredRoles: string[] = this.reflector.get<string[]>(
             'requiredRoles',
@@ -40,15 +63,22 @@ export class GlobalRolesGuard implements CanActivate {
             'forbiddenRoles',
             ctx.getHandler()
         )
+        let roles: string[];
+        const { token, username, id } = wsCtx.getClient<Socket>().data;
 
-        if (!globalRoles) {
-            throw new UnauthorizedWsException(
-                handlerName,
-                wsCtx.getData()
-            );
+        if (!token || !username || !id) {
+            if (handlerName === 'authentication') {
+                return true;
+            } else {
+                throw new UnauthorizedWsException(
+                    handlerName,
+                    wsCtx.getData()
+                );
+            }
         }
-        if (!this._compliesWithRequiredRoles(requiredRoles, globalRoles) ||
-            !this._compliesWithForbiddenRoles(forbiddenRoles, globalRoles)) {
+        roles = await this._getRoles(wsCtx, handlerName);
+        if (!this._compliesWithRequiredRoles(requiredRoles, roles) ||
+            !this._compliesWithForbiddenRoles(forbiddenRoles, roles)) {
             throw new ForbiddenWsException(
                 handlerName,
                 {'forbiddenCtx': 'global'}

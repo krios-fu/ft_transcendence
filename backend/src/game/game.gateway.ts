@@ -41,7 +41,7 @@ import {GameRolesGuard} from "./guards/game.roles.guard";
 import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
 import { GlobalRolesGuard } from './guards/global.roles.guard';
 
-@UseGuards(GlobalRolesGuard) // esto es mentira
+@UseGuards(GlobalRolesGuard)
 @ForbiddenRoles('banned')
 @WebSocketGateway(3001, {
     cors: {
