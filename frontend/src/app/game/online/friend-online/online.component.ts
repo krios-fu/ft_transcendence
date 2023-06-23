@@ -58,11 +58,11 @@ export class OnlineComponent implements OnInit, OnDestroy {
             user.defaultOffline = false
         })
 
-        if (payload.user.id === this.me?.id){
+        if (payload.user.id === this.me?.id) {
           this._redirectToRoomLists();
         }
 
-        if (payload.leave){
+        if (payload.leave) {
           // this.alertService.openSnackBar(`${payload.kicker} kicked player ${payload.user.nickName}`, 'OK')
 
           this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id)
@@ -80,11 +80,11 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
 
   set_status_players(payload: any) {
-    
-    payload.forEach((user_online: UserDto) =>{
-       let lol = this.players.find((user: UserDto) => user.id == user_online.id)
-       if (!lol)
-          this.players.push(user_online)
+
+    payload.forEach((user_online: UserDto) => {
+      let lol = this.players.find((user: UserDto) => user.id == user_online.id)
+      if (!lol)
+        this.players.push(user_online)
     })
 
     payload.forEach((online: UserDto) => {
@@ -117,11 +117,11 @@ export class OnlineComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(({ id }) => {
       this.formMessage.patchValue({ id });
       this.socketGameNotification.getUserConnection()
-      .subscribe(  {
-        next:(payload: any) => {
-          this.set_status_players(payload);
-        },
-      })
+        .subscribe({
+          next: (payload: any) => {
+            this.set_status_players(payload);
+          },
+        })
       this.room_id = id;
       this.admins = []
       this.players = []
@@ -164,7 +164,10 @@ export class OnlineComponent implements OnInit, OnDestroy {
                         if (player['id'] === this.room?.ownerId) {
                           player.is_owner_room = true;
                         }
-                        this.players.push(player)
+
+                        let lol = this.players.find((user: UserDto) => user.id == player.id)
+                        if (!lol)
+                          this.players.push(player)
                       }
                       this.socketGameNotification.joinRoomId(this.room_id as string, user_aux);
                     });
@@ -174,6 +177,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
     });
 
   }
+  
 
   ngOnDestroy(): void {
     console.log("NG ONLINE DESTROYDESTROY");
