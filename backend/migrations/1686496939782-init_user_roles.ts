@@ -8,25 +8,25 @@ import { CreatorUsername } from "./1686412674045-init_users";
 export class initUserRoles1686496939782 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const   creatorEntities: UserEntity[] = await queryRunner.manager
-                    .getRepository(UserEntity)
-                    .findBy([
-                        {
-                            username: "danrodri" as CreatorUsername
-                        },
-                        {
-                            username: "krios-fu" as CreatorUsername
-                        },
-                        {
-                            username: "onapoli-" as CreatorUsername
-                        }
-                    ]);
-        const   adminRoleEntity: RolesEntity = await queryRunner.manager
-                    .getRepository(RolesEntity)
-                    .findOneBy({
-                        role: "admin" as RoleName
-                    });
-        
+        const creatorEntities: UserEntity[] = await queryRunner.manager
+            .getRepository(UserEntity)
+            .findBy([
+                {
+                    username: "danrodri" as CreatorUsername
+                },
+                {
+                    username: "krios-fu" as CreatorUsername
+                },
+                {
+                    username: "onapoli-" as CreatorUsername
+                }
+            ]);
+        const adminRoleEntity: RolesEntity = await queryRunner.manager
+            .getRepository(RolesEntity)
+            .findOneBy({
+                role: "super-admin" as RoleName
+            });
+
         await queryRunner.manager.getRepository(UserRolesEntity).insert(
             creatorEntities.map(creator => {
                 return ({
@@ -40,35 +40,35 @@ export class initUserRoles1686496939782 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        const   creatorIds: number[] = (await queryRunner.manager
-                    .getRepository(UserEntity)
-                    .find({
-                        where: [
-                            {
-                                username: "krios-fu" as CreatorUsername
-                            },
-                            {
-                                username: "danrodri" as CreatorUsername
-                            },
-                            {
-                                username: "onapoli-" as CreatorUsername
-                            }
-                        ]
-                    })).map((user: UserEntity) => {
-                        return (user.id);
+        const creatorIds: number[] = (await queryRunner.manager
+            .getRepository(UserEntity)
+            .find({
+                where: [
+                    {
+                        username: "krios-fu" as CreatorUsername
+                    },
+                    {
+                        username: "danrodri" as CreatorUsername
+                    },
+                    {
+                        username: "onapoli-" as CreatorUsername
+                    }
+                ]
+            })).map((user: UserEntity) => {
+                return (user.id);
+            });
+        const userRoleIds: number[] = (await queryRunner.manager
+            .getRepository(UserRolesEntity)
+            .find({
+                where: creatorIds.map(id => {
+                    return ({
+                        id: id
                     });
-        const   userRoleIds: number[] = (await queryRunner.manager
-                    .getRepository(UserRolesEntity)
-                    .find({
-                        where: creatorIds.map(id => {
-                            return ({
-                                id: id
-                            });
-                        })
-                    })).map(userRoleEntity => {
-                        return (userRoleEntity.id);            
-                    });
-        
+                })
+            })).map(userRoleEntity => {
+                return (userRoleEntity.id);
+            });
+
         await queryRunner.manager.getRepository(UserRolesEntity).delete(
             userRoleIds
         );

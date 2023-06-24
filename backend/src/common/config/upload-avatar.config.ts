@@ -54,7 +54,7 @@ export const uploadRoomAvatarSettings: MulterOptions = {
             cb(null, dir);
         },
         filename: (req: IRequestUser, file: Express.Multer.File, cb): void => {
-            const roomId = req.param['room_id'];
+            const roomId = req.params['room_id'];
             if (roomId === undefined || isNaN(Number(roomId))) {
                 cb(new BadRequestException('no valid room id provided'), null);
             } else {

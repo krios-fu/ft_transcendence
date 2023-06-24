@@ -1,15 +1,20 @@
 import { MigrationInterface, QueryRunner } from "typeorm"
 import { RolesEntity } from "../src/roles/entity/roles.entity";
 
-export type    RoleName = "admin"
-                            | "private"
-                            | "banned"
-                            | "silenced";
+export type RoleName =
+    "super-admin"
+    | "admin"
+    | "private"
+    | "banned"
+    | "silenced";
 
 export class initRoles1686493785757 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.manager.getRepository(RolesEntity).insert([
+            {
+                role: "super-admin" as RoleName
+            },
             {
                 role: "admin" as RoleName
             },
@@ -29,15 +34,15 @@ export class initRoles1686493785757 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        const   roleNames: RoleName[] = [
+        const roleNames: RoleName[] = [
+            "super-admin",
             "admin",
             "private",
             "banned",
             "silenced"
         ];
-    
-        for (const roleName of roleNames)
-        {
+
+        for (const roleName of roleNames) {
             await queryRunner.manager.getRepository(RolesEntity).delete({
                 role: roleName
             });

@@ -32,9 +32,9 @@ import { environment } from 'src/environments/environment';
 import { AlertServices } from "../../services/alert.service";
 
 @Component({
-  selector: 'app-room-game-id',
-  templateUrl: './room-game-id.component.html',
-  styleUrls: ['./room-game-id.component.scss']
+    selector: 'app-room-game-id',
+    templateUrl: './room-game-id.component.html',
+    styleUrls: ['./room-game-id.component.scss']
 })
 export class RoomGameIdComponent implements OnInit, OnDestroy {
     private readonly config: Phaser.Types.Core.GameConfig;
@@ -42,17 +42,22 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     private scenes?: BaseScene[];
     private game?: Phaser.Game;
     private routeParamsSubscription?: Subscription;
-    me ?: UserDto;
+    me?: UserDto;
     user?: UserDto;
     room_id: string;
-    room_dto? : RoomDto;
+    room_dto?: RoomDto;
     close = false;
+    urlPreview = 'https://www.pngall.com/wp-content/uploads/2016/05/Ping-Pong-Download-PNG.png'
     public formMessage = new FormGroup({
         message: new FormControl('')
-      })
+    })
+
+    // photoUrl = 'https://www.pngall.com/wp-content/uploads/2016/05/Ping-Pong-Download-PNG.png'
 
 
-    constructor (
+
+
+    constructor(
         private readonly socketService: SocketService,
         private readonly lagCompensator: LagCompensationService,
         private readonly loadService: LoadService,
@@ -73,7 +78,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             width: 800,
             height: 600,
             scale: {
-                mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT ,
+                mode: Phaser.Scale.WIDTH_CONTROLS_HEIGHT,
                 autoCenter: Phaser.Scale.CENTER_BOTH
             },
             fps: {
@@ -100,26 +105,27 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this._initGame(roomId);
         delete this.room_dto;
         this.http.get<RoomDto>(`${environment.apiUrl}room/${this.room_id}`)
-        .subscribe((entity) => {
-            this.room_dto = entity;
-        });
+            .subscribe((entity) => {
+                this.room_dto = entity;
+                if (this.room_dto?.photoUrl)
+                    this.urlPreview = this.room_dto?.photoUrl as string;
+            });
         this.userService.getUser('me')
-        .subscribe((users : UserDto) => {
-            this.me = users;
-        })
+            .subscribe((users: UserDto) => {
+                this.me = users;
+            })
     }
 
     private _redirectToRoomLists(): void {
-    this.router.navigate(['/game']);
+        this.router.navigate(['/game']);
     }
 
     private _checkUserInRoom(roomId: string): void {
-        const   userId: string | null = this.authService.getAuthId();
-    
-        if (!userId)
-        {
+        const userId: string | null = this.authService.getAuthId();
+
+        if (!userId) {
             this.router.navigateByUrl("/login");
-            return ;
+            return;
         }
         this.roomGameIdService.getUserInRoom(userId, roomId)
             .subscribe({
@@ -141,13 +147,17 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             this.formMessage.patchValue({ id });
             this._checkUserInRoom(id);            
         });
+        // this.alertService.openGameInstructions();
+    }
+
+    info(){
         this.alertService.openGameInstructions();
     }
 
     // Returns the HTMLCanvasElement that is created by Phaser.
     private _getGameCanvas(): HTMLCanvasElement | undefined {
-        const   canvas: HTMLCanvasElement | null =
-                    document.querySelector("canvas");
+        const canvas: HTMLCanvasElement | null =
+            document.querySelector("canvas");
 
         return (canvas ? canvas : undefined);
     }
@@ -155,7 +165,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     // Mainly to remove the socket instance's event listeners
     private _destroyScenes(scenes: BaseScene[] | undefined): void {
         if (!scenes)
-            return ;
+            return;
         for (const scene of scenes) {
             scene.destroy();
         }
@@ -169,8 +179,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     **  because they are associated to game instances.
     */
     private _initGame(roomId: string): void {
-        if (this.game)
-        {
+        if (this.game) {
             this._destroyScenes(this.scenes);
             this.game.destroy(false, false);
             this.config.canvas = this._getGameCanvas();
@@ -179,16 +188,16 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             new StartScene(this.socket, this.recoveryService),
             new MenuScene(this.socket, this.recoveryService),
             new MenuHeroScene(this.socket, this.soundService,
-                                this.recoveryService),
+                this.recoveryService),
             new PlayerScene(this.socket, this.lagCompensator,
-                                this.loadService, this.soundService,
-                                this.recoveryService),
+                this.loadService, this.soundService,
+                this.recoveryService),
             new ClassicPlayerScene(this.socket, this.lagCompensator,
-                                    this.loadService, this.soundService,
-                                    this.recoveryService),
+                this.loadService, this.soundService,
+                this.recoveryService),
             new SpectatorScene(this.socket, this.lagCompensator,
-                                    this.loadService, this.soundService,
-                                    this.recoveryService),
+                this.loadService, this.soundService,
+                this.recoveryService),
             new EndScene(this.socket, this.recoveryService)
         ];
         this.config.scene = this.scenes;
@@ -199,16 +208,14 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     /*'leaveRoom' event is emitted at ngOnDestroy when user is redirected.*/
-    leaveRoom(){
-        const   userId: string | null = this.authService.getAuthId();
-    
-        if (!userId)
-        {
+    leaveRoom() {
+        const userId: string | null = this.authService.getAuthId();
+
+        if (!userId) {
             this.router.navigateByUrl("/login");
-            return ;
+            return;
         }
         this.gameServiceNoti.roomLeave(this.room_id, this.me);
-        console.log('LEAVE', userId)
         this.roomGameIdService.unregisterFromRoom(userId, this.room_id)
             .subscribe({
                 next: () => {
@@ -216,13 +223,13 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                 },
                 error: (err: any) => {
                     let errorMsg: string;
-    
+
                     if (err.error
-                            && err.error.message)
+                        && err.error.message)
                         errorMsg = err.error.message;
                     else
                         errorMsg = "Cannot unregister owner"
-                                    + " from non-empty room.";
+                            + " from non-empty room.";
                     this.alertService.openSnackBar(errorMsg, "Ok");
                     this._redirectToRoomLists();
                 }
@@ -230,11 +237,51 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
 
-    open_chat(){
+    onFile(event: any) {
+
+        let file = event.target.files[0];
+
+        const formData = new FormData();
+
+        formData.append("avatar", file);
+
+        this.http.post<RoomDto>(`${environment.apiUrl}room/${this.room_id}/avatar`, formData)
+            .subscribe(
+                (data: RoomDto) => {
+                    this.room_dto = data;
+
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        this.urlPreview = reader.result as string;
+                    }
+                    reader.readAsDataURL(file as any);
+                });
+    }
+
+    change_name(value: string) {
+        const name = value.trim();
+        if (value === this.room_dto?.roomName)
+            this.edit()
+        else if (name.length < 3 || name.length > 8) {
+            this.alertService.openSnackBar('NAME ROOM INVALID', 'OK');
+            this.edit()
+        }
+        else {
+            let form = new FormData();
+            this.http.put<RoomDto>(`${environment.apiUrl}room/${this.room_id}`, { ...form, roomName: name })
+                .subscribe((data : RoomDto) => {
+                    this.edit()
+                    this.room_dto = data
+                })
+        }
+    }
+
+
+    edit() {
         this.close = !this.close;
     }
 
-    @HostListener('window:keyup.i', ['$event'])
+    @HostListener('window:keyup.shift.i', ['$event'])
     handleKeyDown() {
         this.alertService.openGameInstructions();
     }
