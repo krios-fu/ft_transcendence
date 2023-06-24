@@ -212,7 +212,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             return;
         }
         this.gameServiceNoti.roomLeave(this.room_id, this.me);
-        console.log('LEAVE', userId)
         this.roomGameIdService.unregisterFromRoom(userId, this.room_id)
             .subscribe({
                 next: () => {

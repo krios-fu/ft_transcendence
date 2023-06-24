@@ -204,6 +204,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   leave(player: UserDto) {
     this.chat.sendMessageGame(`kicked player ${player.nickName}`, this.me?.id as number, 'game' + this.room_id);
+    this.roomGameIdService.unregisterFromRoom(player.id, this.room_id)
     this.socketGameNotification.roomLeave(this.room_id, player, true, this.me?.username);
   }
 
