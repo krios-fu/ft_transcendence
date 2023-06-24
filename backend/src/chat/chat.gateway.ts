@@ -97,17 +97,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let users_send = [];
 
     client.join(`noti_roomGame_${payload.room}`);
-    client.join(payload.user.username);
     let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
-
     for (let user of users_in_room) {
       let data = user.data;
-      if (!(users_send.find((element: any) => element.id == data.id)))
         users_send.push(data);
     }
-    // send all user in room
-    this.server.to(payload.user.username).emit(payload.user.username, users_send);
     this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', users_send);
+    this.server.to(payload.user.username).emit(payload.user.username, users_send);
   }
 
   @SubscribeMessage('room_leave')
@@ -115,7 +111,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: { room: string, user: any }) {
     this.server.to(`noti_roomGame_${payload.room}`).emit('room_leave', payload)
-    client.leave(`noti_roomGame_${payload.room}`);
+    // client.leave(`noti_roomGame_${payload.room}`);
   }
 
 

@@ -30,6 +30,8 @@ import { MatchHistoryComponent } from './stats/match-history/match-history.compo
 import { RankingComponent } from './stats/ranking/ranking.component';
 import { AchievementsComponent } from './stats/achievements/achievements.component';
 import { SearchComponent } from '../search/search.component';
+import {MatMenuModule} from "@angular/material/menu";
+
 // import { MatDividerModule } from '@angular/material/divider';
 
 
@@ -79,7 +81,8 @@ import { SearchComponent } from '../search/search.component';
         MatListModule,
         MatTableModule,
         MatPaginatorModule,
-        MatCardModule
+        MatCardModule,
+        MatMenuModule
 
     ],
 })

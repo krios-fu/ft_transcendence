@@ -3,9 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { GameComponent } from './game.component';
 import { RoomGameIdComponent } from './room-game-id/room-game-id.component';
-import { AuthGuard } from '../guards/auth.guard';
 import { GamehomeComponent } from './gamehome/gamehome.component';
-
 
 
 const GameRoutes: Routes = [

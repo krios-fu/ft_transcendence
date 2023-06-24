@@ -1,7 +1,7 @@
-import { BaseEntity } from "src/common/classes/base.entity";
-import { RoomRolesEntity } from "src/room_roles/entity/room_roles.entity";
-import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
-import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
+import { UserRolesEntity } from "../../user_roles/entity/user_roles.entity";
+import { UserRoomRolesEntity } from "../../user_room_roles/entity/user_room_roles.entity";
 import { 
     Column, 
     Entity, 

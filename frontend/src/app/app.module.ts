@@ -35,8 +35,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SocketNotificationService } from './services/socket-notification.service';
 import { SharedService } from './profile/profile/profile-user/profile-user.component';
-import { RoomComponent } from './room/room.component';
 import { SocketService } from './game/services/socket.service';
+import { WtfComponent } from './login/wtf/wtf.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {
     reconnectionAttempts: 3
@@ -56,7 +56,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
 
         MatchNotificationComponent,
         GameInstructionsComponent,
-        RoomPasswordInputComponent
+        RoomPasswordInputComponent,
+        WtfComponent
     ],
     providers: [{
         provide: HTTP_INTERCEPTORS,

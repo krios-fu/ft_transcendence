@@ -154,7 +154,7 @@ export class    LagCompensationService {
                 || playerData.hero.active)
             return ;
         playerData.hero.active = move;
-        playerData.hero.pointInvocation = false; //Leaving it false for testing
+        playerData.hero.pointInvocation = true;
     }
 
     input(buffer: IMatchData[], paddleMove: number, heroMove: number,

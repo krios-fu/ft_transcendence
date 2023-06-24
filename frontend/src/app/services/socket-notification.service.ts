@@ -125,8 +125,8 @@ export class SocketNotificationService implements OnInit {
         this.socket.emit('join_room_game', { room: _room, user: _user });
     }
 
-    roomLeave(_room?: string, _user?: UserDto) {
-        this.socket.emit('room_leave', { room: _room, user: _user });
+    roomLeave(_room?: string, _user?: UserDto, is_leave?: boolean, kicker ?: string ) {
+        this.socket.emit('room_leave', { room: _room, user: _user,  leave: is_leave, kicker: kicker });
     }
 
     sendConnetionRoomGameId(_room: string, _user: UserDto) {
@@ -137,7 +137,7 @@ export class SocketNotificationService implements OnInit {
         return this.socket.fromEvent(userName);
     }
 
-    getUserConnection() {
+   getUserConnection() {
         return this.socket.fromEvent('noti_game_room');
     }
 
