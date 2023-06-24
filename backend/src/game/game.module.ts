@@ -22,6 +22,9 @@ import { GameUpdateService } from './game.updateService';
 import { UserRoomModule } from 'src/user_room/user_room.module';
 import { RoomModule } from 'src/room/room.module';
 import { RoomRolesModule } from 'src/room_roles/room_roles.module';
+import { UserRolesModule } from 'src/user_roles/user_roles.module';
+import {UserRoomRolesModule} from "../user_room_roles/user_room_roles.module";
+import {BanModule} from "../ban/ban.module";
 
 @Module({
   imports: [
@@ -34,6 +37,9 @@ import { RoomRolesModule } from 'src/room_roles/room_roles.module';
     AchievementsUserModule,
     RoomModule,
     UserRoomModule,
+    UserRolesModule,
+    UserRoomRolesModule,
+    BanModule,
     RoomRolesModule
   ],
   providers: [
@@ -51,5 +57,8 @@ import { RoomRolesModule } from 'src/room_roles/room_roles.module';
     GameMatchmakingService,
     GameRoomService
   ],
+  exports: [
+      SocketHelper
+  ]
 })
 export class GameModule {}

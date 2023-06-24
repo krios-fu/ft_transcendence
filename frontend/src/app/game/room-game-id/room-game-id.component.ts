@@ -70,7 +70,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         private readonly router: Router,
         private readonly authService: AuthService,
         private readonly roomGameIdService: RoomGameIdService,
-        private readonly alertService: AlertServices
+        private readonly alertService: AlertServices,
     ) {
         this.config = {
             type: Phaser.CANVAS,
@@ -147,10 +147,10 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             this.formMessage.patchValue({ id });
             this._checkUserInRoom(id);            
         });
-        // this.alertService.openGameInstructions();
+        this.socketService.bannedRoomEvent();
     }
 
-    info(){
+    info(): void {
         this.alertService.openGameInstructions();
     }
 
@@ -291,6 +291,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.routeParamsSubscription?.unsubscribe();
         this._destroyScenes(this.scenes);
         this.game?.destroy(true, false);
+        this.socketService.unsubscribeFromEvent('banned_room');
     }
 
 }

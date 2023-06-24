@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as SockIO from 'socket.io-client';
 import { IAuthPayload } from 'src/app/interfaces/iauth-payload.interface';
+import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 
 enum SocketException {
     Unauthorized = "unauthorized",
     Forbidden = "forbidden",
-    BadRequest = "badRequest"
+    BadRequest = "badRequest",
+    InternalServerError = "internalServerError"
 }
 
 interface   SocketExceptionData {
@@ -29,7 +31,8 @@ export class    SocketService {
     private _failedEvents: SocketExceptionData[];
 
     constructor(
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly alertService: AlertServices
     ) {
         this._socket = SockIO.io("ws://localhost:3001", {
             reconnectionAttempts: 3
@@ -75,11 +78,28 @@ export class    SocketService {
     }
 
     private _emitFailedEvents(): void {
-        this._failedEvents.forEach((event) => {
+        for (let event of this._failedEvents) {
             this.emit(event.targetEvent, event.data);
-        });
+        };
         this._failedEvents = [];
     }
+
+    bannedGlobalEvent(): void {
+        this._socket.on("banned_global", () => {
+            this.authService.redirectBan();
+        });
+    }
+
+    bannedRoomEvent(): void {
+        this._socket.on("banned_room", () => {
+            this.alertService.openSnackBar('You have been banned from the room', 'dismiss');
+            this.authService.redirectHome();
+        });
+    }
+
+    /* diseño de gestion de eventos: 
+    roles: silenciado, baneado, admin 
+    */
 
     private _addConnectionEvents(): void {
         this._socket.on("connect", () => {
@@ -88,15 +108,24 @@ export class    SocketService {
             this.emit("authentication", this.authService.getAuthToken());
         });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
-            console.log("Websocket exception: ", xcpt);
             if (xcpt.cause != SocketException.Forbidden)
             {
-                if (xcpt.targetEvent != "authentication")
+                if (xcpt.targetEvent != "authentication"){
+                    console.log(`[ EXCEPTION: Pushing to ${xcpt.targetEvent} ]`);
                     this._failedEvents.push(xcpt);
+                }
                 if (this._authenticating)
                     return ;
                 this._authenticating = true;
                 this._reAuthenticateConnection();
+            }
+            if (xcpt.cause === SocketException.Forbidden){
+                if (xcpt.data.forbiddenCtx === 'global') {
+                    this.authService.redirectBan();
+                } else if (xcpt.data.forbiddenCtx === 'room') {
+                    this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+                    this.authService.redirectHome();
+                }
             }
         });
         this._socket.on("authSuccess", () => {
@@ -116,6 +145,7 @@ export class    SocketService {
     }
 
     joinRoom(roomId: string): void {
+        console.log('4. [ JOIN ROOM ]');
         if (!roomId || roomId === "")
             return ;
         this.emit<string>("joinRoom", roomId);
@@ -133,6 +163,10 @@ export class    SocketService {
                 });
             })
         );
+    }
+
+    unsubscribeFromEvent(event: string): void {
+        this._socket.off(event);
     }
 
 }
