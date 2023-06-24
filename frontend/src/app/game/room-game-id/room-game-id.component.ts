@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core"
+import { Component, HostListener, OnDestroy, OnInit } from "@angular/core"
 import * as Phaser from 'phaser'
 import * as SockIO from 'socket.io-client'
 import { ClassicPlayerScene } from "../scenes/ClassicPlayerScene";
@@ -30,7 +30,6 @@ import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { AuthService } from "src/app/services/auth.service";
 import { environment } from 'src/environments/environment';
 import { AlertServices } from "../../services/alert.service";
-
 
 @Component({
   selector: 'app-room-game-id',
@@ -141,7 +140,8 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.routeParamsSubscription = this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
             this._checkUserInRoom(id);            
-        });        
+        });
+        this.alertService.openGameInstructions();
     }
 
     // Returns the HTMLCanvasElement that is created by Phaser.
@@ -232,6 +232,11 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
 
     open_chat(){
         this.close = !this.close;
+    }
+
+    @HostListener('window:keyup.i', ['$event'])
+    handleKeyDown() {
+        this.alertService.openGameInstructions();
     }
 
     ngOnDestroy(): void {

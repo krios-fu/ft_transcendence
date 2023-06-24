@@ -75,6 +75,7 @@ export class AlertServices {
   }
 
   openGameInstructions(): void {
+    this._dialog.closeAll();
     this._dialog.open(GameInstructionsComponent, {
       minWidth: '300px',
       maxWidth: '450px',
