@@ -33,6 +33,7 @@ import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config
 import { Express } from 'express';
 import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 import { UserCountData } from './types/user-count-data.type';
+import * as fs from "fs/promises";
 
 @Controller('users')
 export class UserController {
@@ -194,7 +195,10 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path}`;
+        const photoUrl = `${process.env.SERVER_URL}/${avatar.path}`;
+    
+        if (user.photoUrl !== photoUrl)
+            await this.userService.removeAvatarFile(user.username, user.photoUrl);
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
@@ -217,7 +221,10 @@ export class UserController {
             this.userLogger.error(`User with id ${userId} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path}`;
+        const photoUrl = `${process.env.SERVER_URL}/${avatar.path}`;
+
+        if (user.photoUrl !== photoUrl)
+            await this.userService.removeAvatarFile(user.username, user.photoUrl);
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
     }
 
