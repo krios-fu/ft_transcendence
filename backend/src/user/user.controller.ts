@@ -195,7 +195,7 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `${process.env.SERVER_URL}/${avatar.path}`;
+        const photoUrl = `http://localhost:3000/${avatar.path}`;
     
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
@@ -221,7 +221,7 @@ export class UserController {
             this.userLogger.error(`User with id ${userId} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `${process.env.SERVER_URL}/${avatar.path}`;
+        const photoUrl = `http://localhost:3000/${avatar.path}`;
 
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
