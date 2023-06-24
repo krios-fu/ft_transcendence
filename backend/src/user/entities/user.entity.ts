@@ -73,7 +73,7 @@ export class UserEntity extends BaseEntity {
 		type: 'varchar',
 		unique: true,
 		nullable: false,
-		length: 8
+		length: 11
 	})
 	nickName : string;
 
