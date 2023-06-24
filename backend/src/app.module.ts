@@ -44,7 +44,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
             entities: ["dist/**/*.entity{.ts,.js}"],
-            synchronize: true, // should be managed in dev only,
+            migrations: ['dist/migrations/*{.ts,.js}'],
+            synchronize: false,
+            migrationsRun: true,
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'static'),

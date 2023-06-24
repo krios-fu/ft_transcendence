@@ -3,7 +3,7 @@
 
 
     <div id="container">
-      <div id="game_zone" style="border-radius: 3%;"></div>
+      <div id="game_zone"></div>
     </div>
   </div>
 
@@ -48,6 +48,11 @@
 
         <mat-grid-tile>
 
+          <span>
+            <a mat-icon-button (click)="info()">
+              <mat-icon>info</mat-icon>
+            </a>
+          </span>
           <span>
             <a mat-icon-button (click)="leaveRoom()">
               <mat-icon>logout</mat-icon>

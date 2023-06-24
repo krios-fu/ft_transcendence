@@ -20,7 +20,12 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "nest": "nest",
-    "nest:help": "nest --help"
+    "nest:help": "nest --help",
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
+    "typeorm:run-migrations": "npm run typeorm migration:run -- -d ./typeorm.config.ts",
+    "typeorm:generate-migration": "npm run typeorm -- -d ./typeorm.config.ts migration:generate ./migrations/$npm_config_name",
+    "typeorm:create-migration": "npm run typeorm -- migration:create ./migrations/$npm_config_name",
+    "typeorm:revert-migration": "npm run typeorm -- -d ./typeorm.config.ts migration:revert"
   },
   "dependencies": {
     "@nestjs/cli": "^9.1.9",

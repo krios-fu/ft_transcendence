@@ -1,5 +1,5 @@
-import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
-import { BaseEntity } from "src/common/classes/base.entity";
+import { AchievementUserEntity } from "../../achievements_user/entity/achievement_user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
 import {
     Column,
     Entity,

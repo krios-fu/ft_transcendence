@@ -1,6 +1,6 @@
-import { BaseEntity } from "src/common/classes/base.entity";
-import { RoomEntity } from "src/room/entity/room.entity";
-import { UserEntity } from "src/user/entities/user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { RoomEntity } from "../../room/entity/room.entity";
+import { UserEntity } from "../../user/entities/user.entity";
 import { Column,
     Entity,
     Index,
@@ -8,7 +8,7 @@ import { Column,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn } from "typeorm";
-import { UserRoomRolesEntity } from "src/user_room_roles/entity/user_room_roles.entity";
+import { UserRoomRolesEntity } from "../../user_room_roles/entity/user_room_roles.entity";
 import { UserRoomDto } from "../dto/user_room.dto";
 
 @Entity({ name: 'users_room' })

@@ -8,8 +8,8 @@ import {
     PrimaryGeneratedColumn
 } from "typeorm";
 import { CreateAchievementUserDto } from "../dto/achievement_user.dto";
-import { UserEntity } from "src/user/entities/user.entity";
-import { AchievementEntity } from "src/achievements/entity/achievement.entity";
+import { UserEntity } from "../../user/entities/user.entity";
+import { AchievementEntity } from "../../achievements/entity/achievement.entity";
 
 @Entity({ name: 'achievement_user' })
 @Index(['achievementId', 'userId'], { unique: true })

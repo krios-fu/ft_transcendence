@@ -1,14 +1,16 @@
 #container {
   display: grid;
   position: relative;
-  width: 95%;
-  padding-top: 25px;
+  width: 100%;
+  height: 100%;
   place-items: center;
   color: white;
   // max-height: 80vh; /* Establece la altura máxima del div al 100% del alto de la ventana */
   overflow: none;
-  height: 85vh;
+}
 
+#game_zone {
+  max-width: 80%;
 }
 
 .example-full-width {
