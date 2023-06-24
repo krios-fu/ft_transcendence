@@ -132,7 +132,7 @@ export class AuthService {
     }
 
     public redirectBan(): void {
-        this.router.navigateByUrl('/wtf');
+        this.router.navigateByUrl('/login/wtf');
     }
 
     /* Solo permite ejecución a usuarios logeados */

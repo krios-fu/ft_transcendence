@@ -3,7 +3,7 @@ import {
     Strategy,
     ExtractJwt,
 } from 'passport-jwt';
-import { ForbiddenException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { IJwtPayload } from '../../common/interfaces/request-payload.interface';
 import { UserService } from '../../user/services/user.service';
 import { NotValidatedException } from '../../common/classes/not-validated.exception';

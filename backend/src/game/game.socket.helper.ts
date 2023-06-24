@@ -95,6 +95,7 @@ export class    SocketHelper {
         ).fetchSockets();
         userSockets.forEach((sock) => {
             sock.join(roomId);
+
         });
     }
 
@@ -108,7 +109,7 @@ export class    SocketHelper {
 
         roomSockets = await this._server.in(roomId).fetchSockets();
         roomSockets.forEach((sock) => {
-            console.log(`LEAVE CALL: ${roomId}`);
+            console.log(`Conn: user leaves ${roomId}`);
             sock.leave(roomId);
         });
     }
@@ -164,15 +165,11 @@ export class    SocketHelper {
             await this.getAllUserClients(username);
         let roles: string[] = [];
 
-        console.log('[ refreshGlobalRoles ] caught a new global role...');
-        console.log(`[ refreshGlobalRoles ] socket set length: ${sockets.length}`);
         roles = query.map((ur: UserRolesEntity) => ur.role.role);
         for (let socket of sockets) {
             socket.data['globalRoles'] = roles;
-            console.log(`Roles comprobados: ${JSON.stringify(roles, null, 2)}, aserción: ${roles.includes('banned')}`);
             if (roles.includes('banned')) {
-                console.log('emitiendo a banFromApp');
-                socket.emit('banned', 'global');
+                socket.emit('banned_global');
             }
         }
     }
@@ -215,9 +212,9 @@ export class    SocketHelper {
             if (!socket.data[roomKey].includes('banned') && (banned)) {
                 socket.data[roomKey].push('banned');
             }
-            if (banned) {
+            if (banned && socket.rooms.has(roomKey)) {
                 socket.leave(roomKey);
-                socket.emit("banned", "room");
+                socket.emit("banned_room");
             }
         }
     }
@@ -229,38 +226,15 @@ export class    SocketHelper {
         if (!user) {
             return ; /* desconexion en verdad */
         }
-        // switch (creds.ctxName) {
-        //     case 'global':
-        //         return this._refreshGlobalRoles(creds, user.username);
-        //     case 'room':
-        //         return this._refreshRoomRoles(creds, user.username);
-        //     case 'banned':
-        //         return this._refreshBannedRoles(creds, user.username);
-        //     default:
-        //         return ;
-        // }
-
         switch (creds.ctxName) {
             case 'global':
-                this._refreshGlobalRoles(creds, user.username);
-                break;
+                return this._refreshGlobalRoles(creds, user.username);
             case 'room':
-                this._refreshRoomRoles(creds, user.username);
-                break;
+                return this._refreshRoomRoles(creds, user.username);
             case 'banned':
-                this._refreshBannedRoles(creds, user.username);
-                break;
+                return this._refreshBannedRoles(creds, user.username);
             default:
                 return ;
-        }
-        const sockets = await this.getAllUserClients(user.username);
-        for (let socket of sockets) {
-            console.log(`[ refreshUserRoles ${creds.ctxName}]`);
-            console.log(`   -> rooms: `);
-            console.log(`   -> data: ${socket.data}`)
-            for (let room of socket.rooms) {
-                console.log(`       -> room: ${room}`);
-            }
         }
     }
 }

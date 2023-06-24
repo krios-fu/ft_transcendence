@@ -78,22 +78,26 @@ export class    SocketService {
     }
 
     private _emitFailedEvents(): void {
-        this._failedEvents.forEach((event) => {
+        console.log(`[ IN EMIT FAILED EVENTS ${this._failedEvents.length}]`)
+        for (let event of this._failedEvents) {
+            console.log(`[ EMIT FAILED EVENTS: ${event.targetEvent} ]`)
             this.emit(event.targetEvent, event.data);
-        });
+        };
         this._failedEvents = [];
     }
 
-    private _bannedEvent(): void {
-        console.log('estoy escuchando');
-        this._socket.on("banned", (banCtx: string) => {
-            console.log('taggeado en banned events');
-            if (banCtx === 'room') {
-                this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
-                this.authService.redirectHome();
-            } else if (banCtx === 'global'){
-                this.authService.redirectBan();
-            }
+    bannedGlobalEvent(): void {
+        this._socket.on("banned_global", () => {
+            console.log('[ TAG BANNED GLOBAL EVENT ]');
+            this.authService.redirectBan();
+        });
+    }
+
+    bannedRoomEvent(): void {
+        this._socket.on("banned_room", () => {
+            console.log('[ TAG BANNED ROOM EVENT ]');
+            this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+            this.authService.redirectHome();
         });
     }
 
@@ -110,8 +114,10 @@ export class    SocketService {
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
             if (xcpt.cause != SocketException.Forbidden)
             {
-                if (xcpt.targetEvent != "authentication")
+                if (xcpt.targetEvent != "authentication"){
+                    console.log(`[ EXCEPTION: Pushing to ${xcpt.targetEvent} ]`);
                     this._failedEvents.push(xcpt);
+                }
                 if (this._authenticating)
                     return ;
                 this._authenticating = true;
@@ -137,13 +143,13 @@ export class    SocketService {
                 this._failedEvents = [];
             this._lastAuthSuccess = currentTime;
         });
-        this._bannedEvent();
         this._socket.on("disconnect", () => {
             this._reconnect();
         });
     }
 
     joinRoom(roomId: string): void {
+        console.log('4. [ JOIN ROOM ]');
         if (!roomId || roomId === "")
             return ;
         this.emit<string>("joinRoom", roomId);
@@ -161,6 +167,10 @@ export class    SocketService {
                 });
             })
         );
+    }
+
+    unsubscribeFromEvent(event: string): void {
+        this._socket.off(event);
     }
 
 }

@@ -66,7 +66,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         private readonly router: Router,
         private readonly authService: AuthService,
         private readonly roomGameIdService: RoomGameIdService,
-        private readonly alertService: AlertServices
+        private readonly alertService: AlertServices,
     ) {
         this.config = {
             type: Phaser.CANVAS,
@@ -90,12 +90,14 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     private _initRoomConnection(roomId: string): void {
+        console.log('2. [ INIT CONNECTION ]');
         if (this.room_id != roomId)
             this.socketService.emit<string>("leaveRoom", this.room_id);
         this.socketService.joinRoom(roomId);
     }
 
     private _initOps(roomId: string): void {
+        console.log('1. [ INIT OPS ]');
         this._initRoomConnection(roomId); //Call before reassigning this.room_id
         this.room_id = roomId;
         this._initGame(roomId);
@@ -138,10 +140,12 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        console.log('0. [ NG ON INIT ]');
         this.routeParamsSubscription = this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
             this._checkUserInRoom(id);            
-        });        
+        });
+        this.socketService.bannedRoomEvent();
     }
 
     // Returns the HTMLCanvasElement that is created by Phaser.
@@ -237,6 +241,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.routeParamsSubscription?.unsubscribe();
         this._destroyScenes(this.scenes);
         this.game?.destroy(true, false);
+        this.socketService.unsubscribeFromEvent('banned_room');
     }
 
 }

@@ -35,9 +35,9 @@ import { MatchInviteResponseDto } from './dtos/matchInviteResponse.dto';
 import { NumberValidator } from './validators/number.validator';
 import { StringValidator } from './validators/string.validator';
 import { GameRoomService } from './game.room.service';
-import {UserRoomRolesService} from "../user_room_roles/user_room_roles.service";
-import {UserRoomRolesEntity} from "../user_room_roles/entity/user_room_roles.entity";
-import {GameRolesGuard} from "./guards/game.roles.guard";
+import { UserRoomRolesService } from "../user_room_roles/user_room_roles.service";
+import { UserRoomRolesEntity } from "../user_room_roles/entity/user_room_roles.entity";
+import { GameRolesGuard } from "./guards/game.roles.guard";
 import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
 import { GlobalRolesGuard } from './guards/global.roles.guard';
 
@@ -70,6 +70,7 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     handleConnection(client: Socket, ...args: any[]) {
+        console.log(`Socket ${client.id} connected`)
         this.socketAuthService.addAuthTimeout(client);
     }
 
@@ -92,6 +93,7 @@ export class    GameGateway implements OnGatewayInit,
             await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
+        console.log(`[ EMITIENDO A AUTHSUCCESS ]`)
         client.emit("authSuccess");
     }
 
@@ -114,6 +116,7 @@ export class    GameGateway implements OnGatewayInit,
             this.updateService.getClientInitData(roomName, client);
 
         this.roomService.join(
+            client,
             username,
             roomName
         );
@@ -133,7 +136,7 @@ export class    GameGateway implements OnGatewayInit,
             .getUserRolesInRoom(userId, roomId))
             .map((role: UserRoomRolesEntity) => role.role.role);
         console.log(`${username} joined Game room ${roomName}`);
-        client.emit('updateRoomUsers', (await this.socketHelper.getAllUsersInRoom(roomId)).length);
+        //client.emit('updateRoomUsers', (await this.socketHelper.getAllUsersInRoom(roomId)).length);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)

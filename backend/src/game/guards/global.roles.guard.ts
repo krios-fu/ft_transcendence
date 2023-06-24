@@ -1,18 +1,14 @@
 import {CanActivate, ExecutionContext, Injectable} from "@nestjs/common";
-import {Observable} from "rxjs";
 import {Reflector} from "@nestjs/core";
 import {WsArgumentsHost} from "@nestjs/common/interfaces";
 import {UnauthorizedWsException} from "../exceptions/unauthorized.wsException";
 import {ForbiddenWsException} from "../exceptions/forbidden.wsException";
 import { Socket } from "socket.io";
-import { UserRolesService } from "src/user_roles/user_roles.service";
-import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 
 
 @Injectable()
 export class GlobalRolesGuard implements CanActivate {
-    constructor(private readonly reflector: Reflector,
-                private readonly userRolesService: UserRolesService) { }
+    constructor(private readonly reflector: Reflector) { }
 
     private _compliesWithRequiredRoles(constrains: string[], roles: string[]): boolean {
         if (!constrains || !constrains.length) {
@@ -34,15 +30,8 @@ export class GlobalRolesGuard implements CanActivate {
 
     private async _getRoles(wsCtx: WsArgumentsHost, handlerName: string): Promise<string[]> {
         const client: Socket = wsCtx.getClient<Socket>();
-        const username: string = client.data.username;
         let   roles: string[] = client.data.globalRoles;
 
-        if (!roles && handlerName === 'authentication') {
-            roles = (await this.userRolesService
-                .getAllRolesFromUsername(username))
-                .map((userRole: UserRolesEntity) => userRole.role.role);
-            client.data.globalRoles = roles;
-        }
         if (!roles && handlerName !== 'authentication') {
             throw new UnauthorizedWsException(
                 handlerName,

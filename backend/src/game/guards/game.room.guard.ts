@@ -38,9 +38,8 @@ export class    GameRoomGuard implements CanActivate {
                                  roomId: number,
                                  username: string): Promise<boolean> {
         if (client[SocketHelper.roomIdToName(roomId)] &&
-            client[SocketHelper.roomIdToName(roomId)].includes('banned')) {
+            client[SocketHelper.roomIdToName(roomId)].includes('banned')) 
             return (false);
-        }
         try {
             const   userEntity: Promise<UserEntity> =
                             this.userService.findOneByUsername(username);
