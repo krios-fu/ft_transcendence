@@ -78,9 +78,7 @@ export class    SocketService {
     }
 
     private _emitFailedEvents(): void {
-        console.log(`[ IN EMIT FAILED EVENTS ${this._failedEvents.length}]`)
         for (let event of this._failedEvents) {
-            console.log(`[ EMIT FAILED EVENTS: ${event.targetEvent} ]`)
             this.emit(event.targetEvent, event.data);
         };
         this._failedEvents = [];
@@ -88,15 +86,13 @@ export class    SocketService {
 
     bannedGlobalEvent(): void {
         this._socket.on("banned_global", () => {
-            console.log('[ TAG BANNED GLOBAL EVENT ]');
             this.authService.redirectBan();
         });
     }
 
     bannedRoomEvent(): void {
         this._socket.on("banned_room", () => {
-            console.log('[ TAG BANNED ROOM EVENT ]');
-            this.alertService.openSnackBar('You have been kicked from the room', 'dismiss');
+            this.alertService.openSnackBar('You have been banned from the room', 'dismiss');
             this.authService.redirectHome();
         });
     }

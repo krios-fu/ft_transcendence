@@ -94,14 +94,12 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     private _initRoomConnection(roomId: string): void {
-        console.log('2. [ INIT CONNECTION ]');
         if (this.room_id != roomId)
             this.socketService.emit<string>("leaveRoom", this.room_id);
         this.socketService.joinRoom(roomId);
     }
 
     private _initOps(roomId: string): void {
-        console.log('1. [ INIT OPS ]');
         this._initRoomConnection(roomId); //Call before reassigning this.room_id
         this.room_id = roomId;
         this._initGame(roomId);
@@ -145,7 +143,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        console.log('0. [ NG ON INIT ]');
         this.routeParamsSubscription = this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
             this._checkUserInRoom(id);            
