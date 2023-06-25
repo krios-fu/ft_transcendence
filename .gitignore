@@ -11,4 +11,14 @@
 # ~~ python virtual environment ~~ #
 venv
 **/__pycache__
-backend/static/
+backend/static/*
+!backend/static/users
+backend/static/users/*
+!backend/static/users/danrodri.*
+!backend/static/users/krios-fu.*
+!backend/static/users/onapoli-.*
+!backend/static/rooms
+backend/static/rooms/*
+!backend/static/rooms/atlantis.*
+!backend/static/rooms/metropolis.*
+!backend/static/rooms/wakanda.*
