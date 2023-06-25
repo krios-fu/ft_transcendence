@@ -19,7 +19,7 @@ export class UserRoomService {
         private readonly roomService: RoomService,
     ) { }
 
-    public async findAll(queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
+    public async findAll(queryParams?: UserRoomQueryDto): Promise<UserRoomEntity[]> {
         if (queryParams !== undefined) {
             return await this.userRoomRepository.find(new QueryMapper(queryParams));
         }

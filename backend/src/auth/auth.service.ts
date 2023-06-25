@@ -195,7 +195,7 @@ export class AuthService {
             });
         }
         catch(err) {
-            console.error(err);
+            console.error(`validateJWTToken: ${err}`);
             result = undefined;
         }
         return (result);

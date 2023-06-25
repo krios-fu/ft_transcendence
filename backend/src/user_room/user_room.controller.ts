@@ -41,7 +41,7 @@ export class UserRoomController {
 
     /* Get all users registered in rooms */
     @Get()
-    public async findAll(@Query() queryParams: UserRoomQueryDto): Promise<UserRoomEntity[]> {
+    public async findAll(@Query() queryParams?: UserRoomQueryDto): Promise<UserRoomEntity[]> {
         return await this.userRoomService.findAll(queryParams);
     }
 
