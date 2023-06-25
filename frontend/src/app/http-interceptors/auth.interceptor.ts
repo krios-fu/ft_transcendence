@@ -33,8 +33,14 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
+                    console.log(`[ HTTP EXCEPTION ]: caught error ${err.status}, ${err.headers.get('Location')}`);
                     if (err.status === 401 && err.headers.get('Location') === '/login/2fa') {
                         this.authService.redirect2FA();
+                        return throwError(() => err);
+                    }
+                    if (err.status === 403 && err.headers.get('Location') === '/wtf') {
+                        console.log('redirect to ban');
+                        this.authService.redirectBan();
                         return throwError(() => err);
                     }
                     if (!this.authService.getAuthUser()) {

@@ -7,12 +7,15 @@ import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
 import { BanRepository } from './repository/ban.repository';
+import {EventEmitter2} from "@nestjs/event-emitter";
+import {DeleteResult} from "typeorm";
 
 @Injectable()
 export class BanService {
     constructor (
         @InjectRepository(BanEntity)
         private readonly banRepository: BanRepository,
+        private readonly eventEmitter: EventEmitter2
     ) { }
 
     public async findAllBans(queryParams: BanQueryDto): Promise<BanEntity[]> {
@@ -22,9 +25,9 @@ export class BanService {
         return await this.banRepository.find();
     }
 
-    public async findOne(ban_id: number): Promise<BanEntity> {
+    public async findOne(banId: number): Promise<BanEntity> {
         return await this.banRepository.findOne({
-            where: {id: ban_id} 
+            where: {id: banId} 
         });
     }
 
@@ -53,18 +56,54 @@ export class BanService {
     }
 
     public async createBan(dto: CreateBanDto): Promise<BanEntity> {
-        return await this.banRepository.save(new BanEntity(dto));
+        const ban: BanEntity = await this.banRepository.save(new BanEntity(dto));
+        this.eventEmitter.emit('update.roles',
+            {
+                userId: dto.userId,
+                roomId: dto.roomId,
+                ctxName: 'banned'
+            });
+        return ban;
     }
 
-    public async deleteBan(ban_id: number): Promise<void> {
-        this.banRepository.delete(ban_id);
+    public async deleteBan(ban: BanEntity): Promise<void> {
+        const { id, userId, roomId } = ban;
+
+        const delRes: DeleteResult = await this.banRepository.delete(id);
+        if (delRes) {
+            console.log('[ BAN SERVICE ] emitting a new ban...');
+            this.eventEmitter.emit('update.roles',
+                {
+                    userId: userId,
+                    roomId: roomId,
+                    ctxName: 'banned'
+                });
+        }
     }
 
-    public async findOneByUserRoomIds(userId: number, roomId: number) {
+    public async findOneByIds(
+        userId: number, 
+        roomId: number
+    ): Promise<BanEntity> {
         return await this.banRepository.findOne({
             where: {
                 userId: userId,
                 roomId: roomId,
+            }
+        });
+    }
+
+    public async findOneByNames(
+        username: string,
+        room: string
+    ): Promise<BanEntity[]> {
+        return await this.banRepository.find({
+            relations: {
+                user: true,
+                room: true
+            }, where: {
+                user: { username: username },
+                room: { roomName: room }
             }
         });
     }
