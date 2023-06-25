@@ -183,6 +183,26 @@ export class   InterpolationService {
         Match.copyMatchData(baseSnapshot, genSnapshot);
     }
 
+    private _preventBallRecoil(buffer: IMatchData[],
+                                currentSnapshot: IMatchData,
+                                generatedSnapshot: IMatchData,
+                                index: number): boolean {
+        if (
+            (generatedSnapshot.ball.xVel > 0
+                && currentSnapshot.ball.xPos > generatedSnapshot.ball.xPos)
+            ||
+            (generatedSnapshot.ball.xVel < 0
+                && currentSnapshot.ball.xPos < generatedSnapshot.ball.xPos))
+        {
+            if (index < buffer.length)
+                this._updateSnapshot(buffer[index], currentSnapshot);
+            else
+                buffer.push(Match.cloneMatchData(currentSnapshot));
+            return (true);
+        }
+        return (false);
+    }
+
     private _adjustTime(genSnapshot: IMatchData,
                             serverSnapshot: IMatchData,
                             currentStep: number): void {
@@ -210,6 +230,9 @@ export class   InterpolationService {
             );
             this._adjustTime(generatedSnapshot, serverSnapshot,
                                 currentStep);
+            if (this._preventBallRecoil(buffer, currentSnapshot,
+                                            generatedSnapshot, i))
+                break ;
             if (i < buffer.length)
                 this._updateSnapshot(buffer[i], generatedSnapshot);
             else
