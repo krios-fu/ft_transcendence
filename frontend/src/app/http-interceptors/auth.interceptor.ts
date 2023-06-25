@@ -8,7 +8,7 @@ import {
   HttpResponse,
   HttpStatusCode,
 } from '@angular/common/http';
-import { BehaviorSubject, catchError, filter, finalize, Observable, switchMap, take, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, finalize, Observable, repeat, switchMap, take, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 
@@ -33,13 +33,11 @@ export class AuthInterceptor implements HttpInterceptor {
             .pipe
             (
                 catchError((err: HttpErrorResponse) => {
-                    console.log(`[ HTTP EXCEPTION ]: caught error ${err.status}, ${err.headers.get('Location')}`);
                     if (err.status === 401 && err.headers.get('Location') === '/login/2fa') {
                         this.authService.redirect2FA();
                         return throwError(() => err);
                     }
                     if (err.status === 403 && err.headers.get('Location') === '/wtf') {
-                        console.log('redirect to ban');
                         this.authService.redirectBan();
                         return throwError(() => err);
                     }
@@ -76,11 +74,10 @@ export class AuthInterceptor implements HttpInterceptor {
             return this.newCredsSubject
                 .pipe
                 (
-                    take(1),
+                    repeat(),
                     filter((state: boolean) => !state),
-                    switchMap(() => {
-                        return next.handle(this.setAuthHeaders(req));
-                    })
+                    take(1),
+                    switchMap(() => next.handle(this.setAuthHeaders(req)))
                 )
         }
         this.newCredsSubject.next(true);

@@ -182,17 +182,13 @@ export class RoomController {
             @Param('room_id', ParseIntPipe) id: number,
             @Body() dto,
         ): Promise<RoomEntity> {
-
         const room = await this.roomService.findOne(id);
 
         if (room === null) {
             this.roomLogger.error(`No room present with id ${id}`);
             throw new BadRequestException('resource does not exist');
         }
-
-        console.log('ROOM NAME', dto);
         room.roomName = dto.roomName;
-
         return await this.roomService.updateRoom(id, room);
     }
 

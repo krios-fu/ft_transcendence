@@ -94,7 +94,7 @@ export class    GameSocketAuthService {
         **  in the room.
         **  socket.io Event "disconnecting".
         */
-        if (await this.socketHelper.roomSocketLength(playerRoom) > 1)
+        if (await this.socketHelper.roomSocketLength(playerRoom) >= 1)
             return ;
         await this.updateService.playerWithdrawal(roomId, playerRoom);
     }

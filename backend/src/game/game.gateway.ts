@@ -93,7 +93,6 @@ export class    GameGateway implements OnGatewayInit,
             await this.socketAuthService.removeUser(client, username);
             this.socketAuthService.deleteTimeout(clientId);
         });
-        console.log(`[ EMITIENDO A AUTHSUCCESS ]`)
         client.emit("authSuccess");
     }
 
