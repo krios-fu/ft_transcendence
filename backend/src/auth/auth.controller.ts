@@ -19,7 +19,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { FortyTwoAuthGuard } from './guard/fortytwo-auth.guard';
 import { Request, Response } from 'express';
 import { CreateUserDto } from '../user/dto/user.dto';
-import { IAuthPayload, IRequestUser } from '../common/interfaces/request-payload.interface';
+import { IAuthPayload } from '../common/interfaces/request-payload.interface';
 import { UserCreds } from '../common/decorators/user-cred.decorator';
 import { UserService } from '../user/services/user.service';
 import { TokenCredentials } from './token-credentials.dto';
@@ -147,13 +147,14 @@ export class AuthController {
         }
         const refreshToken: string = req.cookies['refresh_token'];
         const authUser: string = req.query.user as string;
+        const authHeader: string | undefined = req.headers.authorization;
         let authPayload: IAuthPayload;
 
-        if (authUser === null) {
+        if (!authUser) {
             throw new HttpException('user not authenticated', HttpStatus.UNAUTHORIZED);
         }
         try {
-            authPayload = await this.authService.refreshToken(refreshToken, authUser);
+            authPayload = await this.authService.refreshToken(refreshToken, authUser, authHeader);
         } catch (err) {
             this.authLogger.error(`Caught exception in refreshToken controller: ${err}`);
             await this.authService.logout(authUser, res);

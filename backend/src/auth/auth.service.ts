@@ -130,7 +130,26 @@ export class AuthService {
         return tokenEntity;
     }
 
-    public async refreshToken(refreshToken: string, username: string): Promise<IAuthPayload> {
+    private _identifyTokenStrength(authHeader: string | undefined, doubleAuth: boolean): boolean {
+        let tokenPayload: IJwtPayload;
+        let token: string;
+
+        if (!authHeader) {
+            return doubleAuth;
+        }
+        token = authHeader.split(' ')[1];
+        tokenPayload = this.validateJWToken(token);
+        if (!tokenPayload) {
+            return doubleAuth;
+        }
+        return !(tokenPayload.data.validated);
+    }
+
+    public async refreshToken(
+        refreshToken: string, 
+        username: string,
+        authHeader: string | undefined
+    ): Promise<IAuthPayload> {
         let tokenEntity: RefreshTokenEntity = await this.getTokenByUsername(username);
   
         if (tokenEntity.token != refreshToken) {
@@ -139,9 +158,10 @@ export class AuthService {
             throw TokenError.TOKEN_EXPIRED;
         }
         const { authUser } = tokenEntity;
-        const accessToken: string = (authUser.doubleAuth) ?
-            this.signLowPrivJwt(authUser) :
-            this.signJwt(authUser);
+        const accessToken: string = 
+            this._identifyTokenStrength(authHeader, authUser.doubleAuth) ?
+                this.signLowPrivJwt(authUser) :
+                this.signJwt(authUser);
         return {
             'accessToken': accessToken,
             'username': username,

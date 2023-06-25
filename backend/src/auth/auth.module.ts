@@ -24,7 +24,7 @@ import { EncryptionService } from './service/encryption.service';
         JwtModule.register({
             secret: process.env.FORTYTWO_APP_SECRET,
             signOptions: {
-                expiresIn:  2 * 60,
+                expiresIn:  2,
             }
         }),
     ],
