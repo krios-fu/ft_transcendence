@@ -220,7 +220,8 @@ export class    ExtrapolationService {
         {
             generatedSnapshot = this._getSnapshot(
                 refSnapshot,
-                refSnapshot.when + this._snapshotInterval
+                i < buffer.length ? buffer[i].when
+                                    : refSnapshot.when + this._snapshotInterval
             );
             if (i < buffer.length)
                 this._preserveUnpredictable(buffer[i], generatedSnapshot, role);
