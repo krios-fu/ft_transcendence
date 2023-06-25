@@ -180,7 +180,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
   
 
   ngOnDestroy(): void {
-    console.log("NG ONLINE DESTROYDESTROY");
     // this.socketGameNotification.roomLeave(this.room_id, this.me, false);
   }
 

@@ -136,7 +136,6 @@ export class    GameMatchmakingService {
             username
         );
 
-        console.log('[ ADD TO QUEUE ]')
         if (lengthUpdate === undefined)
             return ;
         this._emitQueueUpdate(

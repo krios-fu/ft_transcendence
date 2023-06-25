@@ -111,7 +111,6 @@ export class    SocketService {
             if (xcpt.cause != SocketException.Forbidden)
             {
                 if (xcpt.targetEvent != "authentication"){
-                    console.log(`[ EXCEPTION: Pushing to ${xcpt.targetEvent} ]`);
                     this._failedEvents.push(xcpt);
                 }
                 if (this._authenticating)
@@ -145,7 +144,6 @@ export class    SocketService {
     }
 
     joinRoom(roomId: string): void {
-        console.log('4. [ JOIN ROOM ]');
         if (!roomId || roomId === "")
             return ;
         this.emit<string>("joinRoom", roomId);

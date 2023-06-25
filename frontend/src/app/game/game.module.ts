@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { GameComponent } from './game.component';
 import { OnlineComponent } from './online/friend-online/online.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { GameQueueComponent } from './game-queue/game-queue.component';
 import { QueueService } from './services/queue.service';
@@ -19,7 +19,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-// import { SocketNotificationService } from '../services/socket-notification.service';
 import { GamehomeComponent } from './gamehome/gamehome.component';
 import { ChatGameComponent } from './chat-game/chat-game.component';
 import {ReactiveFormsModule} from "@angular/forms";
@@ -31,7 +30,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { RoomListComponent } from './room-list/room-list.component';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
-// import { MatLabel } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [

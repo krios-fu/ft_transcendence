@@ -71,7 +71,6 @@ export class BanService {
 
         const delRes: DeleteResult = await this.banRepository.delete(id);
         if (delRes) {
-            console.log('[ BAN SERVICE ] emitting a new ban...');
             this.eventEmitter.emit('update.roles',
                 {
                     userId: userId,

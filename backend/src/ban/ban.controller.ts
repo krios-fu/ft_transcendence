@@ -80,7 +80,6 @@ export class BanController {
             this.banLogger.error(`Ban to user ${userId} in room ${roomId} already in db`);
             throw new BadRequestException('resource already exists in database');
         }
-        console.log('[ BAN CONTROLLER ] posting a new ban...');
         return await this.banService.createBan(dto);
     }
 
