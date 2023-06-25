@@ -281,7 +281,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.close = !this.close;
     }
 
-    @HostListener('window:keyup.shift.i', ['$event'])
+    @HostListener('window:keyup.control.shift.i', ['$event'])
     handleKeyDown() {
         this.alertService.openGameInstructions();
     }
