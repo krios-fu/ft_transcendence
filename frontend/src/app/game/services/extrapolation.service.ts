@@ -95,11 +95,25 @@ export class    ExtrapolationService {
         }
     }
 
+    private _smoothValue(targetValue: number, previousValue: number,
+                            step: number, totalSteps: number): number {
+        const   diff: number = targetValue - previousValue;
+        let     displacement;
+
+        displacement = diff * (step / totalSteps);
+        return (previousValue + displacement);
+    }
+
     private _improveSnapshot(base: IMatchData, generated: IMatchData,
-                                role: string, aggressive: boolean): void {
+                                aggressive: boolean, step: number): void {
+        const   smoothBallX = this._smoothValue(generated.ball.xPos, base.ball.xPos, step, this._totalSnapshots);
+        const   smoothBallY = this._smoothValue(generated.ball.yPos, base.ball.yPos, step, this._totalSnapshots);
+    
         if (aggressive)
         {
             Match.copyMatchData(base, generated);
+            base.ball.xPos = smoothBallX;
+            base.ball.yPos = smoothBallY;
         }
         else
         {
@@ -178,17 +192,17 @@ export class    ExtrapolationService {
         **  The buffer is full, because it has been filled previously
         **  by the interpolation service.
         */
-        buffer.forEach((snapshot: IMatchData) => {
+        for (let i = 0; i < buffer.length; ++i) {
             genSnapshot = this._getSnapshot(
                 refSnapshot,
-                targetTime ? targetTime : snapshot.when
+                targetTime ? targetTime : buffer[i].when
             );
-            this._improveSnapshot(snapshot, genSnapshot,
-                                    data.role, data.aggressive);
+            this._improveSnapshot(buffer[i], genSnapshot,
+                                    data.aggressive, i + 1);
             targetTime = data.aggressive
-                            ? snapshot.when + this._snapshotInterval : 0;
-            refSnapshot = snapshot;
-        });
+                            ? buffer[i].when + this._snapshotInterval : 0;
+            refSnapshot = buffer[i];
+        }
     }
 
     private _preserveUnpredictable(current: IMatchData,
