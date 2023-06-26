@@ -25,11 +25,15 @@ import { SocketNotificationService } from "src/app/services/socket-notification.
 import { UsersService } from "src/app/services/users.service";
 import { Subscription } from "rxjs";
 import { BaseScene } from "../scenes/BaseScene";
-import { RoomGameIdService } from "./room-game-id.service";
+import {
+    IRoomRole,
+    RoomGameIdService
+} from "./room-game-id.service";
 import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { AuthService } from "src/app/services/auth.service";
 import { environment } from 'src/environments/environment';
 import { AlertServices } from "../../services/alert.service";
+import { IPasswordChange } from "../../services/dialog/input/change_room_password/change-room-password-input.component";
 
 @Component({
     selector: 'app-room-game-id',
@@ -148,6 +152,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             this._checkUserInRoom(id);            
         });
         this.socketService.bannedRoomEvent();
+        this.changePassword();
     }
 
     info(): void {
@@ -276,6 +281,41 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         }
     }
 
+    changePassword(): void {
+        this.alertService.openChangeRoomPassword()
+        .subscribe({
+            next: (passData: IPasswordChange) => {
+                if (passData)
+                {
+                    this.roomGameIdService.changePassword(
+                        this.room_id,
+                        passData.oldPassword,
+                        passData.newPassword
+                    )
+                    .subscribe({
+                        next: (roomRole: IRoomRole) => {
+                            if (roomRole) {
+                                this.alertService.openSnackBar(
+                                    "Password updated successfully",
+                                    "Ok"
+                                );
+                            }
+                        },
+                        error: (err: any) => {
+                            let errorMsg: string;
+
+                            if (err.error
+                                && err.error.message)
+                                errorMsg = err.error.message;
+                            else
+                                errorMsg = "Password could not be changed";
+                            this.alertService.openSnackBar(errorMsg, "Ok");
+                        }
+                    });
+                }
+            }
+        });
+    }
 
     edit() {
         this.close = !this.close;
