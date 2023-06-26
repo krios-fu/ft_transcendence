@@ -84,7 +84,7 @@ export class    LagCompensationService {
     private _extrapolType(serverSnapshot: IMatchData,
                             currentSnapshot: IMatchData): boolean {
         if (currentSnapshot.when
-                + (this._snapshotInterval * this._bufferSnapshots)
+                + (this._snapshotInterval * (this._bufferSnapshots + 1))
                 < serverSnapshot.when)
         {
             if (this._role === "PlayerA"
