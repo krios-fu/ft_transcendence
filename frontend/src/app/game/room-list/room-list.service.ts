@@ -100,15 +100,21 @@ export class    RoomListService {
 
     registerUserToRoom(userId: string, roomId: string,
                         password?: string): Observable<IUserRoom> {
+        const   payload: any = password ?
+                    {
+                        userId: userId,
+                        roomId: roomId,
+                        password: password
+                    } : {
+                        userId: userId,
+                        roomId: roomId,
+                    };
+    
         return (
             this.httpService.post<IUserRoom>(
                 this._urlAuthority
                 + this._urlPathUserRoom,
-                {
-                    userId: userId,
-                    roomId: roomId,
-                    password: password || undefined
-                }
+                payload
             )
             .pipe(
                 catchError((err) => {
