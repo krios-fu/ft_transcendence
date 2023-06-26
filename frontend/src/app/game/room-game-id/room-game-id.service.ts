@@ -10,6 +10,9 @@ import {
 import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { environment } from 'src/environments/environment';
 
+export interface    IRoomRole {
+    id: number;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +20,7 @@ import { environment } from 'src/environments/environment';
 export class    RoomGameIdService {
 
     private readonly _pathUserRoom: string = "user_room/";
+    private readonly _pathRoomRoles: string = "room_roles/";
 
     constructor(
         private readonly httpService: HttpClient
@@ -66,6 +70,25 @@ export class    RoomGameIdService {
                 })
             )
         )
+    }
+
+    changePassword(roomId: string, oldPassword: string,
+                    newPassword: string): Observable<IRoomRole> {
+        return (
+            this.httpService.put<IRoomRole>(
+                `${environment.apiUrl}${this._pathRoomRoles}`
+                + `room/${roomId}/password`,
+                {
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                }
+            )
+            .pipe(
+                catchError((err) => {
+                    return throwError(() => err);
+                })
+            )
+        );
     }
 
 }
