@@ -27,9 +27,7 @@
               [ngStyle]="{'color': 'white', 'font-size':'25px'}"
               style="position: absolute; bottom: -5px; ">photo_camera</mat-icon>
 
-            <!-- </div> -->
-
-            <!-- <mat-icon mat-list-icon *ngIf="!this.room_dto?.photoUrl">groups</mat-icon> -->
+ 
           </mat-grid-tile>
         </mat-grid-tile-header>
         <mat-grid-tile>
@@ -51,6 +49,12 @@
           <span>
             <a mat-icon-button (click)="info()">
               <mat-icon>info</mat-icon>
+            </a>
+          </span>
+
+          <span *ngIf="this.room_dto?.ownerId == this.me?.id">
+            <a mat-icon-button (click)="changePassword()">
+              <mat-icon>password</mat-icon>
             </a>
           </span>
           <span>

@@ -36,7 +36,7 @@ if __name__ == "__main__":
     id = requests.get(base_url + '/users/danrodri/', headers=api.get_param('auth_token')).json()['id']
 
     #print('\n\t ~~ [ ban from room ] ~~')
-    #br1 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
+    br1 = requests.post(base_url + '/ban', {'userId': id, 'roomId': rooms[0]['id']}, headers=api.get_param('auth_token')).json()
 
     print(' ~~ [ global role testing ] ~~')
     r_grTest = requests.post(base_url + '/user_roles/', {'userId':id, 'roleId':roles[2]["id"]}, headers=api.get_param('auth_token'))

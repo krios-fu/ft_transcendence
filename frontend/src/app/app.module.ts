@@ -37,6 +37,7 @@ import { SocketNotificationService } from './services/socket-notification.servic
 import { SharedService } from './profile/profile/profile-user/profile-user.component';
 import { SocketService } from './game/services/socket.service';
 import { WtfComponent } from './login/wtf/wtf.component';
+import { ChangeRoomPasswordInputComponent } from './services/dialog/input/change_room_password/change-room-password-input.component';
 
 const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: {
     reconnectionAttempts: 3
@@ -57,7 +58,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         MatchNotificationComponent,
         GameInstructionsComponent,
         RoomPasswordInputComponent,
-        WtfComponent
+        WtfComponent,
+        ChangeRoomPasswordInputComponent
     ],
     providers: [{
         provide: HTTP_INTERCEPTORS,
@@ -98,7 +100,8 @@ const config: SocketIoConfig = { url: 'http://localhost:3001/private', options: 
         FriendNotificationComponent,
         GameNotificationComponent,
         MatchNotificationComponent,
-        RoomPasswordInputComponent
+        RoomPasswordInputComponent,
+        ChangeRoomPasswordInputComponent
       ]
 })
 export class AppModule {
