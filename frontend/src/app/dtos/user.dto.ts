@@ -11,9 +11,13 @@ export class UserDto {
 	doubleAuth: boolean;
 	defaultOffline: boolean;
 	ranking: number;
-	is_admin?: boolean;
-	is_owner?: boolean;
-	is_owner_room? : boolean;
+	role: {
+		is_super_admin: boolean,
+		is_admin: boolean,
+		is_owner_room : boolean,
+		is_banned: boolean,
+		is_silenced: boolean
+	};
 	achievementUser ?: []
 
 
@@ -31,9 +35,13 @@ export class UserDto {
 		doubleAuth: boolean,
 		defaultOffline: boolean,
 		ranking: number,
-		is_admin?: boolean,
-		is_owner?: boolean,
-		is_owner_room? : boolean,
+		role = {
+			is_super_admin: false,
+			is_admin: false,
+			is_owner_room : false,
+			is_banned: false,
+			is_silenced: false
+		},
 
 
 		achievementUser ?: []
@@ -49,11 +57,11 @@ export class UserDto {
 		this.photoUrl = photoUrl;
 		this.doubleAuth = doubleAuth;
 		this.defaultOffline = defaultOffline;
-		this.is_admin = is_admin;
 		this.ranking = ranking;
 		this.achievementUser = achievementUser;
-		this.is_owner = is_owner;
-		this.is_owner_room = is_owner_room;
+		this.role = role;
+
+		console.log(this)
 	}
   }
   

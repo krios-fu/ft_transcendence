@@ -140,4 +140,16 @@ export class UserRoomRolesService {
             .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
             .getOne();
     }
+
+    public async findRoleByUser(
+        userId: number,
+        roomId: number,
+    ): Promise<UserRoomRolesEntity []> {
+        return await this.userRoomRolesRepository.createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .where('user_room.userId = :user_id', { 'user_id': userId })
+            .andWhere('user_room.roomId = :room_id', { 'room_id': roomId })
+            // .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
+            .getMany();
+    }
 }

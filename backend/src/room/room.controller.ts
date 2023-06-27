@@ -190,7 +190,6 @@ export class RoomController {
             throw new BadRequestException('resource does not exist');
         }
 
-        console.log('ROOM NAME', dto);
         room.roomName = dto.roomName;
 
         return await this.roomService.updateRoom(id, room);

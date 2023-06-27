@@ -129,6 +129,10 @@ export class SocketNotificationService implements OnInit {
         this.socket.emit('room_leave', { room: _room, user: _user,  leave: is_leave, kicker: kicker });
     }
 
+    // roomAdmin(_room?: string, _user?: UserDto) {
+    //     this.socket.emit('room_admin', { room: _room, user: _user });
+    // }
+
     sendConnetionRoomGameId(_room: string, _user: UserDto) {
         this.socket.emit(`noti_game_room`, { room: _room, user: _user })
     }
@@ -144,5 +148,9 @@ export class SocketNotificationService implements OnInit {
     userLeave() {
         return this.socket.fromEvent('room_leave');
     }
+
+    // get_room_admin() {
+    //     return this.socket.fromEvent('room_admin');
+    // }
 
 }

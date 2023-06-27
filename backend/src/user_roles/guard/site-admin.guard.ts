@@ -28,6 +28,6 @@ export class SiteAdminGuard implements CanActivate {
         if (username === undefined) {
             return false;
         }
-        return this.userRolesService.validateGlobalRole(username, ['admin']);
+        return this.userRolesService.validateGlobalRole(username, ['super-admin']);
     }
 }
