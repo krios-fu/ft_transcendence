@@ -79,9 +79,6 @@ export class AchievementsUserController {
 
     @Delete(':id')
     public async removeAchievementUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        /* a testear */
-        const testing = await this.removeAchievementUser(id);
-        console.log("testing testings..." + testing);
-        return testing;
+        return await this.removeAchievementUser(id);
     }
 }

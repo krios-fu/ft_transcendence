@@ -138,7 +138,7 @@ export class AuthService {
             return doubleAuth;
         }
         token = authHeader.split(' ')[1];
-        tokenPayload = this.validateJWToken(token);
+        tokenPayload = this.extractPayloadFromJWT(token);
         if (!tokenPayload) {
             return doubleAuth;
         }
@@ -219,6 +219,23 @@ export class AuthService {
             result = undefined;
         }
         return (result);
+    }
+
+    public extractPayloadFromJWT(token: string): IJwtPayload | undefined {
+        let payload: IJwtPayload | undefined;
+
+        try {
+            payload  = this.jwtService.verify<IJwtPayload>(
+                token,
+                {
+                    secret: process.env.FORTYTWO_APP_SECRET,
+                    ignoreExpiration: true
+                }
+            )
+        } catch (_) {
+            return undefined;
+        }
+        return payload;
     }
 
     public validate2FASession(req: Request): boolean {
