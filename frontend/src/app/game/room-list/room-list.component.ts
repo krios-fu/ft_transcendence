@@ -152,7 +152,7 @@ export class    RoomListComponent implements OnInit {
             });
         }
         else
-            this._initRegistry(userId, roomId, roomName)
+            this._initRegistry(userId, roomId)
     }
 
     goToRoom(roomId: string, roomName: string): void {

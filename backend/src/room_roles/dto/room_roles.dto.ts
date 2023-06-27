@@ -1,7 +1,9 @@
 import {IsNotEmpty, 
     IsNumber, 
     IsOptional, 
-    IsString} from "class-validator";
+    IsString,
+    Length,
+    Matches} from "class-validator";
 import { Type } from "class-transformer";
 
 export class CreateRoomRolesDto {
@@ -15,17 +17,24 @@ export class CreateRoomRolesDto {
     @Type(() => Number)
     readonly roleId: number;
 
-    @IsOptional()
     @IsString()
+    @Length(8, 15)
+    @IsNotEmpty()
+    @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])/)
+    @IsOptional()
     password?: string;
 }
 
 export class UpdatePasswordDto {
     @IsString()
+    @Length(8, 15)
     @IsNotEmpty()
+    @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])/)
     oldPassword: string;
 
     @IsString()
+    @Length(8, 15)
     @IsNotEmpty()
+    @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])/)
     newPassword: string;
 }
