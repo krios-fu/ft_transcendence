@@ -20,7 +20,6 @@ export class    GameComponent {
         this.gameSocketService.getObservable<string>("playerExit")
             .subscribe({
                 next: (roomName: string) => {
-                    console.log("Received playerExit message");
                     this.alertService.openSnackBar(
                         `Return to room ${roomName} in 15 secs, `
                         + "or lose the match.",
