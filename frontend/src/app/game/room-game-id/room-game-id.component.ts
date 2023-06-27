@@ -17,7 +17,7 @@ import {
     ActivatedRoute,
     Router
 } from "@angular/router";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { UserDto } from "src/app/dtos/user.dto";
 import { FormControl, FormGroup } from "@angular/forms";
 import { RoomDto } from "src/app/dtos/room.dto";
@@ -301,12 +301,14 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                                 );
                             }
                         },
-                        error: (err: any) => {
+                        error: (err: HttpErrorResponse) => {
                             let errorMsg: string;
-
-                            if (err.error
-                                && err.error.message)
-                                errorMsg = err.error.message;
+                        
+                            console.log(err);
+                            if (err.error && err.error.statusCode === 400)
+                                errorMsg = "Provided invalid password/s";
+                            else if (err.error && err.error.statusCode === 403)
+                                errorMsg = "Old password is wrong";
                             else
                                 errorMsg = "Password could not be changed";
                             this.alertService.openSnackBar(errorMsg, "Ok");
