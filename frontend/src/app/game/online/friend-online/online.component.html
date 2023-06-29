@@ -23,18 +23,14 @@
         
         <mat-menu #menu="matMenu">
             <!--disabled option -->
-            <button mat-menu-item [routerLink]="['/profile/', player.username]">
+            <button mat-menu-item [routerLink]="['/profile', player.username]">
                 <mat-icon>person</mat-icon>
-                <span>{{player.nickName}}</span>
+                <span>{{player.nickName}} lol</span>
             </button>
             <section *ngIf="this.me && this.me?.id != player.id">
                 <button mat-menu-item (click)="sendInvitationGame(player)">
                     <mat-icon>videogame_asset</mat-icon>
                     <span>Game</span>
-                </button>
-                <button mat-menu-item (click)="goTochat(player)">
-                    <mat-icon>chat</mat-icon>
-                    <span>Chat</span>
                 </button>
 
                 <!--  view if owner  -->

@@ -49,8 +49,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
     private readonly roomGameIdService: RoomGameIdService,
   ) {
 
-
-
+    this.update_player();
     this.socketGameNotification.userLeave()
       .subscribe((payload: any) => {
         this.players.map((user: UserDto) => {
@@ -58,35 +57,47 @@ export class OnlineComponent implements OnInit, OnDestroy {
             user.defaultOffline = false
         })
 
-        if (payload.user.id === this.me?.id) {
+        if (payload.user.id === this.me?.id && this.me?.username !== payload.kicker) {
           this._redirectToRoomLists();
         }
 
-        if (payload.leave) {
-          // this.alertService.openSnackBar(`${payload.kicker} kicked player ${payload.user.nickName}`, 'OK')
-
           this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id)
-        }
-
 
         this.players.sort((user_a: any, user_b: any) => {
           return user_b.defaultOffline - user_a.defaultOffline;
-        })
+        });
         this.players.sort((user_a: any, user_b: any) => {
           return user_b.role.is_admin - user_a.role.is_admin;
-        })
+        });
+        this.players.sort((user_a: any, user_b: any) => {
+          return user_b.role.is_owner_room - user_a.role.is_owner_room;
+        });
+        this.players.sort((user_a: any, user_b: any) => {
+          return user_b.role.is_super_admin - user_a.role.is_super_admin;
+        });
       })
   }
 
 
-  set_status_players(payload: any) {
+  update_player(){
+    this.socketGameNotification.playerUpdate()
+    .subscribe((payload : any) =>{
+        this.players.forEach((user: UserDto, index : number) => {
+          if (user.id == payload.user.id)
+            this.players[index] = Object.assign(payload.user);
+            if (payload.user.id == this.me?.id)
+                this.me = Object.assign(payload.user); 
+      });
+    })
+  }
 
-    // payload.forEach()
+  set_status_players(payload: any) {
 
     payload.forEach((user_online: UserDto) => {
       let lol = this.players.find((user: UserDto) => user.id == user_online.id)
       let is_banned = this.players_banned.find((user: UserDto) => user.id == user_online.id)
       if (!lol && !is_banned) {
+        user_online.defaultOffline = true;
         this.players.push(user_online)
       }
       else if (is_banned && !lol && (this.me?.role.is_super_admin || this.me?.role.is_admin || this.is_owner_room)) {
@@ -97,21 +108,27 @@ export class OnlineComponent implements OnInit, OnDestroy {
     })
 
     payload.forEach((online: UserDto) => {
-
-      this.players.forEach((user: UserDto) => {
-        if (user.id == online.id)
-          user.defaultOffline = true
+      this.players.forEach((user: UserDto, index : number) => {
+        if (user.id == online.id){
+          online.defaultOffline = true;
+          this.players[index] = Object.assign(online); 
+        }
       })
-
-    })
+    });
 
 
     this.players.sort((user_a: any, user_b: any) => {
       return user_b.defaultOffline - user_a.defaultOffline;
-    })
+    });
     this.players.sort((user_a: any, user_b: any) => {
       return user_b.role.is_admin - user_a.role.is_admin;
-    })
+    });
+    this.players.sort((user_a: any, user_b: any) => {
+      return user_b.role.is_owner_room - user_a.role.is_owner_room;
+    });
+    this.players.sort((user_a: any, user_b: any) => {
+      return user_b.role.is_super_admin - user_a.role.is_super_admin;
+    });
   }
 
   set_role(user: UserDto) {
@@ -129,11 +146,11 @@ export class OnlineComponent implements OnInit, OnDestroy {
             this.set_status_players(payload);
           },
         })
-        
-        this.room_id = id;
-        this.get_list_banned();
-      // this.admins = []
+
+      this.room_id = id;
+      this.players_banned = []
       this.players = []
+      this.get_list_banned();
       let user_aux: UserDto;
 
       this.userService.getUser('me')
@@ -169,7 +186,9 @@ export class OnlineComponent implements OnInit, OnDestroy {
                       player.role.is_owner_room = true;
                     }
 
-                    player.defaultOffline = false;
+                    if (this.room?.ownerId=== user_aux.id) {
+                      user_aux.role.is_owner_room = true;
+                    }
 
                     let lol = this.players.find((user: UserDto) => user.id == player.id)
                     let is_banned = this.players_banned.find((user: UserDto) => user.id == player.id)
@@ -208,6 +227,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS ADMIN`, 'OK')
       this.chat.sendMessageGame(`${user.nickName} NOW IS ADMIN`, this.me?.id as number, 'game' + this.room_id);
       // this.socketGameNotification.joinRoomId(this.room?.id.toString() as string, user);
+      user.role.is_admin = true;
+      this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
 
     }
   }
@@ -219,6 +240,10 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
       this.chat.sendMessageGame(`${user.nickName} NOW ISN'T ADMIN`, this.me?.id as number, 'game' + this.room_id);
       // this.socketGameNotification.joinRoomId(this.room?.id.toString() as string, user);
+      user.role.is_admin = false;
+
+      this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+
 
     }
 
@@ -230,21 +255,14 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS SILENCED`, 'OK')
       this.chat.sendMessageGame(`${user.nickName} NOW IS SILENCED`, this.me?.id as number, 'game' + this.room_id);
       // this.socketGameNotification.joinRoomId(this.room?.id.toString() as string, user);
+      this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+
+      user.role.is_silenced = true;
+      this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+
+
 
     }
-  }
-
-  set_ban(user: UserDto) {
-    this.userService.post_role_user_room(user, Roles.banned, this.room?.id as number);
-    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS BANNED`, 'OK');
-    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
-    this.leave(user);
-  }
-
-  un_banned(user: UserDto) {
-    this.userService.delete_role_banned(user, this.room?.id as number);
-    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS UNBANNED`, 'OK');
-    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
   }
 
   deleted_silenced(user: UserDto) {
@@ -253,14 +271,37 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW ISN'T SILENCED`, 'OK')
       this.chat.sendMessageGame(`${user.nickName} NOW ISN'T SILENCED`, this.me?.id as number, 'game' + this.room_id);
       // this.socketGameNotification.joinRoomId(this.room?.id.toString() as string, user);
+      user.role.is_silenced = false;
+      this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+
 
     }
 
   }
 
+  set_ban(user: UserDto) {
+    this.userService.post_role_user_room(user, Roles.banned, this.room?.id as number);
+    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS BANNED`, 'OK');
+    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+
+    this.leave(user);
+  }
+
+  un_banned(user: UserDto) {
+    this.userService.delete_role_banned(user, this.room?.id as number);
+    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS UNBANNED`, 'OK');
+    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+
+  }
+
+ 
+
 
   ngOnDestroy(): void {
-    // this.socketGameNotification.roomLeave(this.room_id, this.me, false);
+    this.socketGameNotification.roomLeave(this.room_id, this.me, false, this.me?.username);
+
   }
 
   sendInvitationGame(user: UserDto) {
@@ -270,12 +311,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
     // this.alertService.openRequestGame(user as UserDto, 'SEND REQUEST GAME');
   }
 
-  goTochat(player: UserDto) {
-    this.chatService.createChat(player.id)
-      .subscribe((data: any) => {
-        this.router.navigate(['/chat/', data.id])
-      })
-  }
 
   private _redirectToRoomLists(): void {
     this.router.navigate(['/game']);

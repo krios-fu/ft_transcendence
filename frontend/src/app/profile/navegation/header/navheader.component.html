@@ -1,5 +1,5 @@
 <section class="row">
-  <div class="column1 " style="border: outset 4px silver;">
+  <div class="column1" style="border: outset 4px silver;">
     <section class="badge">
       <img class="avatar" src={{getPhotoUrl()}} />
     </section>
@@ -10,31 +10,14 @@
       </h1>
     </section>
 
-    <div *ngIf="user" style="display: grid; justify-content: center; align-items: center; padding: 21px; margin: 50px">
-      <span>
 
-        <h3 style="color : goldenrod;"> <mat-icon>scoreboard</mat-icon> {{user.ranking}}</h3>
-      </span>
-      <span>
+    <div *ngIf="user" style="display: flex; justify-content: center; align-items: center; margin: 30px; ">
+      <mat-icon>scoreboard</mat-icon>
+          <h3 style="color : goldenrod; padding-left: 10px">{{user.ranking}}</h3>
+          <app-achievements *ngIf="user" [username]="user?.username"></app-achievements>
+  </div>
 
-        <h3 style="color : rgb(0,149,255);"><mat-icon>leaderboard</mat-icon> 1</h3>
-      </span>
-      <span>
 
-        <h3 style="color : rgb(255,0,47);"> <mat-icon>trending_down</mat-icon> 42</h3>
-      </span>
-    </div>
-<!-- 
-
-    <div style="width: 100%;">
-      <div class="search-box">
-        <form (ngSubmit)="search()" [formGroup]="formMessage">
-          <input formControlName="message" type="text" class="search-input" placeholder="Search">
-        </form>
-      </div>
-    </div> -->
-
-    <!-- <app-search [users]="searching"></app-search> -->
 
   </div>
 

@@ -71,7 +71,6 @@ export class SocketNotificationService implements OnInit {
                                                 }
                                             }
                                         })
-
                             }
                         })
                 }
@@ -147,6 +146,14 @@ export class SocketNotificationService implements OnInit {
 
     userLeave() {
         return this.socket.fromEvent('room_leave');
+    }
+
+    playerUpdate(){
+        return this.socket.fromEvent('player_update');
+    }
+
+    playerUpdateEmit(_room: string, _user: UserDto ) {
+        this.socket.emit('player_update', { room: _room, user: _user });
     }
 
     // get_room_admin() {

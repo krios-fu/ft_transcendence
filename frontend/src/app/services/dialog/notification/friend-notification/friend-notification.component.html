@@ -11,16 +11,12 @@ justify-content: center;" mat-dialog-title>
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS_PENDDING">
             <mat-chip class="tag">
                 <img class="avatar" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
-                <a [routerLink]="['/home/profile/', user.username]">
+                <a [routerLink]="['/profile', user.username]">
                     <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span></a>
                     <a mat-icon-button (click)="add_friend(user.id)">
                         <mat-icon>check_small</mat-icon>
                     </a>
-                    <a mat-icon-button ><mat-icon>person_remove</mat-icon></a>
-                    <a mat-icon-button><mat-icon>block</mat-icon></a>
-                    <!-- [routerLink]="[ '/', { outlets: {  chat: ['chat', user.username] } }]" -->
-                    <a mat-icon-button (click)="open_chat(user.id, user.username)" >
-                        <mat-icon>chat</mat-icon></a>
+                    <a mat-icon-button (click)="delete_friend(user.id)"><mat-icon>person_remove</mat-icon></a>
                 </mat-chip>
             <mat-divider></mat-divider>
         </mat-chip-list>
@@ -28,5 +24,4 @@ justify-content: center;" mat-dialog-title>
 </section>
 <div style="color: rgb(84, 16, 230)" mat-dialog-actions>
     <button mat-button mat-dialog-close>CLOSE</button>
-    <!-- <button mat-button mat-dialog-close cdkFocusInitial>Ok</button> -->
 </div>

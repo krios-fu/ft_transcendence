@@ -1,4 +1,3 @@
-
 .avatar {
     position: relative;
     left: 5px;
@@ -12,11 +11,11 @@
     border: 3px solid rgb(255, 255, 255);
 
     img {
-      width: 100%;
-      height: auto;
+        width: 100%;
+        height: auto;
 
     }
-  }
+}
 
 div {
     border: outset 2px silver;
@@ -25,6 +24,7 @@ div {
 
 .icon_nav {
     color: white;
+
     &:hover {
         color: rgb(237, 235, 139);
     }
@@ -75,10 +75,10 @@ div {
 
 
 /////////
-/// 
-/// 
+///
+///
 /// .
-/// 
+///
 .tree_friend {
     background: none;
     // border: 1px solid rgba(245, 245, 245, 0.29);
@@ -126,6 +126,7 @@ a {
     border: 3px solid rgba(255, 255, 255, 0.24);
     background-image: linear-gradient(var(--rotate), #5ddcff, #3c3ce3 43%, #6700c2);
     animation: spin 2.5s linear infinite;
+
     img {
         width: 100%;
         height: auto;
@@ -142,6 +143,7 @@ a {
     margin: 0;
     padding: 0;
     border: 3px solid rgba(255, 255, 255, 0.24);
+
     img {
         width: 100%;
         height: auto;
@@ -201,41 +203,48 @@ span {
 }
 
 .row {
-	height: calc(100vh - 4rem);
-	display: flex;
-	clear: both;
-	padding: 0;
-	margin: 0;
-  
-  }
+    height: calc(100vh - 4rem);
+    display: flex;
+    clear: both;
+    padding: 0;
+    margin: 0;
 
-  .column1  {
-	float: left;
-	width: 20%;
-	padding: 10px;
-	color: white;
-	background: inherit;
-	text-transform: uppercase;
-	min-width: 21rem;
-	position: relative;
-	a{
-	  color: white;
-	}
-  
-  }
+}
+
+.column1 {
+    float: left;
+    width: 20%;
+    padding: 10px;
+    color: white;
+    background: inherit;
+    text-transform: uppercase;
+    min-width: 21rem;
+    position: relative;
+
+    a {
+        color: white;
+    }
+
+    background-image: url('https://i.gifer.com/C7Hb.gif');
+    background-repeat: no-repeat;
+    background-position: bottom ;
+    background-color: black;
+    background-size: 96%;
+}
 
 
-  .column2 {
-	float: left;
-	width: 80%;
+.column2 {
+    float: left;
+    width: 80%;
     // height: 100%;
-	padding: 0;
-	margin: 0;
-	position: relative;
-	border-left: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    border-left: none;
 
-	background-position: center; /* Center the image */
-  	background-size: cover;
-    
-  
-  }
+    background-position: center;
+    /* Center the image */
+    background-size: cover;
+
+
+}
