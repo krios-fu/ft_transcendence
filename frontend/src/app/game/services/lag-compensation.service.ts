@@ -9,6 +9,7 @@ import {
     IPredictionInit,
     PredictionService
 } from "./prediction.service";
+import { IBuffers } from "../elements/SnapshotBuffer";
 
 @Injectable({
     providedIn: 'root'
@@ -35,8 +36,8 @@ export class    LagCompensationService {
         this._gameHeight = initData.gameHeight;
     }
 
-    autoFill(buffer: IMatchData[]): void {
-        this.extrapolService.fillBuffer(buffer, this._bufferSnapshots);
+    autoFill(buffers: IBuffers): void {
+        this.extrapolService.fillBuffer(buffers, this._bufferSnapshots);
     }
 
     //false: normal, true: slow down
@@ -123,16 +124,16 @@ export class    LagCompensationService {
         return (false);
     }
 
-    serverUpdate(buffer: IMatchData[], serverSnapshot: IMatchData,
+    serverUpdate(buffers: IBuffers, serverSnapshot: IMatchData,
                     currentSnapshot: IMatchData): void {
-        this.interpolService.fillBuffer(buffer, {
+        this.interpolService.fillBuffer(buffers, {
             serverSnapshot: serverSnapshot,
             currentSnapshot: currentSnapshot,
             totalSnapshots: this._bufferSnapshots,
             role: this._role,
             slowDown: this._interpolType(serverSnapshot, currentSnapshot)
         });
-        this.extrapolService.improveInterpol(buffer, {
+        this.extrapolService.improveInterpol(buffers, {
             serverSnapshot: serverSnapshot,
             currentSnapshot: currentSnapshot,
             role: this._role,
@@ -157,7 +158,7 @@ export class    LagCompensationService {
         playerData.hero.pointInvocation = true;
     }
 
-    input(buffer: IMatchData[], paddleMove: number, heroMove: number,
+    input(buffers: IBuffers, paddleMove: number, heroMove: number,
             currentSnapshot: IMatchData): void {
         const   playerData: IPlayerData = this._role === "PlayerA"
                                             ? currentSnapshot.playerA
@@ -165,8 +166,9 @@ export class    LagCompensationService {
     
         this._inputPaddle(playerData, paddleMove);
         this._inputHero(playerData, heroMove);
-        this.extrapolService.updateInput(buffer, currentSnapshot,
-                                            this._bufferSnapshots, this._role);
+        this.extrapolService.updateInput(buffers, currentSnapshot,
+                                            this._bufferSnapshots,
+                                            this._role);
     }
 
 }

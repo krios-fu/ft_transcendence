@@ -61,7 +61,7 @@ export class    PlayerScene extends MatchScene {
             input[1] = 1;
         }
         if (input[0] || input[1])
-            this.buffer?.input(input[0], input[1], this.match?.snapshot);
+            this.buffer?.input(input[0], input[1]);
         super.update(time);
     }
 

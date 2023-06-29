@@ -44,7 +44,7 @@ export class    ClassicPlayerScene extends MatchScene {
             input = 1;
         }
         if (input)
-            this.buffer?.input(input, 0, this.match?.snapshot);
+            this.buffer?.input(input, 0);
         super.update(time);
     }
 

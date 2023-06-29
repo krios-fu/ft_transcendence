@@ -9,6 +9,7 @@ import {
     IPredictionOutput,
     PredictionService
 } from "./prediction.service";
+import { IBuffers } from "../elements/SnapshotBuffer";
 
 export interface    IExtrapolImproveData {
     serverSnapshot: IMatchData;
@@ -77,21 +78,27 @@ export class    ExtrapolationService {
     **  available from the server to generate interpolated or extrapolated
     **  snapshots with.
     */
-    fillBuffer(buffer: IMatchData[], totalSnapshots: number): void {
+    fillBuffer(buffers: IBuffers, totalSnapshots: number): void {
         let generatedSnapshot: IMatchData;
         let refSnapshot: IMatchData;
 
-        if (!buffer.length)
+        if (!buffers.buffer.length)
             return ;
         this._totalSnapshots = totalSnapshots;
         for (let i = 1; i < this._totalSnapshots; ++i)
         {
-            refSnapshot = buffer[i - 1];
+            refSnapshot = buffers.buffer[i - 1];
             generatedSnapshot = this._getSnapshot(
                 refSnapshot,
                 refSnapshot.when + this._snapshotInterval
             );
-            buffer.push(Match.cloneMatchData(generatedSnapshot));
+            buffers.buffer.push(Match.cloneMatchData(generatedSnapshot));
+            refSnapshot = buffers.smoothBuffer[i - 1];
+            generatedSnapshot = this._getSnapshot(
+                refSnapshot,
+                refSnapshot.when + this._snapshotInterval
+            );
+            buffers.smoothBuffer.push(Match.cloneMatchData(generatedSnapshot));
         }
     }
 
@@ -105,15 +112,17 @@ export class    ExtrapolationService {
     }
 
     private _improveSnapshot(base: IMatchData, generated: IMatchData,
-                                aggressive: boolean, step: number): void {
+                                aggressive: boolean, step: number,
+                                smoothed: IMatchData): void {
         const   smoothBallX = this._smoothValue(generated.ball.xPos, base.ball.xPos, step, this._totalSnapshots);
         const   smoothBallY = this._smoothValue(generated.ball.yPos, base.ball.yPos, step, this._totalSnapshots);
     
         if (aggressive)
         {
             Match.copyMatchData(base, generated);
-            base.ball.xPos = smoothBallX;
-            base.ball.yPos = smoothBallY;
+            Match.copyMatchData(smoothed, generated);
+            smoothed.ball.xPos = smoothBallX;
+            smoothed.ball.yPos = smoothBallY;
         }
         else
         {
@@ -124,6 +133,7 @@ export class    ExtrapolationService {
             base.playerB.paddleY = generated.playerB.paddleY;
             if (generated.playerB.hero)
                 base.playerB.hero = {...generated.playerB.hero};
+            Match.copyMatchData(smoothed, base);
         }
     }
 
@@ -180,9 +190,9 @@ export class    ExtrapolationService {
         return (serverTime + this._snapshotInterval);
     }
 
-    improveInterpol(buffer: IMatchData[], data: IExtrapolImproveData): void {
+    improveInterpol(buffers: IBuffers, data: IExtrapolImproveData): void {
         let targetTime: number = this.getTargetTime(data.aggressive,
-                                                    buffer[0].when,
+                                                    buffers.buffer[0].when,
                                                     data.serverSnapshot.when);
         let refSnapshot: IMatchData = Match.cloneMatchData(data.serverSnapshot);
         let genSnapshot: IMatchData;
@@ -192,38 +202,55 @@ export class    ExtrapolationService {
         **  The buffer is full, because it has been filled previously
         **  by the interpolation service.
         */
-        for (let i = 0; i < buffer.length; ++i) {
+        for (let i = 0; i < buffers.buffer.length; ++i) {
             genSnapshot = this._getSnapshot(
                 refSnapshot,
-                targetTime ? targetTime : buffer[i].when
+                targetTime ? targetTime : buffers.buffer[i].when
             );
-            this._improveSnapshot(buffer[i], genSnapshot,
-                                    data.aggressive, i + 1);
+            this._improveSnapshot(buffers.buffer[i], genSnapshot,
+                                    data.aggressive, i + 1,
+                                    buffers.smoothBuffer[i]);
             targetTime = data.aggressive
-                            ? buffer[i].when + this._snapshotInterval : 0;
-            refSnapshot = buffer[i];
+                            ? buffers.buffer[i].when + this._snapshotInterval : 0;
+            refSnapshot = buffers.buffer[i];
         }
     }
 
     private _preserveUnpredictable(current: IMatchData,
+                                    currentSmooth: IMatchData,
                                     prediction: IMatchData,
-                                    role: string): void {        
+                                    role: string,
+                                    step: number): void {
+        const   smoothBallX = this._smoothValue(prediction.ball.xPos, current.ball.xPos, step, this._totalSnapshots);
+        const   smoothBallY = this._smoothValue(prediction.ball.yPos, current.ball.yPos, step, this._totalSnapshots);
+    
         current.ball = {...prediction.ball};
+        currentSmooth.ball = {...current.ball};
+        currentSmooth.ball.xPos = smoothBallX;
+        currentSmooth.ball.yPos = smoothBallY;
         if (role === "PlayerA")
         {
             current.playerA.paddleY = prediction.playerA.paddleY;
+            currentSmooth.playerA.paddleY = prediction.playerA.paddleY;
             if (prediction.playerA.hero)
+            {
                 current.playerA.hero = {...prediction.playerA.hero};
+                currentSmooth.playerA.hero = {...prediction.playerA.hero}
+            }
         }
         else
         {
             current.playerB.paddleY = prediction.playerB.paddleY;
+            currentSmooth.playerB.paddleY = prediction.playerB.paddleY;
             if (prediction.playerB.hero)
+            {
                 current.playerB.hero = {...prediction.playerB.hero};
+                currentSmooth.playerB.hero = {...prediction.playerB.hero}
+            }
         }
     }
 
-    updateInput(buffer: IMatchData[], baseSnapshot: IMatchData,
+    updateInput(buffers: IBuffers, baseSnapshot: IMatchData,
                     totalSnapshots: number, role: string): void {
         let generatedSnapshot: IMatchData;
         let refSnapshot: IMatchData;
@@ -234,14 +261,18 @@ export class    ExtrapolationService {
         {
             generatedSnapshot = this._getSnapshot(
                 refSnapshot,
-                i < buffer.length ? buffer[i].when
+                i < buffers.buffer.length ? buffers.buffer[i].when
                                     : refSnapshot.when + this._snapshotInterval
             );
-            if (i < buffer.length)
-                this._preserveUnpredictable(buffer[i], generatedSnapshot, role);
+            if (i < buffers.buffer.length)
+                this._preserveUnpredictable(buffers.buffer[i], buffers.smoothBuffer[i], generatedSnapshot, role, i + 1);
             else
-                buffer.push(Match.cloneMatchData(generatedSnapshot));
-            refSnapshot = buffer[i];
+            {
+                buffers.buffer.push(Match.cloneMatchData(generatedSnapshot));
+                buffers.smoothBuffer.push(Match.cloneMatchData(generatedSnapshot));
+                
+            }
+            refSnapshot = buffers.buffer[i];
         }
     }
 
