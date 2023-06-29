@@ -10,8 +10,8 @@ import {
     Logger,
     NotFoundException,
     ForbiddenException,
-    BadRequestException,
-    UseGuards } from '@nestjs/common';
+    BadRequestException 
+} from '@nestjs/common';
 import { UserRoomService } from './user_room.service';
 import { CreateUserRoomDto } from './dto/user_room.dto';
 import { UserRoomEntity } from './entity/user_room.entity';
@@ -19,12 +19,9 @@ import { RoomEntity } from '../room/entity/room.entity';
 import { UserService } from '../user/services/user.service';
 import { RoomService } from '../room/room.service';
 import { UserRoomQueryDto } from './dto/user_room.query.dto';
-import { IsPrivate } from '../common/guards/is-private.guard';
-import { Banned } from './guards/banned.guard';
 import { UserCreds } from 'src/common/decorators/user-cred.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { RoomRolesService } from 'src/room_roles/room_roles.service';
-import { ForbiddenWsException } from 'src/game/exceptions/forbidden.wsException';
 import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 
 @Controller('user_room')
@@ -108,9 +105,6 @@ export class UserRoomController {
     }
 
     /* Create a new user in a room */
-    //@UseGuarhds(Banned)
-    //@UseGuards(IsPrivate) /*???*/
-    //@UseGuards(userisme)
     @Post()
     public async create(
         @Body() dto: CreateUserRoomDto,

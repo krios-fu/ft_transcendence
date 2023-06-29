@@ -4,6 +4,7 @@ import * as SockIO from 'socket.io-client';
 import { IAuthPayload } from 'src/app/interfaces/iauth-payload.interface';
 import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 enum SocketException {
     Unauthorized = "unauthorized",
@@ -34,7 +35,7 @@ export class    SocketService {
         private readonly authService: AuthService,
         private readonly alertService: AlertServices
     ) {
-        this._socket = SockIO.io("ws://localhost:3001", {
+        this._socket = SockIO.io(environment.wsUrl, {
             reconnectionAttempts: 3
         });
         this._addConnectionEvents();

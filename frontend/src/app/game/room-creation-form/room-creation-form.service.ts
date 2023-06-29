@@ -27,8 +27,6 @@ export interface    IRoomData {
     providedIn: "root"
 })
 export class   RoomCreationFormService {
-
-    // private readonly _urlAuthority: string = "http://localhost:3000";
     private readonly _path: string = "room";
     private readonly _pathPrivate: string = this._path + '/private';
 

@@ -5,6 +5,7 @@ import { UserDto } from 'src/app/dtos/user.dto';
 import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-friend-notification',
@@ -13,7 +14,7 @@ import { ChatService } from 'src/app/services/chat.service';
 })
 export class FriendNotificationComponent implements OnInit {
   public FRIENDS_USERS_PENDDING = [] as UserDto[];
-  urlApi = 'http://localhost:3000/';
+  urlApi = environment.apiUrl;
 
 
   constructor(
@@ -27,7 +28,7 @@ export class FriendNotificationComponent implements OnInit {
   ngOnInit(): void {
     const user_sesion = this.authService.getAuthUser();
 
-    this.http.get<any[]>('http://localhost:3000/users/me/friends/as_pending')
+    this.http.get<any[]>(environment.apiUrl + '/users/me/friends/as_pending')
     .subscribe((friends: any[]) => {
       for (let friend in friends) {
         const { receiver } = friends[friend];
@@ -57,22 +58,4 @@ export class FriendNotificationComponent implements OnInit {
       this.router.navigate([ '/', { outlets: {  chat: ['chat', username_friend] } }]);
     })
   }
-
-  // post_friendship() {
-  
-  //   else if (this.icon_friend === 'person_remove') {
-  //     this.http.delete(`http://localhost:3000/users/me/friends/deleted/${this.id_friendship}`)
-  //       .subscribe(data => {
-  //         this.icon_friend = 'person_add'
-  //       })
-  //   }
-  //   else if (this.icon_friend === 'check')
-  //     this.http.patch(`http://localhost:3000/users/me/friends/accept`, {
-  //       id: this.user?.id
-  //     })
-  //       .subscribe(data => {
-  //         this.icon_friend = 'person_remove'
-  //       })
-  // }
-
 }

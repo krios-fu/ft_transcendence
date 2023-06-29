@@ -44,11 +44,6 @@ export interface   UserHistory {
     providedIn: 'root'
 })
 export class    MatchHistoryService {
-
-    // Store common urls in separate file to avoid duplication
-    // private readonly _urlAuthority: string = "http://localhost:3000";
-    // private readonly _urlPath: string = "/match";
-
     constructor(
         private readonly httpService: HttpClient
     ) {}
