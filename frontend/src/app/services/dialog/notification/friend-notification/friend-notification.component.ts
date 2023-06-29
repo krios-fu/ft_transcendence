@@ -14,6 +14,7 @@ import { environment } from 'src/environments/environment';
 })
 export class FriendNotificationComponent implements OnInit {
   public FRIENDS_USERS_PENDDING = [] as UserDto[];
+  urlApi = environment.apiUrl;
 
 
   constructor(
@@ -68,22 +69,4 @@ export class FriendNotificationComponent implements OnInit {
       })
 
   }
-
-  // post_friendship() {
-
-  //   else if (this.icon_friend === 'person_remove') {
-  //     this.http.delete(`http://localhost:3000/users/me/friends/deleted/${this.id_friendship}`)
-  //       .subscribe(data => {
-  //         this.icon_friend = 'person_add'
-  //       })
-  //   }
-  //   else if (this.icon_friend === 'check')
-  //     this.http.patch(`http://localhost:3000/users/me/friends/accept`, {
-  //       id: this.user?.id
-  //     })
-  //       .subscribe(data => {
-  //         this.icon_friend = 'person_remove'
-  //       })
-  // }
-
 }

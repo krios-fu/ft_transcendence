@@ -143,7 +143,10 @@ div {
   }
 
   .column1  {
-	float: left;
+	display: flex;
+  flex-direction: column;
+  justify-content: center;
+  // align-items: center;
 	width: 20%;
 	padding: 10px;
 	color: white;

@@ -37,10 +37,6 @@ export interface   UserAchievement {
     providedIn: "root"
 })
 export class    AchievementsService {
-
-    // private readonly _urlAuthority: string = "http://localhost:3000";
-    // private readonly _urlPath: string = "/achievements_user";
-
     constructor(
         private readonly httpService: HttpClient
     ) {}

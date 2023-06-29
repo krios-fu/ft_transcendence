@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriber = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      if (event.url === '/login' || event.url === '/login/2fa')
+      if (event.url === '/login' || event.url === '/login/2fa' || event.url === '/login/wtf')
         this.hiden = false;
       else
         this.hiden = true;

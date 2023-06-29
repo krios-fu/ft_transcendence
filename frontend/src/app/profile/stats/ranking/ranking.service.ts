@@ -9,6 +9,7 @@ import {
     retry,
     throwError
 } from "rxjs";
+import { environment } from "src/environments/environment";
 
 export enum    Category {
     Pending,
@@ -45,8 +46,8 @@ export type UserCountData = [UserRanking[], number]
 export class    RankingService {
 
     // Store common urls in separate file to avoid duplication
-    private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _urlPath: string = "/users";
+    private readonly _urlAuthority: string = environment.apiUrl;
+    private readonly _urlPath: string = "users";
 
     constructor(
         private readonly httpService: HttpClient
