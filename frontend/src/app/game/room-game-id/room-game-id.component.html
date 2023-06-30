@@ -10,6 +10,8 @@
 
   <div class="column1" *ngIf="this.room_dto">
     <!-- <div id="container-title"> -->
+
+   
     <section style="color: white;">
 
       <mat-grid-list cols="3" rowHeight="60px">
@@ -30,16 +32,20 @@
  
           </mat-grid-tile>
         </mat-grid-tile-header>
+        
         <mat-grid-tile>
           <mat-form-field class="example-full-width" *ngIf="this.room_dto?.ownerId == this.me?.id && this.close">
-
             <input #name_room ngModule name="name" style="color: white; font-size: large; text-align: center;" matInput
               value={{this.room_dto?.roomName}} (keydown.enter)="this.change_name(name_room.value)">
-
           </mat-form-field>
+
+          <span *ngIf="this.roles.official">
+              <mat-icon [ngStyle]="{ color: color }">verified</mat-icon>
+          </span>
+
           <h5 (click)="edit()" *ngIf="this.room_dto?.ownerId != this.me?.id || !this.close"
             style="align-content: center; justify-content: center; display: flex; margin-left: 10px;">
-            {{this.room_dto?.roomName?.toUpperCase()}}
+            {{this.room_dto?.roomName?.toUpperCase()}} 
           </h5>
 
         </mat-grid-tile>
@@ -52,7 +58,7 @@
             </a>
           </span>
 
-          <span *ngIf="this.room_dto?.ownerId == this.me?.id">
+          <span *ngIf="this.room_dto?.ownerId == this.me?.id && this.roles.private">
             <a mat-icon-button (click)="changePassword()">
               <mat-icon>password</mat-icon>
             </a>

@@ -44,7 +44,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
     private socketGameNotification: SocketNotificationService,
     private userService: UsersService,
     private alertService: AlertServices,
-    private chatService: ChatService,
     public chat: Chat,
     private readonly roomGameIdService: RoomGameIdService,
   ) {
@@ -61,7 +60,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
           this._redirectToRoomLists();
         }
 
-          this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id)
+          if (payload.user.role && !payload.user.role.is_banned)
+            this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id )
 
         this.players.sort((user_a: any, user_b: any) => {
           return user_b.defaultOffline - user_a.defaultOffline;
@@ -109,7 +109,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
     payload.forEach((online: UserDto) => {
       this.players.forEach((user: UserDto, index : number) => {
-        if (user.id == online.id){
+        if (user.id === online.id){
           online.defaultOffline = true;
           this.players[index] = Object.assign(online); 
         }
@@ -143,6 +143,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.socketGameNotification.getUserConnection()
         .subscribe({
           next: (payload: any) => {
+            console.log("Entrada socket", payload);
             this.set_status_players(payload);
           },
         })
@@ -254,7 +255,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.userService.post_role_user_room(user, Roles.silenced, this.room?.id as number);
       this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS SILENCED`, 'OK')
       this.chat.sendMessageGame(`${user.nickName} NOW IS SILENCED`, this.me?.id as number, 'game' + this.room_id);
-      // this.socketGameNotification.joinRoomId(this.room?.id.toString() as string, user);
       this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
 
       user.role.is_silenced = true;
@@ -268,9 +268,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
   deleted_silenced(user: UserDto) {
     if (user.role.is_silenced) {
       this.userService.deleted_role_room(user, this.room?.id as number, Roles.silenced);
-      this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW ISN'T SILENCED`, 'OK')
-      this.chat.sendMessageGame(`${user.nickName} NOW ISN'T SILENCED`, this.me?.id as number, 'game' + this.room_id);
-      // this.socketGameNotification.joinRoomId(this.room?.id.toString() as string, user);
+      this.alertService.openSnackBar(`${user.nickName.toUpperCase()} ISN'T NOW SILENCED`, 'OK')
+      this.chat.sendMessageGame(`${user.nickName} ISN'T NOW SILENCED`, this.me?.id as number, 'game' + this.room_id);
       user.role.is_silenced = false;
       this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
 
@@ -281,18 +280,21 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   set_ban(user: UserDto) {
     this.userService.post_role_user_room(user, Roles.banned, this.room?.id as number);
-    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS BANNED`, 'OK');
-    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} IS NOW BANNED`, 'OK');
+    user.role.is_banned = true;
     this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
-
-    this.leave(user);
+    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    
+    // this.leave(user);
   }
 
   un_banned(user: UserDto) {
     this.userService.delete_role_banned(user, this.room?.id as number);
-    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} NOW IS UNBANNED`, 'OK');
-    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} IS NOW UNBANNED`, 'OK');
+    user.role.is_banned = false;
+    
     this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
+    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
 
   }
 

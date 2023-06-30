@@ -33,8 +33,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(args);
   }
 
-  handleDisconnect(client: Socket) {
-    // client.leave();
+ handleDisconnect(){
+
   }
 
 
@@ -108,11 +108,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('room_leave')
-  leaveRoomGame(
+  async leaveRoomGame(
     client: Socket,
     payload: { room: string, user: any }) {
     this.server.to(`noti_roomGame_${payload.room}`).emit('room_leave', payload)
-    client.leave(`noti_roomGame_${payload.room}`);
+    let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
+    for (let user of users_in_room) {
+      if (user.data.username === payload.user.username){
+        
+        console.log("Leave",user.data.username)
+        user.leave(`noti_roomGame_${payload.room}`);
+      }
+    }
+
   }
 
   @SubscribeMessage('player_update')
@@ -121,16 +129,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     payload: { room: string, user: any }) {
     this.server.to(`noti_roomGame_${payload.room}`).emit('player_update', payload)
     client.data = payload.user;
-    // client.leave(`noti_roomGame_${payload.room}`);
   }
-
-  // @SubscribeMessage('room_admin')
-  // AdminRoomGame(
-  //   client: Socket,
-  //   payload: { room: string, user: any }) {
-  //   this.server.to(`noti_roomGame_${payload.room}`).emit('room_admin', payload)
-  //   // client.leave(`noti_roomGame_${payload.room}`);
-  // }
 
 
   @SubscribeMessage('noti_game_room')
