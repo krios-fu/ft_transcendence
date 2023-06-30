@@ -121,7 +121,8 @@ export class UserRoomRolesController {
         return role;
     }
 
-
+    @UseGuards(PostRolesGuard)
+    @AllowedRoles('admin')
     @Post()
     public async postRoleInRoom(
         @Body() dto: CreateUserRoomRolesDto,
@@ -153,8 +154,8 @@ export class UserRoomRolesController {
         );
     }
 
-    /* Delete a user with role in a room */
-    /* at least mod role required */
+    @UseGuards(DelRolesGuard)
+    @AllowedRoles('admin')
     @Delete(':id')
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const role: UserRoomRolesEntity = await this.userRoomRolesService.findRole(id);

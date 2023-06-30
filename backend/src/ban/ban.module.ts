@@ -12,8 +12,7 @@ import { UserRoomRolesModule } from 'src/user_room_roles/user_room_roles.module'
   imports: [ 
     TypeOrmModule.forFeature([BanEntity]),
     UserModule,
-    RoomModule,
-    UserRoomRolesModule
+    RoomModule
   ],
   providers: [
     BanService,

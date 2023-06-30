@@ -22,15 +22,13 @@ import { BanService } from './ban.service';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
-import { UserRoomRolesService } from '../user_room_roles/user_room_roles.service';
 
 @Controller('ban')
 export class BanController {
     constructor(
         private readonly banService: BanService,
         private readonly userService: UserService,
-        private readonly roomService: RoomService,
-        private readonly rolesService: UserRoomRolesService
+        private readonly roomService: RoomService
     ) { 
         this.banLogger = new Logger(BanController.name);
     }
@@ -65,7 +63,8 @@ export class BanController {
         return await this.banService.getRoomsWithUserBanned(userId);
     }
 
-    /* Create a ban */
+    @UseGuards(PostRolesGuard)
+    @AllowedRoles('admin')
     @Post()
     async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
         const { userId, roomId } = dto;
@@ -82,15 +81,11 @@ export class BanController {
             this.banLogger.error(`Ban to user ${userId} in room ${roomId} already in db`);
             throw new BadRequestException('resource already exists in database');
         }
-        if (!this.rolesService.validateUserAction(userId, roomId, ['admin'])) {
-            this.banLogger.error(`User ${userId} not allowed to do this action`);
-            throw new ForbiddenException('User not allowed to do this action');
-        }
         return await this.banService.createBan(dto);
     }
 
-    /* Delete a ban */
-    /* baneos solamente permitidos por roles admin, owner (en user roles room) y super-admin en global */
+    @UseGuards(DelRolesGuard)
+    @AllowedRoles('admin')
     @Delete(':ban_id')
     async deleteBan(@Param('ban_id', ParseIntPipe) banId: number): Promise<void> {
         const ban: BanEntity | null = await this.banService.findOne(banId);

@@ -5,13 +5,11 @@ import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
 import { RoomService } from '../room/room.service';
 import { UserRoomService } from '../user_room/user_room.service';
-import { BanService } from '../ban/ban.service';
 import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
 import {EventEmitter2} from "@nestjs/event-emitter";
-import { UserRoomRolesModule } from "./user_room_roles.module";
 import { DeleteResult } from "typeorm";
 import { UserRoomEntity } from 'src/user_room/entity/user_room.entity';
 import { UserRolesService } from 'src/user_roles/user_roles.service';
@@ -23,7 +21,6 @@ export class UserRoomRolesService {
         private readonly userRoomRolesRepository: UserRoomRolesRepository,
         private readonly userService: UserService,
         private readonly roomService: RoomService,
-        private readonly banService: BanService,
         private readonly userRoomService: UserRoomService,
         private readonly userRolesService: UserRolesService,
         private readonly eventEmitter: EventEmitter2
@@ -72,11 +69,6 @@ export class UserRoomRolesService {
                 .findOne(role.userRoom.userId)))
 
         return users;
-        /*rolesInRoom.forEach(async (role) => {
-            const user = await this.userService.findOne(role.userRoom.userId);
-            users.push(user);
-        });
-        return users;*/
     }
 
     public async getUserRolesInRoom(
@@ -185,7 +177,6 @@ export class UserRoomRolesService {
         roles: string[]
     ): Promise<boolean> {
         return (await this._validateOwnerRole(userId, roomId) ||
-            await this._validateUserRoomRoles(userId, roomId, roles)) &&
-            !(await this.banService.validateBanRole(userId, roomId));
+            await this._validateUserRoomRoles(userId, roomId, roles));
     }
 }
