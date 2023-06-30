@@ -20,42 +20,53 @@ export class FriendNotificationComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private alertService: AlertServices,
-    private chatService: ChatService,
-    private router: Router ) {
-    }
+    private alertService: AlertServices,){}
 
   ngOnInit(): void {
     const user_sesion = this.authService.getAuthUser();
 
-    this.http.get<any[]>(environment.apiUrl + '/users/me/friends/as_pending')
-    .subscribe((friends: any[]) => {
-      for (let friend in friends) {
-        const { receiver } = friends[friend];
-        const { sender } = friends[friend];
-        
-        const user = (receiver) ? receiver : sender;
-        if (sender && (sender.username !== user_sesion) )
+    this.http.get<any[]>(`${environment.apiUrl}users/me/friends/as_pending`)
+      .subscribe((friends: any[]) => {
+        for (let friend in friends) {
+          const { receiver } = friends[friend];
+          const { sender } = friends[friend];
+
+          const user = (receiver) ? receiver : sender;
+          if (sender && (sender.username !== user_sesion))
             this.FRIENDS_USERS_PENDDING.push(user);
-      }
-    })
+        }
+      })
   }
 
 
-  add_friend(id_friend : number){
-    this.http.patch(`${this.urlApi}users/me/friends/accept`, {
+  add_friend(id_friend: number) {
+    this.http.patch(`${environment.apiUrl}users/me/friends/accept`, {
       id: id_friend
     })
-    .subscribe(()=> {
-     this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user : UserDto)=> user.id !== id_friend)
-     this.alertService.openSnackBar("Friend add", "Close");
-    })
+      .subscribe(() => {
+        this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== id_friend)
+        this.alertService.openSnackBar("Friend add", "Close");
+      })
   }
 
-  open_chat(id_friend : number, username_friend : string ){
-    this.chatService.createChat(id_friend)
-    .subscribe(() => {
-      this.router.navigate([ '/', { outlets: {  chat: ['chat', username_friend] } }]);
-    })
+  delete_friend(id_friend: number) {
+
+    this.http.get<any[]>(`${environment.apiUrl}users/me/friends/as_pending`)
+      .subscribe((friends: any[]) => {
+        for (let friend in friends) {
+          const { receiver } = friends[friend];
+          const { sender } = friends[friend];
+
+          const user = (receiver) ? receiver : sender;
+          if (user.id === id_friend)
+            this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${friends[friend].id}`)
+              .subscribe(data => {
+                this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== id_friend)
+
+              })
+
+        }
+      })
+
   }
 }

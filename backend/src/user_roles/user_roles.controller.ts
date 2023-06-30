@@ -81,8 +81,8 @@ export class UserRolesController {
     }
 
     /* Create a new role for a user */
+    @UseGuards(SiteAdminGuard)
     @Post()
-    //@UseGuards(SiteAdminGuard)
     public async assignRoleToUser(@Body() dto: CreateUserRolesDto): Promise<UserRolesEntity> {
         const { userId, roleId } = dto;
 
@@ -99,7 +99,7 @@ export class UserRolesController {
     }
 
     /* Remove a role from a user */
-    @UseGuards(SiteAdminGuard) // not true ??
+    @UseGuards(SiteAdminGuard) // not true ?
     @Delete(':id')
     public async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const role: UserRolesEntity = await this.userRolesService.findOne(id);

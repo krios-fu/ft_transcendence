@@ -31,10 +31,10 @@ export class    RoomListService {
 
     // Store common urls in separate file to avoid duplication
     private readonly _urlAuthority: string = environment.apiUrl;
-    private readonly _urlPathRoom: string = "/room";
+    private readonly _urlPathRoom: string = "room";
     private readonly _urlPathRoomUserCount: string =
                             this._urlPathRoom + "/user_count";
-    private readonly _urlPathUserRoom: string = "/user_room";
+    private readonly _urlPathUserRoom: string = "user_room";
 
     constructor(
         private readonly httpService: HttpClient,

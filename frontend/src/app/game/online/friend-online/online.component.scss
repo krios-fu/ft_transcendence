@@ -86,6 +86,34 @@
 		}
 
 	}
+
+	.banned {
+		position: relative;
+		background: greenyellow;
+		//z-index: 1;
+		left: 5px;
+		border-radius: 50%;
+		width: 60px;
+		height: 60px;
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+		border: 4px solid rgba(13, 24, 236, 0.24);
+		// border: 4px solid #f400e3;
+
+		
+		content: "";
+		background-image: linear-gradient(var(--rotate), #d81111, #c90e0e 43%, #ea0a7a79);
+		top: -1%;
+		left: -2%;
+		animation: spin 2.5s linear infinite;
+
+		img {
+			width: 100%;
+			height: 100%;
+		}
+
+	}
 }
 
 @keyframes spin {

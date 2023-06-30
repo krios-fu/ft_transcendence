@@ -8,11 +8,7 @@ import { ChatService } from 'src/app/services/chat.service';
 import { AlertServices } from 'src/app/services/alert.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { environment } from 'src/environments/environment';
-
-
-enum role {
-  owner = 1
-}
+import { Roles } from 'src/app/roles';
 
 @Injectable()
 export class SharedService {
@@ -26,7 +22,8 @@ export class SharedService {
 })
 export class ProfileUserComponent implements OnInit {
 
-  user?: UserDto;
+  user?: UserDto; // user/user:id
+  me?: UserDto; // me
 
   icon_friend = 'person_add'
   icon_activate = true;
@@ -38,7 +35,6 @@ export class ProfileUserComponent implements OnInit {
 
   public FRIENDS_USERS = [] as UserDto[];
 
-  me?: UserDto;
 
   constructor(private http: HttpClient,
     private authService: AuthService,
@@ -49,24 +45,17 @@ export class ProfileUserComponent implements OnInit {
     private userService: UsersService,
     private shareService: SharedService
   ) {
-    // this.user = undefined;
   }
 
-  @Output() username = new EventEmitter();
+  // @Output() username = new EventEmitter();
 
   ngOnInit() {
     this.friend();
     this.userService.getUser('me')
       .subscribe((user: UserDto) => {
 
-        this.http.get(`${environment.apiUrl}user_roles/roles/${role.owner}`)
-        .subscribe((payload)=>{
-          const owners = Object.assign(payload);
-          owners.forEach((user_roles: any) => {
-            if (user_roles.userId === user.id)
-                user.is_owner = true
-          })
-        })
+        this.userService.get_role(user);
+
         this.me = user;
         this.color_icon = (this.me.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
@@ -78,6 +67,7 @@ export class ProfileUserComponent implements OnInit {
 
     })
   }
+
 
 
   getNickName() { return this.user?.nickName; }
@@ -94,8 +84,7 @@ export class ProfileUserComponent implements OnInit {
     if (this.icon_friend === 'person_add') {
       this.http.post(`${environment.apiUrl}users/me/friends`, {
         receiverId: this.user?.id,
-      }).subscribe(
-        data => {
+      }).subscribe( data => {
           this.icon_friend = 'pending'
         })
     }
@@ -103,7 +92,6 @@ export class ProfileUserComponent implements OnInit {
       this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${this.id_friendship}`)
         .subscribe(data => {
           this.icon_friend = 'person_add'
-          // this.get_friend(this.user?.id)
           this.friend()
         })
     }
@@ -113,36 +101,31 @@ export class ProfileUserComponent implements OnInit {
       })
         .subscribe(data => {
           this.icon_friend = 'person_remove'
-          // this.get_friend(this.user?.id)
           this.friend()
         })
   }
 
   get_chat_id() { return this.id_chat; }
 
-  view_chat(){
-  const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
+  view_chat() {
+    const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
 
-   this.view = friend ? true : false;
+    this.view = friend ? true : false;
   }
 
   friend() {
     this.route.params.subscribe(({ id }) => {
       // this.formMessage.patchValue({ id });
-      this.http.get<UserDto[]>(`${environment.apiUrl}users?filter[nickName]=${id}`)
-        .subscribe((user: UserDto[]) => {
-          if (user.length === 0) {
-            this.alertService.openSnackBar('USER NOT FOUND', 'OK')
-            this.authService.redirectHome()
-          }
-          this.user = user[0];
+      this.http.get<UserDto>(`${environment.apiUrl}users/${id}`)
+        .subscribe((user: UserDto) => {
+          this.user = user;
           this.icon_activate = false;
           this.id_chat = -1;
           this.view = false;
           this.icon_friend = 'person_add'
           this.FRIENDS_USERS = [];
 
-
+          this.userService.get_role(this.user);
 
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
@@ -170,24 +153,42 @@ export class ProfileUserComponent implements OnInit {
               }
               this.get_friend(this.user?.id)
             })
+        }, error => {
+          this.alertService.openSnackBar('USER NOT FOUND', 'OK')
+          this.authService.redirectHome()
         });
     });
   }
 
+  close() {
+    if (!this.user?.role.is_banned && this.me?.role.is_super_admin) {
+      this.userService.post_role(this.user as UserDto, Roles.banned);
+      this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} HAS BEEN BANNED`, 'OK')
+    }
 
-  get_friend(id ?: number){
+  }
+
+  unclose() {
+    if (this.user?.role.is_banned && this.me?.role.is_super_admin) {
+      this.userService.delete_role_user(this.user as UserDto, Roles.banned);
+      this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} HAS BEEN UNBANNED`, 'OK');
+    }
+  }
+
+
+  get_friend(id?: number) {
     this.FRIENDS_USERS = [];
     this.http.get<any[]>(`${environment.apiUrl}users/${id}/friends`)
-    .subscribe((friends: any[]) => {
-      for (let friend in friends) {
-        const { receiver } = friends[friend];
-        const { sender } = friends[friend];
-        const user = (receiver) ? receiver : sender;
-        if (user)
-          this.FRIENDS_USERS.push(user);
-      }
-      this.view_chat();
-    })
+      .subscribe((friends: any[]) => {
+        for (let friend in friends) {
+          const { receiver } = friends[friend];
+          const { sender } = friends[friend];
+          const user = (receiver) ? receiver : sender;
+          if (user)
+            this.FRIENDS_USERS.push(user);
+        }
+        this.view_chat();
+      })
   }
 
 }

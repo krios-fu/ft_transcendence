@@ -50,6 +50,7 @@ export class ChatGameComponent implements OnInit {
   ) {
 
     this.unfold = 'unfold_less';
+    this.update_player();
   }
 
   ngOnInit(): void {
@@ -63,13 +64,22 @@ export class ChatGameComponent implements OnInit {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          // this.socketGameNotification.joinRoomNotification(this.me.username);
+
+          this.userService.get_role(this.me);
+          this.userService.get_role_user_room(this.me, this.id as number);
           delete this.user;
 
         });
     });
   }
 
+  update_player(){
+    this.socketGameNotification.playerUpdate()
+    .subscribe((payload : any) =>{
+          if (this.me?.id == payload.user.id)
+            this.me = Object.assign(payload.user);
+    })
+  }
 
   getMessage() {
 
@@ -82,8 +92,6 @@ export class ChatGameComponent implements OnInit {
     });
   }
 
-
-
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
     if (!message || message.trim() == '')
@@ -95,7 +103,6 @@ export class ChatGameComponent implements OnInit {
 
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    // this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
 
 
@@ -108,9 +115,6 @@ export class ChatGameComponent implements OnInit {
 
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
-
   }
-
-
 
 }

@@ -73,7 +73,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('join_room_notification')
   handleJoinnotification(client: Socket, room: string) {
     client.join(`notifications_${room}`);
-    console.log("Join cliente", client.id, "to", `notifications_${room}`);
   }
 
   @SubscribeMessage('notifications')
@@ -84,7 +83,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       msg: string
       dest: string
     }) {
-    console.log('PAYLOAD', payload)
     this.server.to(`notifications_${payload.dest}`).emit('notifications', payload)
   }
 
@@ -92,6 +90,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async joinRoomGame(
     client: Socket,
     payload: { room: string, user: any }) {
+
+    payload.user.defaultOffline = true;
 
     client.data = payload.user;
     let users_send = [];
@@ -102,6 +102,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       let data = user.data;
         users_send.push(data);
     }
+
     this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', users_send);
     this.server.to(payload.user.username).emit(payload.user.username, users_send);
   }
@@ -111,8 +112,25 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: { room: string, user: any }) {
     this.server.to(`noti_roomGame_${payload.room}`).emit('room_leave', payload)
+    client.leave(`noti_roomGame_${payload.room}`);
+  }
+
+  @SubscribeMessage('player_update')
+  playerUpdate(
+    client: Socket,
+    payload: { room: string, user: any }) {
+    this.server.to(`noti_roomGame_${payload.room}`).emit('player_update', payload)
+    client.data = payload.user;
     // client.leave(`noti_roomGame_${payload.room}`);
   }
+
+  // @SubscribeMessage('room_admin')
+  // AdminRoomGame(
+  //   client: Socket,
+  //   payload: { room: string, user: any }) {
+  //   this.server.to(`noti_roomGame_${payload.room}`).emit('room_admin', payload)
+  //   // client.leave(`noti_roomGame_${payload.room}`);
+  // }
 
 
   @SubscribeMessage('noti_game_room')

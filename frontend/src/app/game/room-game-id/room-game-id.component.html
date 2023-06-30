@@ -27,9 +27,7 @@
               [ngStyle]="{'color': 'white', 'font-size':'25px'}"
               style="position: absolute; bottom: -5px; ">photo_camera</mat-icon>
 
-            <!-- </div> -->
-
-            <!-- <mat-icon mat-list-icon *ngIf="!this.room_dto?.photoUrl">groups</mat-icon> -->
+ 
           </mat-grid-tile>
         </mat-grid-tile-header>
         <mat-grid-tile>
@@ -53,6 +51,12 @@
               <mat-icon>info</mat-icon>
             </a>
           </span>
+
+          <span *ngIf="this.room_dto?.ownerId == this.me?.id">
+            <a mat-icon-button (click)="changePassword()">
+              <mat-icon>password</mat-icon>
+            </a>
+          </span>
           <span>
             <a mat-icon-button (click)="leaveRoom()">
               <mat-icon>logout</mat-icon>
@@ -66,7 +70,7 @@
         style=" height: 10vh; position: relative; color: white;" itemSize="4">
         <app-online *ngIf="room_id?.length"></app-online>
       </cdk-virtual-scroll-viewport>
-      <app-chat-game></app-chat-game>
     </section>
+    <app-chat-game></app-chat-game>
   </div>
 </div>

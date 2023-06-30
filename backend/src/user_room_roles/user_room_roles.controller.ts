@@ -101,6 +101,25 @@ export class UserRoomRolesController {
         return role;
     }
 
+
+    @Get('/users/:user_id/rooms/:room_id')
+    public async getRoleUser(
+        @Param('user_id', ParseIntPipe) userId: number,
+        @Param('room_id', ParseIntPipe) roomId: number,
+    ): Promise<UserRoomRolesEntity[]> {
+        if(
+            await this.userRoomService.findUserRoomIds(userId, roomId) === null
+        ) {
+            this.userRoomRolesLogger.error('user role in room not found in database');
+            throw new NotFoundException('resource not found in database');
+        }
+        const role: UserRoomRolesEntity []= await this.userRoomRolesService.findRoleByUser(userId, roomId);
+        if (role === null) {
+            this.userRoomRolesLogger.error('user role in room not found in database');
+            throw new NotFoundException('resource not found in database');
+        }
+        return role;
+    }
     /* Create a new user with a role in a room */
     /* at least mod role required */
     @Post()

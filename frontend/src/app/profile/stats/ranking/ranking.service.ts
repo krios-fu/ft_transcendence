@@ -47,7 +47,7 @@ export class    RankingService {
 
     // Store common urls in separate file to avoid duplication
     private readonly _urlAuthority: string = environment.apiUrl;
-    private readonly _urlPath: string = "/users";
+    private readonly _urlPath: string = "users";
 
     constructor(
         private readonly httpService: HttpClient

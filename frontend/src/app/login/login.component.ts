@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from "@angular/common/http";
 import { ActivatedRoute } from "@angular/router";
 
 @Component({
@@ -12,8 +11,7 @@ import { ActivatedRoute } from "@angular/router";
 export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService,
-              private activatedRoute: ActivatedRoute,
-              private http: HttpClient) { }
+              private activatedRoute: ActivatedRoute) { }
 
   ngOnInit(): void {
     let code: string | undefined;

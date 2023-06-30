@@ -1,7 +1,8 @@
 import {
     Component,
     OnDestroy,
-    OnInit
+    OnInit,
+    Input,
 } from '@angular/core';
 import {
     RankingData,
@@ -14,6 +15,11 @@ import {
     Subscription
 } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { UsersService } from 'src/app/services/users.service';
+import { UserDto } from 'src/app/dtos/user.dto';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
     selector: 'app-ranking',
@@ -27,13 +33,16 @@ export class RankingComponent implements OnInit, OnDestroy {
     totalUsers: number;
     pageSize: number;
     pageIndex: number;
-    username: string;
-    
+    // username: string;
+    @Input() username?: string;
+
+
     private _routeParams?: Subscription;
 
     constructor(
         private readonly rankingService: RankingService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private http: HttpClient
     ) {
         this.ranking = [];
         this.displayedColumns = [
@@ -48,17 +57,11 @@ export class RankingComponent implements OnInit, OnDestroy {
         this.username = "";
     }
 
-    ngOnInit(): void {
-        this._routeParams = this.route.params.subscribe(({ id }) => {
-            this.username = id;
-            this.updateRankings(this.username);
-        });
-    }
+    ngOnInit(): void { this.updateRankings(this.username); }
 
     private _requestRankingData(targetUser?: string)
-                                    : Observable<UserCountData> {    
-        if (targetUser)
-        {
+        : Observable<UserCountData> {
+        if (targetUser) {
             return (
                 this.rankingService.getInitialRankings(
                     this.pageSize,
@@ -76,21 +79,21 @@ export class RankingComponent implements OnInit, OnDestroy {
 
     updateRankings(targetUser?: string): void {
         this._requestRankingData(targetUser)
-        .subscribe({ // No need to unsubscribe. Only one next value
-            next: (data: UserCountData) => {
-                if (data[2] != undefined
+            .subscribe({ // No need to unsubscribe. Only one next value
+                next: (data: UserCountData) => {
+                    if (data[2] != undefined
                         && data[2] != 0)
-                    this.pageIndex = Math.floor(data[2] / this.pageSize);
-                this.ranking = this.rankingService.userToRanking(
-                    data[0],
-                    this.pageIndex * this.pageSize + 1
-                );
-                this.totalUsers = data[1];
-            },
-            error: (err: Observable<never>) => {
-                console.error(err);
-            }
-        });
+                        this.pageIndex = Math.floor(data[2] / this.pageSize);
+                    this.ranking = this.rankingService.userToRanking(
+                        data[0],
+                        this.pageIndex * this.pageSize + 1
+                    );
+                    this.totalUsers = data[1];
+                },
+                error: (err: Observable<never>) => {
+                    console.error(err);
+                }
+            });
     }
 
     pageEventHandler(pageEvent: PageEvent): void {

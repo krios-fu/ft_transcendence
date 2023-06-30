@@ -152,7 +152,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             this._checkUserInRoom(id);            
         });
         this.socketService.bannedRoomEvent();
-        this.changePassword();
     }
 
     info(): void {
@@ -323,7 +322,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.close = !this.close;
     }
 
-    @HostListener('window:keyup.shift.i', ['$event'])
+    @HostListener('window:keyup.control.shift.i', ['$event'])
     handleKeyDown() {
         this.alertService.openGameInstructions();
     }

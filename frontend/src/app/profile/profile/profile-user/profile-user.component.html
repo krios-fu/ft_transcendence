@@ -15,19 +15,9 @@
             </h1>
         </section>
 
-        <div *ngIf="user" style="display: flex; justify-content: space-between; align-items: center; padding: 21px; ">
-            <span>
-                <mat-icon>scoreboard</mat-icon>
-                <h3 style="color : goldenrod;">{{user.ranking}}</h3>
-            </span>
-            <span>
-                <mat-icon>leaderboard</mat-icon>
-                <h3 style="color : rgb(0,149,255);">1</h3>
-            </span>
-            <span>
-                <mat-icon>trending_down</mat-icon>
-                <h3 style="color : rgb(255,0,47);">42</h3>
-            </span>
+        <div *ngIf="user" style="display: flex; justify-content: center; align-items: center; padding: 21px; ">
+            <mat-icon>scoreboard</mat-icon>
+                <h3 style="color : goldenrod; padding-left: 10px">{{user.ranking}}</h3>
         </div>
 
 
@@ -50,16 +40,19 @@
                 </a>
             </span>
 
-            <span *ngIf="this.me?.is_owner">
-                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
+            <span *ngIf="this.me?.role?.is_super_admin">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;" >
                     <mat-icon>admin_panel_settings</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                    <button mat-menu-item [routerLink]="['/profile', user?.username]">
+                    <button mat-menu-item (click)="close()" *ngIf="!this.user?.role?.is_banned">
                         <mat-icon>do_not_disturb_off</mat-icon>
                         <span style="color:red">BAN</span>
                     </button>
-
+                    <button mat-menu-item (click)="unclose()" *ngIf="this.user?.role?.is_banned">
+                        <mat-icon>do_not_disturb_on</mat-icon>
+                        <span style="color: green">UNBAN</span>
+                    </button>
                 </mat-menu>
             </span>
         </section>
@@ -86,8 +79,6 @@
                 </section>
             </mat-tab>
 
-            <mat-tab label="ROOM">
-            </mat-tab>
 
         </mat-tab-group>
     </div>
