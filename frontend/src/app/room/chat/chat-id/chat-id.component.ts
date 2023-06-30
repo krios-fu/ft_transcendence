@@ -59,7 +59,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
             )
             .subscribe((entity) => {
               let chats = Object.assign(entity);
-              console.log(chats)
               let id_friend = (chats[0].users[0].userId == this.me?.id) ? chats[0].users[1].userId : chats[0].users[0].userId;
 
               this.userService.getUserById(id_friend)
@@ -75,7 +74,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
 
 
   getMessageApi(id_chat: string) {
-    console.log("component chatId id: ", id_chat)
     this.http.get(`${environment.apiUrl}message/chat/${id_chat}`)
       .subscribe((entity: any) => {
         let data = Object.assign(entity);

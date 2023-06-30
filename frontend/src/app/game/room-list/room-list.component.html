@@ -1,6 +1,7 @@
 <div id="main-container">
     <div id="list-container">
-        <mat-list role="list">
+
+        <mat-list  role="list">
             <div mat-subheader>Rooms</div>
             <mat-list-item (click)="goToRoom(room.id, room.roomName)" role="listitem" *ngFor="let room of rooms">
                 <img mat-list-icon src="{{room.photoUrl}}" *ngIf="room.photoUrl">

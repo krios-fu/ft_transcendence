@@ -143,7 +143,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.socketGameNotification.getUserConnection()
         .subscribe({
           next: (payload: any) => {
-            console.log("Entrada socket", payload);
             this.set_status_players(payload);
           },
         })

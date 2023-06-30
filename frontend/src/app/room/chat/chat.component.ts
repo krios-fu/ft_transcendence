@@ -34,7 +34,6 @@ export class ChatComponent implements OnInit {
         this.http.get(`${environment.apiUrl}chat/me`)
           .subscribe(entity => {
             let data = Object.assign(entity);
-            console.log(data)
             for (let chat in data) {
               let { users } = data[chat];
               let { id } = data[chat];
@@ -42,7 +41,6 @@ export class ChatComponent implements OnInit {
               if (chat_friend.length != 0)
                 this.userServices.getUserById(chat_friend[0].userId)
                   .subscribe((user: UserDto) => {
-                    console.log(user.nickName)
                     this.CHATS_USERS.push({
                       chat_id: id,
                       user: user

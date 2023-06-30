@@ -28,9 +28,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 
   handleConnection(client: any, ...args): any {
-    console.log('Join connection ');
-    console.log("---> " + client.id)
-    console.log(args);
   }
 
  handleDisconnect(){
@@ -41,7 +38,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('join_room')
   handleJoinRoom(client: Socket, room: string) {
     client.join(`room_${room}`);
-    console.log("Join cliente", client.id, "to", `room_${room}`);
   }
 
 
@@ -50,9 +46,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client: Socket,
     payload: {msg: string, sender: number,  id_chat: number },
   ) {
-    // const {  msg, sender, id_chat } = payload;
     this.server.to(`room_${payload.id_chat}`).emit('new_message', payload);
-    console.log(payload);
     this.messageService.saveMessages(payload);
   }
 
@@ -115,8 +109,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
     for (let user of users_in_room) {
       if (user.data.username === payload.user.username){
-        
-        console.log("Leave",user.data.username)
         user.leave(`noti_roomGame_${payload.room}`);
       }
     }

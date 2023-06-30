@@ -64,10 +64,6 @@ export class UsersService {
             case Roles.silenced:
               user.role.is_silenced = true;
           };
-          // if (room_id){
-          //   console.log("ENTRE", room_id)
-          //   this.get_role_user_room(user, room_id)
-          // }
         });
       });
   }
@@ -99,7 +95,6 @@ export class UsersService {
 
     this.http.get(`${environment.apiUrl}ban`)
     .subscribe((payload : any)=>{
-       console.log("BAND", payload);
        payload = Object.assign(payload)
        payload.forEach((banned : any) => {
          if (banned.roomId == room_id && banned.userId == user.id)
@@ -175,7 +170,6 @@ export class UsersService {
       this.http.post(`${environment.apiUrl}user_room_roles`, { userId: user.id, roleId: roleId, roomId: roomId })
         .subscribe((payload: any) => {
           this.get_role_user_room(user, roomId);
-          console.log(user);
         })
   }
 

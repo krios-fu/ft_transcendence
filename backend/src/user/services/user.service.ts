@@ -152,7 +152,6 @@ export class UserService {
         }
         try {
             const test = await fs.promises.access(filePath, fs.constants.W_OK);
-            console.log(`[deleteAvatar] testing access return: ${test}`);
             fs.unlinkSync(filePath);
         } catch (err) {
             console.error(`[deleteAvatar] caught exception: ${err}`);
