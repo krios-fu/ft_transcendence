@@ -1,17 +1,15 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RoomDto } from 'src/app/dtos/room.dto';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AlertServices } from 'src/app/services/alert.service';
-import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
 import { RoomGameIdService } from '../../room-game-id/room-game-id.service';
-import { Player } from '../../elements/Player';
-import { Chat } from 'src/app/room/chat/chat';
+import { Chat } from 'src/app/chat/chat';
 import { Roles } from 'src/app/roles';
 
 

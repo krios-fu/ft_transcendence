@@ -27,7 +27,6 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event) => {
       if (this.authService.isAuthenticated() === true) {
-        // this.ngOnInit();
         this.getPenddingFriends();
       }
     });
@@ -54,7 +53,5 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void { this.subscriber?.unsubscribe(); }
-
-
 
 }

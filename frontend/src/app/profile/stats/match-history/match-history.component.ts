@@ -4,10 +4,8 @@ import {
     Input,
     OnChanges,
     OnInit,
-    SimpleChanges
 } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
-import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import {
     MatchHistoryData,
@@ -31,7 +29,6 @@ export class MatchHistoryComponent implements OnInit, AfterViewInit, OnChanges {
  
     constructor(
         private readonly matchHistoryService: MatchHistoryService,
-        private readonly route: ActivatedRoute
     ) {
         this.history = [];
         this.displayedColumns = [
@@ -47,15 +44,12 @@ export class MatchHistoryComponent implements OnInit, AfterViewInit, OnChanges {
         this.pageIndex = 0;
     }
 
-    ngOnInit(): void {
-    }
+    ngOnInit(): void {}
 
-    ngAfterViewInit(): void {
-    }
+    ngAfterViewInit(): void {}
     
     ngOnChanges(): void {
         this.updateHistory();
-        
     }
 
     updateHistory(): void {

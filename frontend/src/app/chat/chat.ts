@@ -1,10 +1,6 @@
 import { Injectable, Input, OnInit } from "@angular/core";
 import { Socket } from "ngx-socket-io";
-import { HttpClient } from "@angular/common/http";
-
-import { Observable, map } from "rxjs";
-import { newArray } from "@angular/compiler/src/util";
-import { AuthService } from "../../services/auth.service";
+import { Observable } from "rxjs";
 
 export class message {
   content: string;
@@ -25,8 +21,7 @@ export class Chat implements OnInit {
 
   constructor(private socket: Socket) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   joinRoom(id_chat: string) {
     this.socket.emit('join_room', id_chat);
@@ -53,9 +48,9 @@ export class Chat implements OnInit {
       });
     });
   }
+
   sendMessageGame(txt: string, sender: number, id_chat?: number | string) {
     const msg = new message(txt, sender, id_chat)
     this.socket.emit('message-game', msg);
   }
-
 }

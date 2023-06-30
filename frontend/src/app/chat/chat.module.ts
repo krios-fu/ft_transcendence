@@ -11,7 +11,6 @@ import { ChatIdComponent } from './chat-id/chat-id.component';
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatComponent } from './chat.component';
 import { AuthInterceptor } from 'src/app/http-interceptors/auth.interceptor';
-import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -25,7 +24,6 @@ import { MatChipsModule } from '@angular/material/chips'
   declarations: [
     ChatIdComponent,
     ChatComponent,
-    // RoomComponent
   ],
   imports: [
     CommonModule,
@@ -40,7 +38,6 @@ import { MatChipsModule } from '@angular/material/chips'
     MatListModule,
     ScrollingModule,
     MatChipsModule,
-    // RouterModule,
     
     MatBadgeModule,
     ChatRoutingModule,
@@ -50,14 +47,9 @@ import { MatChipsModule } from '@angular/material/chips'
     useClass: AuthInterceptor,
     multi: true,
 },
-    // SocketNotificationService,
     Chat
 ],
-  exports: [
-    // ChatComponent,
-    // ChatIdComponent
-    
-  ]
+  exports: []
 })
 export class ChatModule {
 }

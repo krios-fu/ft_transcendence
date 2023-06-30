@@ -4,7 +4,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guard/jwt-auth.guard';
-import { ChatModule } from './chat/chat.module';
+import { ChatModule } from './chat/chat.module'
 import { RoomModule } from './room/room.module';
 import { BanModule } from './ban/ban.module';
 import { UserRolesModule } from './user_roles/user_roles.module';
@@ -20,7 +20,6 @@ import { WinnerModule } from './match/winner/winner.module';
 import { LoserModule } from './match/loser/loser.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 

@@ -27,10 +27,7 @@ export class HomeComponent implements OnInit {
     private http: HttpClient
   ) { }
 
-  ngOnInit(): void {
-    this.usersService.getUser('me')
-      .subscribe((userDto: UserDto) => { /* ?? */ })
-  }
+  ngOnInit(): void {}
 
   logout() { this.authService.logout(); }
 
@@ -41,7 +38,6 @@ export class HomeComponent implements OnInit {
       this.http.get<UserDto[]>(`${environment.apiUrl}users/?filter[nickName]=${message}`)
       .subscribe(
        ( user : UserDto[]) => {
-          // this.searchUser.emit(user)
           this.searching = user;
         }
       )
