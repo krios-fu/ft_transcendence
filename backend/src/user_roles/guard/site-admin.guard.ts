@@ -11,14 +11,14 @@ import {
     ExecutionContext, 
     Injectable 
 } from "@nestjs/common";
-import { Observable } from "rxjs";
 import { UserRolesService } from "../../user_roles/user_roles.service";
 import { IRequestUser } from "../../common/interfaces/request-payload.interface";
+import { UserService } from "src/user/services/user.service";
 
 @Injectable()
 export class SiteAdminGuard implements CanActivate {
     constructor (
-        private readonly userRolesService: UserRolesService,
+        private readonly userService: UserService
     ) { }
 
     async canActivate(ctx: ExecutionContext): Promise<boolean>{
@@ -28,6 +28,6 @@ export class SiteAdminGuard implements CanActivate {
         if (!username) {
             return false;
         }
-        return await this.userRolesService.validateGlobalRole(username, ['super-admin']);
+        return await this.userService.validateGlobalRole(username, ['super-admin']);
     }
 }

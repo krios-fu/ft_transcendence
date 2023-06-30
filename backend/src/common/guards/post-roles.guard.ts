@@ -1,24 +1,26 @@
 import {UserRoomRolesService} from "../../user_room_roles/user_room_roles.service";
 import {BanService} from "../../ban/ban.service";
-import {RoomService} from "../../room/room.service";
 import {UserRolesService} from "../../user_roles/user_roles.service";
 import {RolesService} from "../../roles/roles.service";
-import {ForbiddenWsException} from "../../game/exceptions/forbidden.wsException";
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { IRequestUser } from "../interfaces/request-payload.interface";
+import { UserService } from "src/user/services/user.service";
 
 @Injectable()
-export class PostRolesGuard implements canActivate {
+export class PostRolesGuard implements CanActivate {
     constructor(private readonly reflector: Reflector,
+                private readonly userService: UserService,
                 private readonly globalRolesService: UserRolesService,
                 private readonly roomRolesService: UserRoomRolesService,
-                private readonly rolesService: RolesService,
-                private readonly banService: BanService) { }
+                private readonly rolesService: RolesService) { }
     private async _assertValidations(
         userId: number,
         roomId: number,
         username: string,
         roles: string[]
     ): Promise<boolean> {
-        if (await this.banService.findOneByIds(userId, roomId)) {
+        if (await this.userService.validateBanRole(userId, roomId)) {
             throw new ForbiddenException('user has been banned form the room');
         }
         if (!roles.length) {
@@ -36,12 +38,15 @@ export class PostRolesGuard implements canActivate {
         const roomId: number = req.body?.roomId;
         const roleId: number = req.body?.roleId;
         const username: string = req.user?.data?.username;
-        const roles: string[]  = this.reflector.get<string[]>('allowedRoles');
+        const roles: string[]  = this.reflector.get<string[]>(
+            'allowedRoles',
+            ctx.getHandler()
+        );
 
         if (!userId || !roomId) {
             throw new UnauthorizedException();
         }
-        if ((await this.rolesService.getOne()).role === 'admin' &&
+        if ((await this.rolesService.findOne(roleId)).role === 'admin' &&
             !roles.includes('admin')) {
             throw new ForbiddenException();
         }

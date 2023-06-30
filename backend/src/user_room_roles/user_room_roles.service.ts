@@ -12,7 +12,6 @@ import { UserRoomRolesRepository } from './repository/user_room_roles.repository
 import {EventEmitter2} from "@nestjs/event-emitter";
 import { DeleteResult } from "typeorm";
 import { UserRoomEntity } from 'src/user_room/entity/user_room.entity';
-import { UserRolesService } from 'src/user_roles/user_roles.service';
 
 @Injectable()
 export class UserRoomRolesService {
@@ -22,7 +21,6 @@ export class UserRoomRolesService {
         private readonly userService: UserService,
         private readonly roomService: RoomService,
         private readonly userRoomService: UserRoomService,
-        private readonly userRolesService: UserRolesService,
         private readonly eventEmitter: EventEmitter2
     ) { }
 

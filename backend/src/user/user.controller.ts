@@ -125,19 +125,19 @@ export class UserController {
     **      - doubleAuth (boolean)
     */
 
-    @UseGuards(SiteAdminGuard)
-    @Patch(':id')
-    public async updateUser(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() dto: UpdateUserDto
-    ): Promise<UserEntity> {
-        if (await this.userService.findOne(id) === null) {
-            this.userLogger.error(`User with login ${id} not found in database`);
-            throw new NotFoundException('resource does not exists in database');
-        }
-        await this.userService.updateUser(id, dto);
-        return await this.userService.findOne(id);
-    }
+//    @UseGuards(SiteAdminGuard)
+//    @Patch(':id')
+//    public async updateUser(
+//        @Param('id', ParseIntPipe) id: number,
+//        @Body() dto: UpdateUserDto
+//    ): Promise<UserEntity> {
+//        if (await this.userService.findOne(id) === null) {
+//            this.userLogger.error(`User with login ${id} not found in database`);
+//            throw new NotFoundException('resource does not exists in database');
+//        }
+//        await this.userService.updateUser(id, dto);
+//        return await this.userService.findOne(id);
+//    }
 
     @Patch('me')
     public async updateMeUser(
@@ -206,27 +206,27 @@ export class UserController {
     ** Same as above, gives access to avatar posting to site admin.
     */
 
-    @UseGuards(SiteAdminGuard)
-    @Post(':id/avatar')
-    @UseInterceptors(FileInterceptor(
-        'avatar', uploadUserAvatarSettings
-    ))
-    public async uploadUserAvatar(
-        @Param('id', ParseIntPipe) userId: number,
-        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
-    ):Promise<UserEntity> {
-        const user: UserEntity = await this.userService.findOne(userId);
-
-        if (user === null) {
-            this.userLogger.error(`User with id ${userId} not present in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        const photoUrl = `http://localhost:3000/${avatar.path}`;
-
-        if (user.photoUrl !== photoUrl)
-            await this.userService.removeAvatarFile(user.username, user.photoUrl);
-        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
-    }
+//    @UseGuards(SiteAdminGuard)
+//    @Post(':id/avatar')
+//    @UseInterceptors(FileInterceptor(
+//        'avatar', uploadUserAvatarSettings
+//    ))
+//    public async uploadUserAvatar(
+//        @Param('id', ParseIntPipe) userId: number,
+//        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
+//    ):Promise<UserEntity> {
+//        const user: UserEntity = await this.userService.findOne(userId);
+//
+//        if (user === null) {
+//            this.userLogger.error(`User with id ${userId} not present in database`);
+//            throw new BadRequestException('resource not found in database');
+//        }
+//        const photoUrl = `http://localhost:3000/${avatar.path}`;
+//
+//        if (user.photoUrl !== photoUrl)
+//            await this.userService.removeAvatarFile(user.username, user.photoUrl);
+//        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
+//    }
 
 
     /*
@@ -249,19 +249,19 @@ export class UserController {
         return await this.userService.deleteAvatar(id, photoUrl);
     }
 
-    @UseGuards(SiteAdminGuard)
-    @Delete(':id/avatar')
-    @HttpCode(204)
-    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
-        const user: UserEntity = await this.userService.findOne(userId);
-
-        if (user === null) {
-            this.userLogger.error(`User with id ${userId} not present in database`);
-            throw new BadRequestException('resource not found in database');
-        }
-        const { id, photoUrl } = user;
-        return await this.userService.deleteAvatar(id, photoUrl);
-    }
+//    @UseGuards(SiteAdminGuard)
+//    @Delete(':id/avatar')
+//    @HttpCode(204)
+//    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
+//        const user: UserEntity = await this.userService.findOne(userId);
+//
+//        if (user === null) {
+//            this.userLogger.error(`User with id ${userId} not present in database`);
+//            throw new BadRequestException('resource not found in database');
+//        }
+//        const { id, photoUrl } = user;
+//        return await this.userService.deleteAvatar(id, photoUrl);
+//    }
    
 
     @UseGuards(SiteAdminGuard)

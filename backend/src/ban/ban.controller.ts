@@ -3,7 +3,6 @@ import {
     Body,
     Controller,
     Delete,
-    ForbiddenException,
     Get,
     HttpException,
     HttpStatus,
@@ -22,6 +21,9 @@ import { BanService } from './ban.service';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
+import { PostRolesGuard } from 'src/common/guards/post-roles.guard';
+import { DelRolesGuard } from 'src/common/guards/del-roles.guard';
+import { AllowedRoles } from 'src/common/decorators/allowed.roles.decorator';
 
 @Controller('ban')
 export class BanController {

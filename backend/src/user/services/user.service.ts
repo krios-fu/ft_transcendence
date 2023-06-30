@@ -14,7 +14,6 @@ import {
     NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryRunner, UpdateResult } from 'typeorm';
 import { UserQueryDto } from 'src/user/dto/user.query.dto';
 import { QueryMapper } from 'src/common/mappers/query.mapper';
 import { IRequestUser } from 'src/common/interfaces/request-payload.interface';
@@ -23,12 +22,16 @@ import { DEFAULT_AVATAR_PATH } from '../../common/config/upload-avatar.config';
 import { UserCountData } from '../types/user-count-data.type';
 import { extname } from 'path';
 import { StaticDir } from '../../common/constants/static-dir.const';
+import { QueryRunner, DataSource } from 'typeorm'
+import { UserRolesEntity } from 'src/user_roles/entity/user_roles.entity';
+import { BanEntity } from 'src/ban/entity/ban.entity';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
-        private userRepository: UserRepository,
+        private readonly userRepository: UserRepository,
+        private readonly ds: DataSource
     ) { }
 
     public async findAllUsers(queryParams?: UserQueryDto): Promise<UserEntity[]> {
@@ -217,12 +220,54 @@ export class UserService {
             Number(req.body['user_id']) :
             Number(req.param['user_id']);
 
-        if (username === undefined || userId !== userId) {
+        if (!username || userId !== userId) {
             return false;
         }
         this.findOne(userId).then(
             (user: UserEntity) => validate = (user.username === username)
         );
         return validate;
+    }
+
+    public async validateGlobalRole(username: string, roles: string[]): Promise<boolean> {
+        const qr: QueryRunner = this.ds.createQueryRunner();
+        let   assertion: boolean;
+
+        await qr.connect();
+        await qr.startTransaction();
+        try {
+            assertion = (await qr.manager
+                .createQueryBuilder(UserRolesEntity, 'user_roles')
+                .leftJoinAndSelect('user_roles.user', 'user')
+                .where('user.username = :username', { username: username })
+                .getMany())
+                .map((user_role: UserRolesEntity) => user_role.role.role)
+                .some((role: string) => roles.includes(role));
+        } catch(err: any) {
+            assertion = false;
+        } finally {
+            await qr.release();
+        }
+        return assertion;
+    }
+
+    public async validateBanRole(userId: number, roomId: number): Promise<boolean> {
+        const qr: QueryRunner = this.ds.createQueryRunner();
+        let   assertion: boolean;
+
+        await qr.connect();
+        await qr.startTransaction();
+        try {
+            assertion = (await qr.manager
+                .createQueryBuilder(BanEntity, 'ban_role')
+                .where('ban_role.userId = :user_id', { user_id: userId })
+                .andWhere('ban_role.roomId = :room_id', { room_id: roomId })
+                .getOne()) !== null;
+        } catch (err: any) {
+            assertion = false;
+        } finally {
+            await qr.release();
+        }
+        return assertion;
     }
 }
