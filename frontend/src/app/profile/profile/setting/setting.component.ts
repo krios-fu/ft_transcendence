@@ -48,9 +48,6 @@ export class SettingComponent implements OnInit {
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });
           this.formGroup.get("nickName")?.setValue(this.user.nickName, { emitEvent: true });
           this.urlPreview = this.user?.photoUrl;
-
-
-
         }
       })
     this.messageEvent.emit(true);

@@ -8,7 +8,6 @@ export const UserCreds = createParamDecorator(
         const req: IRequestUser = ctx.switchToHttp().getRequest();
         const username: string | undefined = req.user?.data?.username;
         const id: number | undefined = req.user?.data?.id;
-        
         if (username === undefined) {
             throw new UnauthorizedException('Request user has not logged in');
         }
