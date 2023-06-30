@@ -12,6 +12,7 @@ import { RoomModule } from '../room/room.module';
     TypeOrmModule.forFeature([BanEntity]),
     UserModule,
     RoomModule,
+    UserRoomRolesModule
   ],
   providers: [
     BanService,

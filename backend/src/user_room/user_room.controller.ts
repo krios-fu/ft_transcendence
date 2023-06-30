@@ -133,10 +133,13 @@ export class UserRoomController {
     /* Remove an user from a room */
     /* at least room mod || me needed */
     @Delete(':id')
-    public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    public async remove(
+        @Param('id', ParseIntPipe) id: number,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<void> {
         const userRoom: UserRoomEntity = await this.userRoomService.findOne(id);
 
-        if (userRoom === null) {
+        if (!userRoom) {
             this.userRoomLogger.error(`Resource with id ${id} not found in database`);
             throw new NotFoundException('resource not found in database');
         }

@@ -80,7 +80,6 @@ export class UserRolesController {
         return await this.userRolesService.getUserRoleByIds(userId, roleId);
     }
 
-    /* Create a new role for a user */
     @UseGuards(SiteAdminGuard)
     @Post()
     public async assignRoleToUser(@Body() dto: CreateUserRolesDto): Promise<UserRolesEntity> {
@@ -98,8 +97,7 @@ export class UserRolesController {
         return this.userRolesService.assignRoleToUser(dto);
     }
 
-    /* Remove a role from a user */
-    @UseGuards(SiteAdminGuard) // not true ?
+    @UseGuards(SiteAdminGuard)
     @Delete(':id')
     public async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const role: UserRolesEntity = await this.userRolesService.findOne(id);

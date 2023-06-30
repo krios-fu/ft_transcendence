@@ -106,8 +106,7 @@ export class UserController {
         return user;
     }
 
-    /* role guards ?? (or admin) */
-    /* it is me! */
+    @UseGuards(SiteAdminGuard)
     @Post()
     async postUser(@Body() newUser: CreateUserDto): Promise<UserEntity> {
         if (await this.userService.findOneByUsername(newUser.username) !== null) {
@@ -125,7 +124,7 @@ export class UserController {
     **      - doubleAuth (boolean)
     */
 
-    /* it is me! (or admin) */
+    @UseGuards(SiteAdminGuard)
     @Patch(':id')
     public async updateUser(
         @Param('id', ParseIntPipe) id: number,
@@ -206,7 +205,7 @@ export class UserController {
     ** Same as above, gives access to avatar posting to site admin.
     */
 
-    /* @UseGuards(IdentityGuard) */
+    @UseGuards(SiteAdminGuard)
     @Post(':id/avatar')
     @UseInterceptors(FileInterceptor(
         'avatar', uploadUserAvatarSettings
@@ -249,9 +248,9 @@ export class UserController {
         return await this.userService.deleteAvatar(id, photoUrl);
     }
 
+    @UseGuards(SiteAdminGuard)
     @Delete(':id/avatar')
     @HttpCode(204)
-    //@UseGuards(IdentityGuard)
     public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
         const user: UserEntity = await this.userService.findOne(userId);
 
@@ -264,12 +263,24 @@ export class UserController {
     }
    
 
-    /* it is me! (or admin) */
+    @UseGuards(SiteAdminGuard)
     @Delete(':id')
     @HttpCode(204)
-    //@UseGuards(IdentityGuard)
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const user = await this.userService.findOne(id);
+
+        if (user === null) {
+            this.userLogger.error(`User with id ${id} not found in database`);
+            throw new NotFoundException('resource not found in database');
+        }
+        return await this.userService.deleteUser(user);
+    }
+
+    @Delete('/me')
+    @HttpCode(204)
+    public async removeMe(@UserCreds() userCreds: UserCredsDto): Promise<void> {
+        const { id } = userCreds;
+        const user: UserEntity = await this.userService.findOne(id);
 
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);

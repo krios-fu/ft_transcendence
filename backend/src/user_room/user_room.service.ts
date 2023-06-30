@@ -51,7 +51,7 @@ export class UserRoomService {
     }
 
     public async getAllUsersInRoom(roomId: number): Promise<UserRoomEntity[]> {
-        const userList: UserRoomEntity[] = await this.userRoomRepository.find({
+        return await this.userRoomRepository.find({
             select: { userId: true },
             relations: {
                 room: true,
@@ -59,15 +59,6 @@ export class UserRoomService {
             },
             where: { roomId: roomId },
         });
-
-        // /* tmp */ //deleted for krios-fu
-        // he modificado esta query para hacer uso.
-        // var usersInRoom: UserEntity[] = [];
-        // for (var username in userList) {
-        // const user = await this.userService.findOneByUsername(username);
-        // usersInRoom.push(user);
-        // }
-        return userList;
     }
 
     public async getAllRoomsWithUser(userId: number): Promise<RoomEntity[]>  {
@@ -93,6 +84,7 @@ export class UserRoomService {
         const { id: room_id, ownerId: owner_id } = room;
         const users_len: number = (await this.getAllUsersInRoom(room_id)).length;
 
+        /* validate user actions: should be mod, owner, site admin, or me */
         if (owner_id === user_id && users_len > 1) {
             await this.roomService.updateRoomOwner(owner_id, room_id);
         }

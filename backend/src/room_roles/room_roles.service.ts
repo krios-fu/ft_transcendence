@@ -135,9 +135,9 @@ export class RoomRolesService {
 
     public async validateRoomRole(role: string, username: string, roomId: number): Promise<boolean> {
         if (role === 'official') {
-            return this.userRolesService.validateGlobalRole(username, ['owner', 'admin']);
+            return this.userRolesService.validateGlobalRole(username, ['super-admin', 'admin']);
         } else if (role === 'private') {
-            return (await this.userRolesService.validateGlobalRole(username, ['owner', 'admin'])) ||
+            return (await this.userRolesService.validateGlobalRole(username, ['super-admin', 'admin'])) ||
                 (await this.roomService.findOne(roomId)).owner.username === username;
         }
         return true;

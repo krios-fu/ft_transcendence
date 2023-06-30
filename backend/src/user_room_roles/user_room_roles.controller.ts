@@ -120,8 +120,8 @@ export class UserRoomRolesController {
         }
         return role;
     }
-    /* Create a new user with a role in a room */
-    /* at least mod role required */
+
+
     @Post()
     public async postRoleInRoom(
         @Body() dto: CreateUserRoomRolesDto,
@@ -144,6 +144,7 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error(`User role ${userRoomId} with role ${roleId} already in database`);
             throw new BadRequestException('resource already in database');
         }
+        /* validate roles: admin, owner, site-admin */
         return await this.userRoomRolesService.postRoleInRoom(
             new UserRoomRolesDto({
                 "userRoomId": userRoomId,
@@ -158,6 +159,7 @@ export class UserRoomRolesController {
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const role: UserRoomRolesEntity = await this.userRoomRolesService.findRole(id);
 
+        /* validate roles: admin, owner, site-admin */
         if (!role) {
             this.userRoomRolesLogger.error(`No user role in room with id ${id} present in database`);
             throw new NotFoundException('resource not found in database');

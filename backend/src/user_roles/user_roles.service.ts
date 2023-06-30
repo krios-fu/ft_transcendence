@@ -85,7 +85,6 @@ export class UserRolesService {
         return role;
     }
 
-    /* Remove role entity by id */
     public async deleteRoleFromUser(role: UserRolesEntity): Promise<void> {
         const { id, userId } = role;
         const delRes: DeleteResult = await this.userRolesRepository.delete(id);

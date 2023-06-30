@@ -7,8 +7,8 @@ import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
 import { BanRepository } from './repository/ban.repository';
-import {EventEmitter2} from "@nestjs/event-emitter";
-import {DeleteResult} from "typeorm";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { DeleteResult } from "typeorm";
 
 @Injectable()
 export class BanService {
@@ -105,5 +105,9 @@ export class BanService {
                 room: { roomName: room }
             }
         });
+    }
+
+    public async validateBanRole(userId: number, roomId: number): Promise<boolean> {
+        return ((await this.findOneByIds(userId, roomId)) !== null);
     }
 }

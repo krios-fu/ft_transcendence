@@ -21,13 +21,13 @@ export class SiteAdminGuard implements CanActivate {
         private readonly userRolesService: UserRolesService,
     ) { }
 
-    canActivate(ctx: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    async canActivate(ctx: ExecutionContext): Promise<boolean>{
         const req: IRequestUser = ctx.switchToHttp().getRequest();
         const username: string | undefined = req.user?.data?.username;
         
-        if (username === undefined) {
+        if (!username) {
             return false;
         }
-        return this.userRolesService.validateGlobalRole(username, ['super-admin']);
+        return await this.userRolesService.validateGlobalRole(username, ['super-admin']);
     }
 }
