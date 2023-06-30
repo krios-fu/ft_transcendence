@@ -3,6 +3,7 @@ import {
     Body,
     Controller,
     Delete,
+    ForbiddenException,
     Get,
     HttpException,
     HttpStatus,
@@ -29,8 +30,7 @@ export class BanController {
         private readonly banService: BanService,
         private readonly userService: UserService,
         private readonly roomService: RoomService,
-        private readonly rolesService: UserRoomRolesService,
-        private readonly userRoomRolesService: User
+        private readonly rolesService: UserRoomRolesService
     ) { 
         this.banLogger = new Logger(BanController.name);
     }
@@ -45,7 +45,7 @@ export class BanController {
     /* Return a ban by id */
     @Get(':ban_id')
     async findOne(@Param('ban_id', ParseIntPipe) banId: number): Promise<BanEntity> { 
-        const ban = await this.banService.findOne(banId);
+        const ban: BanEntity = await this.banService.findOne(banId);
         if (ban === null) {
             this.banLogger.error('Ban with id ' + banId + ' not found in database');
             throw new HttpException('no ban entity in db', HttpStatus.NOT_FOUND);
@@ -82,7 +82,7 @@ export class BanController {
             this.banLogger.error(`Ban to user ${userId} in room ${roomId} already in db`);
             throw new BadRequestException('resource already exists in database');
         }
-        if (!this.rolesService.validateUserAction(userId, roomId)) {
+        if (!this.rolesService.validateUserAction(userId, roomId, ['admin'])) {
             this.banLogger.error(`User ${userId} not allowed to do this action`);
             throw new ForbiddenException('User not allowed to do this action');
         }

@@ -16,6 +16,7 @@ import {
     NotFoundException,
     HttpCode,
     UnauthorizedException,
+    UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -33,7 +34,7 @@ import { uploadUserAvatarSettings } from 'src/common/config/upload-avatar.config
 import { Express } from 'express';
 import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 import { UserCountData } from './types/user-count-data.type';
-import * as fs from "fs/promises";
+import { SiteAdminGuard } from 'src/user_roles/guard/site-admin.guard';
 
 @Controller('users')
 export class UserController {
