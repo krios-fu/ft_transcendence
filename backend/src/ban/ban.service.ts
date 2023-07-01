@@ -46,7 +46,7 @@ export class BanService {
     public async getRoomsWithUserBanned(userId: number): Promise<RoomEntity[]> {
         let rooms: RoomEntity[] = [];
 
-        const bansByUser = await this.banRepository.find({
+        const bansByUser: BanEntity[] = await this.banRepository.find({
             where: { userId: userId }
         });
         for (let ban of bansByUser) {
