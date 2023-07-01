@@ -155,7 +155,6 @@ export class UserService {
         }
         try {
             const test = await fs.promises.access(filePath, fs.constants.W_OK);
-            console.log(`[deleteAvatar] testing access return: ${test}`);
             fs.unlinkSync(filePath);
         } catch (err) {
             console.error(`[deleteAvatar] caught exception: ${err}`);
@@ -239,11 +238,13 @@ export class UserService {
             assertion = (await qr.manager
                 .createQueryBuilder(UserRolesEntity, 'user_roles')
                 .leftJoinAndSelect('user_roles.user', 'user')
+                .leftJoinAndSelect('user_roles.role', 'role')
                 .where('user.username = :username', { username: username })
                 .getMany())
                 .map((user_role: UserRolesEntity) => user_role.role.role)
                 .some((role: string) => roles.includes(role));
         } catch(err: any) {
+            console.log(`caught error: ${err}`)
             assertion = false;
         } finally {
             await qr.release();

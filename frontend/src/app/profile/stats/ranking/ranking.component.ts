@@ -15,9 +15,6 @@ import {
     Subscription
 } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { UsersService } from 'src/app/services/users.service';
-import { UserDto } from 'src/app/dtos/user.dto';
-import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 

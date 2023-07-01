@@ -3,8 +3,8 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable, catchError, map, switchMap, tap, throwError } from 'rxjs';
+import { FormBuilder, FormGroup} from '@angular/forms';
+import { Observable, catchError, tap, throwError } from 'rxjs';
 import { AlertServices } from 'src/app/services/alert.service';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
@@ -48,9 +48,6 @@ export class SettingComponent implements OnInit {
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });
           this.formGroup.get("nickName")?.setValue(this.user.nickName, { emitEvent: true });
           this.urlPreview = this.user?.photoUrl;
-
-
-
         }
       })
     this.messageEvent.emit(true);
@@ -86,12 +83,9 @@ export class SettingComponent implements OnInit {
       .subscribe((dta: any) => {
         this.qr_generate = dta.qr.qr;
       })
-
-
   }
 
   confir(code: any): Observable<HttpResponse<any>> {
-
 
     return this.http.post<any>(`${environment.apiUrl}auth/2fa/confirm`, { token: code }).pipe(
       tap((res: any) => {
@@ -112,8 +106,6 @@ export class SettingComponent implements OnInit {
     this.confir(code).subscribe(lol => {
     })
   }
-
-  
 
   changeDetected() {
     this.icon = 'lock_open';

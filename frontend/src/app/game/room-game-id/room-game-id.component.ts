@@ -34,6 +34,8 @@ import { AuthService } from "src/app/services/auth.service";
 import { environment } from 'src/environments/environment';
 import { AlertServices } from "../../services/alert.service";
 import { IPasswordChange } from "../../services/dialog/input/change_room_password/change-room-password-input.component";
+import { Roles } from "src/app/roles";
+import { Metropolis } from "../elements/Metropolis";
 
 @Component({
     selector: 'app-room-game-id',
@@ -51,6 +53,19 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     room_id: string;
     room_dto?: RoomDto;
     close = false;
+    roles = {
+        official: false,
+        private: false,
+    };
+
+    colors = {
+        atlantis: '#7fffd4',
+        metropolis: '#ff0000',
+        wakanda: '#a87fff',
+    };
+
+    color = '#ffffff';
+
     urlPreview = 'https://www.pngall.com/wp-content/uploads/2016/05/Ping-Pong-Download-PNG.png'
     public formMessage = new FormGroup({
         message: new FormControl('')
@@ -76,6 +91,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         private readonly roomGameIdService: RoomGameIdService,
         private readonly alertService: AlertServices,
     ) {
+
         this.config = {
             type: Phaser.CANVAS,
             parent: 'game_zone',
@@ -113,6 +129,12 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                 this.room_dto = entity;
                 if (this.room_dto?.photoUrl)
                     this.urlPreview = this.room_dto?.photoUrl as string;
+                if (this.room_dto?.roomName.toLowerCase() === 'metropolis')
+                    this.color = this.colors.metropolis;
+                if (this.room_dto?.roomName.toLowerCase() === 'wakanda')
+                    this.color = this.colors.wakanda;
+                if (this.room_dto?.roomName.toLowerCase() === 'atlantis')
+                    this.color = this.colors.atlantis;
             });
         this.userService.getUser('me')
             .subscribe((users: UserDto) => {
@@ -149,7 +171,8 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.routeParamsSubscription = this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
-            this._checkUserInRoom(id);            
+            this._checkUserInRoom(id);
+            this.get_roles_room();
         });
         this.socketService.bannedRoomEvent();
     }
@@ -273,7 +296,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         else {
             let form = new FormData();
             this.http.put<RoomDto>(`${environment.apiUrl}room/${this.room_id}`, { ...form, roomName: name })
-                .subscribe((data : RoomDto) => {
+                .subscribe((data: RoomDto) => {
                     this.edit()
                     this.room_dto = data
                 })
@@ -282,44 +305,57 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
 
     changePassword(): void {
         this.alertService.openChangeRoomPassword()
-        .subscribe({
-            next: (passData: IPasswordChange) => {
-                if (passData)
-                {
-                    this.roomGameIdService.changePassword(
-                        this.room_id,
-                        passData.oldPassword,
-                        passData.newPassword
-                    )
-                    .subscribe({
-                        next: (roomRole: IRoomRole) => {
-                            if (roomRole) {
-                                this.alertService.openSnackBar(
-                                    "Password updated successfully",
-                                    "Ok"
-                                );
-                            }
-                        },
-                        error: (err: HttpErrorResponse) => {
-                            let errorMsg: string;
-                        
-                            console.log(err);
-                            if (err.error && err.error.statusCode === 400)
-                                errorMsg = "Provided invalid password/s";
-                            else if (err.error && err.error.statusCode === 403)
-                                errorMsg = "Old password is wrong";
-                            else
-                                errorMsg = "Password could not be changed";
-                            this.alertService.openSnackBar(errorMsg, "Ok");
-                        }
-                    });
+            .subscribe({
+                next: (passData: IPasswordChange) => {
+                    if (passData) {
+                        this.roomGameIdService.changePassword(
+                            this.room_id,
+                            passData.oldPassword,
+                            passData.newPassword
+                        )
+                            .subscribe({
+                                next: (roomRole: IRoomRole) => {
+                                    if (roomRole) {
+                                        this.alertService.openSnackBar(
+                                            "Password updated successfully",
+                                            "Ok"
+                                        );
+                                    }
+                                },
+                                error: (err: HttpErrorResponse) => {
+                                    let errorMsg: string;
+                                    if (err.error && err.error.statusCode === 400)
+                                        errorMsg = "Provided invalid password/s";
+                                    else if (err.error && err.error.statusCode === 403)
+                                        errorMsg = "Old password is wrong";
+                                    else
+                                        errorMsg = "Password could not be changed";
+                                    this.alertService.openSnackBar(errorMsg, "Ok");
+                                }
+                            });
+                    }
                 }
-            }
-        });
+            });
     }
 
     edit() {
         this.close = !this.close;
+    }
+
+    get_roles_room() {
+        this.http.get(`${environment.apiUrl}room_roles/rooms/${this.room_id}`)
+            .subscribe((data: any) => {
+                let room_roles = Object.assign(data);
+                room_roles.forEach((room_role: any) => {
+
+                    if (room_role.role === "official") {
+                        this.roles.official = true;
+                    }
+                    if (room_role.role === 'private') {
+                        this.roles.private = true;
+                    }
+                });
+            });
     }
 
     @HostListener('window:keyup.control.shift.i', ['$event'])

@@ -415,7 +415,6 @@ export class UserController {
         const user = await this.userService.findOneByUsername(username);
        const  userId = user.id;
        const friendId = friend.id;
-       console.log("friends", userId,"<--->" ,friendId)
         if ((await this.userService.findAllUsers({ filter: { id: [userId, friendId] } }))
             .length != 2) {
             this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);

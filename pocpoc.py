@@ -13,20 +13,23 @@ def pretty_print(fmt):
 def clean_state(api):
     users = requests.get(base_url + '/users/', headers=api.get_param('auth_token')).json()
     rooms = requests.get(base_url + '/room/', headers=api.get_param('auth_token')).json()
-    roles = requests.get(base_url + '/roles/', headers=api.get_param('auth_token')).json()
+    #roles = requests.get(base_url + '/roles/', headers=api.get_param('auth_token')).json()
+    api.set_user_creds(admin)
     for u in users:
-        if u["username"] in [api.get_param('api_user'), "danrodri"]:
+        if u["username"] in [api.get_param('api_user'), "danrodri", "krios-fu", "onapoli-"]:
             continue
-        requests.delete(base_url + f'/users/{u["id"]}', headers=api.get_param('auth_token'))
+        r = requests.delete(base_url + f'/users/{u["id"]}', headers=api.get_param('auth_token'))
     for r in rooms:
+        if r["roomName"] in ["wakanda", "metropolis", "atlantis"]:
+            continue
         requests.delete(base_url + f'/room/{r["id"]}', headers=api.get_param('auth_token'))
-    for ro in roles:
-        requests.delete(base_url + f'/roles/{ro["id"]}', headers=api.get_param('auth_token'))
+    #for ro in roles:
+    #    requests.delete(base_url + f'/roles/{ro["id"]}', headers=api.get_param('auth_token'))
 
 
 def set_user(payload, api):
     api.set_user_creds(admin)
-    r = requests.post('https://localhost/user/',
+    r = requests.post(base_url + '/users/',
                       data=payload,
                       headers=api.get_param('auth_token'))
     return r.json()
@@ -34,16 +37,16 @@ def set_user(payload, api):
 
 def set_room(api):
     api.set_user_creds(admin)
-    r = requests.post('https://localhost/room/',
-                      headers=api.set_param('auth_token'),
-                      data={ 'roomname': 'loromo' })
+    r = requests.post(base_url + '/room/',
+                      headers=api.get_param('auth_token'),
+                      data={ 'roomName': 'laromada' })
     return r.json()
 
 
 def set_role(api):
     api.set_user_creds(admin)
-    r = requests.post('https://localhost/role/',
-                      headers=api.set_param('auth_token'),
+    r = requests.post(base_url + '/role/',
+                      headers=api.get_param('auth_token'),
                       data={ 'role': 'bobo' })
     return r.json()
 
@@ -54,46 +57,54 @@ if __name__ == "__main__":
 
     # ~~ post user tests ~~
     print('~~ [ post user tests ] ~~')
+    print('\t --> as admin')
     api.set_user_creds(admin)
     payload = {
         'username': 'user',
         'firstName': 'user-fn',
         'lastName': 'user-ln',
         'profileUrl': 'nada',
-        'email': 'nada',
+        'email': 'nada@mail.com',
         'photoUrl': 'nada'
     }
-    r = requests.post('https://localhost/user/',
+    r = requests.post(base_url + '/users/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 201
+    assert r.status_code == 201, f'{r.json()}'
+    input()
     user = r.json()
 
+    print('\t --> as user')
     api.set_user_creds(user['username'])
     payload = {
         'username': 'user2',
         'firstName': 'user2-fn',
         'lastName': 'user2-ln',
         'profileUrl': 'nada',
-        'email': 'nada',
+        'email': 'nada@mail.com',
         'photoUrl': 'nada'
     }
-    r = requests.post('https://localhost/user/',
+    r = requests.post(base_url + '/users/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 403
+    assert r.status_code == 403, f'{r.json()}'
+    input()
 
     user2 = set_user(payload, api)
     print('~~ [ delete user tests ] ~~')
+    print('\t --> as user')
     api.set_user_creds(user['username'])
-    r = requests.delete(f'https://localhost/user/{user2["id"]}',
+    r = requests.delete(base_url + f'/users/{user2["id"]}',
                         headers=api.get_param('auth_token'))
-    assert r.status_code == 403
+    assert r.status_code == 403, f'{r.json()}'
+    input()
 
+    print('\t --> as admin')
     api.set_user_creds(admin)
-    r = requests.delete(f'https:://localhost/user/{user2["id"]}',
+    r = requests.delete(base_url + f'/users/{user2["id"]}',
                         headers=api.get_param('auth_token'))
-    assert r.status_code == 204
+    assert r.status_code == 204, f'{r.json()}'
+    input()
 
     print('~~ [ ban user tests ] ~~')
     room = set_room(api)
@@ -101,54 +112,68 @@ if __name__ == "__main__":
         'userId': user['id'],
         'roomId': room['id']
     }
+    print('\t --> as user')    
     api.set_user_creds(user['username'])
-    r = requests.post('https://localhost/ban/',
+    r = requests.post(base_url + '/ban/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 403
+    assert r.status_code == 403, f'{r.json()}'
+    input()
 
     api.set_user_creds(admin)
-    r = requests.post('https://localhost/ban/',
+    print('\t --> as admin')
+    r = requests.post(base_url + '/ban/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 201
+    assert r.status_code == 201, f'{r.json()}'
+    input()
     banned_role = r.json()
 
     role = set_role(api)
     api.set_user_creds(user['username'])
+    print('\t --> as user')
     payload = {
         'userId': user["id"],
         'roomId': room["id"],
         'roleId': role["id"]
     }
-    r = requests.post('https://localhost/user_room_role/',
+    r = requests.post(base_url + '/user_room_role/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 403
+    assert r.status_code == 403, f'{r.json()}'
+    input()
 
     api.set_user_creds(admin)
-    r = requests.delete(f'https://localhost/user_room_role/{banned_role["id"]}',
+    print('\t --> as admin')
+    r = requests.delete(base_url + f'/user_room_role/{banned_role["id"]}',
                         headers=api.get_param('auth_token'))
 
     api.set_user_creds(user['username'])
-    r = requests.post('https://localhost/user_room_role/',
+    print('\t --> as user')
+    r = requests.post(base_url + '/user_room_role/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 403
+    assert r.status_code == 403, f'{r.json()}'
+    input()
 
     api.set_user_creds(admin)
-    r = requests.post('https://localhost/user_room_role/',
+    print('\t --> as admin')
+    r = requests.post(base_url + '/user_room_role/',
                       headers=api.get_param('auth_token'),
                       data=payload)
-    assert r.status_code == 201
+    assert r.status_code == 201, f'{r.json()}'
+    input()
     room_role = r.json()
 
     api.set_user_creds(user['username'])
-    r = requests.delete(f'https://localhost/user_room_role/{room_role["id"]}',
+    r = requests.delete(base_url + f'/user_room_role/{room_role["id"]}',
                         headers=api.get_param('auth_token'))
-    assert r.status_code == 403
+    assert r.status_code == 403, f'{r.json()}'
+    input()
 
     api.set_user_creds(admin)
-    r = requests.delete(f'https://localhost/user_room_role/{room_role["id"]}',
+    print('\t --> as admin')
+    r = requests.delete(base_url + f'/user_room_role/{room_role["id"]}',
                         headers=api.get_param('auth_token'))
-    assert r.status_code == 204
+    assert r.status_code == 204, f'{r.json()}'
+    input()

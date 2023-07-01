@@ -35,7 +35,7 @@ export class UserRolesEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         {
-            /*cascade: true,*/
+            eager: true,
             onDelete: 'CASCADE'
         },
     )
@@ -51,7 +51,7 @@ export class UserRolesEntity extends BaseEntity {
     @ManyToOne(
         () => RolesEntity,
         {
-            /*cascade: true,*/
+            eager: true,
             onDelete: 'CASCADE'
         },
     )

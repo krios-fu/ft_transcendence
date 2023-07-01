@@ -70,12 +70,10 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        console.log(`Socket ${client.id} connected`)
         this.socketAuthService.addAuthTimeout(client);
     }
 
     handleDisconnect(client: Socket) {
-        console.log(`Socket ${client.id} disconnected`);
     }
 
     @UseGuards(GameAuthGuard)
@@ -114,15 +112,10 @@ export class    GameGateway implements OnGatewayInit,
                 undefined] =
             this.updateService.getClientInitData(roomName, client);
 
-        this.roomService.join(
+        await this.roomService.join(
             client,
             username,
             roomName
-        );
-        await this.matchMakingService.emitQueuesInfo(
-            roomName,
-            client.id,
-            username
         );
         if (initScene && initData)
             client.emit(initScene, initData);
@@ -134,8 +127,6 @@ export class    GameGateway implements OnGatewayInit,
         client.data[roomName] = (await this.rolesService
             .getUserRolesInRoom(userId, roomId))
             .map((role: UserRoomRolesEntity) => role.role.role);
-        console.log(`${username} joined Game room ${roomName}`);
-        //client.emit('updateRoomUsers', (await this.socketHelper.getAllUsersInRoom(roomId)).length);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -146,7 +137,7 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() roomId: number
     ) {
         const roomName: string = SocketHelper.roomIdToName(roomId);
-        this.roomService.leave(
+        await this.roomService.leave(
             client,
             client.data.username,
             roomName
@@ -156,8 +147,20 @@ export class    GameGateway implements OnGatewayInit,
             roomName,
             false
         );
-        console.log(`${client.data.username} left Game room ${roomName}`);
-        /* emit event to room actualize event */
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage('getQueueInfo')
+    async getQueueInfo(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        await this.matchMakingService.emitQueuesInfo(
+            roomId,
+            client.id,
+            client.data.username
+        );
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)

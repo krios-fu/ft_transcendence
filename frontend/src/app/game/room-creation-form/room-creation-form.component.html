@@ -31,6 +31,7 @@
                     </mat-expansion-panel-header>
                     <mat-form-field appearance="fill">
                         <mat-label>Password</mat-label>
+
                         <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="password">
                         <button type="button" mat-icon-button matSuffix (click)="hidePass = !hidePass"
                             [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePass">
@@ -44,6 +45,10 @@
                     </mat-form-field>
                 </mat-expansion-panel>
             </mat-accordion>
+            <br>
+            <mat-slide-toggle *ngIf="this.me && this.me?.role?.is_super_admin"  formControlName="official">
+                Official</mat-slide-toggle>
+                <br>
             <button id="submit-button" mat-raised-button color="primary" type="submit" [disabled]="!form.valid">
                 Create
             </button>

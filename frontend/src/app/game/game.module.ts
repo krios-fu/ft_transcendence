@@ -22,7 +22,6 @@ import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
 import { GamehomeComponent } from './gamehome/gamehome.component';
 import { ChatGameComponent } from './chat-game/chat-game.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import { Chat } from '../room/chat/chat';
 import { RoomCreationFormComponent } from './room-creation-form/room-creation-form.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -30,6 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RoomListComponent } from './room-list/room-list.component';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { Chat } from '../chat/chat';
 
 @NgModule({
   declarations: [
@@ -64,7 +64,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     ReactiveFormsModule,
     MatListModule,
     MatPaginatorModule
-    // MatLabel
   ],
   providers: [
     QueueService,
@@ -73,9 +72,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
       useClass: AuthInterceptor,
       multi: true,
   },
-  // SocketNotificationService,
   Chat
-
   ],
 })
 export class GameModule { }

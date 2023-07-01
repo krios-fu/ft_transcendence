@@ -81,7 +81,6 @@ export class    GameSocketAuthService {
             .getAllRolesFromUsername(username))
             .map((userRole: UserRolesEntity) => userRole.role.role);
         client.data.globalRoles = roles;
-        console.log(`user joins its room: ${SocketHelper.getUserRoomName(username)}`);
         await client.join(SocketHelper.getUserRoomName(username));
     }
 
@@ -110,7 +109,6 @@ export class    GameSocketAuthService {
                 continue ;
             else if (room.includes("Player"))
                 await this._removePlayer(room);
-            console.log(`Conn: user ${username} leaves ${room}`);
             client.leave(room);
         }
     }

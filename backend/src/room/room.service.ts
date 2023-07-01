@@ -123,10 +123,10 @@ export class RoomService {
     public async createPrivateRoom(dto: PrivateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId, password } = dto;
         const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+        let roomId: number;
+
         await queryRunner.connect();
         await queryRunner.startTransaction();
-    
-        let roomId: number;
         try {
             const room: InsertResult = (await queryRunner.manager
                 .createQueryBuilder()

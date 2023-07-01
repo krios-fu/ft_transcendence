@@ -9,6 +9,7 @@ import {
     Subscription
 } from 'rxjs';
 import { QueueService } from '../services/queue.service';
+import { SocketService } from '../services/socket.service';
 
 export type QueueType = "classic" | "hero";
 
@@ -37,7 +38,8 @@ export class GameQueueComponent implements OnInit, OnDestroy {
     @Input('roomId') roomId: string = '';
 
     constructor(
-        private readonly queueService: QueueService
+        private readonly queueService: QueueService,
+        private readonly socketService: SocketService
     ) {
         this.classicLength = 0;
         this.heroLength = 0;
@@ -103,6 +105,7 @@ export class GameQueueComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this._subscribe();
+        this.socketService.emit("getQueueInfo", this.roomId);
     }
 
     addToQueue() {

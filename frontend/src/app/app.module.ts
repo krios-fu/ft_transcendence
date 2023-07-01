@@ -41,7 +41,7 @@ import { ChangeRoomPasswordInputComponent } from './services/dialog/input/change
 import { environment } from 'src/environments/environment';
 
 const config: SocketIoConfig = { url: environment.wsUrl + '/private', options: {
-    reconnectionAttempts: 3
+    reconnectionAttempts: 5
 } }
 
 @NgModule({

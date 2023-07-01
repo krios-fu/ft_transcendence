@@ -97,13 +97,10 @@ export class ChatService {
             
             let chatFriend;
             for ( let chat in chats){
-            console.log("CHATS global: ", chats[chat].users )
              chatFriend = chats[chat].users.find( user => user.userId == id_friend)
             if (chatFriend)
                 break
         }
-
-        console.log("CHATS FRIEND: ", chatFriend)
 
         if (chatFriend)
             return chatFriend;

@@ -19,6 +19,7 @@ export class BanEntity extends BaseEntity {
         if (dto !== undefined){
             Object.assign(this, dto);
         }
+        console.log(`New Ban: ${JSON.stringify(dto, null, 2)}`);
     }
 
     @PrimaryGeneratedColumn('increment', { type: 'bigint' })
@@ -34,7 +35,7 @@ export class BanEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         {
-            cascade: true,
+            onDelete: 'CASCADE',
             eager: true,
         }
     )
@@ -51,7 +52,6 @@ export class BanEntity extends BaseEntity {
     @ManyToOne(
         () => RoomEntity,
         {
-            cascade: true,
             eager: true,
             onDelete: 'CASCADE'
         }
