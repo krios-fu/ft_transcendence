@@ -11,9 +11,17 @@ export interface    IBufferInit {
     role: string;
 }
 
+export interface    IBuffers {
+    buffer: IMatchData[];
+    smoothBuffer: IMatchData[];
+}
+
 export class   SnapshotBuffer {
 
     private _buffer: IMatchData[];
+    private _smoothBuffer: IMatchData[];
+    private _currentSnapshot: IMatchData | undefined;
+    private _currentSmoothSnapshot: IMatchData | undefined;
 
     constructor(
         initData: IBufferInit,
@@ -22,6 +30,7 @@ export class   SnapshotBuffer {
         const   matchData: IMatchInitData = initData.matchData;
     
         this._buffer = [];
+        this._smoothBuffer = [];
         this.lagCompensator.init({
             gameWidth: initData.gameWidth,
             gameHeight: initData.gameHeight,
@@ -45,7 +54,9 @@ export class   SnapshotBuffer {
     }
 
     getSnapshot(): IMatchData | undefined {
-        return (this._buffer.shift());
+        this._currentSnapshot = this._buffer.shift();
+        this._currentSmoothSnapshot = this._smoothBuffer.shift();
+        return (this._currentSmoothSnapshot);
     }
 
     /*
@@ -59,21 +70,20 @@ export class   SnapshotBuffer {
         if (serverSnapshot)
         {
             this.lagCompensator.serverUpdate(
-                this._buffer,
+                {buffer: this._buffer, smoothBuffer: this._smoothBuffer},
                 serverSnapshot,
                 currentSnapshot
             );
         }
         else
-            this.lagCompensator.autoFill(this._buffer);
+            this.lagCompensator.autoFill({buffer: this._buffer, smoothBuffer: this._smoothBuffer});
     }
 
-    input(paddleMove: number, heroMove: number,
-            currentSnapshot: IMatchData | undefined): void {
-        if (!currentSnapshot)
+    input(paddleMove: number, heroMove: number): void {
+        if (!this._currentSnapshot || !this._currentSmoothSnapshot)
             return ;
-        this.lagCompensator.input(this._buffer, paddleMove,
-                                    heroMove, currentSnapshot);
+        this.lagCompensator.input({buffer: this._buffer, smoothBuffer: this._smoothBuffer}, paddleMove,
+                                    heroMove, this._currentSnapshot);
     }
 
     empty(): void {

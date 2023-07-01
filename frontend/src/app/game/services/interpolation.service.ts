@@ -5,6 +5,7 @@ import {
     Match
 } from "../elements/Match";
 import { IPlayerData } from "../elements/Player";
+import { IBuffers } from "../elements/SnapshotBuffer";
 
 export interface    IInterpolationData {
     serverSnapshot: IMatchData;
@@ -179,8 +180,33 @@ export class   InterpolationService {
     }
 
     private _updateSnapshot(baseSnapshot: IMatchData,
+                                baseSmoothSnapshot: IMatchData,
                                 genSnapshot: IMatchData): void {    
         Match.copyMatchData(baseSnapshot, genSnapshot);
+        Match.copyMatchData(baseSmoothSnapshot, genSnapshot);
+    }
+
+    private _preventBallRecoil(buffers: IBuffers,
+                                currentSnapshot: IMatchData,
+                                generatedSnapshot: IMatchData,
+                                index: number): boolean {
+        if (
+            (generatedSnapshot.ball.xVel > 0
+                && currentSnapshot.ball.xPos > generatedSnapshot.ball.xPos)
+            ||
+            (generatedSnapshot.ball.xVel < 0
+                && currentSnapshot.ball.xPos < generatedSnapshot.ball.xPos))
+        {
+            if (index < buffers.buffer.length)
+                this._updateSnapshot(buffers.buffer[index], buffers.smoothBuffer[index], currentSnapshot);
+            else
+            {
+                buffers.buffer.push(Match.cloneMatchData(currentSnapshot));
+                buffers.smoothBuffer.push(Match.cloneMatchData(currentSnapshot));
+            }
+            return (true);
+        }
+        return (false);
     }
 
     private _adjustTime(genSnapshot: IMatchData,
@@ -194,7 +220,7 @@ export class   InterpolationService {
         genSnapshot.when = baseTime + (this._snapshotInterval * currentStep);
     }
 
-    private _fillLoop(buffer: IMatchData[], serverSnapshot: IMatchData,
+    private _fillLoop(buffers: IBuffers, serverSnapshot: IMatchData,
                         currentSnapshot: IMatchData, role: string): void {
         let currentStep: number;
         let generatedSnapshot: IMatchData;
@@ -210,10 +236,18 @@ export class   InterpolationService {
             );
             this._adjustTime(generatedSnapshot, serverSnapshot,
                                 currentStep);
-            if (i < buffer.length)
-                this._updateSnapshot(buffer[i], generatedSnapshot);
+            if (this._preventBallRecoil(buffers, currentSnapshot,
+                                            generatedSnapshot, i))
+                break ;
+            if (i < buffers.buffer.length)
+            {
+                this._updateSnapshot(buffers.buffer[i], buffers.smoothBuffer[i], generatedSnapshot);
+            }
             else
-                buffer.push(Match.cloneMatchData(generatedSnapshot));
+            {
+                buffers.buffer.push(Match.cloneMatchData(generatedSnapshot));
+                buffers.smoothBuffer.push(Match.cloneMatchData(generatedSnapshot));
+            }
         }
     }
 
@@ -224,40 +258,54 @@ export class   InterpolationService {
     **
     **  TODO: Smooth ball slow down.
     */
-    private _stopTime(buffer: IMatchData[], serverSnapshot: IMatchData,
+    private _stopTime(buffers: IBuffers, serverSnapshot: IMatchData,
                         currentSnapshot: IMatchData, role: string): void {
-        buffer.length = this._totalSnapshots;
-        buffer.fill(Match.cloneMatchData(serverSnapshot));
-        buffer.forEach((snapshot) => {
+        buffers.buffer.length = this._totalSnapshots;
+        buffers.buffer.fill(Match.cloneMatchData(serverSnapshot));
+        buffers.smoothBuffer.length = this._totalSnapshots;
+        buffers.smoothBuffer.fill(Match.cloneMatchData(serverSnapshot));
+        for (let i = 0; i < buffers.buffer.length; ++i)
+        {
             if (role === "PlayerA")
             {
-                snapshot.playerA.paddleY = currentSnapshot.playerA.paddleY;
+                buffers.buffer[i].playerA.paddleY = currentSnapshot.playerA.paddleY;
+                buffers.smoothBuffer[i].playerA.paddleY = currentSnapshot.playerA.paddleY;
                 if (currentSnapshot.playerA.hero)
-                    snapshot.playerA.hero = {...currentSnapshot.playerA.hero};
+                {
+                    buffers.buffer[i].playerA.hero = {...currentSnapshot.playerA.hero};
+                    buffers.smoothBuffer[i].playerA.hero = {...currentSnapshot.playerA.hero};
+                }
             }
             else //For Spectators this method is not called
             {
-                snapshot.playerB.paddleY = currentSnapshot.playerB.paddleY;
+                buffers.buffer[i].playerB.paddleY = currentSnapshot.playerB.paddleY;
+                buffers.smoothBuffer[i].playerB.paddleY = currentSnapshot.playerB.paddleY;
                 if (currentSnapshot.playerB.hero)
-                    snapshot.playerB.hero = {...currentSnapshot.playerB.hero};
+                {
+                    buffers.buffer[i].playerB.hero = {...currentSnapshot.playerB.hero};
+                    buffers.smoothBuffer[i].playerB.hero = {...currentSnapshot.playerB.hero};
+                }
             }
-        });
+        };
     }
 
-    fillBuffer(buffer: IMatchData[], data: IInterpolationData): void {    
+    fillBuffer(buffers: IBuffers, data: IInterpolationData): void {    
         this._totalSnapshots = data.totalSnapshots;
         if (data.slowDown)
         {
-            this._stopTime(buffer, data.serverSnapshot,
+            this._stopTime(buffers, data.serverSnapshot,
                             data.currentSnapshot, data.role);
         }
         else
         {
-            this._fillLoop(buffer, data.serverSnapshot, data.currentSnapshot,
+            this._fillLoop(buffers, data.serverSnapshot, data.currentSnapshot,
                             data.role);
         }
-        while (buffer.length > this._totalSnapshots)
-            buffer.pop();
+        while (buffers.buffer.length > this._totalSnapshots)
+        {
+            buffers.buffer.pop();
+            buffers.smoothBuffer.pop();
+        }
     }
 
 }

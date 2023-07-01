@@ -9,6 +9,8 @@ import {
     IPredictionInit,
     PredictionService
 } from "./prediction.service";
+import { IBuffers } from "../elements/SnapshotBuffer";
+import { IHeroData } from "../elements/Hero";
 
 @Injectable({
     providedIn: 'root'
@@ -35,8 +37,8 @@ export class    LagCompensationService {
         this._gameHeight = initData.gameHeight;
     }
 
-    autoFill(buffer: IMatchData[]): void {
-        this.extrapolService.fillBuffer(buffer, this._bufferSnapshots);
+    autoFill(buffers: IBuffers): void {
+        this.extrapolService.fillBuffer(buffers, this._bufferSnapshots);
     }
 
     //false: normal, true: slow down
@@ -84,7 +86,7 @@ export class    LagCompensationService {
     private _extrapolType(serverSnapshot: IMatchData,
                             currentSnapshot: IMatchData): boolean {
         if (currentSnapshot.when
-                + (this._snapshotInterval * this._bufferSnapshots)
+                + (this._snapshotInterval * (this._bufferSnapshots + 1))
                 < serverSnapshot.when)
         {
             if (this._role === "PlayerA"
@@ -123,16 +125,77 @@ export class    LagCompensationService {
         return (false);
     }
 
-    serverUpdate(buffer: IMatchData[], serverSnapshot: IMatchData,
+    private _resetHeroInvocation(buffers: IBuffers,
+                                    currentSnapshot: IMatchData): void {
+        const   playerA: boolean = this._role === "PlayerA";
+        const   buffer: IMatchData[] = buffers.buffer;
+        const   smoothBuffer: IMatchData[] = buffers.smoothBuffer;
+    
+        if (playerA && currentSnapshot.playerA.hero)
+            currentSnapshot.playerA.hero.pointInvocation = false;
+        else if (currentSnapshot.playerB.hero)
+            currentSnapshot.playerB.hero.pointInvocation = false;
+        for (let i = 0; i < buffer.length; ++i)
+        {
+            let hero: IHeroData | undefined = playerA ? buffer[i].playerA.hero
+                                                        : buffer[i].playerB.hero;
+            let smoothHero: IHeroData | undefined = playerA
+                                                        ? smoothBuffer[i].playerA.hero
+                                                        : smoothBuffer[i].playerB.hero;
+        
+            if (hero)
+                hero.pointInvocation = false;
+            if (smoothHero)
+                smoothHero.pointInvocation = false;
+        }
+    }
+
+    private _checkHeroInvocationReset(currentHeroData: IHeroData | undefined,
+                                        serverHeroData: IHeroData | undefined): boolean {
+        if (!currentHeroData || !serverHeroData)
+            return (false);
+        return (currentHeroData.pointInvocation != serverHeroData.pointInvocation
+                    && currentHeroData.pointInvocation === true);
+    }
+
+    private _manageHeroInvocationSync(buffers: IBuffers,
+                                currentSnapshot: IMatchData,
+                                serverSnapshot: IMatchData): void {
+        if (
+            (this._role === "PlayerA"
+                && this._checkHeroInvocationReset(currentSnapshot.playerA.hero,
+                                                    serverSnapshot.playerA.hero))
+            ||
+            (this._role === "PlayerB"
+                && this._checkHeroInvocationReset(currentSnapshot.playerB.hero,
+                                                    serverSnapshot.playerB.hero)))
+        {
+            this._resetHeroInvocation(buffers, currentSnapshot);
+        }
+    }
+
+    serverUpdate(buffers: IBuffers, serverSnapshot: IMatchData,
                     currentSnapshot: IMatchData): void {
-        this.interpolService.fillBuffer(buffer, {
+        if (currentSnapshot.playerA.hero
+                && (!serverSnapshot.ball.xVel
+                        && currentSnapshot.ball.xVel)
+                || (serverSnapshot.ball.xVel
+                        && !currentSnapshot.ball.xVel))
+        {
+            this._manageHeroInvocationSync(
+                buffers,
+                currentSnapshot,
+                serverSnapshot
+            );
+        }
+        this.interpolService.fillBuffer(buffers, {
             serverSnapshot: serverSnapshot,
             currentSnapshot: currentSnapshot,
             totalSnapshots: this._bufferSnapshots,
             role: this._role,
             slowDown: this._interpolType(serverSnapshot, currentSnapshot)
         });
-        this.extrapolService.improveInterpol(buffer, {
+        this.extrapolService.improveInterpol(buffers, {
             serverSnapshot: serverSnapshot,
             currentSnapshot: currentSnapshot,
             role: this._role,
@@ -157,7 +220,7 @@ export class    LagCompensationService {
         playerData.hero.pointInvocation = true;
     }
 
-    input(buffer: IMatchData[], paddleMove: number, heroMove: number,
+    input(buffers: IBuffers, paddleMove: number, heroMove: number,
             currentSnapshot: IMatchData): void {
         const   playerData: IPlayerData = this._role === "PlayerA"
                                             ? currentSnapshot.playerA
@@ -165,8 +228,9 @@ export class    LagCompensationService {
     
         this._inputPaddle(playerData, paddleMove);
         this._inputHero(playerData, heroMove);
-        this.extrapolService.updateInput(buffer, currentSnapshot,
-                                            this._bufferSnapshots, this._role);
+        this.extrapolService.updateInput(buffers, currentSnapshot,
+                                            this._bufferSnapshots,
+                                            this._role);
     }
 
 }
