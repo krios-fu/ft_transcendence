@@ -27,24 +27,20 @@ export class    ClassicPlayerScene extends MatchScene {
         super.create();
     }
 
-    override update(time: number) {
-        let     input: number = 0;
+    override update() {
+        const   currentTime: number = Date.now();
     
         if (this.cursors?.up.isDown)
         {
             if (this.match)
-                this.socket.emit('paddleUp', this.match.snapshot.when);
-            input = 2;
+                this.socket.emit('paddleUp', currentTime);
         }
         else if (this.cursors?.down.isDown)
         {
             if (this.match)
-                this.socket.emit('paddleDown', this.match.snapshot.when);
-            input = 1;
+                this.socket.emit('paddleDown', currentTime);
         }
-        if (input)
-            this.buffer?.input(input, 0, this.match?.snapshot);
-        super.update(time);
+        super.update();
     }
 
 }
