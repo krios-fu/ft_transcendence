@@ -10,6 +10,7 @@ import {
     PredictionService
 } from "./prediction.service";
 import { IBuffers } from "../elements/SnapshotBuffer";
+import { IHeroData } from "../elements/Hero";
 
 @Injectable({
     providedIn: 'root'
@@ -124,8 +125,69 @@ export class    LagCompensationService {
         return (false);
     }
 
+    private _resetHeroInvocation(buffers: IBuffers,
+                                    currentSnapshot: IMatchData): void {
+        const   playerA: boolean = this._role === "PlayerA";
+        const   buffer: IMatchData[] = buffers.buffer;
+        const   smoothBuffer: IMatchData[] = buffers.smoothBuffer;
+    
+        if (playerA && currentSnapshot.playerA.hero)
+            currentSnapshot.playerA.hero.pointInvocation = false;
+        else if (currentSnapshot.playerB.hero)
+            currentSnapshot.playerB.hero.pointInvocation = false;
+        for (let i = 0; i < buffer.length; ++i)
+        {
+            let hero: IHeroData | undefined = playerA ? buffer[i].playerA.hero
+                                                        : buffer[i].playerB.hero;
+            let smoothHero: IHeroData | undefined = playerA
+                                                        ? smoothBuffer[i].playerA.hero
+                                                        : smoothBuffer[i].playerB.hero;
+        
+            if (hero)
+                hero.pointInvocation = false;
+            if (smoothHero)
+                smoothHero.pointInvocation = false;
+        }
+    }
+
+    private _checkHeroInvocationReset(currentHeroData: IHeroData | undefined,
+                                        serverHeroData: IHeroData | undefined): boolean {
+        if (!currentHeroData || !serverHeroData)
+            return (false);
+        return (currentHeroData.pointInvocation != serverHeroData.pointInvocation
+                    && currentHeroData.pointInvocation === true);
+    }
+
+    private _manageHeroInvocationSync(buffers: IBuffers,
+                                currentSnapshot: IMatchData,
+                                serverSnapshot: IMatchData): void {
+        if (
+            (this._role === "PlayerA"
+                && this._checkHeroInvocationReset(currentSnapshot.playerA.hero,
+                                                    serverSnapshot.playerA.hero))
+            ||
+            (this._role === "PlayerB"
+                && this._checkHeroInvocationReset(currentSnapshot.playerB.hero,
+                                                    serverSnapshot.playerB.hero)))
+        {
+            this._resetHeroInvocation(buffers, currentSnapshot);
+        }
+    }
+
     serverUpdate(buffers: IBuffers, serverSnapshot: IMatchData,
                     currentSnapshot: IMatchData): void {
+        if (currentSnapshot.playerA.hero
+                && (!serverSnapshot.ball.xVel
+                        && currentSnapshot.ball.xVel)
+                || (serverSnapshot.ball.xVel
+                        && !currentSnapshot.ball.xVel))
+        {
+            this._manageHeroInvocationSync(
+                buffers,
+                currentSnapshot,
+                serverSnapshot
+            );
+        }
         this.interpolService.fillBuffer(buffers, {
             serverSnapshot: serverSnapshot,
             currentSnapshot: currentSnapshot,
