@@ -30,7 +30,6 @@ export class RoomRolesEntity extends BaseEntity {
     @ManyToOne(
         () => RoomEntity,
         {
-            cascade: true,
             eager: true,
             onDelete: 'CASCADE'
         }
