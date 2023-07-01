@@ -109,7 +109,6 @@ export class    SocketHelper {
 
         roomSockets = await this._server.in(roomId).fetchSockets();
         roomSockets.forEach((sock) => {
-            console.log(`Conn: user leaves ${roomId}`);
             sock.leave(roomId);
         });
     }

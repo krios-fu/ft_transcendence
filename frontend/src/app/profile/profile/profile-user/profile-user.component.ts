@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injectable, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Injectable, OnInit} from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -46,8 +46,6 @@ export class ProfileUserComponent implements OnInit {
     private shareService: SharedService
   ) {
   }
-
-  // @Output() username = new EventEmitter();
 
   ngOnInit() {
     this.friend();
@@ -145,6 +143,7 @@ export class ProfileUserComponent implements OnInit {
               if (check)
                 this.icon_friend = 'check';
             });
+
           this.http.get<any>(`${environment.apiUrl}users/me/friends/${this.user?.id}`)
             .subscribe((friend: any) => {
               if (friend) {

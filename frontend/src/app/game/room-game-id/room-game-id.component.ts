@@ -324,8 +324,6 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                                 },
                                 error: (err: HttpErrorResponse) => {
                                     let errorMsg: string;
-
-                                    console.log(err);
                                     if (err.error && err.error.statusCode === 400)
                                         errorMsg = "Provided invalid password/s";
                                     else if (err.error && err.error.statusCode === 403)

@@ -70,12 +70,10 @@ export class    GameGateway implements OnGatewayInit,
     }
 
     handleConnection(client: Socket, ...args: any[]) {
-        console.log(`Socket ${client.id} connected`)
         this.socketAuthService.addAuthTimeout(client);
     }
 
     handleDisconnect(client: Socket) {
-        console.log(`Socket ${client.id} disconnected`);
     }
 
     @UseGuards(GameAuthGuard)
@@ -134,8 +132,6 @@ export class    GameGateway implements OnGatewayInit,
         client.data[roomName] = (await this.rolesService
             .getUserRolesInRoom(userId, roomId))
             .map((role: UserRoomRolesEntity) => role.role.role);
-        console.log(`${username} joined Game room ${roomName}`);
-        //client.emit('updateRoomUsers', (await this.socketHelper.getAllUsersInRoom(roomId)).length);
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
@@ -156,8 +152,6 @@ export class    GameGateway implements OnGatewayInit,
             roomName,
             false
         );
-        console.log(`${client.data.username} left Game room ${roomName}`);
-        /* emit event to room actualize event */
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)

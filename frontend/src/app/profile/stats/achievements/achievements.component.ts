@@ -4,15 +4,12 @@ import {
     Input,
     OnChanges,
     OnInit,
-    SimpleChanges
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import {
     AchievementData,
     AchievementsService,
     UserAchievement
 } from './achievements.service';
-import { SharedService } from '../../profile/profile-user/profile-user.component';
 
 @Component({
     selector: 'app-achievements',
@@ -24,16 +21,11 @@ export class AchievementsComponent implements OnInit, AfterViewInit, OnChanges {
     achievements: AchievementData[];
     @Input() username ?: string;
 
-    // private _username?: string;
 
     constructor(
         private readonly achievementsService: AchievementsService,
-        private readonly route: ActivatedRoute,
-        private shareService: SharedService
     ) {
         this.achievements = [];
-    
-
     }
 
     ngOnInit(): void {

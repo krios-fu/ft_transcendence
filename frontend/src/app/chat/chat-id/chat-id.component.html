@@ -1,0 +1,53 @@
+<section class="chat" *ngIf="user && me">
+    <div class="chat-title">
+
+        <section
+            style="display: flex; justify-content: space-between; align-items: center; align-content: center; position:relative; width: 60%">
+
+            <img class="avatar" src={{user.photoUrl}} alt="krios-fu" />
+
+            <span>{{user.nickName}}</span>
+        </section>
+
+
+        <section class="icon" style=" display: flex; color : #ffffff; align-items: center; align-content: center;">
+            <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+                <!--disabled option -->
+                <button mat-menu-item (click)="sendInvitationGame()"x>
+                    <mat-icon>videogame_asset</mat-icon>
+                    <span>Game</span>
+                </button>
+                <button mat-menu-item [routerLink]="['/profile', user.username]">
+                    <mat-icon>person</mat-icon>
+                    <span>Profile</span>
+                </button>
+            </mat-menu>
+        </section>
+
+    </div>
+
+    <div class="messages">
+        <section *ngFor="let msg of messages">
+            <section readonly *ngIf="msg.sender === this.me.id; else other" class="message message-personal new">
+                {{msg.content}}
+            </section>
+            <ng-template #other>
+                <section class="message">
+                    <!-- <img class="avatar" src={{user.photoUrl}}> -->
+                    {{msg.content}}
+                </section>
+            </ng-template>
+        </section>
+    </div>
+
+    <div class="message-box">
+        <form (ngSubmit)="sendMessage()" [formGroup]="formMessage">
+            <textarea formControlName="message" type="submit" class="message-input"
+                placeholder="Type message..."></textarea>
+            <button type="submit" class="message-submit">Send</button>
+        </form>
+    </div>
+</section>

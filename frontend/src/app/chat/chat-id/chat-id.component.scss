@@ -1,0 +1,335 @@
+/*--------------------
+Mixins
+--------------------*/
+@mixin center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+@mixin ball {
+	@include center;
+	content: '';
+	display: block;
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, .5);
+	z-index: 2;
+	margin-top: 4px;
+	animation: ball .45s cubic-bezier(0, 0, 0.15, 1) alternate infinite;
+}
+
+div {
+    border: outset 2px silver;
+    border-radius: 22px;
+}
+
+/*--------------------
+  Body
+  --------------------*/
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+
+
+/*--------------------
+  Chat
+  --------------------*/
+
+
+
+.chat {
+	width: 100%;
+	height: 100%;
+	float: left;
+	display: flex;
+	position: absolute;
+	// bottom: 0vh;
+	// right: 0;
+	z-index: 2;
+	overflow: hidden;
+	border-radius: 22px;
+	// box-shadow: 0 10px 30px black;
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background-image: url('https://i.pinimg.com/originals/f5/5b/0f/f55b0f3e0d9b878ed9192b8358fd1480.gif');
+	// border: 1px solid rgba(245, 245, 245, 0.29);
+	background-size: cover; background-position: center;
+	// border: outset 3px silver;
+	// background-color: rgba(0, 0, 0, 30);
+	padding: 10px;
+	flex-direction: column;
+	animation: fade-in 2s linear both;
+
+	@keyframes fade-in {
+		from {
+			opacity: 0;
+		}
+
+		to {
+			opacity: 1;
+		}
+	}
+}
+
+/*--------------------
+  Chat Title
+  --------------------*/
+.chat-title {
+	//flex: 0 1 45px;
+	position: relative;
+	z-index: 10;
+	display: flex;
+	// border: 1px solid rgba(245, 245, 245, 0.29);
+	border-bottom: outset 3px silver;
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(28, 221, 224, 0.25) 0, rgba(114, 244, 238, 0.25) 100%);
+
+	// border-top: none;
+
+	color: #fff;
+	text-transform: uppercase;
+	text-align: center;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0;
+	margin-bottom: 10px;
+	height: 3rem;
+
+
+		.avatar {
+			border-radius: 30px;
+			width: 40px;
+			height: 40px;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			border: 2px solid rgba(255, 255, 255, 0.24);
+
+			img {
+				width: 100%;
+				height: auto;
+			}
+		}
+
+}
+
+
+/*--------------------
+  Messages
+  --------------------*/
+.messages {
+	flex: 1 1 auto;
+	color: rgb(255, 255, 255);
+	position: relative;
+	width: 100%;
+	overflow: scroll;
+	display: flex;
+	flex-direction: column-reverse;
+	// padding-bottom: 50px;
+	margin-bottom: 10px;
+
+
+	& .messages-content {
+		position: absolute;
+		top: 0;
+		left: 0;
+
+		height: 101%;
+		width: 100%;
+	}
+
+
+	.message {
+		clear: both;
+		float: left;
+		padding: 6px 10px 7px;
+		border-radius: 10px 10px 10px 0;
+		background: linear-gradient(90deg, #b34bb7 0%, #18483a 100%);
+		font-size: 1rem;
+		margin: 3px 0 3px ;
+		position: relative;
+		line-height: 2;
+		word-break:break-all;
+		text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+
+
+		&.message-personal {
+			float: right;
+			color: #fff;
+			text-align: right;
+			border-radius: 10px 10px 0 10px;
+
+
+		}
+
+	
+
+		&.new {
+			transform: scale(0);
+			transform-origin: 0 0;
+			animation: bounce 500ms linear both;
+			color: #fff;
+			background: linear-gradient(90deg, #320f2c 0%, #7489f5 100%);
+		}
+	}
+}
+
+
+/*--------------------
+  Message Box
+  --------------------*/
+.message-box {
+	flex: 0 1 40px;
+	width: 100%;
+	//background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
+	//background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	// border: 1px solid rgba(245, 245, 245, 0.29);
+	border-top: outset 3px silver;
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	// background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	background: linear-gradient(90deg, rgba(224, 28, 201, 0.25) 0, rgba(244, 114, 209, 0.25) 100%);
+
+	padding: 10px;
+	position: relative;
+
+	& .message-input {
+		background: none;
+		border: none;
+		outline: none !important;
+		  resize: none;
+		font-size: 11px;
+		height: 42px;
+		margin: 0;
+		padding-right: 20px;
+
+		width: 85%;
+		color: white;
+		//   width: 265px;
+	}
+
+	textarea:focus:-webkit-placeholder {
+		color: transparent;
+	}
+
+
+	& .message-submit {
+		position: absolute;
+		z-index: 1;
+		bottom: 10px;
+		right: 10px;
+		color: rebeccapurple;
+		border: none;
+		background: whitesmoke;
+		font-size: 10px;
+		text-transform: uppercase;
+		line-height: 1;
+		padding: 6px 10px;
+		border-radius: 10px;
+		outline: none !important;
+		transition: background .2s ease;
+
+		&:hover {
+			background: rebeccapurple;
+			color: whitesmoke;
+		}
+	}
+}
+
+
+/*--------------------
+  Custom Srollbar
+  --------------------*/
+.mCSB_scrollTools {
+	margin: 1px -3px 1px 0;
+	opacity: 0;
+}
+
+.mCSB_inside>.mCSB_container {
+	margin-right: 0;
+	padding: 0 10px;
+}
+
+.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+	background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+
+/*--------------------
+  Bounce
+  --------------------*/
+@keyframes bounce {
+	0% {
+		transform: matrix3d(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	4.7% {
+		transform: matrix3d(0.45, 0, 0, 0, 0, 0.45, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	9.41% {
+		transform: matrix3d(0.883, 0, 0, 0, 0, 0.883, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	14.11% {
+		transform: matrix3d(1.141, 0, 0, 0, 0, 1.141, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	18.72% {
+		transform: matrix3d(1.212, 0, 0, 0, 0, 1.212, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	24.32% {
+		transform: matrix3d(1.151, 0, 0, 0, 0, 1.151, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	29.93% {
+		transform: matrix3d(1.048, 0, 0, 0, 0, 1.048, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	35.54% {
+		transform: matrix3d(0.979, 0, 0, 0, 0, 0.979, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	41.04% {
+		transform: matrix3d(0.961, 0, 0, 0, 0, 0.961, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	52.15% {
+		transform: matrix3d(0.991, 0, 0, 0, 0, 0.991, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	63.26% {
+		transform: matrix3d(1.007, 0, 0, 0, 0, 1.007, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	85.49% {
+		transform: matrix3d(0.999, 0, 0, 0, 0, 0.999, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+
+	100% {
+		transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+	}
+}
+
+
+@keyframes ball {
+	from {
+		transform: translateY(0) scaleY(.8);
+	}
+
+	to {
+		transform: translateY(-10px);
+	}
+}
+
+.full-width {
+	width: 100%;
+	color: white;
+	font-size: small;
+	margin-top: 10px;
+}

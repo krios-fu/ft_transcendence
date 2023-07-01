@@ -23,7 +23,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
       public usersService: UsersService,
       private authService: AuthService,
-      private socketService: SocketService
+      private socketService: SocketService,
+
   ) {
     this.checkLogin();
 

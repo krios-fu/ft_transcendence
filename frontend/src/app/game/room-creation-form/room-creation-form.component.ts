@@ -123,10 +123,7 @@ export class RoomCreationFormComponent implements OnInit {
         )
             .subscribe({
                 next: (roomData: IRoomData) => {
-                    console.log("roomData", roomData);
                     if (role) {
-                    console.log("roomData", role);
-
                         this.http.post(`${environment.apiUrl}room_roles`, { roomId: roomData.id, roleId: role })
                             .subscribe((data: any) => {
                                 
@@ -144,7 +141,6 @@ export class RoomCreationFormComponent implements OnInit {
     }
 
     onSubmit() {
-        console.log("STATUS", this.form.get("official")?.value );
         if (this.form.get("official")?.value)
             this._postRoom(
                 this.form.get("roomName")?.value,

@@ -60,14 +60,10 @@ export class UserDto {
 		this.ranking = ranking;
 		this.achievementUser = achievementUser;
 		this.role = role;
-
-		console.log(this)
 	}
   }
   
   export type Payload = {
   
 	userProfile: UserDto;
-	// accessToken: string;
-  
   };

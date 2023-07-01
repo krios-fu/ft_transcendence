@@ -21,16 +21,13 @@
 }
 
 .tag {
-    padding-left: 0;
-    height: 50px;
-    border-radius: 22px;
-    float: right;
-    box-shadow: 10px rgb(255, 255, 255);
-
-    background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-    color: white;
-    border: outset 3px silver;
-    margin: 10px !important;
+	padding: 15px;
+	height: 70px;
+	width: 80%;
+  
+	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
+	color: white;
+	margin-top: 10px;
 }
 
 a {

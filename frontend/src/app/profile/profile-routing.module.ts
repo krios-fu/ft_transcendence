@@ -12,9 +12,6 @@ const ProfileRoutes: Routes = [
   {
     path: '',
     component: ProfileComponent,
-    // pathMatch: 'full',
-
-        // redirectTo: 'me',
 
     children: [
       {
@@ -31,8 +28,6 @@ const ProfileRoutes: Routes = [
       },
       {
         path: 'me/setting',
-        // pathMatch: 'full',
-
         component: SettingComponent,
         canActivate: [AuthGuard]
       },
@@ -44,8 +39,6 @@ const ProfileRoutes: Routes = [
       
     ]
   },
-
-
 ];
 
 @NgModule({

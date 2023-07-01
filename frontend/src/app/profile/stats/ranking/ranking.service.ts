@@ -49,9 +49,7 @@ export class    RankingService {
     private readonly _urlAuthority: string = environment.apiUrl;
     private readonly _urlPath: string = "users";
 
-    constructor(
-        private readonly httpService: HttpClient
-    ) {}
+    constructor( private readonly httpService: HttpClient) {}
 
     private _httpErrorHandler(err: HttpErrorResponse): Observable<never> {
         return (
