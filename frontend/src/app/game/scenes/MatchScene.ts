@@ -114,10 +114,8 @@ export class    MatchScene extends BaseScene {
         this.match.update(
             this.buffer.getSnapshot()
         );
-        /*if (this.buffer.size <= 1)
-        {
-            this.buffer.fill(this.queue, this.match.snapshot);
-        }*/
+        if (this.buffer.size <= 0)
+            this.buffer.autofill();
     }
 
     destroy(): void {

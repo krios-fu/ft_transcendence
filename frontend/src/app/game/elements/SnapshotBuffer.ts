@@ -1,6 +1,7 @@
 import {
     IMatchData,
-    IMatchInitData
+    IMatchInitData,
+    Match
 } from "./Match";
 import { LagCompensationService } from "../services/lag-compensation.service";
 
@@ -14,6 +15,8 @@ export interface    IBufferInit {
 export class   SnapshotBuffer {
 
     private _buffer: IMatchData[];
+    private _auxBuffer: IMatchData[];
+    private _currentSnapshot: IMatchData | undefined;
 
     constructor(
         initData: IBufferInit,
@@ -22,6 +25,8 @@ export class   SnapshotBuffer {
         const   matchData: IMatchInitData = initData.matchData;
     
         this._buffer = [];
+        this._auxBuffer = [];
+        this._currentSnapshot = undefined;
         this.lagCompensator.init({
             gameWidth: initData.gameWidth,
             gameHeight: initData.gameHeight,
@@ -44,8 +49,42 @@ export class   SnapshotBuffer {
         return (this._buffer.length);
     }
 
-    getSnapshot(): IMatchData | undefined {
-        return (this._buffer.shift());
+    getSnapshot(): IMatchData | undefined {    
+        if (!this._buffer.length
+                && this._auxBuffer.length)
+            this._currentSnapshot = this._auxBuffer.shift();
+        else if (this._buffer.length)
+        {
+            this._currentSnapshot = this._buffer.shift();
+        }
+        return (this._currentSnapshot ? Match.cloneMatchData(this._currentSnapshot)
+                                        : undefined);
+    }
+
+    private _smoothValue(targetValue: number, previousValue: number,
+                            step: number, totalSteps: number): number {
+        const   diff: number = targetValue - previousValue;
+        let     displacement;
+
+        displacement = diff * (step / totalSteps);
+        return (previousValue + displacement);
+    }
+
+    private _applyServerNonPosBallData(matchData: IMatchData): void {
+        let ballX: number;
+        let ballY: number;
+        let when: number;
+    
+        for (const snapshot of this._auxBuffer)
+        {
+            ballX = snapshot.ball.xPos;
+            ballY = snapshot.ball.yPos;
+            when = snapshot.when;
+            Match.copyMatchData(snapshot, matchData);
+            snapshot.ball.xPos = ballX;
+            snapshot.ball.yPos = ballY;
+            snapshot.when = when;
+        }
     }
 
     /*
@@ -54,19 +93,25 @@ export class   SnapshotBuffer {
     **  if any.
     */
     fill(matchData: IMatchData): void {
-        /*const   serverSnapshot: IMatchData | undefined = updateQueue.shift();
-
-        if (serverSnapshot)
+        if (this._currentSnapshot
+                && this._currentSnapshot.when - matchData.when > 0)
         {
-            this.lagCompensator.serverUpdate(
-                this._buffer,
-                serverSnapshot,
-                currentSnapshot
-            );
+            this._applyServerNonPosBallData(matchData);
+            return ;
         }
-        else
-            this.lagCompensator.autoFill(this._buffer);*/
         this._buffer.push(matchData);
+        this._auxBuffer = [];
+    }
+
+    autofill(): void {
+        this._auxBuffer = [];
+        if (this._buffer.length)
+            this._auxBuffer.push(this._buffer[0]);
+        else if (this._currentSnapshot)
+            this._auxBuffer.push(this._currentSnapshot);
+        else
+            return ;
+        this.lagCompensator.autoFill(this._auxBuffer);
     }
 
     input(paddleMove: number, heroMove: number,
