@@ -114,15 +114,10 @@ export class    GameGateway implements OnGatewayInit,
                 undefined] =
             this.updateService.getClientInitData(roomName, client);
 
-        this.roomService.join(
+        await this.roomService.join(
             client,
             username,
             roomName
-        );
-        await this.matchMakingService.emitQueuesInfo(
-            roomName,
-            client.id,
-            username
         );
         if (initScene && initData)
             client.emit(initScene, initData);
@@ -146,7 +141,7 @@ export class    GameGateway implements OnGatewayInit,
         @MessageBody() roomId: number
     ) {
         const roomName: string = SocketHelper.roomIdToName(roomId);
-        this.roomService.leave(
+        await this.roomService.leave(
             client,
             client.data.username,
             roomName
@@ -158,6 +153,20 @@ export class    GameGateway implements OnGatewayInit,
         );
         console.log(`${client.data.username} left Game room ${roomName}`);
         /* emit event to room actualize event */
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard)
+    @UsePipes(StringValidator)
+    @SubscribeMessage('getQueueInfo')
+    async getQueueInfo(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() roomId: string
+    ) {
+        await this.matchMakingService.emitQueuesInfo(
+            roomId,
+            client.id,
+            client.data.username
+        );
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
