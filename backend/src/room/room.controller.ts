@@ -164,13 +164,32 @@ export class RoomController {
             @Param('room_id', ParseIntPipe) id: number,
             @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
         ): Promise<RoomEntity> {
-        if (await this.roomService.findOne(id) === null) {
+
+            const room = await this.roomService.findOne(id);
+
+        if ( room === null) {
             fs.unlinkSync(avatar.path);
             throw new BadRequestException('no room in db');
         }
         const photoUrl: string = `http://localhost:3000/${avatar.path}`;
 
         return await this.roomService.updateRoom(id, { photoUrl: photoUrl })
+    }
+
+    @Put(':room_id')
+    public async upload
+        (
+            @Param('room_id', ParseIntPipe) id: number,
+            @Body() dto,
+        ): Promise<RoomEntity> {
+        const room = await this.roomService.findOne(id);
+
+        if (room === null) {
+            this.roomLogger.error(`No room present with id ${id}`);
+            throw new BadRequestException('resource does not exist');
+        }
+        room.roomName = dto.roomName;
+        return await this.roomService.updateRoom(id, room);
     }
 
     /* must be owner */

@@ -1,11 +1,11 @@
 import { Exclude } from "class-transformer";
-import { AchievementUserEntity } from "src/achievements_user/entity/achievement_user.entity";
-import { RefreshTokenEntity } from "src/auth/entity/refresh-token.entity";
-import { ChatUserEntity } from "src/chat/entities/chat-user.entity";
-import { BaseEntity } from "src/common/classes/base.entity";
-import { DEFAULT_AVATAR_PATH } from "src/common/config/upload-avatar.config";
-import { RoomEntity } from "src/room/entity/room.entity";
-import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
+import { AchievementUserEntity } from "../../achievements_user/entity/achievement_user.entity";
+import { RefreshTokenEntity } from "../../auth/entity/refresh-token.entity";
+import { ChatUserEntity } from "../../chat/entities/chat-user.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
+import { DEFAULT_AVATAR_PATH } from "../../common/config/upload-avatar.config";
+import { RoomEntity } from "../../room/entity/room.entity";
+import { UserRoomEntity } from "../../user_room/entity/user_room.entity";
 import {
 	Column,
 	Entity,
@@ -15,6 +15,7 @@ import {
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
 import { Category } from "../enum/category.enum";
+import { BanEntity } from "src/ban/entity/ban.entity";
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
@@ -33,7 +34,7 @@ export class UserEntity extends BaseEntity {
 		type: 'varchar',
 		unique: true,
 		nullable: false,
-		length: 8
+		length: 11
 	})
 	readonly username : string;
 	
@@ -73,7 +74,7 @@ export class UserEntity extends BaseEntity {
 		type: 'varchar',
 		unique: true,
 		nullable: false,
-		length: 8
+		length: 11
 	})
 	nickName : string;
 
@@ -143,4 +144,11 @@ export class UserEntity extends BaseEntity {
 		}
 	)
 	achievementUser: AchievementUserEntity[];
+
+	@OneToMany(
+		() => BanEntity,
+		(ban: BanEntity) => ban.user,
+		{ cascade: true }
+	)
+	ban: BanEntity
 }

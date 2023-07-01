@@ -83,9 +83,7 @@ export class    LagCompensationService {
     //false: normal, true: aggressive
     private _extrapolType(serverSnapshot: IMatchData,
                             currentSnapshot: IMatchData): boolean {
-        if (currentSnapshot.when
-                + (this._snapshotInterval * this._bufferSnapshots)
-                < serverSnapshot.when)
+        if (currentSnapshot.when <= serverSnapshot.when)
         {
             if (this._role === "PlayerA"
                     && serverSnapshot.ball.xVel < 0)
@@ -154,7 +152,7 @@ export class    LagCompensationService {
                 || playerData.hero.active)
             return ;
         playerData.hero.active = move;
-        playerData.hero.pointInvocation = false; //Leaving it false for testing
+        playerData.hero.pointInvocation = true;
     }
 
     input(buffer: IMatchData[], paddleMove: number, heroMove: number,

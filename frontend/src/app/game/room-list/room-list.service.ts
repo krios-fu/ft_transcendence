@@ -8,6 +8,7 @@ import {
 } from "rxjs";
 import { IUserRoom } from "src/app/interfaces/IUserRoom.interface";
 import { AuthService } from "src/app/services/auth.service";
+import { environment } from "src/environments/environment";
 
 export type    RoomRole = "public" | "private";
 
@@ -29,11 +30,11 @@ export interface    IRoomUserCount {
 export class    RoomListService {
 
     // Store common urls in separate file to avoid duplication
-    private readonly _urlAuthority: string = "http://localhost:3000";
-    private readonly _urlPathRoom: string = "/room";
+    private readonly _urlAuthority: string = environment.apiUrl;
+    private readonly _urlPathRoom: string = "room";
     private readonly _urlPathRoomUserCount: string =
                             this._urlPathRoom + "/user_count";
-    private readonly _urlPathUserRoom: string = "/user_room";
+    private readonly _urlPathUserRoom: string = "user_room";
 
     constructor(
         private readonly httpService: HttpClient,
@@ -100,15 +101,21 @@ export class    RoomListService {
 
     registerUserToRoom(userId: string, roomId: string,
                         password?: string): Observable<IUserRoom> {
+        const   payload: any = password ?
+                    {
+                        userId: userId,
+                        roomId: roomId,
+                        password: password
+                    } : {
+                        userId: userId,
+                        roomId: roomId,
+                    };
+    
         return (
             this.httpService.post<IUserRoom>(
                 this._urlAuthority
                 + this._urlPathUserRoom,
-                {
-                    userId: userId,
-                    roomId: roomId,
-                    password: password || undefined
-                }
+                payload
             )
             .pipe(
                 catchError((err) => {

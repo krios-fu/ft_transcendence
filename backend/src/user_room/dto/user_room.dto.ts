@@ -1,6 +1,6 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class CreateUserRoomDto {
     @IsNotEmpty()
@@ -9,9 +9,10 @@ export class CreateUserRoomDto {
     roomId: number;
 
     @IsString()
+    @Length(8, 15)
     @IsNotEmpty()
+    @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])/)
     @IsOptional()
-    /* password validation */
     password?: string;
 }
 

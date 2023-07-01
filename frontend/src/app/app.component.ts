@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { UserDto } from './dtos/user.dto';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { UsersService } from './services/users.service';
 import { Subscription, filter, throwError } from 'rxjs';
 import { NavigationEnd, Router } from "@angular/router";
+import { SocketService } from './game/services/socket.service';
 
 
 
@@ -13,7 +13,7 @@ import { NavigationEnd, Router } from "@angular/router";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit, OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
   hiden = false;
   public subscriber: Subscription;
@@ -23,13 +23,15 @@ export class AppComponent implements AfterViewInit, OnInit {
     private router: Router,
       public usersService: UsersService,
       private authService: AuthService,
+      private socketService: SocketService,
+
   ) {
     this.checkLogin();
 
     this.subscriber = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      if (event.url === '/login' || event.url === '/login/2fa')
+      if (event.url === '/login' || event.url === '/login/2fa' || event.url === '/login/wtf')
         this.hiden = false;
       else
         this.hiden = true;
@@ -39,11 +41,12 @@ export class AppComponent implements AfterViewInit, OnInit {
 
 
   ngOnInit(): void {
-  
+    this.socketService.bannedGlobalEvent();
   }
 
-
-
+  ngOnDestroy(): void {
+    this.socketService.unsubscribeFromEvent('banned_global');
+  }
 
   checkLogin() {
     this.hiden = !(this.authService.getAuthUser()) ? false : true;
@@ -52,13 +55,5 @@ export class AppComponent implements AfterViewInit, OnInit {
   logout() {
     this.authService.logout();
   }
-
-
-
-  ngAfterViewInit() {
-  }
-  // minNavegation() {
-  //   this.hiden = !this.hiden;
-  // }
 }
 

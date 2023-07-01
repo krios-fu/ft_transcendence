@@ -54,8 +54,6 @@ export class AchievementsUserService {
     ** Service: delete a user achievement.
     */
     public async removeAchievementUser(id: number): Promise<void> {
-        /* a testear */
-        const tal = this.achievementsUserRepository.delete(id);
-        console.log('[ TEST | TO REMOVE ] testing testings...' + tal);
+        await this.achievementsUserRepository.delete(id);
     }
 }

@@ -80,16 +80,11 @@ export class    GameRoomService {
     **  All user's client join the room in order to
     **  know through any user client, the rooms it has joined.
     */
-    async join(username: string,
+    async join(client: Socket,
+                username: string,
                 roomId: string): Promise<void> {
-        const   clients = await this.socketHelper.getAllUserClients(username);
-    
-        for (const client of clients)
-        {
-            this._leaveRegularRooms(client);
-        }
         this._returnHandler(username, roomId);
-        await this.socketHelper.addUserToRoom(username, roomId);
+        await client.join(roomId);
     }
 
     private _playerLeave(roomId: string, client: Socket): [boolean, string] {
@@ -104,13 +99,9 @@ export class    GameRoomService {
 
     async leave(client: Socket, username: string,
                     roomId: string): Promise<void> {
-        const   clients = await this.socketHelper.getAllUserClients(username);
         let     playerLeaveResult: [boolean, string];
     
-        for (const client of clients)
-        {
-            client.leave(roomId);
-        }
+        client.leave(roomId);
         playerLeaveResult = this._playerLeave(roomId, client);
         if (!playerLeaveResult[0])
             return ;

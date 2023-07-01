@@ -3,6 +3,8 @@ import { Socket } from "socket.io";
 import { GameMatchmakingService } from "./game.matchmaking.service";
 import { SocketHelper } from "./game.socket.helper";
 import { GameUpdateService } from "./game.updateService";
+import { UserRolesService } from "src/user_roles/user_roles.service";
+import { UserRolesEntity } from "src/user_roles/entity/user_roles.entity";
 
 @Injectable()
 export class    GameSocketAuthService {
@@ -12,7 +14,8 @@ export class    GameSocketAuthService {
     constructor(
         private readonly socketHelper: SocketHelper,
         private readonly updateService: GameUpdateService,
-        private readonly matchMakingService: GameMatchmakingService
+        private readonly matchMakingService: GameMatchmakingService,
+        private readonly userRolesService: UserRolesService
     ) {
         this._authTimeout = new Map<string, NodeJS.Timeout>;
     }
@@ -65,6 +68,7 @@ export class    GameSocketAuthService {
 
     async registerUser(client: Socket, username: string): Promise<void> {
         const   currentUsername: string = this._getCurrentUser(client);
+        let     roles: string[];
     
         if (currentUsername)
         {
@@ -73,8 +77,11 @@ export class    GameSocketAuthService {
             else
                 await this.removeUser(client, username);
         }
-        client.join(SocketHelper.getUserRoomName(username));
-        console.log(`Registered client with id: ${client.id}, username: ${username}`);
+        roles = (await this.userRolesService
+            .getAllRolesFromUsername(username))
+            .map((userRole: UserRolesEntity) => userRole.role.role);
+        client.data.globalRoles = roles;
+        await client.join(SocketHelper.getUserRoomName(username));
     }
 
     private async _removePlayer(playerRoom: string): Promise<void> {
@@ -86,7 +93,7 @@ export class    GameSocketAuthService {
         **  in the room.
         **  socket.io Event "disconnecting".
         */
-        if (await this.socketHelper.roomSocketLength(playerRoom) > 1)
+        if (await this.socketHelper.roomSocketLength(playerRoom) >= 1)
             return ;
         await this.updateService.playerWithdrawal(roomId, playerRoom);
     }

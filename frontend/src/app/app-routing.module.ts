@@ -3,8 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { HomeComponent } from './home/home.component';
-import { RoomComponent } from './room/room.component';
-// import { LoginModule } from './login/login.module';
 
 const routes: Routes = [
   {
@@ -21,7 +19,7 @@ const routes: Routes = [
   },
   {
     path: 'chat',
-    loadChildren: () => import('./room/chat/chat.module').then(m => m.ChatModule),
+    loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule),
     canActivate: [AuthGuard]
 
   },

@@ -47,7 +47,7 @@ export class    GameUpdateService {
 
     private _updateInterval: NodeJS.Timer;
 
-    static readonly updateTimeInterval: number = 1000 / 20;
+    static readonly updateTimeInterval: number = 1000 / 60;
     static readonly clientUpdateTimeInterval: number = 1000 / 60;
 
     constructor(

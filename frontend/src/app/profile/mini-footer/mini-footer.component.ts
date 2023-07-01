@@ -14,7 +14,7 @@ import { UsersService } from 'src/app/services/users.service';
 export class MiniFooterComponent implements OnInit, OnDestroy {
 
   friend_state = false;
-  nPenddingFriends = 0;
+  nPenddingFriends = 42;
   public subscriber: Subscription;
 
   constructor(private authService: AuthService,
@@ -27,7 +27,6 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event) => {
       if (this.authService.isAuthenticated() === true) {
-        // this.ngOnInit();
         this.getPenddingFriends();
       }
     });
@@ -53,11 +52,6 @@ export class MiniFooterComponent implements OnInit, OnDestroy {
       })
   }
 
-  ngOnDestroy(): void {
-
-    this.subscriber?.unsubscribe();
-  }
-
-
+  ngOnDestroy(): void { this.subscriber?.unsubscribe(); }
 
 }

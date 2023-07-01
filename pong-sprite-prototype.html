@@ -132,16 +132,11 @@
 
             //Aquaman ball collision setup
             this.physics.add.overlap(ball, aquaman_shape, () => {
-                console.log("ball.x: ", ball.x);
-                console.log("ball.y: ", ball.y);
-                console.log("aquaman_shape.x: ", aquaman_shape.x);
-                console.log("aquaman_shape.y: ", aquaman_shape.y);
                 if (ball.x <= aquaman_shape.x + 50
                     && ball.x >= aquaman_shape.x - 50
                     && ball.y >= aquaman_shape.y - 50)
                 {
                     ball.body.setVelocity(-700, 700);
-                    console.log("hit ball!");
                 }
             });
 

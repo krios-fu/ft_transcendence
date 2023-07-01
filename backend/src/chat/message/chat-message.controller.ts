@@ -24,7 +24,6 @@ export class ChatMessageController {
 	@Public()
 	async findMessageChat(@Param('chat_id', ParseIntPipe) id : number) : Promise<ChatMessageEntity[]>{
 		const messages = await this.messageService.findMessageChats(id);
-		console.log('MESSAGE', messages);
 		return messages
 	}
 }

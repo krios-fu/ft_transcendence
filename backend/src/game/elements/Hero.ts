@@ -108,6 +108,10 @@ export class    Hero {
         this._activeSprite = up ? 2 : 1;
     }
 
+    resetInvocation(): void {
+        this._pointInvocation = false;
+    }
+
     private getActiveSprite(): ISprite {
         if (!this._activeSprite)
             return (undefined);
@@ -237,7 +241,6 @@ export class    Hero {
         sprite.xPos = sprite.xPosInit;
         sprite.yPos = sprite.yPosInit;
         this._activeSprite = 0;
-        this._pointInvocation = false; // For testing
     }
 
     private checkEnd(sprite: ISprite): void {    

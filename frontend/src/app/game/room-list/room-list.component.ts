@@ -91,6 +91,7 @@ export class    RoomListComponent implements OnInit {
                 }
                 for (const [id, room] of roomUserCount.entries())
                 {
+                    this.rooms[id].userCount = room.userCount;
                 }
             },
             error: (err: any) => {
@@ -151,7 +152,7 @@ export class    RoomListComponent implements OnInit {
             });
         }
         else
-            this._initRegistry(userId, roomId, roomName)
+            this._initRegistry(userId, roomId)
     }
 
     goToRoom(roomId: string, roomName: string): void {

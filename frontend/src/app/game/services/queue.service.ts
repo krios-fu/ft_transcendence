@@ -40,7 +40,7 @@ export class    QueueService {
                 this.alertService.openMatchInvite(inviteData);
             },
             error: (err: any) => {
-                console.log(`Error in Match Invite Notification. ${err}`);
+                console.error(`Error in Match Invite Notification. ${err}`);
             }
         });
         this._gameCancel.subscribe({
@@ -51,7 +51,7 @@ export class    QueueService {
                 );
             },
             error: (err: any) => {
-                console.log(`Error in Game Cancel Notification. ${err}`);
+                console.error(`Error in Game Cancel Notification. ${err}`);
             }
         });
     }

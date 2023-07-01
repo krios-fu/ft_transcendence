@@ -96,10 +96,10 @@ export class    MenuHeroScene extends MenuScene {
         );
         this.selector = new MenuSelector(this.initData, this._menuHeroRenderer);
         this.socket.on("leftSelection", (data: ISelectionData) => {
-            this.selector?.serverUpdate(data);
+            this.selector?.serverUpdate(data, this.role);
         });
         this.socket.on("rightSelection", (data: ISelectionData) => {
-            this.selector?.serverUpdate(data);
+            this.selector?.serverUpdate(data, this.role);
         });
         this.socket.on("confirmSelection", (data: ISelectionData) => {
             this.selector?.serverUpdate(data, this.role);

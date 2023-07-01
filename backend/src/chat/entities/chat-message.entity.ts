@@ -1,4 +1,4 @@
-import { BaseEntity } from "src/common/classes/base.entity";
+import { BaseEntity } from "../../common/classes/base.entity";
 import {Column, 
     Entity, 
     ManyToOne, 

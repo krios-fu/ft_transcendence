@@ -10,6 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { IAuthPayload } from '../interfaces/iauth-payload.interface';
 import { environment } from 'src/environments/environment';
+import { AlertServices } from './alert.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class AuthService {
         private http: HttpClient,
         private router: Router,
         private cookies: CookieService,
+        private alertService: AlertServices
     ) { }
 
     private getUserCredentials(authCode: string): Observable<HttpResponse<any>> {
@@ -98,20 +100,29 @@ export class AuthService {
     public confirm2FA(code: string): void {
         this.http.post<IAuthPayload>(
             environment.apiUrl + 'auth/2fa/validate',
-            { token: code }
+            { token: code },
+            { 
+                observe: 'response',
+                responseType: 'json',
+                withCredentials: true,
+            }
         )
             .subscribe({
-                next: (creds: IAuthPayload) => {
+                next: (res: HttpResponse<IAuthPayload>) => {
+                    if (!res.body) {
+                        throw new HttpErrorResponse({
+                            statusText: 'successful login never returned credentials',
+                            status: HttpStatusCode.InternalServerError,
+                          });
+                    }
                     this.setAuthInfo({
-                        'accessToken': creds.accessToken,
-                        'username': creds.username,
-                        'id': creds.id
+                        'accessToken': res.body.accessToken,
+                        'username': res.body.username,
+                        'id': res.body.id
                     });
                     this.redirectHome();
                 },
-                error: (err: HttpErrorResponse) => {
-                    alert('Invalid OTP code');  /* TODO: testear que no de problemas al esperar la resolución de la alerta */
-                }
+                error: () => this.alertService.openSnackBar('Invalid OTP code', 'dismiss')
             });
     }
 
@@ -129,6 +140,10 @@ export class AuthService {
 
     public redirectLogin(): void {
         this.router.navigateByUrl('/login');
+    }
+
+    public redirectBan(): void {
+        this.router.navigateByUrl('/login/wtf');
     }
 
     /* Solo permite ejecución a usuarios logeados */

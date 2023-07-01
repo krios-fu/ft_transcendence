@@ -12,8 +12,7 @@ export class SearchComponent implements OnInit {
   constructor() { 
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   clearUser(){
     this.users = [];

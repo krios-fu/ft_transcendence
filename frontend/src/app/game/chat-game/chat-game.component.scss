@@ -212,6 +212,8 @@ div {
 	overflow: scroll;
 	display: flex;
 	flex-direction: column-reverse;
+	font-size: 8px;
+
 
 
 	& .messages-content {
@@ -230,7 +232,7 @@ div {
 		padding: 6px 10px 7px;
 		border-radius: 10px 10px 10px 0;
 		background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
-		font-size: 1rem;
+		font-size: 8px;
 		margin: 3px 0 3px 35px;
 		position: relative;
 		line-height: 2;
@@ -312,7 +314,7 @@ div {
 		background: none;
 		border: none;
 		outline: none !important;
-		  resize: none;
+		resize: none;
 		font-size: 11px;
 		height: 42px;
 		margin: 0;

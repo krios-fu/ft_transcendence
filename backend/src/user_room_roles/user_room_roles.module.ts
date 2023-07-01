@@ -8,14 +8,17 @@ import { RolesModule } from '../roles/roles.module';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
 import { RoomModule } from '../room/room.module';
 import { UserModule } from '../user/user.module';
+import { UserRolesModule } from 'src/user_roles/user_roles.module';
+import { BanModule } from 'src/ban/ban.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserRoomRolesEntity]),
     UserRoomModule,
+    UserRolesModule,
     RoomModule,
     RolesModule,
-    UserModule,
+    UserModule
   ],
   providers: [
     UserRoomRolesService,

@@ -3,7 +3,8 @@ import { WsException } from "@nestjs/websockets";
 export enum SocketExceptionCause {
     Unauthorized = "unauthorized",
     Forbidden = "forbidden",
-    BadRequest = "badRequest"
+    BadRequest = "badRequest",
+    InternalServerError = "internalServerError"
 }
 
 export interface    SocketError {

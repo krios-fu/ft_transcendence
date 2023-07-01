@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { GameComponent } from './game.component';
 import { OnlineComponent } from './online/friend-online/online.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { CommonModule } from '@angular/common';
 import { GameQueueComponent } from './game-queue/game-queue.component';
 import { QueueService } from './services/queue.service';
@@ -19,11 +19,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../http-interceptors/auth.interceptor';
-// import { SocketNotificationService } from '../services/socket-notification.service';
 import { GamehomeComponent } from './gamehome/gamehome.component';
 import { ChatGameComponent } from './chat-game/chat-game.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import { Chat } from '../room/chat/chat';
 import { RoomCreationFormComponent } from './room-creation-form/room-creation-form.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -31,7 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RoomListComponent } from './room-list/room-list.component';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginatorModule } from '@angular/material/paginator';
-// import { MatLabel } from '@angular/material/form-field';
+import { Chat } from '../chat/chat';
 
 @NgModule({
   declarations: [
@@ -66,7 +64,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     ReactiveFormsModule,
     MatListModule,
     MatPaginatorModule
-    // MatLabel
   ],
   providers: [
     QueueService,
@@ -75,9 +72,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
       useClass: AuthInterceptor,
       multi: true,
   },
-  // SocketNotificationService,
   Chat
-
   ],
 })
 export class GameModule { }

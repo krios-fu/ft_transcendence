@@ -13,7 +13,7 @@ export class CreatePrivateRoomDto extends CreateRoomDto {
     @IsString()
     @Length(8, 15)
     @IsNotEmpty()
-    //@Matches(room password regex)
+    @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])/)
     password: string;
 }
 

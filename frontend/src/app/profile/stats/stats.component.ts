@@ -1,5 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 
 @Component({
     selector: 'app-stats',
@@ -9,16 +8,10 @@ import { ActivatedRoute } from '@angular/router';
 export class StatsComponent implements OnInit, OnChanges {
 
     @Input() username ?: string;
-    constructor(
-    private route: ActivatedRoute,
+    constructor() { }
 
-    ) { }
+    ngOnInit(): void {}
 
-    ngOnInit(): void {
-       
-    }
-
-    ngOnChanges(): void {
-    }
+    ngOnChanges(): void {}
 
 }

@@ -23,7 +23,7 @@
             </ng-template>
         </div>
     </div>
-    <div class="message-box">
+    <div class="message-box" *ngIf="!this.me.role.is_silenced">
         <form (ngSubmit)="sendMessage()" [formGroup]="formMessage">
             <textarea formControlName="message" type="submit" class="message-input"
                 placeholder="Type message..."></textarea>

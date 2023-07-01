@@ -34,7 +34,7 @@ export class BanEntity extends BaseEntity {
     @ManyToOne(
         () => UserEntity,
         {
-            cascade: true,
+            onDelete: 'CASCADE',
             eager: true,
         }
     )
@@ -49,9 +49,8 @@ export class BanEntity extends BaseEntity {
     roomId: number;
 
     @ManyToOne(
-        () => UserEntity,
+        () => RoomEntity,
         {
-            cascade: true,
             eager: true,
             onDelete: 'CASCADE'
         }

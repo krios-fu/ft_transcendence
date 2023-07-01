@@ -10,7 +10,8 @@ import {
 import { RoomRolesEntity } from "../../room_roles/entity/room_roles.entity";
 import { UserEntity } from "../../user/entities/user.entity";
 import { BaseEntity } from "../../common/classes/base.entity";
-import { UserRoomEntity } from "src/user_room/entity/user_room.entity";
+import { UserRoomEntity } from "../../user_room/entity/user_room.entity";
+import { BanEntity } from "src/ban/entity/ban.entity";
 
 @Entity({ name: "room" })
 export class RoomEntity extends BaseEntity {
@@ -65,7 +66,15 @@ export class RoomEntity extends BaseEntity {
 
     @OneToMany(
         () => RoomRolesEntity,
-        (roomRole: RoomRolesEntity) => roomRole.room
+        (roomRole: RoomRolesEntity) => roomRole.room,
+        { cascade: true }
     )
     roomRole: RoomRolesEntity[];
+
+    @OneToMany(
+        () => BanEntity,
+        (ban: BanEntity) => ban.room,
+        { cascade: true }
+    )
+    ban: BanEntity
 }

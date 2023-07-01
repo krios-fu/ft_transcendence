@@ -3,10 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from '../common/mappers/query.mapper';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
+import { RoomService } from '../room/room.service';
+import { UserRoomService } from '../user_room/user_room.service';
 import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
+import {EventEmitter2} from "@nestjs/event-emitter";
+import { DeleteResult } from "typeorm";
+import { UserRoomEntity } from 'src/user_room/entity/user_room.entity';
 
 @Injectable()
 export class UserRoomRolesService {
@@ -14,6 +19,9 @@ export class UserRoomRolesService {
         @InjectRepository(UserRoomRolesEntity)
         private readonly userRoomRolesRepository: UserRoomRolesRepository,
         private readonly userService: UserService,
+        private readonly roomService: RoomService,
+        private readonly userRoomService: UserRoomService,
+        private readonly eventEmitter: EventEmitter2
     ) { }
 
     public async findAllRoles(queryParams: UserRoomRolesQueryDto): Promise<UserRoomRolesEntity[]> {
@@ -54,23 +62,59 @@ export class UserRoomRolesService {
                 userRoom: { roomId: roomId }
             },
         });
-        let users: UserEntity[] = [];
+        let users: UserEntity[] = await Promise.all(rolesInRoom
+            .map(async (role: UserRoomRolesEntity) => await this.userService
+                .findOne(role.userRoom.userId)))
 
-        rolesInRoom.forEach(async (role) => {
-            const user = await this.userService.findOne(role.userRoom.userId);
-            users.push(user);
-        });
         return users;
     }
 
-    public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
-        return await this.userRoomRolesRepository.save(
-            new UserRoomRolesEntity(dto)
-        );
+    public async getUserRolesInRoom(
+        userId: number,
+        roomId: number
+    ): Promise<UserRoomRolesEntity[]> {
+        return await this.userRoomRolesRepository
+            .createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.role', 'role')
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .leftJoinAndSelect('user_room.user', 'user')
+            .leftJoinAndSelect('user_room.room', 'room')
+            .where('user.id = :username', { 'username': userId })
+            .where('room.id = :roomName', { 'roomName': roomId })
+            .getMany();
     }
 
-    public async remove(id: number): Promise<void> {
-        await this.userRoomRolesRepository.delete(id);
+    public async postRoleInRoom(dto: UserRoomRolesDto): Promise<UserRoomRolesEntity> {
+        const role: UserRoomRolesEntity = await this.userRoomRolesRepository.save(
+            new UserRoomRolesEntity(dto)
+        );
+        const userRoom: UserRoomEntity = (await this.findRole(role.id)).userRoom;
+
+        if (role) {
+            const { userId, roomId } = userRoom;
+            this.eventEmitter.emit('update.roles',
+                {
+                    userId: userId,
+                    roomId: roomId,
+                    ctxName: 'room'
+                });
+        }
+        return role;
+    }
+
+    public async remove(role: UserRoomRolesEntity): Promise<void> {
+        const { id } = role;
+        const { userId, roomId } = role.userRoom;
+        const delRes: DeleteResult = await this.userRoomRolesRepository.delete(id);
+
+        if (delRes) {
+            this.eventEmitter.emit('updateRoles',
+                {
+                    userId: userId,
+                    roomId: roomId,
+                    ctxName: 'room'
+            });
+        }
     }
 
     public async findRoleByIds(userRoomId: number, roleId: number): Promise<UserRoomRolesEntity> {
@@ -93,5 +137,44 @@ export class UserRoomRolesService {
             .andWhere('user_room.roomId = :room_id', { 'room_id': roomId })
             .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
             .getOne();
+    }
+
+    public async findRoleByUser(
+        userId: number,
+        roomId: number,
+    ): Promise<UserRoomRolesEntity []> {
+        return await this.userRoomRolesRepository.createQueryBuilder('user_room_roles')
+            .leftJoinAndSelect('user_room_roles.userRoom', 'user_room')
+            .where('user_room.userId = :user_id', { 'user_id': userId })
+            .andWhere('user_room.roomId = :room_id', { 'room_id': roomId })
+            // .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
+            .getMany();
+    }
+
+    private async _validateOwnerRole(userId: number, roomId: number): Promise<boolean> {
+        return (await this.roomService.findOne(roomId))
+            .ownerId === userId;
+    }
+
+    private async _validateUserRoomRoles(
+        userId: number,
+        roomId: number,
+        roles: string[]
+    ): Promise<boolean> {
+        if (!(await this.userRoomService.findUserRoomIds(userId, roomId))) {
+            return false;
+        }
+        return (await this.getUserRolesInRoom(userId, roomId))
+            .map(urr => urr.role.role)
+            .some(role => roles.includes(role));
+    }
+
+    public async validateUserAction(
+        userId: number,
+        roomId: number,
+        roles: string[]
+    ): Promise<boolean> {
+        return (await this._validateOwnerRole(userId, roomId) ||
+            await this._validateUserRoomRoles(userId, roomId, roles));
     }
 }

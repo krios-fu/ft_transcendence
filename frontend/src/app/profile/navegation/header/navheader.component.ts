@@ -23,19 +23,19 @@ export class NavHeaderComponent implements OnInit {
   online_icon = '';
 
   @Output() searchUser = new EventEmitter();
-  public formMessage= new FormGroup({
-    message : new FormControl('')
+  public formMessage = new FormGroup({
+    message: new FormControl('')
   })
 
   constructor(private http: HttpClient,
     private usersService: UsersService,
-    private shareService : SharedService,
-    private route : ActivatedRoute,
+    private shareService: SharedService,
+    private route: ActivatedRoute,
 
   ) {
     this.user = undefined;
     const room = this.route.snapshot.paramMap.get('id');
-    this.formMessage.patchValue({ room } );
+    this.formMessage.patchValue({ room });
   }
 
   /*
@@ -44,13 +44,12 @@ export class NavHeaderComponent implements OnInit {
   */
   ngOnInit() {
     const room = this.route.snapshot.paramMap.get('id');
-    this.formMessage.patchValue({ room } );
+    this.formMessage.patchValue({ room });
 
     this.usersService.getUser('me')
       .subscribe((user: UserDto) => {
         this.user = user;
-      //  this.gameNotification.joinRoomNotification(this.user.username);
-       this.shareService.eventEmitter.emit(this.user.username);
+        this.shareService.eventEmitter.emit(this.user.username);
 
         this.color_icon = (this.user.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.user.defaultOffline) ? 'online_prediction' : 'online_prediction';
@@ -66,13 +65,13 @@ export class NavHeaderComponent implements OnInit {
     this.plus_minus = (this.status_room) ? "expand_more" : "chevron_right";
   }
 
-  search(){
+  search() {
     const { message, room } = this.formMessage.value;
-    if( message.trim() == '' )
+    if (message.trim() == '')
       return false;
-      this.http.get<UserDto[]>(`${environment.apiUrl}users/?filter[nickName]=${message}`)
+    this.http.get<UserDto[]>(`${environment.apiUrl}users/?filter[nickName]=${message}`)
       .subscribe(
-       ( user : UserDto[]) => {
+        (user: UserDto[]) => {
           this.searching = user;
         }
       )

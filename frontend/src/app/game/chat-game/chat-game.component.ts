@@ -1,14 +1,11 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms'; //
 import { UserDto } from 'src/app/dtos/user.dto';
 import { UsersService } from 'src/app/services/users.service';
-import { ChatService } from 'src/app/services/chat.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
-import { AlertServices } from 'src/app/services/alert.service';
-import { message } from 'src/app/room/chat/chat';
-import { Chat } from 'src/app/room/chat/chat';
+import { message } from 'src/app/chat/chat';
+import { Chat } from 'src/app/chat/chat';
 
 
 @Component({
@@ -18,19 +15,14 @@ import { Chat } from 'src/app/room/chat/chat';
 })
 export class ChatGameComponent implements OnInit {
 
-
-
   unfold: string;
   hidden = true;
-
   login?= ''
-
   user?: UserDto;
   me?: UserDto;
   id?: number;
 
   public messages: message[] = [];
-
 
   public formMessage = new FormGroup({
     message: new FormControl('')
@@ -39,17 +31,12 @@ export class ChatGameComponent implements OnInit {
 
   constructor(public chat: Chat,
     private route: ActivatedRoute,
-    private chatService: ChatService,
-    private http: HttpClient,
     private socketGameNotification: SocketNotificationService,
     private userService: UsersService,
-    private alertService: AlertServices,
-    private router: Router
-
-
   ) {
 
     this.unfold = 'unfold_less';
+    this.update_player();
   }
 
   ngOnInit(): void {
@@ -63,13 +50,22 @@ export class ChatGameComponent implements OnInit {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          // this.socketGameNotification.joinRoomNotification(this.me.username);
+
+          this.userService.get_role(this.me);
+          this.userService.get_role_user_room(this.me, this.id as number);
           delete this.user;
 
         });
     });
   }
 
+  update_player(){
+    this.socketGameNotification.playerUpdate()
+    .subscribe((payload : any) =>{
+          if (this.me?.id == payload.user.id)
+            this.me = Object.assign(payload.user);
+    })
+  }
 
   getMessage() {
 
@@ -82,8 +78,6 @@ export class ChatGameComponent implements OnInit {
     });
   }
 
-
-
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;
     if (!message || message.trim() == '')
@@ -95,22 +89,14 @@ export class ChatGameComponent implements OnInit {
 
   sendInvitationGame() {
     this.socketGameNotification.sendNotification({ user: this.me, dest: this.user?.username, title: 'INVITE GAME' });
-    // this.alertService.openRequestGame(this.user as UserDto, 'SEND REQUEST GAME');
   }
-
-
 
   getMeId() {
     return this.me?.id as number
   }
 
-
-
   toggleBadgeVisibility() {
     this.hidden = !this.hidden;
-
   }
-
-
 
 }

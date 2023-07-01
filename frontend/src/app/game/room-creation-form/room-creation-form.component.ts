@@ -3,10 +3,10 @@ import {
     OnInit
 } from '@angular/core';
 import {
-  FormGroup,
-  Validators,
-  FormBuilder,
-  AbstractControl
+    FormGroup,
+    Validators,
+    FormBuilder,
+    AbstractControl
 } from '@angular/forms';
 import {
     IRoomData,
@@ -14,6 +14,12 @@ import {
 } from './room-creation-form.service';
 import { Router } from '@angular/router';
 import { AlertServices } from 'src/app/services/alert.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { Roles } from 'src/app/roles';
+import { UserDto } from 'src/app/dtos/user.dto';
+import { UsersService } from 'src/app/services/users.service';
+
 
 @Component({
     selector: 'app-room-creation-form',
@@ -24,12 +30,17 @@ export class RoomCreationFormComponent implements OnInit {
 
     form: FormGroup;
     hidePass = true;
+    official = false;
+    me?: UserDto;
 
     constructor(
         formBuilder: FormBuilder,
         private readonly alertService: AlertServices,
         private readonly roomCreationFormService: RoomCreationFormService,
-        private readonly router: Router
+        private readonly router: Router,
+        private http: HttpClient,
+        private usersService: UsersService,
+
     ) {
         this.form = formBuilder.group({
             "roomName": [
@@ -41,24 +52,30 @@ export class RoomCreationFormComponent implements OnInit {
                     Validators.pattern(/^\w+$/)
                 ]
             ],
-            "password":[
+            "password": [
                 "",
                 [
                     Validators.minLength(8),
                     Validators.maxLength(15),
                     Validators.pattern(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9])/)
                 ]
-            ]
+            ],
+            "official" : Boolean
         });
     }
 
-    ngOnInit(): void {    
-        this.form.reset();
+    ngOnInit(): void {
+        this.usersService.getUser('me')
+        .subscribe( (user : UserDto) => {
+            this.me = user;
+            this.usersService.get_role(this.me);
+            this.form.reset();
+        })
     }
 
     getNameErrorMessage() {
-        const   name: AbstractControl | null = this.form.get("roomName");
-    
+        const name: AbstractControl | null = this.form.get("roomName");
+
         if (!name)
             return ('');
         if (name.hasError('required'))
@@ -72,8 +89,8 @@ export class RoomCreationFormComponent implements OnInit {
     }
 
     getPasswordErrorMessage() {
-        const   pass: AbstractControl | null = this.form.get("password");
-    
+        const pass: AbstractControl | null = this.form.get("password");
+
         if (!pass)
             return ('');
         if (pass.hasError('required'))
@@ -90,36 +107,52 @@ export class RoomCreationFormComponent implements OnInit {
 
     private _errorHandler(err: any): void {
         let errorMsg: string;
-    
+
         if (err.error
-                && err.error.message)
+            && err.error.message)
             errorMsg = err.error.message;
         else
             errorMsg = "Room creation failed, try again later.";
         this.alertService.openSnackBar(errorMsg, "OK");
     }
 
-    private _postRoom(roomName: string, password?: string): void {
+    private _postRoom(roomName: string, password?: string, role?: number): void {
         this.roomCreationFormService.postRoom(
             roomName,
             password
         )
-        .subscribe({
-            next: (roomData: IRoomData) => {
-                this.router.navigate(['/game', roomData.id]);
-            },
-            error: (err: any) => {
-                console.error(err);
-                this._errorHandler(err);
-            }
-        });
+            .subscribe({
+                next: (roomData: IRoomData) => {
+                    if (role) {
+                        this.http.post(`${environment.apiUrl}room_roles`, { roomId: roomData.id, roleId: role })
+                            .subscribe((data: any) => {
+                                
+                                this.router.navigate(['/game', roomData.id]);
+                            });
+                    }
+                    else
+                        this.router.navigate(['/game', roomData.id]);
+                },
+                error: (err: any) => {
+                    console.error(err);
+                    this._errorHandler(err);
+                }
+            });
     }
 
     onSubmit() {
-        this._postRoom(
-            this.form.get("roomName")?.value,
-            this.form.get("password")?.value
-        );
+        if (this.form.get("official")?.value)
+            this._postRoom(
+                this.form.get("roomName")?.value,
+                this.form.get("password")?.value,
+                Roles.official
+            );
+        else
+            this._postRoom(
+                this.form.get("roomName")?.value,
+                this.form.get("password")?.value,
+                
+            );
     }
 
 }

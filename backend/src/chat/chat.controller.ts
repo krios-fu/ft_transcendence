@@ -56,7 +56,6 @@ export class ChatController {
         }
 
         let lol = await this.chatService.findChatsUser(user.id);
-        console.log("CHAT -->", lol)
         return lol;
     }
 

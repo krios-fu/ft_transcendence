@@ -13,9 +13,7 @@ export class    MatchService {
         @InjectRepository(MatchEntity)
         private matchRepository: MatchRepository,
         private matchMapper: MatchMapper
-    ) {
-        console.log("MatchService initiated.");
-    }
+    ) { }
 
     async findAllMatches(): Promise<[MatchEntity[], number]> {
         return (await this.matchRepository.findAndCount({

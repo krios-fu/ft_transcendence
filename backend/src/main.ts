@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import { NotValidatedExceptionFilter } from './common/filters/not-validated.filter';
+import { BannedExceptionFilter } from './common/filters/banned.filter';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -27,7 +28,10 @@ async function bootstrap() {
         exposedHeaders: ['Location'],
         credentials: true,
     });
-    app.useGlobalFilters(new NotValidatedExceptionFilter());
+    app.useGlobalFilters(
+        new NotValidatedExceptionFilter(),
+        new BannedExceptionFilter()
+    );
     app.use(cookieParser());
     await app.listen(3000);
 }

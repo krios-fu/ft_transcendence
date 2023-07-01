@@ -12,6 +12,10 @@ import {
 import { GameInstructionsComponent } from "./dialog/info/game-instructions/game-instructions.component";
 import { RoomPasswordInputComponent } from "./dialog/input/room_password/room-password-input.component";
 import { Observable } from "rxjs";
+import {
+  ChangeRoomPasswordInputComponent,
+  IPasswordChange
+} from "./dialog/input/change_room_password/change-room-password-input.component";
 
 @Injectable({
   providedIn: 'root'
@@ -75,6 +79,7 @@ export class AlertServices {
   }
 
   openGameInstructions(): void {
+    this._dialog.closeAll();
     this._dialog.open(GameInstructionsComponent, {
       minWidth: '300px',
       maxWidth: '450px',
@@ -85,6 +90,20 @@ export class AlertServices {
     const dialogRef: MatDialogRef<RoomPasswordInputComponent>
       = this._dialog.open(RoomPasswordInputComponent, {
         data: roomName
+      });
+
+    return (
+      dialogRef.afterClosed()
+    );
+  }
+
+  openChangeRoomPassword(): Observable<any> {
+    const dialogRef: MatDialogRef<ChangeRoomPasswordInputComponent>
+      = this._dialog.open(ChangeRoomPasswordInputComponent, {
+        data: {
+          oldPassword: '',
+          newPassword: ''
+        } as IPasswordChange
       });
 
     return (

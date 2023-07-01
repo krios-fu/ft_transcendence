@@ -11,7 +11,15 @@ export class UserDto {
 	doubleAuth: boolean;
 	defaultOffline: boolean;
 	ranking: number;
-	is_admin?: boolean; 
+	role: {
+		is_super_admin: boolean,
+		is_admin: boolean,
+		is_owner_room : boolean,
+		is_banned: boolean,
+		is_silenced: boolean
+	};
+	achievementUser ?: []
+
 
 	
   
@@ -27,7 +35,16 @@ export class UserDto {
 		doubleAuth: boolean,
 		defaultOffline: boolean,
 		ranking: number,
-		is_admin?: boolean
+		role = {
+			is_super_admin: false,
+			is_admin: false,
+			is_owner_room : false,
+			is_banned: false,
+			is_silenced: false
+		},
+
+
+		achievementUser ?: []
 
 	) {
 		this.id = id;
@@ -40,14 +57,13 @@ export class UserDto {
 		this.photoUrl = photoUrl;
 		this.doubleAuth = doubleAuth;
 		this.defaultOffline = defaultOffline;
-		this.is_admin = is_admin;
 		this.ranking = ranking;
+		this.achievementUser = achievementUser;
+		this.role = role;
 	}
   }
   
   export type Payload = {
   
 	userProfile: UserDto;
-	// accessToken: string;
-  
   };
