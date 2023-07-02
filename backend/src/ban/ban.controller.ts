@@ -21,13 +21,16 @@ import { BanService } from './ban.service';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
+import { PostRolesGuard } from 'src/common/guards/post-roles.guard';
+import { DelRolesGuard } from 'src/common/guards/del-roles.guard';
+import { AllowedRoles } from 'src/common/decorators/allowed.roles.decorator';
 
 @Controller('ban')
 export class BanController {
     constructor(
         private readonly banService: BanService,
         private readonly userService: UserService,
-        private readonly roomService: RoomService,
+        private readonly roomService: RoomService
     ) { 
         this.banLogger = new Logger(BanController.name);
     }
@@ -42,7 +45,7 @@ export class BanController {
     /* Return a ban by id */
     @Get(':ban_id')
     async findOne(@Param('ban_id', ParseIntPipe) banId: number): Promise<BanEntity> { 
-        const ban = await this.banService.findOne(banId);
+        const ban: BanEntity = await this.banService.findOne(banId);
         if (ban === null) {
             this.banLogger.error('Ban with id ' + banId + ' not found in database');
             throw new HttpException('no ban entity in db', HttpStatus.NOT_FOUND);
@@ -62,8 +65,8 @@ export class BanController {
         return await this.banService.getRoomsWithUserBanned(userId);
     }
 
-    /* Create a ban */
-    //@UseGuards(AtLeastRoomOwner)
+    @UseGuards(PostRolesGuard)
+    @AllowedRoles('admin')
     @Post()
     async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
         const { userId, roomId } = dto;
@@ -83,8 +86,8 @@ export class BanController {
         return await this.banService.createBan(dto);
     }
 
-    /* Delete a ban */
-    //@UseGuards(AtLeastRoomOwner)
+    @UseGuards(DelRolesGuard)
+    @AllowedRoles('admin')
     @Delete(':ban_id')
     async deleteBan(@Param('ban_id', ParseIntPipe) banId: number): Promise<void> {
         const ban: BanEntity | null = await this.banService.findOne(banId);

@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { RoomEntity } from "./entity/room.entity";
-import { CreatePrivateRoomDto, UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
+import { UpdateRoomDto, UpdateRoomOwnerDto } from "./dto/room.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RoomRepository } from "./repository/room.repository";
 import { RoomQueryDto } from "./dto/room.query.dto";
@@ -123,10 +123,10 @@ export class RoomService {
     public async createPrivateRoom(dto: PrivateRoomDto): Promise<RoomEntity> {
         const { roomName, ownerId, password } = dto;
         const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
+        let roomId: number;
+
         await queryRunner.connect();
         await queryRunner.startTransaction();
-    
-        let roomId: number;
         try {
             const room: InsertResult = (await queryRunner.manager
                 .createQueryBuilder()
@@ -237,62 +237,4 @@ export class RoomService {
 
         return (admins.filter(user => user['id'] == userId)).length > 0;
     }
-
-    ///**************** room auth services *****************/
-    //public async loginToRoom(loginInfo: LoginInfoDto): Promise<boolean> {
-    //    const roomEntity = await this.roomRepository.findOne({
-    //        where: {
-    //            name: loginInfo.name
-    //        }
-    //    });
-//
-    //    if (roomEntity === null) {
-    //        throw new HttpException('Room does not exist in db', HttpStatus.BAD_REQUEST);
-    //    }
-    //    if (roomEntity.password === null) {
-    //        return true;
-    //    }
-    //    if (loginInfo.password === undefined) {
-    //        return false;
-    //    }
-    //    return await bcrypt.compare(loginInfo.password, roomEntity.password);
-    //}
-//
-    //public async isOwner(loginInfo: LoginInfoDto): Promise<boolean> {
-    //    const ownerRoom: RoomEntity = await this.roomRepository.findOne({
-    //        relations: { owner: true },
-    //        where: { 
-    //            name: loginInfo.name,
-    //            owner: loginInfo.user, /* ??? */
-    //        }
-    //    });
-//
-    //    return (ownerRoom != null);
-    //}
-//
-    //public async getUserRole(user: string, room: string): Promise<Roles> {
-    //    const roleArray = await this.rolesRepository.find({
-    //        select: ["role"],
-    //        where: {
-    //            role_user: user,
-    //            role_room: room,
-    //        }
-    //    });
-    //    if (roleArray.length === 0) {
-    //        return Roles.NOT_IN_ROOM;
-    //    }
-    //    return roleArray[0].role;
-    //}
-//
-    //public async authRole(userRoleCreds: RoleInfoDto, allowedRole: Roles): Promise<boolean> {
-    //    const { user, room } = userRoleCreds;
-//
-    //    if (user === undefined || room === undefined) { // ???
-    //        return false;
-    //    }
-    //    const userRole = await this.getUserRole(user, room);
-//
-    //    return (userRole >= allowedRole);
-    //}
-    /**************** ****************** *****************/
 }

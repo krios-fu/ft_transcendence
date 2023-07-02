@@ -45,7 +45,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
             entities: ["dist/**/*.entity{.ts,.js}"],
             migrations: ['dist/migrations/*{.ts,.js}'],
             synchronize: false,
-            migrationsRun: true,
+            migrationsRun: true
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'static'),

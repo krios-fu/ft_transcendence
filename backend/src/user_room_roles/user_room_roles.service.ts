@@ -3,13 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QueryMapper } from '../common/mappers/query.mapper';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
+import { RoomService } from '../room/room.service';
+import { UserRoomService } from '../user_room/user_room.service';
 import { UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesRepository } from './repository/user_room_roles.repository';
 import {EventEmitter2} from "@nestjs/event-emitter";
-import {UserRoomRolesModule} from "./user_room_roles.module";
-import {DeleteResult} from "typeorm";
+import { DeleteResult } from "typeorm";
 import { UserRoomEntity } from 'src/user_room/entity/user_room.entity';
 
 @Injectable()
@@ -18,6 +19,8 @@ export class UserRoomRolesService {
         @InjectRepository(UserRoomRolesEntity)
         private readonly userRoomRolesRepository: UserRoomRolesRepository,
         private readonly userService: UserService,
+        private readonly roomService: RoomService,
+        private readonly userRoomService: UserRoomService,
         private readonly eventEmitter: EventEmitter2
     ) { }
 
@@ -64,11 +67,6 @@ export class UserRoomRolesService {
                 .findOne(role.userRoom.userId)))
 
         return users;
-        /*rolesInRoom.forEach(async (role) => {
-            const user = await this.userService.findOne(role.userRoom.userId);
-            users.push(user);
-        });
-        return users;*/
     }
 
     public async getUserRolesInRoom(
@@ -151,5 +149,32 @@ export class UserRoomRolesService {
             .andWhere('user_room.roomId = :room_id', { 'room_id': roomId })
             // .andWhere('user_room_roles.roleId = :role_id', { 'role_id': roleId })
             .getMany();
+    }
+
+    private async _validateOwnerRole(userId: number, roomId: number): Promise<boolean> {
+        return (await this.roomService.findOne(roomId))
+            .ownerId === userId;
+    }
+
+    private async _validateUserRoomRoles(
+        userId: number,
+        roomId: number,
+        roles: string[]
+    ): Promise<boolean> {
+        if (!(await this.userRoomService.findUserRoomIds(userId, roomId))) {
+            return false;
+        }
+        return (await this.getUserRolesInRoom(userId, roomId))
+            .map(urr => urr.role.role)
+            .some(role => roles.includes(role));
+    }
+
+    public async validateUserAction(
+        userId: number,
+        roomId: number,
+        roles: string[]
+    ): Promise<boolean> {
+        return (await this._validateOwnerRole(userId, roomId) ||
+            await this._validateUserRoomRoles(userId, roomId, roles));
     }
 }

@@ -15,6 +15,7 @@ import {
 } from "typeorm";
 import { CreateUserDto } from "../dto/user.dto";
 import { Category } from "../enum/category.enum";
+import { BanEntity } from "src/ban/entity/ban.entity";
 
 @Entity({ name: 'user' })
 export class UserEntity extends BaseEntity {
@@ -143,4 +144,11 @@ export class UserEntity extends BaseEntity {
 		}
 	)
 	achievementUser: AchievementUserEntity[];
+
+	@OneToMany(
+		() => BanEntity,
+		(ban: BanEntity) => ban.user,
+		{ cascade: true }
+	)
+	ban: BanEntity
 }

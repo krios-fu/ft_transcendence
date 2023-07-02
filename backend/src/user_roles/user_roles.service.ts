@@ -7,9 +7,8 @@ import { CreateUserRolesDto } from './dto/user_roles.dto';
 import { UserRolesQueryDto } from './dto/user_roles.query.dto';
 import { UserRolesEntity } from './entity/user_roles.entity';
 import { UserRolesRepository } from './repository/user_roles.repository';
-import { SocketHelper } from 'src/game/game.socket.helper';
-import {EventEmitter2} from "@nestjs/event-emitter";
-import {DeleteResult} from "typeorm";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { DeleteResult } from "typeorm";
 
 @Injectable()
 export class UserRolesService {
@@ -85,7 +84,6 @@ export class UserRolesService {
         return role;
     }
 
-    /* Remove role entity by id */
     public async deleteRoleFromUser(role: UserRolesEntity): Promise<void> {
         const { id, userId } = role;
         const delRes: DeleteResult = await this.userRolesRepository.delete(id);
