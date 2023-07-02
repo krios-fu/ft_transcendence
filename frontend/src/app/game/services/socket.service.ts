@@ -36,7 +36,8 @@ export class    SocketService {
         private readonly alertService: AlertServices
     ) {
         this._socket = SockIO.io(environment.wsUrl, {
-            reconnectionAttempts: 3
+            reconnectionAttempts: 3,
+            // rejectUnauthorized: false
         });
         this._addConnectionEvents();
         this._connectAttempts = 0;
