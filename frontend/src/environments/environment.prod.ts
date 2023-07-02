@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
   apiUrl: '/api/',
-  wsUrl: '/ws/',
-  redirectUri: 'https://api.intra.42.fr/oauth/authorize?client_id=69aeb66a278743631dbafcd44c86243a16b425b19a096d176dc681ae7fadc3dd&redirect_uri=https%3A%2F%2Fc1r9s2%2Flogin&response_type=code'
+  wsUrl: '/',
+  redirectUri: 'https://api.intra.42.fr/oauth/authorize?client_id=4fa51aeb8eafcafd00c2b72a70720daf534190b81adf41fb9874c83bb9563042&redirect_uri=http%3A%2F%2Flocalhost%2Flogin&response_type=code'
 };
