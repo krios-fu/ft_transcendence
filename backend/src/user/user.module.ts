@@ -10,6 +10,7 @@ import { UserController } from './user.controller';
 import { BlockEntity } from './entities/block.entity';
 import { BlockService } from './services/block.service';
 import { BlockRepository } from './repositories/block.repository';
+import { UserRolesModule } from 'src/user_roles/user_roles.module';
 
 @Module({
     imports: [
@@ -17,7 +18,7 @@ import { BlockRepository } from './repositories/block.repository';
             UserEntity, 
             FriendshipEntity, 
             BlockEntity
-        ]),
+        ])
     ],
     exports: [UserService],
     controllers: [UserController],

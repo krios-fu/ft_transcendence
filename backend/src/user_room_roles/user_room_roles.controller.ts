@@ -4,24 +4,24 @@ import { Body,
     Get, 
     NotFoundException,
     BadRequestException,
-    HttpStatus, 
     Logger, 
     Param, 
     ParseIntPipe, 
     Post, 
-    Query } from '@nestjs/common';
+    Query, 
+    UseGuards} from '@nestjs/common';
 import { RolesService } from 'src/roles/roles.service';
 import { RoomService } from 'src/room/room.service';
 import { UserEntity } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/services/user.service';
 import { UserRoomEntity } from 'src/user_room/entity/user_room.entity';
 import { UserRoomService } from 'src/user_room/user_room.service';
 import { CreateUserRoomRolesDto, UserRoomRolesDto } from './dto/user_room_roles.dto';
 import { UserRoomRolesQueryDto } from './dto/user_room_roles.query.dto';
 import { UserRoomRolesEntity } from './entity/user_room_roles.entity';
 import { UserRoomRolesService } from './user_room_roles.service';
-import { UserCreds } from 'src/common/decorators/user-cred.decorator';
-import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
+import { DelRolesGuard } from 'src/common/guards/del-roles.guard';
+import { AllowedRoles } from 'src/common/decorators/allowed.roles.decorator';
+import { PostRolesGuard } from 'src/common/guards/post-roles.guard';
 
 @Controller('user_room_roles')
 export class UserRoomRolesController {
@@ -120,8 +120,9 @@ export class UserRoomRolesController {
         }
         return role;
     }
-    /* Create a new user with a role in a room */
-    /* at least mod role required */
+
+    @UseGuards(PostRolesGuard)
+    @AllowedRoles('admin')
     @Post()
     public async postRoleInRoom(
         @Body() dto: CreateUserRoomRolesDto,
@@ -144,6 +145,7 @@ export class UserRoomRolesController {
             this.userRoomRolesLogger.error(`User role ${userRoomId} with role ${roleId} already in database`);
             throw new BadRequestException('resource already in database');
         }
+        /* validate roles: admin, owner, site-admin */
         return await this.userRoomRolesService.postRoleInRoom(
             new UserRoomRolesDto({
                 "userRoomId": userRoomId,
@@ -152,12 +154,13 @@ export class UserRoomRolesController {
         );
     }
 
-    /* Delete a user with role in a room */
-    /* at least mod role required */
+    @UseGuards(DelRolesGuard)
+    @AllowedRoles('admin')
     @Delete(':id')
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const role: UserRoomRolesEntity = await this.userRoomRolesService.findRole(id);
 
+        /* validate roles: admin, owner, site-admin */
         if (!role) {
             this.userRoomRolesLogger.error(`No user role in room with id ${id} present in database`);
             throw new NotFoundException('resource not found in database');

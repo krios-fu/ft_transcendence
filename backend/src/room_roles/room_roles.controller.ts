@@ -54,7 +54,6 @@ export class RoomRolesController {
     }
 
     /* Get roles of an specific room */
-    /* what do we return if a room has no roles ?? */
     @Get('/rooms/:room_id')
     public async findRolesOfRoom(@Param('room_id', ParseIntPipe) roomId: number): Promise<RolesEntity[]> {
         if (await this.roomService.findOne(roomId) === null) {
@@ -101,7 +100,7 @@ export class RoomRolesController {
             throw new NotFoundException('resource not found in database');
         }
         const { role } = roleEntity;
-        if (role === 'private' && password === undefined) {
+        if (role === 'private' && !password) {
             this.roomRoleLogger.error('Cannot create a private room without a password');
             throw new BadRequestException('Cannot create a private room without a password');
         }
