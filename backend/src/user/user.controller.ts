@@ -195,7 +195,10 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path}`;
+
+        let path = String(avatar.path);
+        path = path.substring(5, path.length);
+        const photoUrl = `http://localhost:3000/${path}`;
     
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
