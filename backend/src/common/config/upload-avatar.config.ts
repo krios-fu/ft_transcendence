@@ -6,6 +6,7 @@ import { BadRequestException, UnprocessableEntityException } from "@nestjs/commo
 import { IRequestUser } from "src/common/interfaces/request-payload.interface";
 import { Express } from 'express';
 
+
 export const DEFAULT_AVATAR_PATH = 'http://localhost:3000/default-avatar.jpg';
 
 function filterFileByType

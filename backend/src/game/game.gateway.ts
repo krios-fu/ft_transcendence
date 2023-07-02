@@ -40,6 +40,7 @@ import { UserRoomRolesEntity } from "../user_room_roles/entity/user_room_roles.e
 import { GameRolesGuard } from "./guards/game.roles.guard";
 import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
 import { GlobalRolesGuard } from './guards/global.roles.guard';
+import { RequiredRoles } from 'src/common/decorators/required.roles.decorator';
 
 @UseGuards(GlobalRolesGuard)
 @ForbiddenRoles('banned')
@@ -147,6 +148,23 @@ export class    GameGateway implements OnGatewayInit,
             roomName,
             false
         );
+    }
+
+    @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard)
+    @RequiredRoles('super-admin')
+    @SubscribeMessage('kickAndRemove')
+    async kickAndRemoveRoom(
+        @ConnectedSocket() cli: Socket,
+        @MessageBody() roomId: number
+    ) {
+//        const room_key: string = SocketHelper
+/* get room name */
+/* get all sockets registered in that room */
+/* leave from room */
+/* erase user room entities */
+/* kick from channel */
+
+/* check kick login */
     }
 
     @UseGuards(GameAuthGuard, GameRoomGuard)
