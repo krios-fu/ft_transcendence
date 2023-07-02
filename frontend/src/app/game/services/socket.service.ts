@@ -13,7 +13,7 @@ enum SocketException {
     InternalServerError = "internalServerError"
 }
 
-interface   SocketExceptionData {
+interface SocketExceptionData {
     cause: SocketException;
     data: any;
     targetEvent: string;
@@ -22,7 +22,7 @@ interface   SocketExceptionData {
 @Injectable({
     providedIn: "root"
 })
-export class    SocketService {
+export class SocketService {
 
     private _socket: SockIO.Socket;
     private _connectAttempts: number;
@@ -53,7 +53,7 @@ export class    SocketService {
 
     private _reconnect(): void {
         if (this._connectAttempts >= 3)
-            return ;
+            return;
         ++this._connectAttempts;
         this._socket.connect();
     }
@@ -68,15 +68,20 @@ export class    SocketService {
     */
     private _reAuthenticateConnection(): void {
         if (this._authAttempts >= 3)
-            return ;
+            return;
         ++this._authAttempts;
-        this.authService.directRefreshToken().subscribe(
-            (payload: IAuthPayload | undefined) => {
-                if (!payload)
-                    return ;
-                this.emit<string>("authentication", payload.accessToken);
-            }
-        );
+        if (this.getAuthUser())
+            this.authService.directRefreshToken().subscribe(
+                (payload: IAuthPayload | undefined) => {
+                    if (!payload)
+                        return;
+                    this.emit<string>("authentication", payload.accessToken);
+                }
+            );
+    }
+
+    getAuthUser(): string | null {
+        return localStorage.getItem('username');
     }
 
     private _emitFailedEvents(): void {
@@ -110,17 +115,16 @@ export class    SocketService {
             this.emit("authentication", this.authService.getAuthToken());
         });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
-            if (xcpt.cause != SocketException.Forbidden)
-            {
-                if (xcpt.targetEvent != "authentication"){
+            if (xcpt.cause != SocketException.Forbidden) {
+                if (xcpt.targetEvent != "authentication") {
                     this._failedEvents.push(xcpt);
                 }
                 if (this._authenticating)
-                    return ;
+                    return;
                 this._authenticating = true;
                 this._reAuthenticateConnection();
             }
-            if (xcpt.cause === SocketException.Forbidden){
+            if (xcpt.cause === SocketException.Forbidden) {
                 if (xcpt.data.forbiddenCtx === 'global') {
                     this.authService.redirectBan();
                 } else if (xcpt.data.forbiddenCtx === 'room') {
@@ -130,8 +134,8 @@ export class    SocketService {
             }
         });
         this._socket.on("authSuccess", () => {
-            const   currentTime: number = Date.now();
-        
+            const currentTime: number = Date.now();
+
             this._authenticating = false;
             this._authAttempts = 0;
             if (currentTime - this._lastAuthSuccess > 5000)
@@ -147,7 +151,7 @@ export class    SocketService {
 
     joinRoom(roomId: string): void {
         if (!roomId || roomId === "")
-            return ;
+            return;
         this.emit<string>("joinRoom", roomId);
     }
 

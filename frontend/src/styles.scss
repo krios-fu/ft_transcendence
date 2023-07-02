@@ -58,7 +58,9 @@ body, html {
 
 // body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-
+::-webkit-scrollbar {
+  display: none;
+}
 
 // html, body { height: 100%; }
 // body { margin: 0; font-family: 'Super Mario World Text Box', sans-serif; }
