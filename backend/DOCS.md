@@ -201,6 +201,149 @@ Si lso dos jugadores aceptan y están en sala, llamada a confirmNextPlayers.
 Si devuelve false, llamada a aattemptPlayerPairing, else llamada a _initGame.
 Nada fuera del condicional.
 
+## queueService
+### _getNextQueue
+Recibimos todas las colas con llamada a _getAllQueues.
+Comprobamos longitudes de cola y actuamos:
+* Menos de 2, retornamos undefined.
+* Devolvemos cola según la condición de qué cola tiene más de dos jugadores y cuál lleva más tiempo activa.
+
+### _getQueue
+Llamada a _gameQueues.get para obtener las colas de un juego.
+Devolvemos la cola según el tipo queryado.
+
+### _setQueues
+Retorna si ya hay una cola existente (_gameQueues.get)
+Setea con gameQueues.set (condición inicial: array de undefineds para nextPlayers).
+
+### _setNextPlayers
+Setea en el array de nextPlayers de la cola queryada.
+
+### _pruneGameQueues
+Elimina las colas vacías o inválidas del objeto global _gameQueues.
+
+Obtenemos cola de juego (_gameQueues.get)
+Comprobamos que la cola tiene longitud, y los siguientes jugadores están definidos, si no es el caso se llama a _gameQueues.delete.
+
+### getAllQueuesLength
+Llamada a _getAllQueues, devuelve array con longitud de las dos colas.
+
+### _generateNextPlayer
+Devuelve objeto nextPlayer a partir de un elemento de cola y el tipo de juego.
+
+### _selectplayerB
+Iteración en logitud de la cola, se implementa la lógica de matchmaking para setear el jugador B a emparejar.
+Retorna el jugador encontrado.
+
+## _selectPlayerA
+Llamada a _getNextQueue.
+Retornamos si no hay cola.
+Devolvemos objeto PlayerQueueType.
+
+### _existingNextPlayer
+Llamada a getNextPlayers para obener lista de jugadores en sala.
+Si no hay juagores, retornamos.
+Iteramos sobre jugadores, llamada a _getQueue (parámetros id del juego y tipo del juego).
+Si no hay cola, llamada a _reInsertToQueue y a _setNextPlayers.
+Si hay elementos en cola, devolvemos jugador y tipo de juego.
+Por default, devolevmos jugador indefinido y juego clásico.
+
+### selectNextPlayers
+Llamada a _existingNextPlayers para obtener el siguiente jugador A.
+Si no existe, llamada a _selectPlayerA para obtener el jugador.
+Devolvemos undefined si los dos métodos fallan.
+Llamada a _selectPlayerB para obtener el jugador B.
+Montamos array de siguientes jugadores; _generateNextPlayer si la primera llamada a obtener nextPlayerA no funcionó,
+_generateNextPlayer para playerB.
+Llamada a _setNextPlayers con el array construído.
+
+### getNextPlayers
+Llamada a _gameQueues.get para obtener la cola de un juego, extraemos los siguientes jugadores.
+
+### updateNextPayerInvite
+Llamada a getNextPlayers para obtener los siguientes jugadores. Si devuelve indefinido retornamos.
+Iteramos por lista de siguientes jugadores, si el jugador no ha aceptado ni declinado el juego se le setea como target (seleccionado como potencial siguiente jugador).
+Se trabaja sobre el target, se setean los parámetros declined y accepted según el parámetro de entrada accept, y se devuelve la lista de nextPlayers.
+
+### updateNextPlayerRoom
+Obtenemos la lista de siguientes jugadores con llamada a getNextPlayers.
+Iteramos sobre lista de jugadores, el primero existente se selecciona y se setea su atributo de inRoom como join.
+
+### confirmNextPlayers
+Obtención de colas con _gameQueues.get
+Si no existe o no contiene elementos en la lista de siguientes jugadores, sale.
+Se obtiene la cola según el tipo de juego, se obtiene su longitud y se devuelve.
+Llamada a _pruneGameQueues y se setea el atributo nextPlayers de la cola como undefined.
+
+### remmoveInvalidNextPlayers
+Obtenemos colas con _gameQueues.get.
+Iteramos array de jugadores, si el jugador no tiene atributo aceptado o atributo en sala, se le elimina de la cola (aquí el undefined).
+Llamada a _pruneGameQueues.
+Retorna lista de usuarios eliminados.
+
+### _findByUsername
+Devuelve la posición del usuario por su nombre en la cola.
+
+### _setUserQueueUpdate
+Devuelve objeto UserQueueUpdate con attributps cola, id de sala y tipo de juego.
+
+### findUser
+Iteramos sobre la lista de colas en _gameQueues.
+Llamada a _findByUsername, si es válida (usuario en cola), devuelve _setUserQueueUpdate.
+Llamada a _findByUsername (cola hero), si es válida, devuelve tal.
+Si no se cumplen esas condiciones, iteramos sobre nextPlayers, si encontramos un nextPlayer con el nombre se usuario,
+se devuelve un objeto con éste.
+Si no cumple ninguna condición, devuelve false (queried == false).
+
+### add
+Query entidad usuario en base a username. Buscamos query de juego con _getQueue.
+Si no existe cola, _setQueue y trabajamos con la nueva cola.
+Llamada a findUser, miramos su atributo de queued. Si el usuario no está en cola, se pushea el usuario en la cola y se devuelve la longitud de la cola. Si el usuario está en la cola, devuelve undefined. (CHECKTHIS)
+
+### deleteGameQueues
+Llamdada a _gameQueues.delete con el id del juego.
+
+### _reinsertToQueue
+Inserta jugador según su timestamp, elimina elementos repetidos.
+
+### _removeFromQueue
+Si la cola pasada como parámetro existe, llamada a _findByUsername.
+Si el usuario se encuentra en la cola, se elimina de esta.
+
+### removeFromQueue
+No existen colas o usuario, devuelve undefined.
+Selecciona tipo de juego.
+Si _removeFromQueue devuelve falso (el usuario no se encuentra en la cola), devuelve undefined.
+Obtiene longitud de cola.
+Llama a _pruneGameQueues.
+Devuelve longitud de la cola previa.
+
+### removeAll
+Llamada a removeFromQueue para cola clásica.
+Si la eliminación fue válida (la cola existe, el usuario estaba en la cola), se devuelve la nueva longitud.
+Llamada a removeFromQueue para la cola hero.
+Eliminación válida, retorna nueva longitud. (CHECKTHIS -- uso de splice para eliminar usuarios en cola)
+El usuario no estaba en ninguna cola, devuelve undefined.
+
+## UpdateService
+### EVENTO `game.start`
+Llamada a startGame con id del juego y tipo de juego.
+
+### getGameSelectionData
+Obtención la selección de juego con llamada de gameDataService.getSelection.
+Si existe y no tiene el atributo de cancelado activo, se devuelve el atributo data, si no devuelve undefined.
+
+### getGameClientStartData
+Obtención del juego con llamada a gameDataService.getGame.
+Si existe, su atributo es Running o es Finished con llamada getGameResult falsa, devuelve game.clientStartData.
+
+### getGameResult
+Devuelve llamda a gameDataService.getResult.
+
+### getClientInitData
+
+
+
 ## Flujo de trabajo ws en colas de juego
 Al inicializar la vista de colas, se llama a la función `subscribe`, que
 monta cuatro observables en los atributos del componente:
@@ -214,3 +357,8 @@ Llamada a socketService para emitir en el evento `getQUeueInfo` con el id de la 
 ### addToQueue
 Condiciones de subscripción en sala.
 ### addToHeroQueue
+
+
+
+### Notas
+A la hora de iterar por la lista de siguientes jugadores, se comprueba si uno de esos elementos es indefinido, ¿se permiten elementos indefinidos dentro de un array de elementos definidos de jugadores?
