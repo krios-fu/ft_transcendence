@@ -189,7 +189,7 @@ export class    GameMatchmakingService {
             );
             return ;
         }
-        this.updateNextPlayerInvite(username, gameId, false);
+        await this.updateNextPlayerInvite(username, gameId, false);
     }
 
     private async _initInRoom(gameId: string,
