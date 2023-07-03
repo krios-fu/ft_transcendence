@@ -129,12 +129,16 @@ Si lengthUpdate es mayor a 1, _canAttemptPairing y _canStartGame retornan true,
 llamada a aattemptPlayerPairing.
 
 ### removeFromQueue
+Eliminamos de la cola el usuario. RemoveFromQueue puede devolver undefined si no existe el usuario o la cola, o si el usuario no se encuentra en la cola. Emite al evento que actualiza a la sala del usuario el tamaño de la cola.
+
 Inicializa lengthUpdate con llamada a queueService.removeFromQueue.
 Si no devuelve valor válido, terminamos.
 Llamada a _emitQueueUpdate.
 Llamada a _emitUserQueueUpdate (queued como false).
 
 ### removeFromAllQueues
+Elimina al usuario de las dos colas.
+
 Inicializamos gameId con llamada a queueService.findUser.
 Inicializamos lengthUpdate con llamada a queueService.removeAll.
 Si recibimos un valor válido, llamamos a _emitQueueUpdate y salimos.
@@ -144,18 +148,26 @@ Llamada a updateNextPlayerInvite.
 Llamada a attemptPlayerPairing.
 
 ### _emitQueueUpdate
+Emite a la sala correspondiente el evento `userQueue` con la longitud de la cola.
+
 Llamada a socketHelper.emitToRoom.
 Eventos a emitir: "queueClassicLength" : "queueHeroLength",
 
 ### _emitUserQueueUpdate
+Emite al evento de cola dentro de la sala propia del usuario en la conexión.
+
 Llamada a socketHelper.emitToRoom (esta vez, roomId es la sala de usuario).
 Evento a emitir: userQueue.
 
 ### _emitCancelNotification
+Emite en la sala del usuario de la conexión el evento `gameCancel` con la id de la sala.
+
 Llamada a socketHelper.emitToRoom.
 Evento a emitir: gameCancel.
 
 ### _initInRoom
+Recibe el par de siguientes jugadores. Comprueba en cada uno que tenga validado el parámetro de inRoom, y si es el caso...
+
 Iteración sobre lista de jugadores.
 Comprobamos con llamada a socketHelper.checkUserInRoom que se encuentran en la sala en la que van a jugar.
 Por cada coincidencia, llamada a updateNextPlayerRoom.

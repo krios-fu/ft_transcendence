@@ -166,6 +166,7 @@ export class    GameMatchmakingService {
             gameType,
             username
         );
+        console.log(`[ removeFromQueue ] longitud de cola tras la cosa: ${lengthUpdate}`)
         if (lengthUpdate === undefined)
             return ;
         this._emitQueueUpdate(
