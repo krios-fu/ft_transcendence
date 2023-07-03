@@ -73,27 +73,54 @@ Llamada a **recoveryService.recover**.
 
 ## MatchMaking Service
 ### emitAllQueuesLength
+Transmite a partir de emisión a los eventos `classic` y `hero` las longitudes actuales de las colas.
+La obtención de las longitudes de cola es un acceso al mapa de colas a través del id del juego.
+
 Llamada a queueService.getAllQueuesLength con la id del juego.
 Llamadas a emitQueueUpdate con los dos gameTypes disponibles.
 
 ### emitQueuesInfo
+Emite la información sobre los tamaños de cola para una sala, y a continuación emite a todas las conexiones de un único 
+usuario el evento `userQueue` con el id de la sala.
+(socketHelper.emitToRoom := emite un evento en una sala concreta con un payload.)
+
 Llamada a emitAllQueuesLength.
-Llamada a queueService.findUser para obtener userQueueUPdate.
+Llamada a queueService.findUser para obtener userQueueUpdate.
 Llamada a _emitUserQueueUpdate.
 
 ### isNextPlayer
+
+---
+Estructura NextPlayerPair: Par de dos elementos INextPlayer,
+cuyo formato consta de 
+* queueElement: IQueueElement { user: UserEntity, insertTime: number },
+* gametype: GameType { "classic" | "hero" },
+* inRoom: boolean,
+* accepted: boolean,
+* declined: boolean
+---
+Comprueba si el jugador a comprobar si es siguente jugador está dentro del par de la cola.
+
+
 Llamada a queueService.getNextPlayer.
 Si no recibimos un array completo de nextPlayer, devolvemos error.
 Si encontramos en el array un user con nuestro nombre, retornamos true;
 
 ### _canAttemptPairing
+Comprueba si dentro de la estructura de siguientes jugadores existe información válida y suficiente para iniciar un
+emparejamiento.
+
 Llamada a queueService.getNextPlayer.
 Devuelve aserción de que no se encuentra en la cola.
 
 ### _canStartGame
+
 Llamada a gameDataService.getGameData, retorna true si devuelve false.
 
 ### addToQueue
+Emite información sobre las colas, también emite info sobre el usuario en las colas,
+por último intenta el emparejamiento.
+
 Inicializa lengthUpdate con llamada a queueService.add.
 Si no retorna un valor válido, terminamos.
 Llamada a _emitQueueUpdate.
@@ -235,7 +262,7 @@ Devuelve objeto nextPlayer a partir de un elemento de cola y el tipo de juego.
 Iteración en logitud de la cola, se implementa la lógica de matchmaking para setear el jugador B a emparejar.
 Retorna el jugador encontrado.
 
-## _selectPlayerA
+### _selectPlayerA
 Llamada a _getNextQueue.
 Retornamos si no hay cola.
 Devolvemos objeto PlayerQueueType.
