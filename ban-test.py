@@ -5,11 +5,14 @@ import json
 admin = 'danrodri'
 base_url = 'http://localhost:3000'
 
+# print assertions
 
 def clean_state(api):
     rooms = requests.get(base_url + '/room/',
                          headers=api.get_param('auth_token')).json()
     users = requests.get(base_url + '/users/',
+                         headers=api.get_param('auth_token')).json()
+    roles = requests.get(base_url + '/roles/',
                          headers=api.get_param('auth_token')).json()
     for r in rooms:
         if r['roomName'] == 'rooma':
@@ -19,6 +22,10 @@ def clean_state(api):
         if u['username'] == 'user':
             requests.delete(base_url + f'/users/{u["id"]}',
                 headers=api.get_param('auth_token'))
+    for ro in roles:
+        if ro['role'] == 'rola':
+            requests.delete(base_url + f'/roles/{ro["id"]}',
+                            headers=api.get_param('auth_token'))
             
 
 def post_ban(api, user, room):
