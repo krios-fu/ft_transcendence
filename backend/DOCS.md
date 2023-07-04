@@ -391,12 +391,24 @@ monta cuatro observables en los atributos del componente:
 * unqueueSubscription (evento 'unqueue')
 * userQueueSubscription (evento 'userQueue')
 
-Llamada a socketService para emitir en el evento `getQUeueInfo` con el id de la sala.
+Llamada a socketService para emitir en el evento `getQueueInfo` con el id de la sala.
+Gateway en backend va a recibir el evento y va a llamar a la función `matchMakingService.emitQueuesInfo`.
+Esta función va a emitir a dos eventos distintos, emite a la sala en los 
+dos eventos `queueClassicLength` y `queueHeroLength` con la longitud de las colas,
+y emite a la sala del usuario el evento `userQueue` con la información del usuario en la cola (queued, roomId, type);
+
+* Por el momento, userQueueData solo lo hemos obtenido al iniciar el componente.
 
 ### addToQueue
-Condiciones de subscripción en sala.
-### addToHeroQueue
+Condiciones de subscripción en sala: el atributo userQueueData (obtenido tras recepción del evento) tiene que tener
+seteado a true el elemento queued, ha de comprobarse que las ids de la sala coinciden y que se está suscrito al tipo de
+cola correcto.
+Si está en cola pero no cumple el resto de condiciones, se elimina de la cola con `queueService.removeFromQueue`, que
+emite un evento a `removeFromQueue`.
+En caso exitoso, emite evento a `addToGameQueue`, que a su vez emitirá a los eventos en sala y en usuario de
+actualización de cola (longitud para sala, queued val. para usuario);
 
+Se intenta emparejar jugadores en el momento en que se añaden a la cola y se comprueba que son válidos.
 
 
 ### Notas

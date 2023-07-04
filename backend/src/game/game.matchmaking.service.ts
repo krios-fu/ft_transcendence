@@ -46,6 +46,7 @@ export class    GameMatchmakingService {
 
     private _emitQueueUpdate(roomId: string, gameType: GameType,
                                 length: number): void {
+        console.log(`[ _emitQueueUpdate ] longitudes a emitir: ${length}`);
         this.socketHelper.emitToRoom(
             roomId,
             gameType === "classic" ? "queueClassicLength" : "queueHeroLength",

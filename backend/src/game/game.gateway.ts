@@ -174,6 +174,7 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
+        console.log(`[ getQueueInfo ] ${roomId}, ${client.id}, ${client.data.username}`);
         await this.matchMakingService.emitQueuesInfo(
             roomId,
             client.id,
@@ -230,6 +231,7 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
+        console.log(`[ removeFromHeroQueue ] recibido evento de eliminado de cola`);
         await this.matchMakingService.removeFromQueue(
             roomId,
             "hero",
