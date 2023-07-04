@@ -137,6 +137,7 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: number
     ) {
+        console.log(`[ leaveRoom ] llamada a evento leaveRoom`);
         const roomName: string = SocketHelper.roomIdToName(roomId);
         await this.roomService.leave(
             client,
