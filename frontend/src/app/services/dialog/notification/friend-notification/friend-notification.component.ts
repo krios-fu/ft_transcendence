@@ -14,6 +14,8 @@ import { environment } from 'src/environments/environment';
 })
 export class FriendNotificationComponent implements OnInit {
   public FRIENDS_USERS_PENDDING = [] as UserDto[];
+  public FRIENDS_USER = [] as UserDto[];
+
   urlApi = environment.apiUrl;
 
 
@@ -36,15 +38,32 @@ export class FriendNotificationComponent implements OnInit {
             this.FRIENDS_USERS_PENDDING.push(user);
         }
       })
+      this.get_friends()
   }
 
+  get_friends(){
+    this.http.get(`${environment.apiUrl}users/me/friends`)
+    .subscribe((friends: any) =>{
+      console.log("FRIENDSSS", friends);
 
-  add_friend(id_friend: number) {
+      for (let friend in friends) {
+        const { receiver } = friends[friend];
+        const { sender } = friends[friend];
+        const user = (receiver) ? receiver : sender;
+        if (user)
+          this.FRIENDS_USER.push(user);
+      }
+    })
+  }
+
+  add_friend(friend: UserDto) {
     this.http.patch(`${environment.apiUrl}users/me/friends/accept`, {
-      id: id_friend
+      id: friend.id
     })
       .subscribe(() => {
-        this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== id_friend)
+        this.FRIENDS_USER.push(friend);
+        this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== friend.id)
+
         this.alertService.openSnackBar("Friend add", "Close");
       })
   }
@@ -68,5 +87,17 @@ export class FriendNotificationComponent implements OnInit {
         }
       })
 
+  }
+
+  block_friend(friend : UserDto){
+
+    this.http.post(`${environment.apiUrl}users/me/blocked`, {
+      blockReceiverId: friend.id
+    })
+    .subscribe(
+      (data : any)=>{
+        this.FRIENDS_USER = this.FRIENDS_USER.filter((user: UserDto) => user.id !== friend.id)
+      }
+    )
   }
 }

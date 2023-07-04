@@ -507,8 +507,12 @@ export class UserController {
             this.userLogger.error(`No friendship between users ${me.id} and ${dto.blockReceiverId}`);
             throw new BadRequestException('resource not found in database');
         }
+
+        console.log("DTO", dto)
         return this.blockService.blockFriend({
             'friendshipId': friendship.id,
+            'friendship' : friendship,
+            'blockSender' : me,
             'senderId': me.id
         });
     }

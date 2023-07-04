@@ -96,7 +96,7 @@ const config: SocketIoConfig = { url: environment.wsUrl + 'private', options: {
         MatTabsModule,
         LoginModule,
         MatFormFieldModule,
-        MatInputModule
+        MatInputModule,
     ],
     entryComponents: [
         DialogNotification,

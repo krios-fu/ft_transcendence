@@ -24,10 +24,11 @@ export class SiteAdminGuard implements CanActivate {
     async canActivate(ctx: ExecutionContext): Promise<boolean>{
         const req: IRequestUser = ctx.switchToHttp().getRequest();
         const username: string | undefined = req.user?.data?.username;
+
         
         if (!username) {
             return false;
         }
-        return await this.userService.validateGlobalRole(username, ['super-admin']);
+        return await this.userService.validateGlobalRole(username, ['super-admin', 'moderator']);
     }
 }

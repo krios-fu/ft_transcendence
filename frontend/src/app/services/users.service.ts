@@ -46,6 +46,7 @@ export class UsersService {
       is_owner_room: false,
       is_banned: false,
       is_silenced: false,
+      is_moderator: false
     }
     this.http.get(`${environment.apiUrl}user_roles/users/${user.id}`)
       .subscribe((payload) => {
@@ -63,6 +64,10 @@ export class UsersService {
               break;
             case Roles.silenced:
               user.role.is_silenced = true;
+              break;
+              case Roles.moderator:
+                user.role.is_moderator = true;
+              break; 
           };
         });
       });
@@ -143,7 +148,8 @@ export class UsersService {
   deleted_role(user: UserDto, user_role_id: number) {
     this.http.delete(`${environment.apiUrl}user_roles/${user_role_id}`)
       .subscribe((data: any) => {
-        user.role.is_banned = false;
+        // user.role.is_banned = false;
+        console.log("deleted", data)
       });
   }
 
@@ -153,6 +159,7 @@ export class UsersService {
         const roles = Object.assign(payload);
         let role = roles.find((role: any) => { role.roleId == id_role; return role })
         if (role)
+        console.log(role);
           this.deleted_role(user, role.id);
       });
   }
@@ -177,6 +184,7 @@ export class UsersService {
     this.http.post(`${environment.apiUrl}user_roles`, { userId: user.id, roleId: role_id })
       .subscribe(
         (data: any) => {
+          console.log(data);
           this.get_role(user);
         }
       )

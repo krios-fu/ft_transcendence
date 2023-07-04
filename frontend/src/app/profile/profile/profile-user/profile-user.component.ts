@@ -52,9 +52,10 @@ export class ProfileUserComponent implements OnInit {
     this.userService.getUser('me')
       .subscribe((user: UserDto) => {
 
-        this.userService.get_role(user);
+        // this.userService.get_role(user);
 
         this.me = user;
+        this.userService.get_role(this.me);
         this.color_icon = (this.me.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
         this.shareService.eventEmitter.emit(this.me.username);
@@ -124,6 +125,7 @@ export class ProfileUserComponent implements OnInit {
           this.FRIENDS_USERS = [];
 
           this.userService.get_role(this.user);
+          console.log(this.user);
 
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
@@ -172,6 +174,22 @@ export class ProfileUserComponent implements OnInit {
       this.userService.delete_role_user(this.user as UserDto, Roles.banned);
       this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} HAS BEEN UNBANNED`, 'OK');
     }
+  }
+
+  add_as_moderator(){
+    if (!this.user?.role.is_moderator && this.me?.role.is_super_admin) {
+      this.userService.post_role(this.user as UserDto, Roles.moderator);
+      this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} IS NOW MODERATOR`, 'OK');
+    }
+  }
+
+  delete_as_moderator(){
+    if (this.user?.role.is_moderator && (this.me?.role.is_super_admin || this.me?.role.is_moderator)) {
+      this.userService.delete_role_user(this.user, Roles.moderator);
+      this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} IS DELETED AS MODERATOR`, 'OK');
+
+    }
+
   }
 
 

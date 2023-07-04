@@ -6,7 +6,8 @@ export type RoleName =
     | "admin"
     | "private"
     | "banned"
-    | "silenced";
+    | "silenced"
+    | "moderator";
 
 export class initRoles1686493785757 implements MigrationInterface {
 
@@ -29,6 +30,9 @@ export class initRoles1686493785757 implements MigrationInterface {
             },
             {
                 role: "silenced" as RoleName
+            },
+            {
+                role: "moderator" as RoleName
             }
         ]);
     }
@@ -39,7 +43,8 @@ export class initRoles1686493785757 implements MigrationInterface {
             "admin",
             "private",
             "banned",
-            "silenced"
+            "silenced",
+            "moderator"
         ];
 
         for (const roleName of roleNames) {

@@ -22,8 +22,11 @@ export class    BlockService {
     **  TODO: Implement transaction
     */
 
-    public async blockFriend(dto: CreateBlockDto): Promise<UpdateResult> {
+    public async blockFriend(dto ): Promise<UpdateResult> {
         const block: BlockEntity = new BlockEntity(dto);
+
+        console.log("BLOCK", block);
+
 
         return await this.friendshipService.blockFriend(dto.friendshipId, block);
     }

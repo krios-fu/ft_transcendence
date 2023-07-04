@@ -16,7 +16,8 @@ export class UserDto {
 		is_admin: boolean,
 		is_owner_room : boolean,
 		is_banned: boolean,
-		is_silenced: boolean
+		is_silenced: boolean,
+		is_moderator: boolean
 	};
 	achievementUser ?: []
 
@@ -40,7 +41,8 @@ export class UserDto {
 			is_admin: false,
 			is_owner_room : false,
 			is_banned: false,
-			is_silenced: false
+			is_silenced: false,
+			is_moderator: false
 		},
 
 
