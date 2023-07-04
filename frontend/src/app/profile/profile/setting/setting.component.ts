@@ -115,7 +115,7 @@ export class SettingComponent implements OnInit {
     const nickname = login.trim();
 
     if (nickname.length < 3 || nickname.length > 8) {
-      alert('Error login');
+      this.alertServices.openSnackBar('invalid username (must have 3-8 chars)', 'dismiss');
       return;
 
     }

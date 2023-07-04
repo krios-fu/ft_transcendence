@@ -46,6 +46,7 @@ export class    GameMatchmakingService {
 
     private _emitQueueUpdate(roomId: string, gameType: GameType,
                                 length: number): void {
+        console.log(`[ _emitQueueUpdate ] longitudes a emitir: ${length}`);
         this.socketHelper.emitToRoom(
             roomId,
             gameType === "classic" ? "queueClassicLength" : "queueHeroLength",
@@ -55,6 +56,7 @@ export class    GameMatchmakingService {
 
     private _emitUserQueueUpdate(username: string,
                                     data: UserQueueUpdate): void {
+        console.log(`[ emitUserQueueUpdate ] emitiendo info a usuario ${username}: ${JSON.stringify(data, null, 2)}`);
         this.socketHelper.emitToRoom(
             SocketHelper.getUserRoomName(username),
             "userQueue",
@@ -73,7 +75,8 @@ export class    GameMatchmakingService {
     emitAllQueuesLength(gameId: string, emitTo: string): void {
         const   [classicLength, heroLength]: [number, number] =
                                 this.queueService.getAllQueuesLength(gameId);
-    
+
+        console.log(`[ emitAllQueuesLength ] queues length: ${classicLength}, ${heroLength}`)
         this._emitQueueUpdate(
             emitTo,
             "classic",
@@ -136,6 +139,7 @@ export class    GameMatchmakingService {
             username
         );
 
+        console.log(`[ addToQueue ] longitud obtenida: ${lengthUpdate}`);
         if (lengthUpdate === undefined)
             return ;
         this._emitQueueUpdate(
@@ -163,6 +167,7 @@ export class    GameMatchmakingService {
             gameType,
             username
         );
+        console.log(`[ removeFromQueue ] longitud de cola tras la cosa: ${lengthUpdate}`)
         if (lengthUpdate === undefined)
             return ;
         this._emitQueueUpdate(
