@@ -133,7 +133,6 @@ export class UserRoomRolesController {
             filter: { userId: [ userId ], roomId: [ roomId ] }
         });
 
-        console.log(`received roles: ${userId}, ${roomId}, ${roleId}`);
         if (!userRoom.length) {
             this.userRoomRolesLogger.error(`User ${userId} is not registered in room ${roomId}`);
             throw new BadRequestException('resource not found in database');

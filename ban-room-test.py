@@ -39,7 +39,17 @@ def clean_state(api):
             requests.delete(base_url + f'/roles/{ro["id"]}',
                             headers=api.get_param('auth_token'))
 
+def post_role_without_being_in_room(api, user, room):
+    pass
+
+
 if __name__ == "__main__":
     api = Api()
     api.set_user_creds(admin)
+
+    user = api.post_user(user_name)
+    room = api.post_room(room_name)
+    role = api.post_role(role_name)
+
+
     pass

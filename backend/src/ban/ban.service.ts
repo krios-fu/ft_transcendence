@@ -84,8 +84,9 @@ export class BanService {
 
     public async deleteBan(ban: BanEntity): Promise<void> {
         const { id, userId, roomId } = ban;
-
         const delRes: DeleteResult = await this.banRepository.delete(id);
+        const roles = await this.findAllBans(undefined);
+        
         if (delRes) {
             this.eventEmitter.emit('update.roles',
                 {
