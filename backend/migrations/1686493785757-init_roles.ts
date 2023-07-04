@@ -10,6 +10,7 @@ export type RoleName =
     | "moderator";
 
 export class initRoles1686493785757 implements MigrationInterface {
+    name = 'initRoles1686493785757'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.manager.getRepository(RolesEntity).insert([

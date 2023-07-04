@@ -1,38 +1,18 @@
-import { UserRoomRolesService } from "../../user_room_roles/user_room_roles.service";
-import { UserRolesService } from "../../user_roles/user_roles.service";
-import { UserRoomRolesEntity } from "../../user_room_roles/entity/user_room_roles.entity";
-import { NotFoundException, CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import {UserRoomRolesService} from "../../user_room_roles/user_room_roles.service";
+import {UserRolesService} from "../../user_roles/user_roles.service";
+import {RolesService} from "../../roles/roles.service";
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { IRequestUser } from "../interfaces/request-payload.interface";
 import { UserService } from "src/user/services/user.service";
-import { BanService } from "src/ban/ban.service";
-import { BanEntity } from "src/ban/entity/ban.entity";
 
 @Injectable()
-export class DelRolesGuard implements CanActivate {
+export class PostBanGuard implements CanActivate {
     constructor(private readonly reflector: Reflector,
+                private readonly userService: UserService,
                 private readonly globalRolesService: UserRolesService,
                 private readonly roomRolesService: UserRoomRolesService,
-                private readonly userService: UserService) { }
-
-    private async _extractRoomId(
-        roles: string[], 
-        roleId: number
-    ): Promise<number> {
-        let role: UserRoomRolesEntity;
-        let roomId: number;
-
-        role = await this.roomRolesService.findRole(roleId);
-        if (!role) {
-            throw new NotFoundException();
-        }
-        roomId = role.userRoom.room.id;
-        if (role.role.role === 'admin' &&
-            !roles.includes('admin')) {
-            throw new ForbiddenException();
-        }
-        return roomId;
-    }
+                private readonly rolesService: RolesService) { }
 
     private async _assertValidations(
         userId: number,
@@ -56,20 +36,17 @@ export class DelRolesGuard implements CanActivate {
     async canActivate(ctx: ExecutionContext): Promise<boolean> {
         const req: IRequestUser = ctx.switchToHttp().getRequest();
         const userId: number = req.user?.data?.id;
-        const roleId: number = Number(req.params?.id);
+        const roomId: number = req.body?.roomId
+        const roleId: number = req.body?.roleId;
         const username: string = req.user?.data?.username;
         const roles: string[]  = this.reflector.get<string[]>(
             'allowedRoles',
             ctx.getHandler()
         );
-        let   role: BanEntity | UserRoomRolesEntity;
-        let   roomId: number;
 
-        if (!userId || !roleId) {
-            console.log( `Traicionado por userId ${userId} o roleId ${roomId}` );
+        if (!userId || !roomId) {
             throw new UnauthorizedException();
         }
-        roomId = await this._extractRoomId(roles, roleId);
         return this._assertValidations(userId, roomId, username, roles);
     }
 }

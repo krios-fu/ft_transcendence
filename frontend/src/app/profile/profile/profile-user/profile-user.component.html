@@ -34,7 +34,7 @@
                     <mat-icon matTooltip="Friend status">{{this.icon_friend}}</mat-icon>
                 </a>
             </span>
-            <span>
+            <span *ngIf="view">
                 <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship">
                     <mat-icon matTooltip="Invite to a game" >videogame_asset</mat-icon>
                 </a>
@@ -72,7 +72,7 @@
 
 
 
-        <mat-tab-group mat-stretch-tabs mat-align-tabs="end" color="primary" aria-label="primary"
+        <mat-tab-group *ngIf="view" mat-stretch-tabs mat-align-tabs="end" color="primary" aria-label="primary"
             style="padding: 10px;">
 
             <mat-tab label="FRIENDS {{FRIENDS_USERS.length}}">
@@ -91,13 +91,10 @@
                     </cdk-virtual-scroll-viewport>
                 </section>
             </mat-tab>
-
-
         </mat-tab-group>
     </div>
-    <div class="column2" style="border: outset 4px #02fbe6cc;">
-        <!-- <app-room></app-room> -->
-        <app-stats *ngIf="this.user" [username]="this.user.username"></app-stats>
+    <div  class="column2" style="border: outset 4px #02fbe6cc;">
+        <app-stats *ngIf="this.user && view" [username]="this.user.username"></app-stats>
     </div>
 
 </section>

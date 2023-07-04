@@ -10,6 +10,7 @@ import {
     Param,
     ParseIntPipe,
     Post,
+    HttpCode,
     Query,
     UseGuards
 } from '@nestjs/common';
@@ -21,9 +22,9 @@ import { BanService } from './ban.service';
 import { CreateBanDto } from './dto/ban.dto';
 import { BanQueryDto } from './dto/ban.query.dto';
 import { BanEntity } from './entity/ban.entity';
-import { PostRolesGuard } from 'src/common/guards/post-roles.guard';
-import { DelRolesGuard } from 'src/common/guards/del-roles.guard';
 import { AllowedRoles } from 'src/common/decorators/allowed.roles.decorator';
+import { DelBanGuard } from 'src/common/guards/del-ban.guard';
+import { PostBanGuard } from 'src/common/guards/post-ban.guard';
 
 @Controller('ban')
 export class BanController {
@@ -65,7 +66,7 @@ export class BanController {
         return await this.banService.getRoomsWithUserBanned(userId);
     }
 
-    @UseGuards(PostRolesGuard)
+    @UseGuards(PostBanGuard)
     @AllowedRoles('admin')
     @Post()
     async createBan(@Body() dto: CreateBanDto): Promise<BanEntity> {
@@ -83,13 +84,14 @@ export class BanController {
             this.banLogger.error(`Ban to user ${userId} in room ${roomId} already in db`);
             throw new BadRequestException('resource already exists in database');
         }
-        return await this.banService.createBan(dto);
+        return await this.banService.createBan(dto); /* tmp */
     }
 
-    @UseGuards(DelRolesGuard)
+    @UseGuards(DelBanGuard)
     @AllowedRoles('admin')
-    @Delete(':ban_id')
-    async deleteBan(@Param('ban_id', ParseIntPipe) banId: number): Promise<void> {
+    @HttpCode(204)
+    @Delete(':id')
+    async deleteBan(@Param('id', ParseIntPipe) banId: number): Promise<void> {
         const ban: BanEntity | null = await this.banService.findOne(banId);
 
         if (!ban) {
