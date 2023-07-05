@@ -58,7 +58,11 @@ export class NavHeaderComponent implements OnInit {
 
   getNickname() { return this.user?.nickName; }
 
-  getPhotoUrl() { return this.user?.photoUrl; }
+  getPhotoUrl(): string {
+    if (!this.user?.photoUrl)
+      return ("");
+    return (environment.staticUrl + this.user.photoUrl);
+  }
 
   plus() {
     this.status_room = !this.status_room;

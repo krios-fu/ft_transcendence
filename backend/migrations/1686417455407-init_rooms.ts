@@ -36,19 +36,19 @@ export class initRooms1686417455407 implements MigrationInterface {
             {
                 roomName: "atlantis" as RoomName,
                 ownerId: getCreator(creatorEntities, "onapoli-").id,
-                photoUrl: "http://localhost:3000/static/rooms/atlantis.png",
+                photoUrl: "rooms/atlantis.png",
                 owner: getCreator(creatorEntities, "onapoli-"),
             },
             {
                 roomName: "metropolis" as RoomName,
                 ownerId: getCreator(creatorEntities, "krios-fu").id,
-                photoUrl: "http://localhost:3000/static/rooms/metropolis.png",
+                photoUrl: "rooms/metropolis.png",
                 owner: getCreator(creatorEntities, "krios-fu"),
             },
             {
                 roomName: "wakanda" as RoomName,
                 ownerId: getCreator(creatorEntities, "danrodri").id,
-                photoUrl: "http://localhost:3000/static/rooms/wakanda.png",
+                photoUrl: "rooms/wakanda.png",
                 owner: getCreator(creatorEntities, "danrodri"),
             }
         ]);

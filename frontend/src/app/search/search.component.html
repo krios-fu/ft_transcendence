@@ -4,7 +4,7 @@
 			<mat-chip-list style="padding-top: 10px;" *ngFor="let user of users">
 				<mat-chip class="tag" [routerLink]="['/profile/', user.username]" (click)="clearUser()">
 				
-				<img class="avatar" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
+				<img class="avatar" style="padding-left:0;" src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
 				<span style="padding-left:10px;"> {{user.nickName}} </span>
 			</mat-chip>
 		</mat-chip-list>

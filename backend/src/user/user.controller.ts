@@ -196,10 +196,8 @@ export class UserController {
             throw new BadRequestException('resource not found in database');
         }
 
-        let path = String(avatar.path);
-        path = path.substring(5, path.length);
-        const photoUrl = `http://localhost:3000/${path}`;
-    
+        const   path = String(avatar.path);
+        const   photoUrl = path.substring(("dist/static/").length);
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });

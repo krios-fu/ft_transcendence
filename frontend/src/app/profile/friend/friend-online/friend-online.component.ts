@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { environment } from 'src/environments/environment';
+import { g_buildImgUrl } from '../../../game/utils/images';
 
 
 @Component({
@@ -39,4 +40,9 @@ export class FriendOnlineComponent implements OnInit {
         }
       })
   }
+
+  buildImgUrl(imgPath: string): string {
+    return (g_buildImgUrl(imgPath));
+  }
+
 }
