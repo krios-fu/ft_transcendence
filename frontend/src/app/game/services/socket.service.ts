@@ -26,8 +26,7 @@ export class SocketService {
 
     private _socket: SockIO.Socket;
     private _connectAttempts: number;
-    private _authAttempts: number;
-    private _authenticating: boolean;
+    private _refreshTokenTry: boolean;
     private _lastAuthSuccess: number;
     private _failedEvents: SocketExceptionData[];
 
@@ -41,8 +40,7 @@ export class SocketService {
         });
         this._addConnectionEvents();
         this._connectAttempts = 0;
-        this._authAttempts = 0;
-        this._authenticating = false;
+        this._refreshTokenTry = false;
         this._lastAuthSuccess = 0;
         this._failedEvents = [];
     }
@@ -67,17 +65,21 @@ export class SocketService {
     **  negatively.
     */
     private _reAuthenticateConnection(): void {
-        if (this._authAttempts >= 3)
-            return;
-        ++this._authAttempts;
-        if (this.getAuthUser())
-            this.authService.directRefreshToken().subscribe(
-                (payload: IAuthPayload | undefined) => {
-                    if (!payload)
-                        return;
-                    this.emit<string>("authentication", payload.accessToken);
+        const username: string | null =  this.getAuthUser();
+
+        if (!username) {
+            this.authService.redirectLogin();
+            return ;
+        }
+        this.authService.directRefreshToken().subscribe(
+            (payload: IAuthPayload | undefined) => {
+                if (!payload){
+                    this.authService.redirectLogin();
+                    return ;
                 }
-            );
+                this.emit<string>("authentication", payload.accessToken);
+            }
+        );
     }
 
     getAuthUser(): string | null {
@@ -119,9 +121,11 @@ export class SocketService {
                 if (xcpt.targetEvent != "authentication") {
                     this._failedEvents.push(xcpt);
                 }
-                if (this._authenticating)
-                    return;
-                this._authenticating = true;
+                if (this._refreshTokenTry) {
+                    this.authService.redirectLogin();
+                    return ;
+                }
+                this._refreshTokenTry = true;
                 this._reAuthenticateConnection();
             }
             if (xcpt.cause === SocketException.Forbidden) {
@@ -136,8 +140,7 @@ export class SocketService {
         this._socket.on("authSuccess", () => {
             const currentTime: number = Date.now();
 
-            this._authenticating = false;
-            this._authAttempts = 0;
+            this._refreshTokenTry = false;
             if (currentTime - this._lastAuthSuccess > 5000)
                 this._emitFailedEvents();
             else
