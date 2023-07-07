@@ -72,7 +72,7 @@ export class  FriendshipEntity extends BaseEntity {
   @OneToOne(
     () => BlockEntity, 
     (block: BlockEntity) => block.friendship, 
-    { cascade: true }
+    // { cascade: true }
   )
   block: BlockEntity
 }

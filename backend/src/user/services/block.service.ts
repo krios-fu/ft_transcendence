@@ -6,6 +6,7 @@ import { UpdateResult } from 'typeorm';
 import { BlockRepository } from "../repositories/block.repository";
 import { BlockEntity } from "../entities/block.entity";
 import { FriendshipService } from "./friendship.service";
+import { UserEntity } from "../entities/user.entity";
 
 @Injectable()
 export class    BlockService {
@@ -22,13 +23,19 @@ export class    BlockService {
     **  TODO: Implement transaction
     */
 
-    public async blockFriend(dto ): Promise<UpdateResult> {
-        const block: BlockEntity = new BlockEntity(dto);
+    public async blockFriend(friendship: FriendshipEntity,
+        sender : UserEntity ): Promise<FriendshipEntity> {
+        const block: BlockEntity = await this.blockRepository.save({
+            friendshipId : friendship.id,
+            blockSenderId : sender.id,
+            blockSender : sender
+
+        });
 
         console.log("BLOCK", block);
 
 
-        return await this.friendshipService.blockFriend(dto.friendshipId, block);
+        return await this.friendshipService.blockFriend(friendship, block);
     }
 
     /*

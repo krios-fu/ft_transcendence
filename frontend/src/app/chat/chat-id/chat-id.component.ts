@@ -49,7 +49,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
         .subscribe((user: UserDto) => {
           this.me = user;
           delete this.user;
-          this.get_friend_blocked();
           this.http.get(`${environment.apiUrl}chat/${id}`)
             .pipe(
               catchError(error => {
@@ -67,8 +66,7 @@ export class ChatIdComponent implements OnInit, OnDestroy {
                   this.user = user;
                 }, error => {
                 });
-            }, error => {
-            });
+            }, error => {});
         });
     });
   }
@@ -89,14 +87,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
   }
 
 
-  get_friend_blocked(){
-    this.http.get(`${environment.apiUrl}users/me/blocked`)
-    .subscribe(
-      (friends_blocked : any ) =>{
-        console.log('BLOCKED', friends_blocked);
-      }
-    )
-  }
 
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;

@@ -186,26 +186,16 @@ export class FriendshipService {
 
     public async getAllBlocks(id: number): Promise<FriendshipEntity[]> {
         return await this.friendRepository.createQueryBuilder('friendship')
-            .leftJoinAndSelect(
-                'friendship.block', 'block',
-                'block.blockSender = :id', { id: id }
-            )
-            .where(
-                'friendship.senderId = :id'
-                + ' AND friendship.status = :status',
-                {
-                    id: id,
-                    status: FriendshipStatus.BLOCKED
-                }
-            )
-            .orWhere(
-                'friendship.receiverId = :id'
-                + ' AND friendship.status = :status',
-                {
-                    id: id,
-                    status: FriendshipStatus.BLOCKED
-                }
-            ).getMany();
+        .leftJoinAndSelect(
+            'friendship.block',
+            'block',
+            // 'block',
+            'block.blockSender = :id',
+            { id: id }
+          )
+          .where('(friendship.senderId = :id OR friendship.receiverId = :id)', { id: id })
+          .andWhere('friendship.status = :status', { status: FriendshipStatus.BLOCKED })
+          .getMany();
     }
 
     /*
@@ -255,14 +245,15 @@ export class FriendshipService {
     ** needs id from previous created friendship.
     */
 
-    public async blockFriend(id: number, block: BlockEntity): Promise<UpdateResult> {
-        return await this.friendRepository.update(
-          { id: id },
-          {
-            status: FriendshipStatus.BLOCKED,
-            block: block
-          }
-        );
+    public async blockFriend(friendship : FriendshipEntity, block: BlockEntity): Promise<FriendshipEntity> {
+
+        await this.friendRepository.createQueryBuilder('friendship')
+          .update(FriendshipEntity)
+          .set({ status: FriendshipStatus.BLOCKED, block: block})
+          .where("id = :id", { id: friendship.id })
+          .execute();
+      
+        return friendship;
       }
 
     /*

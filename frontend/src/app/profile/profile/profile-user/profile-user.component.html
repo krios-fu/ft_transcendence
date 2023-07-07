@@ -34,6 +34,11 @@
                     <mat-icon matTooltip="Friend status">{{this.icon_friend}}</mat-icon>
                 </a>
             </span>
+            <span> 
+                <a mat-icon-button (click)="block_user(user)">
+                    <mat-icon>block</mat-icon>
+                </a>
+            </span>
             <span *ngIf="view">
                 <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship">
                     <mat-icon matTooltip="Invite to a game" >videogame_asset</mat-icon>

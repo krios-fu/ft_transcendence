@@ -4,6 +4,7 @@ import { UserDto } from '../dtos/user.dto';
 import { environment } from 'src/environments/environment';
 import { Roles } from '../roles';
 import { AlertServices } from './alert.service';
+import { Friendship } from '../dtos/block.dto';
 // import { SocketNotificationService } from './socket-notification.service';
 
 export interface IUser {
@@ -188,6 +189,16 @@ export class UsersService {
           this.get_role(user);
         }
       )
+  }
+
+  block_user(user : UserDto){
+    return this.http.post(`${environment.apiUrl}users/me/blocked`, {
+      blockReceiverId: user.id
+    })
+  }
+
+  get_blocked_users(){
+    return this.http.get<Friendship []>(`${environment.apiUrl}users/me/blocked`);
   }
 
 }

@@ -5,6 +5,7 @@ import { UserDto } from 'src/app/dtos/user.dto';
 import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
+import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -22,7 +23,9 @@ export class FriendNotificationComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private alertService: AlertServices,){}
+    private alertService: AlertServices,
+    private userService: UsersService,
+    ){}
 
   ngOnInit(): void {
     const user_sesion = this.authService.getAuthUser();
@@ -90,12 +93,10 @@ export class FriendNotificationComponent implements OnInit {
   }
 
   block_friend(friend : UserDto){
-
-    this.http.post(`${environment.apiUrl}users/me/blocked`, {
-      blockReceiverId: friend.id
-    })
+  this.userService.block_user(friend)
     .subscribe(
       (data : any)=>{
+        this.alertService.openSnackBar(`${friend.nickName} IS NOW BLOCKED`, 'OK');
         this.FRIENDS_USER = this.FRIENDS_USER.filter((user: UserDto) => user.id !== friend.id)
       }
     )

@@ -208,4 +208,13 @@ export class ProfileUserComponent implements OnInit {
       })
   }
 
+  block_user(friend : UserDto){
+    this.userService.block_user(friend)
+      .subscribe(
+        (data : any)=>{
+          this.alertService.openSnackBar(`${friend.nickName} IS NOW BLOCKED`, 'OK');
+        }
+      )
+    }
+
 }

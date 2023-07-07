@@ -26,13 +26,9 @@ export class BlockEntity extends BaseEntity {
     @Column({ name: 'friendship_id' })
     friendshipId: number;
 
-    @OneToOne(
-        () => FriendshipEntity,
-        (friendship: FriendshipEntity) => friendship.block,
-        { onDelete: 'CASCADE' }
-    )
-    @JoinColumn({ name: 'friendship_id' })
-    friendship: FriendshipEntity
+    @OneToOne(() => FriendshipEntity)
+    @JoinColumn()
+    friendship: FriendshipEntity;
 
     @Column({ name: 'block_sender_id' })
     blockSenderId: number;

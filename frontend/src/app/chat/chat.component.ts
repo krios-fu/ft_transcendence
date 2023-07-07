@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
+import { Friendship } from '../dtos/block.dto';
+
 
 
 interface chat_user {
@@ -26,14 +28,17 @@ export class ChatComponent implements OnInit {
     private http: HttpClient,
   ) {}
 
+
+
   ngOnInit(): void {
 
     this.userServices.getUser('me')
       .subscribe((user: UserDto) => {
         this.me = user;
+        this.get_user_blocked(this.me);
         this.http.get(`${environment.apiUrl}chat/me`)
-          .subscribe(entity => {
-            let data = Object.assign(entity);
+        .subscribe(entity => {
+          let data = Object.assign(entity);
             for (let chat in data) {
               let { users } = data[chat];
               let { id } = data[chat];
@@ -45,9 +50,20 @@ export class ChatComponent implements OnInit {
                       chat_id: id,
                       user: user
                     });
+                  },
+                   error => {
                   });
             }
           });
-      })
+      }, error => {})
   }
+  
+  
+  get_user_blocked(me : UserDto): void {
+    this.userServices.get_blocked_users()
+    .subscribe((blocked : Friendship [])=> {
+        console.log('user blocked', blocked);
+    })
+  }
+  
 }
