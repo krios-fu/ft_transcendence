@@ -35,6 +35,7 @@ import { Express } from 'express';
 import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 import { UserCountData } from './types/user-count-data.type';
 import { SiteAdminGuard } from 'src/user_roles/guard/site-admin.guard';
+import {BlockEntity} from "./entities/block.entity";
 
 @Controller('users')
 export class UserController {
@@ -209,28 +210,6 @@ export class UserController {
     ** Same as above, gives access to avatar posting to site admin.
     */
 
-//    @UseGuards(SiteAdminGuard)
-//    @Post(':id/avatar')
-//    @UseInterceptors(FileInterceptor(
-//        'avatar', uploadUserAvatarSettings
-//    ))
-//    public async uploadUserAvatar(
-//        @Param('id', ParseIntPipe) userId: number,
-//        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
-//    ):Promise<UserEntity> {
-//        const user: UserEntity = await this.userService.findOne(userId);
-//
-//        if (user === null) {
-//            this.userLogger.error(`User with id ${userId} not present in database`);
-//            throw new BadRequestException('resource not found in database');
-//        }
-//        const photoUrl = `http://localhost:3000/${avatar.path}`;
-//
-//        if (user.photoUrl !== photoUrl)
-//            await this.userService.removeAvatarFile(user.username, user.photoUrl);
-//        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
-//    }
-
 
     /*
     **  Remove an avatar previously uploaded by user.
@@ -251,21 +230,6 @@ export class UserController {
         const { id, photoUrl } = user;
         return await this.userService.deleteAvatar(id, photoUrl);
     }
-
-//    @UseGuards(SiteAdminGuard)
-//    @Delete(':id/avatar')
-//    @HttpCode(204)
-//    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
-//        const user: UserEntity = await this.userService.findOne(userId);
-//
-//        if (user === null) {
-//            this.userLogger.error(`User with id ${userId} not present in database`);
-//            throw new BadRequestException('resource not found in database');
-//        }
-//        const { id, photoUrl } = user;
-//        return await this.userService.deleteAvatar(id, photoUrl);
-//    }
-   
 
     @UseGuards(SiteAdminGuard)
     @Delete(':id')
@@ -301,7 +265,6 @@ export class UserController {
 
     /*
     ** Get all friends from user
-    ** (user_id must be my id or I need to be an admin)
     */
    
    @Get('me/friends')
@@ -481,22 +444,28 @@ export class UserController {
     async blockFriend(
         @UserCreds() userCreds: UserCredsDto,
         @Body() dto: BlockPayloadDto,
-    ): Promise<UpdateResult> {
+    ): Promise<BlockEntity> {
         const { username } = userCreds;
         const me: UserEntity = await this.userService.findOneByUsername(username);
+        let friendship: FriendshipEntity;
 
-        if (me === null) {
+        if (!me) {
             this.userLogger.error(`User with username ${username} not found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const friendship: FriendshipEntity = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
-        if (friendship === null) {
-            this.userLogger.error(`No friendship between users ${me.id} and ${dto.blockReceiverId}`);
-            throw new BadRequestException('resource not found in database');
+        friendship = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
+        if (!friendship) {
+            friendship = await this.friendshipService.addFriend({
+                senderId: me.id,
+                receiverId: dto.blockReceiverId
+            });
+            if (!friendship) {
+                throw new BadRequestException('se pudrió la cosa');
+            }
         }
         return this.blockService.blockFriend({
             'friendshipId': friendship.id,
-            'senderId': me.id
+            'blockSenderId': me.id
         });
     }
 
@@ -505,6 +474,7 @@ export class UserController {
     */
 
     @Delete('me/blocked/:id')
+    @HttpCode(204)
     public async unblockFriend(
         @UserCreds() userCreds: UserCredsDto,
         @Param('id', ParseIntPipe) id: number

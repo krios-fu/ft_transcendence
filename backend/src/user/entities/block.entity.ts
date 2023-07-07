@@ -29,7 +29,10 @@ export class BlockEntity extends BaseEntity {
     @OneToOne(
         () => FriendshipEntity,
         (friendship: FriendshipEntity) => friendship.block,
-        { onDelete: 'CASCADE' }
+        {
+            onDelete: 'CASCADE',
+            eager: true
+        }
     )
     @JoinColumn({ name: 'friendship_id' })
     friendship: FriendshipEntity
@@ -39,7 +42,10 @@ export class BlockEntity extends BaseEntity {
 
     @ManyToOne(
         () => UserEntity,
-        { onDelete: 'CASCADE' }
+        {
+            onDelete: 'CASCADE',
+            eager: true
+        }
     )
     @JoinColumn({ name: 'blockSender_id' })
     blockSender: UserEntity

@@ -188,7 +188,7 @@ export class FriendshipService {
         return await this.friendRepository.createQueryBuilder('friendship')
             .leftJoinAndSelect(
                 'friendship.block', 'block',
-                'block.sender = :id', { id: id }
+                'block.blockSenderId = :id', { id: id }
             )
             .where(
                 'friendship.senderId = :id'
@@ -200,7 +200,7 @@ export class FriendshipService {
             )
             .orWhere(
                 'friendship.receiverId = :id'
-                + ' AND friendship.status = "status',
+                + ' AND friendship.status = :status',
                 {
                     id: id,
                     status: FriendshipStatus.BLOCKED
@@ -224,13 +224,13 @@ export class FriendshipService {
             .leftJoinAndSelect(
                 'friendship.block',
                 'block',
-                'block.sender = :user_id', { user_id: userId }
+                'block.blockSenderId = :user_id', { user_id: userId }
             )
             .where(
                 'friendship.senderId = :user_id '
                 + ' AND friendship.receiverId = :blocked_id'
-                + ' AND friendship.status = :status'
-                + ' AND friendship.block.',
+                + ' AND friendship.status = :status',
+                //+ ' AND friendship.block.',
                 {
                     user_id: userId,
                     blocked_id: blockedId,
@@ -300,8 +300,7 @@ export class FriendshipService {
         return await this.friendRepository.update(
             id,
             {
-                status: FriendshipStatus.BLOCKED,
-                block: block
+                status: FriendshipStatus.BLOCKED
             }
         )
     }
