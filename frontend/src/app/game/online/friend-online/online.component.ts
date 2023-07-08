@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 import { RoomGameIdService } from '../../room-game-id/room-game-id.service';
 import { Chat } from 'src/app/chat/chat';
 import { Roles } from 'src/app/roles';
+import { Friendship } from 'src/app/dtos/block.dto';
 
 
 @Component({
@@ -52,6 +53,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
         this.players.map((user: UserDto) => {
           if (user.id === payload.user.id)
             user.defaultOffline = false
+
         })
 
         if (payload.user.id === this.me?.id && this.me?.username !== payload.kicker) {
@@ -241,7 +243,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
       user.role.is_admin = false;
 
       this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
-
 
     }
 

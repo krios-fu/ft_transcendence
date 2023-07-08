@@ -20,6 +20,7 @@ export class UserDto {
 		is_moderator: boolean
 	};
 	achievementUser ?: []
+	is_blocked ?: boolean;
 
 
 	
@@ -46,7 +47,8 @@ export class UserDto {
 		},
 
 
-		achievementUser ?: []
+		achievementUser ?: [],
+		is_blocked ?: boolean,
 
 	) {
 		this.id = id;
@@ -62,6 +64,7 @@ export class UserDto {
 		this.ranking = ranking;
 		this.achievementUser = achievementUser;
 		this.role = role;
+		this.is_blocked = is_blocked;
 	}
   }
   
