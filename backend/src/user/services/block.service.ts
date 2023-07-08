@@ -23,19 +23,11 @@ export class    BlockService {
     **  TODO: Implement transaction
     */
 
-    public async blockFriend(friendship: FriendshipEntity,
-        sender : UserEntity ): Promise<FriendshipEntity> {
-        const block: BlockEntity = await this.blockRepository.save({
-            friendshipId : friendship.id,
-            blockSenderId : sender.id,
-            blockSender : sender
+    public async blockFriend(dto: CreateBlockDto): Promise<BlockEntity> {
+        const block = await this.blockRepository.save(new BlockEntity(dto));
 
-        });
-
-        console.log("BLOCK", block);
-
-
-        return await this.friendshipService.blockFriend(friendship, block);
+        await this.friendshipService.blockFriend(dto.friendshipId, block);
+        return block;
     }
 
     /*
@@ -54,11 +46,9 @@ export class    BlockService {
         if (friendship === null) {
             return ;
         }
-        const test = await this.blockRepository.remove(friendship.block);
+        await this.blockRepository.remove(friendship.block);
         await this.friendshipService.unblockFriend(friendship.id);
     }
-
-    
 
     async getBlockedFriends(userId: number): Promise<FriendshipEntity[]> {
         return await this.friendshipService.getAllBlocks(userId);

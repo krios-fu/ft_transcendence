@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsObject } from "class-validator";
+import {IsDate, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsObject} from "class-validator";
 import { UserEntity } from "../entities/user.entity";
 import { FriendshipStatus } from "../enums/user.enum";
 
@@ -48,5 +48,5 @@ export class CreateBlockDto {
 
     @IsNumber()
     @IsNotEmpty()
-    senderId: number;
+    blockSenderId: number;
 }

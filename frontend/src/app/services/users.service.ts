@@ -201,4 +201,9 @@ export class UsersService {
     return this.http.get<Friendship []>(`${environment.apiUrl}users/me/blocked`);
   }
 
+  get_blocked_user_id(user: UserDto){
+   return this.http.get<any>(`${environment.apiUrl}users/me/friends/${user.id}/blocked`)
+  
+  }
+
 }

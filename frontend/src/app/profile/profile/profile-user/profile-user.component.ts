@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Injectable, OnInit} from '@angular/core';
+import { Component, EventEmitter, Injectable, OnInit, Output } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
@@ -9,6 +9,8 @@ import { AlertServices } from 'src/app/services/alert.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { environment } from 'src/environments/environment';
 import { Roles } from 'src/app/roles';
+import { Friendship } from 'src/app/dtos/block.dto';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Injectable()
 export class SharedService {
@@ -33,8 +35,9 @@ export class ProfileUserComponent implements OnInit {
   id_chat = -1;
   view = false;
 
-  public FRIENDS_USERS = [] as UserDto[];
+  blocked = false;
 
+  public FRIENDS_USERS = [] as UserDto[];
 
   constructor(private http: HttpClient,
     private authService: AuthService,
@@ -48,7 +51,6 @@ export class ProfileUserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.friend();
     this.userService.getUser('me')
       .subscribe((user: UserDto) => {
 
@@ -59,6 +61,8 @@ export class ProfileUserComponent implements OnInit {
         this.color_icon = (this.me.defaultOffline) ? '#49ff01' : '#ff0000';
         this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
         this.shareService.eventEmitter.emit(this.me.username);
+        this.friend();
+
       })
 
     this.route.params.subscribe(({ id }) => {
@@ -83,16 +87,12 @@ export class ProfileUserComponent implements OnInit {
     if (this.icon_friend === 'person_add') {
       this.http.post(`${environment.apiUrl}users/me/friends`, {
         receiverId: this.user?.id,
-      }).subscribe( data => {
-          this.icon_friend = 'pending'
-        })
+      }).subscribe(data => {
+        this.icon_friend = 'pending'
+      })
     }
     else if (this.icon_friend === 'person_remove') {
-      this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${this.id_friendship}`)
-        .subscribe(data => {
-          this.icon_friend = 'person_add'
-          this.friend()
-        })
+      this.deleted_friend();
     }
     else if (this.icon_friend === 'check')
       this.http.patch(`${environment.apiUrl}users/me/friends/accept`, {
@@ -104,12 +104,27 @@ export class ProfileUserComponent implements OnInit {
         })
   }
 
+
+  deleted_friend() {
+    this.http.get<any>(`${environment.apiUrl}users/me/friends/${this.user?.id}`)
+      .subscribe((friend: any) => {
+        this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${friend.id}`)
+          .subscribe(data => {
+            this.icon_friend = 'person_add'
+            this.friend()
+          });
+      });
+
+  }
+
   get_chat_id() { return this.id_chat; }
 
   view_chat() {
     const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
 
     this.view = friend ? true : false;
+    if (this.view)
+      this.icon_friend = 'person_remove';
   }
 
   friend() {
@@ -123,9 +138,9 @@ export class ProfileUserComponent implements OnInit {
           this.view = false;
           this.icon_friend = 'person_add'
           this.FRIENDS_USERS = [];
+          this.is_blocked(this.user, this.me as UserDto);
 
           this.userService.get_role(this.user);
-          console.log(this.user);
 
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
@@ -146,14 +161,7 @@ export class ProfileUserComponent implements OnInit {
                 this.icon_friend = 'check';
             });
 
-          this.http.get<any>(`${environment.apiUrl}users/me/friends/${this.user?.id}`)
-            .subscribe((friend: any) => {
-              if (friend) {
-                this.id_friendship = friend.id
-                this.icon_friend = 'person_remove';
-              }
-              this.get_friend(this.user?.id)
-            })
+          this.get_friend(this.user?.id)
         }, error => {
           this.alertService.openSnackBar('USER NOT FOUND', 'OK')
           this.authService.redirectHome()
@@ -176,14 +184,14 @@ export class ProfileUserComponent implements OnInit {
     }
   }
 
-  add_as_moderator(){
+  add_as_moderator() {
     if (!this.user?.role.is_moderator && this.me?.role.is_super_admin) {
       this.userService.post_role(this.user as UserDto, Roles.moderator);
       this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} IS NOW MODERATOR`, 'OK');
     }
   }
 
-  delete_as_moderator(){
+  delete_as_moderator() {
     if (this.user?.role.is_moderator && (this.me?.role.is_super_admin || this.me?.role.is_moderator)) {
       this.userService.delete_role_user(this.user, Roles.moderator);
       this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} IS DELETED AS MODERATOR`, 'OK');
@@ -208,13 +216,45 @@ export class ProfileUserComponent implements OnInit {
       })
   }
 
-  block_user(friend : UserDto){
+
+  is_blocked(friend: UserDto, me: UserDto) {
+
+    this.userService.get_blocked_user_id(friend)
+      .subscribe((friend: Friendship) => {
+
+        if (friend && friend.block?.blockSenderId !== friend.id && friend.block?.blockSenderId !== me.id) {
+          this.alertService.openSnackBar(`YOU CANNOT ACCESS THIS PROFILE`, 'OK');
+          this.authService.redirectHome()
+        }
+        if( friend && friend.block?.blockSenderId === me.id)
+          this.blocked = true;
+
+      })
+
+  }
+
+  block_user(friend: UserDto) {
     this.userService.block_user(friend)
       .subscribe(
-        (data : any)=>{
-          this.alertService.openSnackBar(`${friend.nickName} IS NOW BLOCKED`, 'OK');
+        (data: any) => {
+          this.alertService.openSnackBar(`${friend.nickName.toUpperCase()} IS NOW BLOCKED`, 'OK');
+          this.blocked = true;
         }
       )
-    }
+  }
+
+  unblock_user() {
+    this.http.get<any>(`${environment.apiUrl}users/me/friends/${this.user?.id}/blocked`)
+      .subscribe((friend: any) => {
+        this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${friend.id}`)
+          .subscribe(data => {
+          this.alertService.openSnackBar(`${this.user?.nickName.toUpperCase()} IS NOW UNBLOCKED`, 'OK');
+
+            this.blocked = false;
+          });
+      });
+  }
+
+
 
 }

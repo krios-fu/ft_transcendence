@@ -23,10 +23,13 @@ export class ChatComponent implements OnInit {
   public CHATS_USERS = [] as chat_user[];
   me?: UserDto;
 
+  block = [] as Friendship[];
+
   constructor(
     private userServices: UsersService,
     private http: HttpClient,
-  ) {}
+  ) {
+  }
 
 
 
@@ -35,35 +38,35 @@ export class ChatComponent implements OnInit {
     this.userServices.getUser('me')
       .subscribe((user: UserDto) => {
         this.me = user;
-        this.get_user_blocked(this.me);
-        this.http.get(`${environment.apiUrl}chat/me`)
-        .subscribe(entity => {
-          let data = Object.assign(entity);
-            for (let chat in data) {
-              let { users } = data[chat];
-              let { id } = data[chat];
-              let chat_friend = users.filter((user: any) => { return user.userId != this.me?.id });
-              if (chat_friend.length != 0)
-                this.userServices.getUserById(chat_friend[0].userId)
-                  .subscribe((user: UserDto) => {
-                    this.CHATS_USERS.push({
-                      chat_id: id,
-                      user: user
-                    });
-                  },
-                   error => {
-                  });
-            }
-          });
-      }, error => {})
+        this.userServices.get_blocked_users()
+          .subscribe((blocked: Friendship[]) => {
+            this.block = blocked;
+
+            this.http.get(`${environment.apiUrl}chat/me`)
+              .subscribe(entity => {
+                let data = Object.assign(entity);
+                for (let chat in data) {
+                  let { users } = data[chat];
+                  let { id } = data[chat];
+                  let chat_friend = users.filter((user: any) => { return user.userId != this.me?.id });
+                  const blocked = this.block.find((blocked: Friendship) => blocked.senderId === chat_friend[0].userId);
+                  if (chat_friend.length != 0 && !blocked)
+                    this.userServices.getUserById(chat_friend[0].userId)
+                      .subscribe((user: UserDto) => {
+                        this.CHATS_USERS.push({
+                          chat_id: id,
+                          user: user
+                        });
+                      },
+                        error => {
+                        });
+                }
+              });
+          })
+
+      }, error => { })
   }
-  
-  
-  get_user_blocked(me : UserDto): void {
-    this.userServices.get_blocked_users()
-    .subscribe((blocked : Friendship [])=> {
-        console.log('user blocked', blocked);
-    })
-  }
-  
+
+
+
 }

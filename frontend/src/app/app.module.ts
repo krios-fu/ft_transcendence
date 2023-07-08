@@ -39,6 +39,7 @@ import { SocketService } from './game/services/socket.service';
 import { WtfComponent } from './login/wtf/wtf.component';
 import { ChangeRoomPasswordInputComponent } from './services/dialog/input/change_room_password/change-room-password-input.component';
 import { environment } from 'src/environments/environment';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 const config: SocketIoConfig = { url: environment.wsUrl + 'private', options: {
     reconnectionAttempts: 5,
@@ -97,6 +98,8 @@ const config: SocketIoConfig = { url: environment.wsUrl + 'private', options: {
         LoginModule,
         MatFormFieldModule,
         MatInputModule,
+        MatTooltipModule
+
     ],
     entryComponents: [
         DialogNotification,

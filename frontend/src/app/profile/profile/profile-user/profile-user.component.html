@@ -17,31 +17,38 @@
 
         <div *ngIf="user"
             style="display: flex; justify-content: space-around;  align-items: center; text-align: center; padding: 10px; ">
-                <mat-icon>scoreboard</mat-icon>
-                <h3 style="color : goldenrod; padding-left: 10px" matTooltip="Rating">{{user.ranking}}</h3>
-            <mat-icon matTooltip="Moderator" *ngIf="this.user?.role?.is_moderator" [ngStyle]="{'color': 'yellow'}">grade</mat-icon>
-            <mat-icon matTooltip="Owner" *ngIf="this.user?.role?.is_super_admin" [ngStyle]="{'color': '#02fbe6cc'}">api</mat-icon>
+            <mat-icon>scoreboard</mat-icon>
+            <h3 style="color : goldenrod; padding-left: 10px" matTooltip="Rating">{{user.ranking}}</h3>
+            <mat-icon matTooltip="Moderator" *ngIf="this.user?.role?.is_moderator"
+                [ngStyle]="{'color': 'yellow'}">grade</mat-icon>
+            <mat-icon matTooltip="Owner" *ngIf="this.user?.role?.is_super_admin"
+                [ngStyle]="{'color': '#02fbe6cc'}">api</mat-icon>
 
-            
+
         </div>
 
 
         <section
             style="margin-top: 5px; display: flex; justify-content: space-around; align-items: center; padding: 21px; ;"
             *ngIf="icon_activate && user">
-            <span>
+            <span *ngIf="!this.blocked">
                 <a mat-icon-button class="send_friendship" (click)="post_friendship()">
                     <mat-icon matTooltip="Friend status">{{this.icon_friend}}</mat-icon>
                 </a>
             </span>
-            <span> 
-                <a mat-icon-button (click)="block_user(user)">
-                    <mat-icon>block</mat-icon>
+            <span *ngIf="this.blocked">
+                <a mat-icon-button matTooltip="Unblock {{user?.nickName}}" (click)="unblock_user()">
+                    <mat-icon>lock_open</mat-icon>
+                </a>
+            </span>
+            <span *ngIf="!this.blocked">
+                <a mat-icon-button matTooltip="Block {{user?.nickName}}" (click)="block_user(user)">
+                    <mat-icon>lock</mat-icon>
                 </a>
             </span>
             <span *ngIf="view">
                 <a mat-icon-button (click)="send_invitatiion_game()" class="send_friendship">
-                    <mat-icon matTooltip="Invite to a game" >videogame_asset</mat-icon>
+                    <mat-icon matTooltip="Invite to a game">videogame_asset</mat-icon>
                 </a>
             </span>
             <span *ngIf="view">
@@ -50,7 +57,8 @@
                 </a>
             </span>
 
-            <span *ngIf="this.me?.role?.is_super_admin || ((!this.user?.role?.is_super_admin && !this.user?.role?.is_moderator) && this.me?.role?.is_moderator)">
+            <span
+                *ngIf="this.me?.role?.is_super_admin || ((!this.user?.role?.is_super_admin && !this.user?.role?.is_moderator) && this.me?.role?.is_moderator)">
                 <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="options" style="padding: 1px;">
                     <mat-icon matTooltip="Admin panel">admin_panel_settings</mat-icon>
                 </button>
@@ -98,8 +106,8 @@
             </mat-tab>
         </mat-tab-group>
     </div>
-    <div  class="column2" style="border: outset 4px #02fbe6cc;">
-        <app-stats *ngIf="this.user && view" [username]="this.user.username"></app-stats>
+    <div class="column2" style="border: outset 4px #02fbe6cc;">
+        <app-stats *ngIf="(this.user && view) || (this.user && this.user?.id === this.me?.id)" [username]="this.user.username"></app-stats>
     </div>
 
 </section>

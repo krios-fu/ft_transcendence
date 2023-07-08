@@ -43,7 +43,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
         RankingComponent,
         AchievementsComponent,
 
-
     ],
     exports: [
     ],
