@@ -13,6 +13,7 @@ services:
     volumes:
       - backend_node_modules:/usr/src/app/node_modules
       - ./backend/public:/usr/src/app/public/
+      - static_image:/usr/src/app/dist/static
     depends_on:
       - db
     working_dir: /usr/src/app
@@ -53,4 +54,5 @@ volumes:
   pgadmindata: {}
   backend_node_modules: {}
   frontend_node_modules: {}
+  static_image: {}
 

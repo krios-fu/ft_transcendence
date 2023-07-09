@@ -106,7 +106,7 @@ export class UserRoomRolesService {
         const { id } = role;
         const { userId, roomId } = role.userRoom;
         const delRes: DeleteResult = await this.userRoomRolesRepository.delete(id);
-
+        
         if (delRes) {
             this.eventEmitter.emit('updateRoles',
                 {

@@ -4,7 +4,8 @@ import { Body,
     BadRequestException, 
     Logger, 
     NotFoundException, 
-    Param, 
+    Param,
+    HttpCode,
     ParseIntPipe, 
     Post, 
     Query, 
@@ -94,17 +95,19 @@ export class UserRolesController {
             this.userRolesLogger.error(`User ${userId} with role ${roleId} already present in database`);
             throw new BadRequestException('user role already in db');
         }
-        return this.userRolesService.assignRoleToUser(dto);
+        return await this.userRolesService.assignRoleToUser(dto);
     }
 
     @UseGuards(SiteAdminGuard)
+    @HttpCode(204)
     @Delete(':id')
     public async deleteRoleFromUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
         const role: UserRolesEntity = await this.userRolesService.findOne(id);
+
         if (!role) {
             this.userRolesLogger.error(`No user role with id ${id} found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        await this.userRolesService.deleteRoleFromUser(role);
+        return await this.userRolesService.deleteRoleFromUser(role);
     }
 }

@@ -7,7 +7,8 @@ import { Body,
     Logger, 
     Param, 
     ParseIntPipe, 
-    Post, 
+    Post,
+    HttpCode,
     Query, 
     UseGuards} from '@nestjs/common';
 import { RolesService } from 'src/roles/roles.service';
@@ -155,6 +156,7 @@ export class UserRoomRolesController {
     }
 
     @UseGuards(DelRolesGuard)
+    @HttpCode(204)
     @AllowedRoles('admin')
     @Delete(':id')
     public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {

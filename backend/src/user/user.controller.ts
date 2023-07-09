@@ -195,7 +195,10 @@ export class UserController {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const photoUrl = `http://localhost:3000/${avatar.path}`;
+
+        let path = String(avatar.path);
+        path = path.substring(5, path.length);
+        const photoUrl = `http://localhost:3000/${path}`;
     
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
@@ -318,16 +321,6 @@ export class UserController {
    
         return await this.friendshipService.getFriends(id);
     }
-    
-    // @Get(':id/friends')
-    // public async getUserFriends(@Param('id', ParseIntPipe) userId: number,): Promise<FriendshipEntity[]> {
-    //     if (await this.userService.findOne(userId) === null) {
-    //         this.userLogger.error(`User with login ${username} not present in database`);
-    //         throw new HttpException('user not found in database', HttpStatus.BAD_REQUEST);
-    //     }
-    //     return await this.friendshipService.getFriends(userId);
-    // }
-
 
     @Get('me/friends/as_pending')
     public async getFriendsAsPendding(@UserCreds() userCreds: UserCredsDto): Promise<FriendshipEntity[]> {
@@ -384,7 +377,6 @@ export class UserController {
     **  if username of the request matches the receiverId in friendship.
     */
 
-    //UseGuards(ItIsMe)
     @Patch('me/friends/:friend_id/accept')
     public async acceptFriend(
         @UserCreds() userCreds: UserCredsDto,
@@ -402,8 +394,6 @@ export class UserController {
 
     @Patch('me/friends/accept')
     public async meAcceptFriend(
-        // @Param('user_id', ParseIntPipe) userId: number,
-        // @Param('friend_id', ParseIntPipe) friendId: number,
         @UserCreds() userCreds: UserCredsDto,
         @Body() friend: any
     ): Promise<UpdateResult> { // TODELETE
