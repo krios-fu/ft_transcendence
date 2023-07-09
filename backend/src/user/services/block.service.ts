@@ -39,9 +39,9 @@ export class    BlockService {
     **  both operations or none of them.
     */
 
-    public async unblockFriend(blockedFrienship: FriendshipEntity): Promise<void> {
-        await this.blockRepository.remove(blockedFrienship.block);
-        await this.friendshipService.unblockFriend(blockedFrienship.id);
+    public async unblockFriend(blockedFriendship: FriendshipEntity): Promise<void> {
+        await this.blockRepository.remove(blockedFriendship.block);
+        await this.friendshipService.unblockFriend(blockedFriendship.id);
     }
 
     async getBlockedFriends(userId: number): Promise<FriendshipEntity[]> {
