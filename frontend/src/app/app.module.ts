@@ -42,10 +42,9 @@ import { environment } from 'src/environments/environment';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 const config: SocketIoConfig = { url: environment.wsUrl + 'private', options: {
-    reconnectionAttempts: 5,
-    // rejectUnauthorized: false
-
-} }
+        reconnectionAttempts: 5,
+    } 
+}
 
 @NgModule({
     declarations: [
