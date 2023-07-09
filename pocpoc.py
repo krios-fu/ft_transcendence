@@ -13,7 +13,7 @@ def pretty_print(fmt):
 def clean_state(api):
     users = requests.get(base_url + '/users/', headers=api.get_param('auth_token')).json()
     rooms = requests.get(base_url + '/room/', headers=api.get_param('auth_token')).json()
-    roles = requests.get(base_url + '/roles/', headers=api.get_param('auth_token')).json()
+    #roles = requests.get(base_url + '/roles/', headers=api.get_param('auth_token')).json()
     api.set_user_creds(admin)
     for u in users:
         if u["username"] in [api.get_param('api_user'), "danrodri", "krios-fu", "onapoli-"]:
@@ -23,9 +23,8 @@ def clean_state(api):
         if r["roomName"] in ["wakanda", "metropolis", "atlantis"]:
             continue
         requests.delete(base_url + f'/room/{r["id"]}', headers=api.get_param('auth_token'))
-    for ro in roles:
-        if ro['role'] == 'bobo':
-            requests.delete(base_url + f'/roles/{ro["id"]}', headers=api.get_param('auth_token'))
+    #for ro in roles:
+    #    requests.delete(base_url + f'/roles/{ro["id"]}', headers=api.get_param('auth_token'))
 
 
 def set_user(payload, api):
@@ -46,7 +45,7 @@ def set_room(api):
 
 def set_role(api):
     api.set_user_creds(admin)
-    r = requests.post(base_url + '/roles/',
+    r = requests.post(base_url + '/role/',
                       headers=api.get_param('auth_token'),
                       data={ 'role': 'bobo' })
     return r.json()
@@ -130,36 +129,15 @@ if __name__ == "__main__":
     input()
     banned_role = r.json()
 
-    print('~~ [ post role tests ] ~~')
     role = set_role(api)
     api.set_user_creds(user['username'])
-    print('\t --> as banned user')
+    print('\t --> as user')
     payload = {
         'userId': user["id"],
         'roomId': room["id"],
         'roleId': role["id"]
     }
-    r = requests.post(base_url + '/user_room_roles/',
-                      headers=api.get_param('auth_token'),
-                      data=payload)
-    assert r.status_code == 403, f'{r.json()}'
-    input()
-
-    print('\t --> >> remove as admin << ')
-    api.set_user_creds(admin)
-    r = requests.delete(base_url + f'/ban/{banned_role["id"]}',
-                        headers=api.get_param('auth_token'))
-    assert r.status_code == 204, f'{r.json()}'
-
-    # --- post user in room ---
-    api.set_user_creds(user['username'])
-    test = requests.post(base_url + '/user_room/', 
-                  headers=api.get_param('auth_token'),
-                  data={'roomId': room["id"]})
-    # ---                   --- 
-    api.set_user_creds(user['username'])
-    print('\t --> as user')
-    r = requests.post(base_url + '/user_room_roles/',
+    r = requests.post(base_url + '/user_room_role/',
                       headers=api.get_param('auth_token'),
                       data=payload)
     assert r.status_code == 403, f'{r.json()}'
@@ -167,23 +145,35 @@ if __name__ == "__main__":
 
     api.set_user_creds(admin)
     print('\t --> as admin')
-    r = requests.post(base_url + '/user_room_roles/',
+    r = requests.delete(base_url + f'/user_room_role/{banned_role["id"]}',
+                        headers=api.get_param('auth_token'))
+
+    api.set_user_creds(user['username'])
+    print('\t --> as user')
+    r = requests.post(base_url + '/user_room_role/',
+                      headers=api.get_param('auth_token'),
+                      data=payload)
+    assert r.status_code == 403, f'{r.json()}'
+    input()
+
+    api.set_user_creds(admin)
+    print('\t --> as admin')
+    r = requests.post(base_url + '/user_room_role/',
                       headers=api.get_param('auth_token'),
                       data=payload)
     assert r.status_code == 201, f'{r.json()}'
     input()
     room_role = r.json()
 
-    print('~~ [ remove role tests ] ~~')
     api.set_user_creds(user['username'])
-    r = requests.delete(base_url + f'/user_room_roles/{room_role["id"]}',
+    r = requests.delete(base_url + f'/user_room_role/{room_role["id"]}',
                         headers=api.get_param('auth_token'))
     assert r.status_code == 403, f'{r.json()}'
     input()
 
     api.set_user_creds(admin)
     print('\t --> as admin')
-    r = requests.delete(base_url + f'/user_room_roles/{room_role["id"]}',
+    r = requests.delete(base_url + f'/user_room_role/{room_role["id"]}',
                         headers=api.get_param('auth_token'))
     assert r.status_code == 204, f'{r.json()}'
     input()

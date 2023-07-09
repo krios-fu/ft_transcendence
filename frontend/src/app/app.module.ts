@@ -40,10 +40,8 @@ import { WtfComponent } from './login/wtf/wtf.component';
 import { ChangeRoomPasswordInputComponent } from './services/dialog/input/change_room_password/change-room-password-input.component';
 import { environment } from 'src/environments/environment';
 
-const config: SocketIoConfig = { url: environment.wsUrl + 'private', options: {
-    reconnectionAttempts: 5,
-    // rejectUnauthorized: false
-
+const config: SocketIoConfig = { url: environment.wsUrl + '/private', options: {
+    reconnectionAttempts: 5
 } }
 
 @NgModule({

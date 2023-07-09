@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ForbiddenWsException } from 'src/game/exceptions/forbidden.wsException';
 import { QueryMapper } from '../common/mappers/query.mapper';
 import { RoomEntity } from '../room/entity/room.entity';
 import { RoomService } from '../room/room.service';
@@ -74,7 +75,7 @@ export class UserRoomService {
         return rooms;
     }
 
-    public async create(dto: UserRoomDto): Promise<UserRoomEntity> {
+    public async create(dto: UserRoomDto): Promise<UserRoomEntity> {        
         return await this.userRoomRepository.save(new UserRoomEntity(dto));
     }
 

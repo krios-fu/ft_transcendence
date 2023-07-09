@@ -10,7 +10,6 @@ import { RoomModule } from '../room/room.module';
 import { UserModule } from '../user/user.module';
 import { UserRolesModule } from 'src/user_roles/user_roles.module';
 import { BanModule } from 'src/ban/ban.module';
-import { BanService } from 'src/ban/ban.service';
 
 @Module({
   imports: [

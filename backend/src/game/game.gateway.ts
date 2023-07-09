@@ -40,7 +40,6 @@ import { UserRoomRolesEntity } from "../user_room_roles/entity/user_room_roles.e
 import { GameRolesGuard } from "./guards/game.roles.guard";
 import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
 import { GlobalRolesGuard } from './guards/global.roles.guard';
-import { RequiredRoles } from 'src/common/decorators/required.roles.decorator';
 
 @UseGuards(GlobalRolesGuard)
 @ForbiddenRoles('banned')
@@ -137,7 +136,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: number
     ) {
-        console.log(`[ leaveRoom ] llamada a evento leaveRoom`);
         const roomName: string = SocketHelper.roomIdToName(roomId);
         await this.roomService.leave(
             client,
@@ -151,23 +149,6 @@ export class    GameGateway implements OnGatewayInit,
         );
     }
 
-    @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard)
-    @RequiredRoles('super-admin')
-    @SubscribeMessage('kickAndRemove')
-    async kickAndRemoveRoom(
-        @ConnectedSocket() cli: Socket,
-        @MessageBody() roomId: number
-    ) {
-//        const room_key: string = SocketHelper
-/* get room name */
-/* get all sockets registered in that room */
-/* leave from room */
-/* erase user room entities */
-/* kick from channel */
-
-/* check kick login */
-    }
-
     @UseGuards(GameAuthGuard, GameRoomGuard)
     @UsePipes(StringValidator)
     @SubscribeMessage('getQueueInfo')
@@ -175,7 +156,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        console.log(`[ getQueueInfo ] ${roomId}, ${client.id}, ${client.data.username}`);
         await this.matchMakingService.emitQueuesInfo(
             roomId,
             client.id,
@@ -232,7 +212,6 @@ export class    GameGateway implements OnGatewayInit,
         @ConnectedSocket() client: Socket,
         @MessageBody() roomId: string
     ) {
-        console.log(`[ removeFromHeroQueue ] recibido evento de eliminado de cola`);
         await this.matchMakingService.removeFromQueue(
             roomId,
             "hero",

@@ -86,9 +86,7 @@ export class GameQueueComponent implements OnInit, OnDestroy {
         );
         this._unqueueSubscription = this.queueService.unqueueSubscription()
         .subscribe({
-            next: () => {
-                console.log(`[ _unqueueSubscription ] subscripción a borrado de cola`)
-                this.userQueueData.queued = false },
+            next: () => { this.userQueueData.queued = false },
             error: (err: any) => {
                 console.error(err);
             }
@@ -97,7 +95,6 @@ export class GameQueueComponent implements OnInit, OnDestroy {
                                     this.queueService.userQueueSubscription()
         .subscribe({
             next: (data: UserQueueData) => {
-                console.log(`[ userQueueData subscription ] hemos recibido: ${JSON.stringify(data, null, 2)}`);
                 this.userQueueData = data;
             },
             error: (err: any) => {
@@ -108,7 +105,6 @@ export class GameQueueComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this._subscribe();
-        console.log(`[ gameQueueComponent ] emitioendo a getQueueInfo`);
         this.socketService.emit("getQueueInfo", this.roomId);
     }
 
@@ -124,7 +120,6 @@ export class GameQueueComponent implements OnInit, OnDestroy {
     }
 
     addToHeroQueue() {
-        console.log(`[ addToHeroQueue ] elemento: ${JSON.stringify(this.userQueueData, null, 2)}`);
         if (this.userQueueData.queued)
         {
             if (this.userQueueData.roomId === this.roomId

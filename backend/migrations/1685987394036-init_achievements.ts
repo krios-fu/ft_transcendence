@@ -7,7 +7,6 @@ type    AchievementName = "rookie" |
                             "giant killer"
 
 export class initAchievements1685987394036 implements MigrationInterface {
-    name = 'initAchievements1685987394036'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.manager.getRepository(AchievementEntity).insert([

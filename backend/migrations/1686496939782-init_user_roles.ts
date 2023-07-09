@@ -6,7 +6,6 @@ import { RoleName } from "./1686493785757-init_roles";
 import { CreatorUsername } from "./1686412674045-init_users";
 
 export class initUserRoles1686496939782 implements MigrationInterface {
-    name = 'initUserRoles1686496939782'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const creatorEntities: UserEntity[] = await queryRunner.manager

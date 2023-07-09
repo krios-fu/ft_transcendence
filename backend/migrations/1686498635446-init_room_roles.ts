@@ -6,7 +6,6 @@ import { RolesEntity } from "../src/roles/entity/roles.entity";
 import { RoleName } from "./1686493785757-init_roles";
 
 export class initRoomRoles1686498635446 implements MigrationInterface {
-    name = 'initRoomRoles1686498635446'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const   roomEntities: RoomEntity[] = await queryRunner.manager

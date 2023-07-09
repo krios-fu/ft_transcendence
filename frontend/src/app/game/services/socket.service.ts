@@ -13,7 +13,7 @@ enum SocketException {
     InternalServerError = "internalServerError"
 }
 
-interface SocketExceptionData {
+interface   SocketExceptionData {
     cause: SocketException;
     data: any;
     targetEvent: string;
@@ -22,11 +22,12 @@ interface SocketExceptionData {
 @Injectable({
     providedIn: "root"
 })
-export class SocketService {
+export class    SocketService {
 
     private _socket: SockIO.Socket;
     private _connectAttempts: number;
-    private _refreshTokenTry: boolean;
+    private _authAttempts: number;
+    private _authenticating: boolean;
     private _lastAuthSuccess: number;
     private _failedEvents: SocketExceptionData[];
 
@@ -35,12 +36,12 @@ export class SocketService {
         private readonly alertService: AlertServices
     ) {
         this._socket = SockIO.io(environment.wsUrl, {
-            reconnectionAttempts: 3,
-            // rejectUnauthorized: false
+            reconnectionAttempts: 3
         });
         this._addConnectionEvents();
         this._connectAttempts = 0;
-        this._refreshTokenTry = false;
+        this._authAttempts = 0;
+        this._authenticating = false;
         this._lastAuthSuccess = 0;
         this._failedEvents = [];
     }
@@ -51,7 +52,7 @@ export class SocketService {
 
     private _reconnect(): void {
         if (this._connectAttempts >= 3)
-            return;
+            return ;
         ++this._connectAttempts;
         this._socket.connect();
     }
@@ -65,25 +66,16 @@ export class SocketService {
     **  negatively.
     */
     private _reAuthenticateConnection(): void {
-        const username: string | null =  this.getAuthUser();
-
-        if (!username) {
-            this.authService.redirectLogin();
+        if (this._authAttempts >= 3)
             return ;
-        }
+        ++this._authAttempts;
         this.authService.directRefreshToken().subscribe(
             (payload: IAuthPayload | undefined) => {
-                if (!payload){
-                    this.authService.redirectLogin();
+                if (!payload)
                     return ;
-                }
                 this.emit<string>("authentication", payload.accessToken);
             }
         );
-    }
-
-    getAuthUser(): string | null {
-        return localStorage.getItem('username');
     }
 
     private _emitFailedEvents(): void {
@@ -117,18 +109,17 @@ export class SocketService {
             this.emit("authentication", this.authService.getAuthToken());
         });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
-            if (xcpt.cause != SocketException.Forbidden) {
-                if (xcpt.targetEvent != "authentication") {
+            if (xcpt.cause != SocketException.Forbidden)
+            {
+                if (xcpt.targetEvent != "authentication"){
                     this._failedEvents.push(xcpt);
                 }
-                if (this._refreshTokenTry) {
-                    this.authService.redirectLogin();
+                if (this._authenticating)
                     return ;
-                }
-                this._refreshTokenTry = true;
+                this._authenticating = true;
                 this._reAuthenticateConnection();
             }
-            if (xcpt.cause === SocketException.Forbidden) {
+            if (xcpt.cause === SocketException.Forbidden){
                 if (xcpt.data.forbiddenCtx === 'global') {
                     this.authService.redirectBan();
                 } else if (xcpt.data.forbiddenCtx === 'room') {
@@ -138,9 +129,10 @@ export class SocketService {
             }
         });
         this._socket.on("authSuccess", () => {
-            const currentTime: number = Date.now();
-
-            this._refreshTokenTry = false;
+            const   currentTime: number = Date.now();
+        
+            this._authenticating = false;
+            this._authAttempts = 0;
             if (currentTime - this._lastAuthSuccess > 5000)
                 this._emitFailedEvents();
             else
@@ -154,7 +146,7 @@ export class SocketService {
 
     joinRoom(roomId: string): void {
         if (!roomId || roomId === "")
-            return;
+            return ;
         this.emit<string>("joinRoom", roomId);
     }
 

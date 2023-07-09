@@ -243,11 +243,9 @@ export class UserService {
                 .getMany())
                 .map((user_role: UserRolesEntity) => user_role.role.role)
                 .some((role: string) => roles.includes(role));
-            await qr.commitTransaction();
         } catch(err: any) {
             console.log(`caught error: ${err}`)
             assertion = false;
-            await qr.rollbackTransaction();
         } finally {
             await qr.release();
         }
@@ -266,10 +264,8 @@ export class UserService {
                 .where('ban_role.userId = :user_id', { user_id: userId })
                 .andWhere('ban_role.roomId = :room_id', { room_id: roomId })
                 .getOne()) !== null;
-            await qr.commitTransaction();
         } catch (err: any) {
             assertion = false;
-            await qr.rollbackTransaction();
         } finally {
             await qr.release();
         }

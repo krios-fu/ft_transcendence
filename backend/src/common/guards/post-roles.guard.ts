@@ -1,4 +1,5 @@
 import {UserRoomRolesService} from "../../user_room_roles/user_room_roles.service";
+import {BanService} from "../../ban/ban.service";
 import {UserRolesService} from "../../user_roles/user_roles.service";
 import {RolesService} from "../../roles/roles.service";
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
@@ -13,7 +14,6 @@ export class PostRolesGuard implements CanActivate {
                 private readonly globalRolesService: UserRolesService,
                 private readonly roomRolesService: UserRoomRolesService,
                 private readonly rolesService: RolesService) { }
-
     private async _assertValidations(
         userId: number,
         roomId: number,
@@ -32,11 +32,10 @@ export class PostRolesGuard implements CanActivate {
         }
         return true;
     }
-
     async canActivate(ctx: ExecutionContext): Promise<boolean> {
         const req: IRequestUser = ctx.switchToHttp().getRequest();
         const userId: number = req.user?.data?.id;
-        const roomId: number = req.body?.roomId
+        const roomId: number = req.body?.roomId;
         const roleId: number = req.body?.roleId;
         const username: string = req.user?.data?.username;
         const roles: string[]  = this.reflector.get<string[]>(
@@ -47,9 +46,9 @@ export class PostRolesGuard implements CanActivate {
         if (!userId || !roomId) {
             throw new UnauthorizedException();
         }
-        if ((await this.rolesService.findOne(roleId)).role &&
+        if ((await this.rolesService.findOne(roleId)).role === 'admin' &&
             !roles.includes('admin')) {
-                throw new ForbiddenException();
+            throw new ForbiddenException();
         }
         return this._assertValidations(userId, roomId, username, roles);
     }

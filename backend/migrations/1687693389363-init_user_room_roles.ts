@@ -3,7 +3,6 @@ import { UserRoomEntity } from "../src/user_room/entity/user_room.entity"
 import { UserRoomRolesEntity } from "../src/user_room_roles/entity/user_room_roles.entity";
 
 export class initUserRoomRoles1687693389363 implements MigrationInterface {
-    name = 'initUserRoomRoles1687693389363'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const   userRoomEntities: UserRoomEntity[] =

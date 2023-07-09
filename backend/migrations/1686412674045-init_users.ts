@@ -7,7 +7,6 @@ export type CreatorUsername = "krios-fu"
                             | "onapoli-";
 
 export class initUsers1686412674045 implements MigrationInterface {
-    name = 'initUsers1686412674045'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.manager.getRepository(UserEntity).insert([

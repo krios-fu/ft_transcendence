@@ -13,7 +13,6 @@ function    getCreator(creators: UserEntity[],
 }
 
 export class initUserRoom1687618260396 implements MigrationInterface {
-    name = 'initUserRoom1687618260396'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const   creatorEntities: UserEntity[] = await queryRunner.manager
