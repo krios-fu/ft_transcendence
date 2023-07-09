@@ -520,18 +520,20 @@ export class UserController {
     @HttpCode(204)
     public async unblockFriend(
         @UserCreds() userCreds: UserCredsDto,
-        @Param('id', ParseIntPipe) id: number
+        @Param('id', ParseIntPipe) friendId: number
     ): Promise<void> {
-        const { username } = userCreds;
-        const me: UserEntity[] = await this.userService.findAllUsers(
-            {
-                "filter": { "username": [username] }
-            });
+        const { id } = userCreds;
+        let block: FriendshipEntity;
 
-        if (me === null) {
-            this.userLogger.error(`User with login ${username} not found in database`);
+        if (!(await this.userService.findOne(id))) {
+            this.userLogger.error(`User with id ${id} not found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        await this.blockService.unblockFriend(me[0].id, id);
+        block = await this.friendshipService.getOneBlock(id, friendId);
+        if (!block) {
+            this.userLogger.error('User is not blocked');
+            throw new NotFoundException('Resource not found')
+        }
+        await this.blockService.unblockFriend(block);
     }
 }

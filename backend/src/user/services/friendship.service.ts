@@ -322,23 +322,6 @@ export class FriendshipService {
             .getOne();
     }
 
-
-    /*
-    ** Update the status to BLOCKED of a friendship,
-    ** needs id from previous created friendship.
-    */
-
-    // public async blockFriend(friendship : FriendshipEntity, block: BlockEntity): Promise<FriendshipEntity> {
-
-    //     await this.friendRepository.createQueryBuilder('friendship')
-    //       .update(FriendshipEntity)
-    //       .set({ status: FriendshipStatus.BLOCKED, block: block})
-    //       .where("id = :id", { id: friendship.id })
-    //       .execute();
-
-    //     return friendship;
-    //   }
-
     /*
     **  Update the status from PENDING to CONFIRMED of a friendship
     **  where sender and receiver usernames match senderId and receiverId.
@@ -398,7 +381,7 @@ export class FriendshipService {
     public async unblockFriend(id: number): Promise<UpdateResult> {
         return await this.friendRepository.update(
             id,
-            { status: FriendshipStatus.BLOCKED, block: null } /* test and remove if not necessary !! */
+            { status: FriendshipStatus.PENDING }
         );
     }
 }
