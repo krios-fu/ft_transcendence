@@ -91,12 +91,10 @@ export class FriendNotificationComponent implements OnInit {
 
   }
 
-<<<<<<< HEAD
   buildImgUrl(imgPath: string): string {
     return (g_buildImgUrl(imgPath));
   }
 
-=======
   block_friend(friend : UserDto){
   this.userService.block_user(friend)
     .subscribe(
@@ -106,5 +104,4 @@ export class FriendNotificationComponent implements OnInit {
       }
     )
   }
->>>>>>> dev
 }
