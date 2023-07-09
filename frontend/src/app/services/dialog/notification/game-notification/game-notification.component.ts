@@ -2,6 +2,7 @@ import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { interval } from 'rxjs';
 import { UserDto } from 'src/app/dtos/user.dto';
+import { g_buildImgUrl } from '../../../../game/utils/images';
 
 interface dialogGame {
   user: UserDto,
@@ -41,6 +42,10 @@ export class GameNotificationComponent implements OnInit {
   ngOnInit(): void {
     this.startTimer(10);
     // this.sendResponse();
+  }
+
+  buildImgUrl(imgPath: string): string {
+    return (g_buildImgUrl(imgPath));
   }
 
 }

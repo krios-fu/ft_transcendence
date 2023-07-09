@@ -4,7 +4,7 @@
         aria-label="options">
         <div class="badge">
             <figure class="avatar" *ngIf="!player.defaultOffline && !player.role.is_banned">
-                <img src={{player.photoUrl}} alt={{player.username}} />
+                <img src={{buildImgUrl(player.photoUrl)}} alt={{player.username}} />
                 <!-- <figcaption style="font-size:7px; "></figcaption> -->
             </figure>
             <figure class="online" *ngIf="player.defaultOffline && !player.role.is_banned">

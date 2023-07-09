@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
+import { g_buildImgUrl } from '../game/utils/images';
 import { Friendship } from '../dtos/block.dto';
-
 
 
 interface chat_user {
@@ -67,6 +67,7 @@ export class ChatComponent implements OnInit {
       }, error => { })
   }
 
-
-
+  buildImgUrl(imgPath: string): string {
+    return (g_buildImgUrl(imgPath));
+  }
 }

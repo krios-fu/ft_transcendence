@@ -1,4 +1,4 @@
 export enum StaticDir {
-    Users = "static/users/",
-    Rooms = "static/rooms/"
+    Users = "dist/static/users/",
+    Rooms = "dist/static/rooms/"
 }

@@ -16,6 +16,7 @@ import {
 } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { g_buildImgUrl } from '../../../game/utils/images';
 
 
 @Component({
@@ -96,6 +97,10 @@ export class RankingComponent implements OnInit, OnDestroy {
     pageEventHandler(pageEvent: PageEvent): void {
         this.pageIndex = pageEvent.pageIndex;
         this.updateRankings();
+    }
+
+    buildImgUrl(imgPath: string): string {
+        return (g_buildImgUrl(imgPath));
     }
 
     ngOnDestroy(): void {
