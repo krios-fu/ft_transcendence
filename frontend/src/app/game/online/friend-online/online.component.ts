@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 import { RoomGameIdService } from '../../room-game-id/room-game-id.service';
 import { Chat } from 'src/app/chat/chat';
 import { Roles } from 'src/app/roles';
+import { Friendship } from 'src/app/dtos/block.dto';
 
 
 @Component({
@@ -52,6 +53,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
         this.players.map((user: UserDto) => {
           if (user.id === payload.user.id)
             user.defaultOffline = false
+
         })
 
         if (payload.user.id === this.me?.id && this.me?.username !== payload.kicker) {
@@ -242,7 +244,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
       this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
 
-
     }
 
   }
@@ -277,10 +278,10 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   set_ban(user: UserDto) {
     this.userService.post_role_user_room(user, Roles.banned, this.room?.id as number);
-    this.alertService.openSnackBar(`${user.nickName.toUpperCase()} IS NOW BANNED`, 'OK');
+    // this.alertService.openSnackBar(`${user.nickName.toUpperCase()} IS NOW BANNED`, 'OK');
     user.role.is_banned = true;
     this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
-    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    this.chat.sendMessageGame(`${user.nickName} IS NOW BANNED`, this.me?.id as number, 'game' + this.room_id);
     
     // this.leave(user);
   }
@@ -291,7 +292,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
     user.role.is_banned = false;
     
     this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
-    this.chat.sendMessageGame(`${user.nickName} NOW IS BANNED`, this.me?.id as number, 'game' + this.room_id);
+    this.chat.sendMessageGame(`${user.nickName} IS N'T NOW  BANNED`, this.me?.id as number, 'game' + this.room_id);
 
   }
 

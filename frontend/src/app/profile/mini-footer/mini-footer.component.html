@@ -1,36 +1,36 @@
-<div class="effect"  >
+<div class="effect">
 
     <div>
       <button mat-icon-button class="icon_logout" routerLink="/profile/me">
-        <mat-icon>person</mat-icon>
+        <mat-icon matTooltip="Profile">person</mat-icon>
       </button>
     </div>
     <div>
       <a mat-icon-button class="icon_nav" (click)="hello()">
-        <mat-icon matBadge="{{nPenddingFriends}}" matBadgeColor="warn" matBadgeSize="small">
+        <mat-icon matTooltip="Friends" matBadge="{{nPenddingFriends}}" matBadgeColor="warn" matBadgeSize="small">
           people
         </mat-icon>
       </a>
     </div>
     <div>
       <a mat-icon-button [routerLink]="[ '/', 'chat']">
-        <mat-icon>chat</mat-icon>
+        <mat-icon matTooltip="Chat">chat</mat-icon>
       </a>
     </div>
     <div>
       <a mat-icon-button [routerLink]="[ '/', 'game']">
-        <mat-icon>videogame_asset</mat-icon>
+        <mat-icon matTooltip="Game rooms">videogame_asset</mat-icon>
       </a>
     </div>
     <div>
       <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/profile/me/setting">
-        <mat-icon>manage_accounts</mat-icon>
+        <mat-icon matTooltip="Settings">manage_accounts</mat-icon>
       </a>
     </div>
     <!-- > -->
     <div>
       <a mat-icon-button class="icon_logout" (click)="logout()">
-        <mat-icon>logout</mat-icon>
+        <mat-icon matTooltip="Logout">logout</mat-icon>
       </a>
     </div>
   </div>
