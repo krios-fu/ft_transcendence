@@ -17,6 +17,7 @@ import {
     HttpCode,
     UnauthorizedException,
     UseGuards,
+    ForbiddenException
 } from '@nestjs/common';
 import { CreateUserDto, SettingsPayloadDto, UpdateUserDto } from './dto/user.dto';
 import { UpdateResult } from 'typeorm';
@@ -35,6 +36,7 @@ import { Express } from 'express';
 import { UserCredsDto } from 'src/common/dtos/user.creds.dto';
 import { UserCountData } from './types/user-count-data.type';
 import { SiteAdminGuard } from 'src/user_roles/guard/site-admin.guard';
+import { BlockEntity } from "./entities/block.entity";
 
 @Controller('users')
 export class UserController {
@@ -83,8 +85,20 @@ export class UserController {
     */
 
     @Get(':id([0-9]+)')
-    async findOneUser(@Param('id', ParseIntPipe) id: number): Promise<UserEntity> {
+    async findOneUser(@Param('id', ParseIntPipe) id: number,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOne(id);
+
+        const users_blocked = await this.getBlockedFriends(userCreds);
+
+        // users_blocked.forEach((blocked: FriendshipEntity) => {
+        //     if (user && blocked && blocked.senderId === user.id) {
+        //         this.userLogger.error(`User with login ${userCreds.username} is blocked by ${user.username}`);
+        //         throw new ForbiddenException('You are blocked');
+        //     }
+        // })
+
         if (user === null) {
             this.userLogger.error(`User with id ${id} not found in database`);
             throw new NotFoundException('resource not found in database');
@@ -98,8 +112,20 @@ export class UserController {
     */
 
     @Get(':id([a-z][a-z0-9-]{2,10})')
-    public async findOneUserByUsername(@Param('id') id: string): Promise<UserEntity> {
+    public async findOneUserByUsername(@Param('id') id: string,
+        @UserCreds() userCreds: UserCredsDto
+    ): Promise<UserEntity> {
         const user: UserEntity = await this.userService.findOneByUsername(id);
+
+        // const users_blocked = await this.getBlockedFriends(userCreds);
+
+        // users_blocked.forEach((blocked: FriendshipEntity) => {
+        //     if ( user && blocked && blocked.senderId === user.id) {
+        //         this.userLogger.error(`User with login ${userCreds.username} is blocked by ${user.username}`);
+        //         throw new ForbiddenException('You are blocked');
+        //     }
+        // })
+
         if (user === null) {
             this.userLogger.error(`User with login ${id} not found in database`);
             throw new NotFoundException('resource not found exists in database');
@@ -125,19 +151,19 @@ export class UserController {
     **      - doubleAuth (boolean)
     */
 
-//    @UseGuards(SiteAdminGuard)
-//    @Patch(':id')
-//    public async updateUser(
-//        @Param('id', ParseIntPipe) id: number,
-//        @Body() dto: UpdateUserDto
-//    ): Promise<UserEntity> {
-//        if (await this.userService.findOne(id) === null) {
-//            this.userLogger.error(`User with login ${id} not found in database`);
-//            throw new NotFoundException('resource does not exists in database');
-//        }
-//        await this.userService.updateUser(id, dto);
-//        return await this.userService.findOne(id);
-//    }
+    //    @UseGuards(SiteAdminGuard)
+    //    @Patch(':id')
+    //    public async updateUser(
+    //        @Param('id', ParseIntPipe) id: number,
+    //        @Body() dto: UpdateUserDto
+    //    ): Promise<UserEntity> {
+    //        if (await this.userService.findOne(id) === null) {
+    //            this.userLogger.error(`User with login ${id} not found in database`);
+    //            throw new NotFoundException('resource does not exists in database');
+    //        }
+    //        await this.userService.updateUser(id, dto);
+    //        return await this.userService.findOne(id);
+    //    }
 
     @Patch('me')
     public async updateMeUser(
@@ -196,10 +222,8 @@ export class UserController {
             throw new BadRequestException('resource not found in database');
         }
 
-        let path = String(avatar.path);
-        path = path.substring(5, path.length);
-        const photoUrl = `http://localhost:3000/${path}`;
-    
+        const   path = String(avatar.path);
+        const   photoUrl = path.substring(("dist/static/").length);
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
@@ -208,28 +232,6 @@ export class UserController {
     /*
     ** Same as above, gives access to avatar posting to site admin.
     */
-
-//    @UseGuards(SiteAdminGuard)
-//    @Post(':id/avatar')
-//    @UseInterceptors(FileInterceptor(
-//        'avatar', uploadUserAvatarSettings
-//    ))
-//    public async uploadUserAvatar(
-//        @Param('id', ParseIntPipe) userId: number,
-//        @UploadedFile(FileTypeValidatorPipe) avatar: Express.Multer.File
-//    ):Promise<UserEntity> {
-//        const user: UserEntity = await this.userService.findOne(userId);
-//
-//        if (user === null) {
-//            this.userLogger.error(`User with id ${userId} not present in database`);
-//            throw new BadRequestException('resource not found in database');
-//        }
-//        const photoUrl = `http://localhost:3000/${avatar.path}`;
-//
-//        if (user.photoUrl !== photoUrl)
-//            await this.userService.removeAvatarFile(user.username, user.photoUrl);
-//        return await this.userService.updateUser(user.id, { photoUrl: photoUrl });
-//    }
 
 
     /*
@@ -251,21 +253,6 @@ export class UserController {
         const { id, photoUrl } = user;
         return await this.userService.deleteAvatar(id, photoUrl);
     }
-
-//    @UseGuards(SiteAdminGuard)
-//    @Delete(':id/avatar')
-//    @HttpCode(204)
-//    public async deleteUserAvatar(@Param('id', ParseIntPipe) userId: number): Promise<void> {
-//        const user: UserEntity = await this.userService.findOne(userId);
-//
-//        if (user === null) {
-//            this.userLogger.error(`User with id ${userId} not present in database`);
-//            throw new BadRequestException('resource not found in database');
-//        }
-//        const { id, photoUrl } = user;
-//        return await this.userService.deleteAvatar(id, photoUrl);
-//    }
-   
 
     @UseGuards(SiteAdminGuard)
     @Delete(':id')
@@ -301,14 +288,13 @@ export class UserController {
 
     /*
     ** Get all friends from user
-    ** (user_id must be my id or I need to be an admin)
     */
-   
-   @Get('me/friends')
-   public async getMyFriends(@UserCreds() userCreds: UserCredsDto): Promise<FriendshipEntity[]> {
+
+    @Get('me/friends')
+    public async getMyFriends(@UserCreds() userCreds: UserCredsDto): Promise<FriendshipEntity[]> {
         const { username } = userCreds;
         const user: UserEntity = await this.userService.findOneByUsername(username);
-        
+
         if (user === null) {
             this.userLogger.error(`User with login ${username} not present in database`);
             throw new BadRequestException('resource not found in database');
@@ -318,7 +304,7 @@ export class UserController {
 
     @Get(':id/friends')
     public async getUserFriends(@Param('id', ParseIntPipe) id: number): Promise<FriendshipEntity[]> {
-   
+
         return await this.friendshipService.getFriends(id);
     }
 
@@ -350,6 +336,20 @@ export class UserController {
             throw new BadRequestException('resource not found in database');
         }
         return this.friendshipService.getOneFriend(user.id, friendId);
+    }
+
+    @Get('me/friends/:friend_id/blocked')
+    public async getOneFriendBlocked(
+        @UserCreds() userCreds: UserCredsDto,
+        @Param('friend_id', ParseIntPipe) friendId: number
+    ): Promise<FriendshipEntity> {
+        const { username } = userCreds;
+        const user: UserEntity = await this.userService.findOneByUsername(username);
+        if (user === null) {
+            this.userLogger.error(`User with login ${username} not present in database`);
+            throw new BadRequestException('resource not found in database');
+        }
+        return this.friendshipService.getOneFriendBlocked(user.id, friendId);
     }
 
     /* 
@@ -403,8 +403,8 @@ export class UserController {
             throw new UnauthorizedException('request user has not logged in');
         }
         const user = await this.userService.findOneByUsername(username);
-       const  userId = user.id;
-       const friendId = friend.id;
+        const userId = user.id;
+        const friendId = friend.id;
         if ((await this.userService.findAllUsers({ filter: { id: [userId, friendId] } }))
             .length != 2) {
             this.userLogger.error(`No user pair {${userId}, ${friendId}} found in database`);
@@ -460,6 +460,7 @@ export class UserController {
     **                                               **
     ** ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+
     @Get('me/blocked')
     public async getBlockedFriends(@UserCreds() userCreds: UserCredsDto): Promise<FriendshipEntity[]> {
         const { username } = userCreds;
@@ -481,22 +482,31 @@ export class UserController {
     async blockFriend(
         @UserCreds() userCreds: UserCredsDto,
         @Body() dto: BlockPayloadDto,
-    ): Promise<UpdateResult> {
+    ): Promise<BlockEntity> {
         const { username } = userCreds;
         const me: UserEntity = await this.userService.findOneByUsername(username);
+        let friendship: FriendshipEntity;
 
-        if (me === null) {
+        if (!me) {
             this.userLogger.error(`User with username ${username} not found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        const friendship: FriendshipEntity = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
-        if (friendship === null) {
-            this.userLogger.error(`No friendship between users ${me.id} and ${dto.blockReceiverId}`);
-            throw new BadRequestException('resource not found in database');
+        friendship = await this.friendshipService.getOneFriend(me.id, dto.blockReceiverId);
+
+        if (!friendship)
+            friendship = await this.friendshipService.getPosibleFriend(me.id, dto.blockReceiverId);
+        if (!friendship) {
+            friendship = await this.friendshipService.addFriend({
+                senderId: me.id,
+                receiverId: dto.blockReceiverId
+            });
+            if (!friendship) {
+                throw new BadRequestException('se pudrió la cosa');
+            }
         }
         return this.blockService.blockFriend({
             'friendshipId': friendship.id,
-            'senderId': me.id
+            'blockSenderId': me.id
         });
     }
 
@@ -505,20 +515,23 @@ export class UserController {
     */
 
     @Delete('me/blocked/:id')
+    @HttpCode(204)
     public async unblockFriend(
         @UserCreds() userCreds: UserCredsDto,
-        @Param('id', ParseIntPipe) id: number
+        @Param('id', ParseIntPipe) friendId: number
     ): Promise<void> {
-        const { username } = userCreds;
-        const me: UserEntity[] = await this.userService.findAllUsers(
-            {
-                "filter": { "username": [username] }
-            });
+        const { id } = userCreds;
+        let block: FriendshipEntity;
 
-        if (me === null) {
-            this.userLogger.error(`User with login ${username} not found in database`);
+        if (!(await this.userService.findOne(id))) {
+            this.userLogger.error(`User with id ${id} not found in database`);
             throw new BadRequestException('resource not found in database');
         }
-        await this.blockService.unblockFriend(me[0].id, id);
+        block = await this.friendshipService.getOneBlock(id, friendId);
+        if (!block) {
+            this.userLogger.error('User is not blocked');
+            throw new NotFoundException('Resource not found')
+        }
+        await this.blockService.unblockFriend(block);
     }
 }
