@@ -11,9 +11,9 @@
 				  <cdk-virtual-scroll-viewport class="scroll" itemSize="5" >
 					<mat-chip-list style="padding-top: 10px;" *ngFor="let chat of CHATS_USERS">
 					  <mat-chip class="tag" [routerLink]="[ '/', 'chat' ,chat.chat_id ] ">
-						<img class="avatar"  *ngIf="!chat.user.defaultOffline" style="padding-left:0;" src={{chat.user.photoUrl}}
+						<img class="avatar"  *ngIf="!chat.user.defaultOffline" style="padding-left:0;" src={{buildImgUrl(chat.user.photoUrl)}}
 						  alt={{chat.user.nickName}} />
-						<img class="avatar_online" *ngIf="chat.user.defaultOffline" style="padding-left:0;" src={{chat.user.photoUrl}}
+						<img class="avatar_online" *ngIf="chat.user.defaultOffline" style="padding-left:0;" src={{buildImgUrl(chat.user.photoUrl)}}
 						  alt={{chat.user.nickName}} />
 						  <span style="font-size: 15px;"> {{chat.user.nickName}} </span>
 						</mat-chip>

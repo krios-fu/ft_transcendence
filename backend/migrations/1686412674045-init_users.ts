@@ -7,6 +7,7 @@ export type CreatorUsername = "krios-fu"
                             | "onapoli-";
 
 export class initUsers1686412674045 implements MigrationInterface {
+    name = 'initUsers1686412674045'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.manager.getRepository(UserEntity).insert([
@@ -15,7 +16,7 @@ export class initUsers1686412674045 implements MigrationInterface {
                 firstName: "Daniel",
                 lastName: "Rodriguez",
                 email: "danrodri@student.42madrid.com",
-                photoUrl: "http://localhost:3000/static/users/danrodri.jpg",
+                photoUrl: "users/danrodri.jpg",
                 profileUrl: "https://profile.intra.42.fr/users/danrodri",
                 nickName: "danrodri",
                 doubleAuth: false,
@@ -29,7 +30,7 @@ export class initUsers1686412674045 implements MigrationInterface {
                 firstName: "Kevin",
                 lastName: "Rios",
                 email: "krios-fu@student.42madrid.com",
-                photoUrl: "http://localhost:3000/static/users/krios-fu.jpeg",
+                photoUrl: "users/krios-fu.jpg",
                 profileUrl: "https://profile.intra.42.fr/users/krios-fu",
                 nickName: "krios-fu",
                 doubleAuth: false,
@@ -43,7 +44,7 @@ export class initUsers1686412674045 implements MigrationInterface {
                 firstName: "Omar",
                 lastName: "Napoli",
                 email: "onapoli-@student.42madrid.com",
-                photoUrl: "http://localhost:3000/static/users/onapoli-.jpeg",
+                photoUrl: "users/onapoli-.jpeg",
                 profileUrl: "https://profile.intra.42.fr/users/onapoli-",
                 nickName: "onapoli-",
                 doubleAuth: false,

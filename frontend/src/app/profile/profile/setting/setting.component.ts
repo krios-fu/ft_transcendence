@@ -47,7 +47,7 @@ export class SettingComponent implements OnInit {
           this.formGroup.get("doubleAuth")?.setValue(this.user.doubleAuth, { emitEvent: true });
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });
           this.formGroup.get("nickName")?.setValue(this.user.nickName, { emitEvent: true });
-          this.urlPreview = this.user?.photoUrl;
+          this.urlPreview = this.user?.photoUrl ? environment.staticUrl + this.user?.photoUrl : "";
         }
       })
     this.messageEvent.emit(true);
@@ -115,7 +115,7 @@ export class SettingComponent implements OnInit {
     const nickname = login.trim();
 
     if (nickname.length < 3 || nickname.length > 8) {
-      alert('Error login');
+      this.alertServices.openSnackBar('invalid username (must have 3-8 chars)', 'dismiss');
       return;
 
     }

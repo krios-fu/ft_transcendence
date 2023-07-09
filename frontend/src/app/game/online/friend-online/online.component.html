@@ -1,10 +1,10 @@
 <div style="display: flex; align-items: center; justify-content: center; ">
-    <div *ngFor=" let player of players;"
+    <div  *ngFor="let player of players;"
         style="margin: 5px; display:grid; align-items: center; justify-content: center;" [matMenuTriggerFor]="menu"
         aria-label="options">
         <div class="badge">
             <figure class="avatar" *ngIf="!player.defaultOffline && !player.role.is_banned">
-                <img src={{player.photoUrl}} alt={{player.username}} />
+                <img src={{buildImgUrl(player.photoUrl)}} alt={{player.username}} />
                 <!-- <figcaption style="font-size:7px; "></figcaption> -->
             </figure>
             <figure class="online" *ngIf="player.defaultOffline && !player.role.is_banned">

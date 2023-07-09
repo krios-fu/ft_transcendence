@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { ChatService } from 'src/app/services/chat.service';
+import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
+import { g_buildImgUrl } from '../../../../game/utils/images';
 
 @Component({
   selector: 'app-friend-notification',
@@ -14,13 +14,17 @@ import { environment } from 'src/environments/environment';
 })
 export class FriendNotificationComponent implements OnInit {
   public FRIENDS_USERS_PENDDING = [] as UserDto[];
+  public FRIENDS_USER = [] as UserDto[];
+
   urlApi = environment.apiUrl;
 
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private alertService: AlertServices,){}
+    private alertService: AlertServices,
+    private userService: UsersService,
+    ){}
 
   ngOnInit(): void {
     const user_sesion = this.authService.getAuthUser();
@@ -36,15 +40,32 @@ export class FriendNotificationComponent implements OnInit {
             this.FRIENDS_USERS_PENDDING.push(user);
         }
       })
+      this.get_friends()
   }
 
+  get_friends(){
+    this.http.get(`${environment.apiUrl}users/me/friends`)
+    .subscribe((friends: any) =>{
+      console.log("FRIENDSSS", friends);
 
-  add_friend(id_friend: number) {
+      for (let friend in friends) {
+        const { receiver } = friends[friend];
+        const { sender } = friends[friend];
+        const user = (receiver) ? receiver : sender;
+        if (user)
+          this.FRIENDS_USER.push(user);
+      }
+    })
+  }
+
+  add_friend(friend: UserDto) {
     this.http.patch(`${environment.apiUrl}users/me/friends/accept`, {
-      id: id_friend
+      id: friend.id
     })
       .subscribe(() => {
-        this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== id_friend)
+        this.FRIENDS_USER.push(friend);
+        this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== friend.id)
+
         this.alertService.openSnackBar("Friend add", "Close");
       })
   }
@@ -68,5 +89,19 @@ export class FriendNotificationComponent implements OnInit {
         }
       })
 
+  }
+
+  buildImgUrl(imgPath: string): string {
+    return (g_buildImgUrl(imgPath));
+  }
+
+  block_friend(friend : UserDto){
+  this.userService.block_user(friend)
+    .subscribe(
+      (data : any)=>{
+        this.alertService.openSnackBar(`${friend.nickName} IS NOW BLOCKED`, 'OK');
+        this.FRIENDS_USER = this.FRIENDS_USER.filter((user: UserDto) => user.id !== friend.id)
+      }
+    )
   }
 }
