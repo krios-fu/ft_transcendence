@@ -1,4 +1,4 @@
-<h2 style="color: rgb(84, 16, 230);   width: 100%;
+<h2 style="width: 100%;
 height: 100%;
 display: flex;
 align-items: center;
@@ -7,17 +7,40 @@ justify-content: center;" mat-dialog-title>
 </h2>
 <section mat-dialog-content class="notification"
     style=" font-size: small; align-items: center; justify-content: center; align-items: center;">
+    <h5 style="color: white" *ngIf="FRIENDS_USERS_PENDDING.length">PENDDING</h5>
+    <mat-divider *ngIf="FRIENDS_USERS_PENDDING.length"></mat-divider>
     <cdk-virtual-scroll-viewport class="efect" class="scroll" itemSize="5">
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS_PENDDING">
             <mat-chip class="tag">
                 <img class="avatar" style="padding-left:0;" src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
                 <a [routerLink]="['/profile', user.username]">
                     <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span></a>
-                    <a mat-icon-button (click)="add_friend(user.id)">
-                        <mat-icon>check_small</mat-icon>
+                <a mat-icon-button (click)="add_friend(user)">
+                    <mat-icon>check_small</mat-icon>
+                </a>
+                <a mat-icon-button (click)="block_friend(user)">
+                    <mat-icon>block</mat-icon>
+                </a>
+                <a mat-icon-button (click)="delete_friend(user.id)"><mat-icon>person_remove</mat-icon></a>
+            </mat-chip>
+            <mat-divider></mat-divider>
+        </mat-chip-list>
+
+        <mat-divider *ngIf="FRIENDS_USERS_PENDDING.length"></mat-divider>
+        <h5>FRIENDS</h5>
+        <mat-divider></mat-divider>
+
+        <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USER">
+            <mat-chip class="tag">
+                    <img class="avatar" src={{user.photoUrl}} alt={{user.nickName}} />
+                    <a [routerLink]="['/profile', user.username]">
+                        <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span>
                     </a>
-                    <a mat-icon-button (click)="delete_friend(user.id)"><mat-icon>person_remove</mat-icon></a>
-                </mat-chip>
+                <a mat-icon-button (click)="block_friend(user)">
+                    <mat-icon>block</mat-icon>
+                </a>
+                <a mat-icon-button (click)="delete_friend(user.id)"><mat-icon>person_remove</mat-icon></a>
+            </mat-chip>
             <mat-divider></mat-divider>
         </mat-chip-list>
     </cdk-virtual-scroll-viewport>

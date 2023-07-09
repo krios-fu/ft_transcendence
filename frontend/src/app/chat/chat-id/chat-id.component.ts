@@ -11,6 +11,8 @@ import { message } from '../chat';
 import { catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { g_buildImgUrl } from '../../game/utils/images';
+import { AuthService } from 'src/app/services/auth.service';
+import { Friendship } from 'src/app/dtos/block.dto';
 
 @Component({
   selector: 'app-chat-id',
@@ -36,6 +38,8 @@ export class ChatIdComponent implements OnInit, OnDestroy {
     private socketGameNotification: SocketNotificationService,
     private userService: UsersService,
     private alertService: AlertServices,
+    private authService: AuthService,
+
   ) { this.unfold = 'unfold_less'; }
 
   ngOnInit(): void {
@@ -65,10 +69,18 @@ export class ChatIdComponent implements OnInit, OnDestroy {
               this.userService.getUserById(id_friend)
                 .subscribe((user: UserDto) => {
                   this.user = user;
+                  this.userService.get_blocked_user_id(this.user)
+                  .subscribe((friend: Friendship)=>{
+                    if (friend && friend.block?.blockSenderId !== friend.id && friend.block?.blockSenderId !== this.me?.id) {
+                      this.alertService.openSnackBar(`YOU CANNOT ACCESS THIS CHAT`, 'OK');
+                      this.authService.redirectHome()
+                    }
+
+                  })
+
                 }, error => {
                 });
-            }, error => {
-            });
+            }, error => {});
         });
     });
   }
@@ -87,6 +99,8 @@ export class ChatIdComponent implements OnInit, OnDestroy {
       this.messages.unshift(message);
     });
   }
+
+
 
   sendMessage(): boolean {
     const { message, room } = this.formMessage.value;

@@ -212,19 +212,21 @@ span {
 }
 
 .column1 {
-    float: left;
-    width: 20%;
-    padding: 10px;
-    color: white;
-    background: inherit;
-    text-transform: uppercase;
-    min-width: 21rem;
-    position: relative;
-
-    a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // align-items: center;
+    background-image: url('https://wallpaperaccess.com/full/5927911.gif');
+      width: 20%;
+      padding: 10px;
+      color: white;
+      background: inherit;
+      text-transform: uppercase;
+      min-width: 21rem;
+      position: relative;
+      a{
         color: white;
-    }
-
+      }
 }
 
 

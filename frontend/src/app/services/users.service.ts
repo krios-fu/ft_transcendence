@@ -4,6 +4,7 @@ import { UserDto } from '../dtos/user.dto';
 import { environment } from 'src/environments/environment';
 import { Roles } from '../roles';
 import { AlertServices } from './alert.service';
+import { Friendship } from '../dtos/block.dto';
 // import { SocketNotificationService } from './socket-notification.service';
 
 export interface IUser {
@@ -46,6 +47,7 @@ export class UsersService {
       is_owner_room: false,
       is_banned: false,
       is_silenced: false,
+      is_moderator: false
     }
     this.http.get(`${environment.apiUrl}user_roles/users/${user.id}`)
       .subscribe((payload) => {
@@ -63,6 +65,10 @@ export class UsersService {
               break;
             case Roles.silenced:
               user.role.is_silenced = true;
+              break;
+              case Roles.moderator:
+                user.role.is_moderator = true;
+              break; 
           };
         });
       });
@@ -143,7 +149,8 @@ export class UsersService {
   deleted_role(user: UserDto, user_role_id: number) {
     this.http.delete(`${environment.apiUrl}user_roles/${user_role_id}`)
       .subscribe((data: any) => {
-        user.role.is_banned = false;
+        // user.role.is_banned = false;
+        console.log("deleted", data)
       });
   }
 
@@ -153,6 +160,7 @@ export class UsersService {
         const roles = Object.assign(payload);
         let role = roles.find((role: any) => { role.roleId == id_role; return role })
         if (role)
+        console.log(role);
           this.deleted_role(user, role.id);
       });
   }
@@ -177,9 +185,25 @@ export class UsersService {
     this.http.post(`${environment.apiUrl}user_roles`, { userId: user.id, roleId: role_id })
       .subscribe(
         (data: any) => {
+          console.log(data);
           this.get_role(user);
         }
       )
+  }
+
+  block_user(user : UserDto){
+    return this.http.post(`${environment.apiUrl}users/me/blocked`, {
+      blockReceiverId: user.id
+    })
+  }
+
+  get_blocked_users(){
+    return this.http.get<Friendship []>(`${environment.apiUrl}users/me/blocked`);
+  }
+
+  get_blocked_user_id(user: UserDto){
+   return this.http.get<any>(`${environment.apiUrl}users/me/friends/${user.id}/blocked`)
+  
   }
 
 }
