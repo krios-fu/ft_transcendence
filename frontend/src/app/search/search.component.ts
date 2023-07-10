@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UserDto } from '../dtos/user.dto';
+import { g_buildImgUrl } from '../game/utils/images';
 
 @Component({
   selector: 'app-search',
@@ -16,6 +17,10 @@ export class SearchComponent implements OnInit {
 
   clearUser(){
     this.users = [];
+  }
+
+  buildImgUrl(imgPath: string): string {
+    return (g_buildImgUrl(imgPath));
   }
 
 }

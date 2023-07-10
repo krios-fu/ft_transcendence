@@ -1,4 +1,5 @@
-import {IsDate, IsEnum, IsNotEmpty, IsNumber, IsNumberString, IsObject} from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsObject } from "class-validator";
+import { Type } from "class-transformer";
 import { UserEntity } from "../entities/user.entity";
 import { FriendshipStatus } from "../enums/user.enum";
 
@@ -38,6 +39,7 @@ export class CreateFriendDto extends FriendshipPayload {
 export class BlockPayloadDto {
     @IsNumber()
     @IsNotEmpty()
+    @Type(() => Number)
     blockReceiverId: number;
 }
 

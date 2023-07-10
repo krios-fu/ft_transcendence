@@ -128,7 +128,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             .subscribe((entity) => {
                 this.room_dto = entity;
                 if (this.room_dto?.photoUrl)
-                    this.urlPreview = this.room_dto?.photoUrl as string;
+                    this.urlPreview = environment.staticUrl + this.room_dto?.photoUrl as string;
                 if (this.room_dto?.roomName.toLowerCase() === 'metropolis')
                     this.color = this.colors.metropolis;
                 if (this.room_dto?.roomName.toLowerCase() === 'wakanda')

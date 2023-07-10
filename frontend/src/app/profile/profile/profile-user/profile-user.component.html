@@ -95,9 +95,9 @@
                         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS">
                             <mat-chip class="tag_friend" [routerLink]="['/profile/', user.username]">
                                 <img class="avatar_friend_online" *ngIf="user.defaultOffline" style="padding-left:0;"
-                                    src={{user.photoUrl}} alt={{user.nickName}} />
+                                    src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
                                 <img class="avatar_friend" *ngIf="!user.defaultOffline" style="padding-left:0;"
-                                    src={{user.photoUrl}} alt={{user.nickName}} />
+                                    src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
                                 <span style="font-size: xx-small"> {{user.nickName}}</span>
                             </mat-chip>
                         </mat-chip-list>

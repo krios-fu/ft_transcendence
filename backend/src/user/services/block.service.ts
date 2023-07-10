@@ -6,7 +6,6 @@ import { UpdateResult } from 'typeorm';
 import { BlockRepository } from "../repositories/block.repository";
 import { BlockEntity } from "../entities/block.entity";
 import { FriendshipService } from "./friendship.service";
-import { UserEntity } from "../entities/user.entity";
 
 @Injectable()
 export class    BlockService {
@@ -40,14 +39,9 @@ export class    BlockService {
     **  both operations or none of them.
     */
 
-    public async unblockFriend(senderId: number, recvId: number)
-                        : Promise<UpdateResult> {
-        const friendship: FriendshipEntity = await this.friendshipService.getOneBlock(senderId, recvId);
-        if (friendship === null) {
-            return ;
-        }
-        await this.blockRepository.remove(friendship.block);
-        await this.friendshipService.unblockFriend(friendship.id);
+    public async unblockFriend(blockedFriendship: FriendshipEntity): Promise<void> {
+        await this.blockRepository.remove(blockedFriendship.block);
+        await this.friendshipService.unblockFriend(blockedFriendship.id);
     }
 
     async getBlockedFriends(userId: number): Promise<FriendshipEntity[]> {

@@ -4,7 +4,7 @@
         <mat-list  role="list">
             <div mat-subheader>Rooms</div>
             <mat-list-item (click)="goToRoom(room.id, room.roomName)" role="listitem" *ngFor="let room of rooms">
-                <img mat-list-icon src="{{room.photoUrl}}" *ngIf="room.photoUrl">
+                <img mat-list-icon src="{{buildImgUrl(room.photoUrl)}}" *ngIf="room.photoUrl">
                 <mat-icon mat-list-icon *ngIf="!room.photoUrl">groups</mat-icon>
                 <h3 mat-line>
                     <span class="room-name-line">{{ room.roomName }}</span>
