@@ -66,6 +66,7 @@ export class AuthService {
 
     public refreshToken(): Observable<HttpResponse<IAuthPayload>> {
         const tokenEndpoint: string = environment.apiUrl + 'auth/token?user=' + this.getAuthUser();
+
         return this.http.get<IAuthPayload>
         (
             tokenEndpoint, {

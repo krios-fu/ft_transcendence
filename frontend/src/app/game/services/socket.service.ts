@@ -8,9 +8,7 @@ import { environment } from 'src/environments/environment';
 
 enum SocketException {
     Unauthorized = "unauthorized",
-    Forbidden = "forbidden",
-    BadRequest = "badRequest",
-    InternalServerError = "internalServerError"
+    Forbidden = "forbidden"
 }
 
 interface SocketExceptionData {
@@ -26,7 +24,7 @@ export class SocketService {
 
     private _socket: SockIO.Socket;
     private _connectAttempts: number;
-    private _refreshTokenTry: boolean;
+    private _authenticating: boolean;
     private _lastAuthSuccess: number;
     private _failedEvents: SocketExceptionData[];
 
@@ -40,7 +38,7 @@ export class SocketService {
         });
         this._addConnectionEvents();
         this._connectAttempts = 0;
-        this._refreshTokenTry = false;
+        this._authenticating = false;
         this._lastAuthSuccess = 0;
         this._failedEvents = [];
     }
@@ -68,16 +66,21 @@ export class SocketService {
         const username: string | null =  this.getAuthUser();
 
         if (!username) {
+            this._authenticating = false;
             this.authService.redirectLogin();
             return ;
         }
         this.authService.directRefreshToken().subscribe(
             (payload: IAuthPayload | undefined) => {
                 if (!payload){
+                    this._authenticating = false;
                     this.authService.redirectLogin();
                     return ;
                 }
-                this.emit<string>("authentication", payload.accessToken);
+                this.emit("authentication", {
+                    refresh: true,
+                    payload: payload.accessToken
+                });
             }
         );
     }
@@ -89,7 +92,7 @@ export class SocketService {
     private _emitFailedEvents(): void {
         for (let event of this._failedEvents) {
             this.emit(event.targetEvent, event.data);
-        };
+        }
         this._failedEvents = [];
     }
 
@@ -106,26 +109,27 @@ export class SocketService {
         });
     }
 
-    /* diseño de gestion de eventos: 
-    roles: silenciado, baneado, admin 
-    */
-
     private _addConnectionEvents(): void {
         this._socket.on("connect", () => {
             this._connectAttempts = 0;
-            //Authenticate through this event to register user in socket server
-            this.emit("authentication", this.authService.getAuthToken());
+            this.emit("authentication", {
+                refresh: false,
+                payload: this.authService.getAuthToken()
+            });
         });
         this._socket.on("exception", (xcpt: SocketExceptionData) => {
             if (xcpt.cause != SocketException.Forbidden) {
                 if (xcpt.targetEvent != "authentication") {
                     this._failedEvents.push(xcpt);
                 }
-                if (this._refreshTokenTry) {
-                    this.authService.redirectLogin();
+                if (this._authenticating) {
+                    if (xcpt.data.refresh === true) {
+                        this._authenticating = false;
+                        this.authService.redirectLogin();
+                    }
                     return ;
                 }
-                this._refreshTokenTry = true;
+                this._authenticating = true;
                 this._reAuthenticateConnection();
             }
             if (xcpt.cause === SocketException.Forbidden) {
@@ -140,7 +144,7 @@ export class SocketService {
         this._socket.on("authSuccess", () => {
             const currentTime: number = Date.now();
 
-            this._refreshTokenTry = false;
+            this._authenticating = false;
             if (currentTime - this._lastAuthSuccess > 5000)
                 this._emitFailedEvents();
             else

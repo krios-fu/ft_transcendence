@@ -86,7 +86,6 @@ export class UserRolesService {
 
     public async deleteRoleFromUser(role: UserRolesEntity): Promise<void> {
         const { id, userId } = role;
-        console.log("ID ROLE", id);
         const delRes: DeleteResult = await this.userRolesRepository.delete(id);
 
 

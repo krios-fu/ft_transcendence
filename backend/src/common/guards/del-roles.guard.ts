@@ -66,7 +66,6 @@ export class DelRolesGuard implements CanActivate {
         let   roomId: number;
 
         if (!userId || !roleId) {
-            console.log( `Traicionado por userId ${userId} o roleId ${roomId}` );
             throw new UnauthorizedException();
         }
         roomId = await this._extractRoomId(roles, roleId);
