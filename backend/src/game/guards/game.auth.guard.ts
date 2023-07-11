@@ -27,7 +27,7 @@ export class    GameAuthGuard implements CanActivate {
                     
         if (handlerName === "authentication")
         {
-            token = ctx.getData();
+            token = ctx.getData().payload;
             if (!token || typeof token != "string")
                 return ("");
             token = this.encryptionService.decrypt(token);
@@ -47,9 +47,10 @@ export class    GameAuthGuard implements CanActivate {
         let payload: IJwtPayload | undefined;
     
         payload = this.authService.validateJWToken(token);
-        if (!payload)
+        if (!payload) {
             return (false);
-        if (!client.data.token 
+        }
+        if (!client.data.token
                 || handlerName === "authentication") {
             client.data.id = payload.data.id;
             client.data.token = token;
