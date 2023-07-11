@@ -8,6 +8,7 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { AlertServices } from 'src/app/services/alert.service';
 import { MatDialog } from '@angular/material/dialog';
 import { environment } from 'src/environments/environment';
+import { g_buildImgUrl } from '../../../game/utils/images';
 
 
 @Component({
@@ -43,11 +44,13 @@ export class SettingComponent implements OnInit {
       .subscribe({
         next: (user) => {
           this.user = user;
+          if (this.user.photoUrl)
+            this.user.photoUrl = g_buildImgUrl(this.user.photoUrl);
 
           this.formGroup.get("doubleAuth")?.setValue(this.user.doubleAuth, { emitEvent: true });
           this.formGroup.get("defaultOffline")?.setValue(this.user.defaultOffline, { emitEvent: true });
           this.formGroup.get("nickName")?.setValue(this.user.nickName, { emitEvent: true });
-          this.urlPreview = this.user?.photoUrl ? environment.staticUrl + this.user?.photoUrl : "";
+          this.urlPreview = this.user?.photoUrl ? g_buildImgUrl(this.user.photoUrl) : "";
         }
       })
     this.messageEvent.emit(true);
@@ -140,7 +143,7 @@ export class SettingComponent implements OnInit {
         .subscribe(
           (data: any) => {
             this.icon = 'lock';
-            this.user.photoUrl = data.photoUrl;
+            this.user.photoUrl = g_buildImgUrl(data.photoUrl);
           },
           error => {
             this.alertServices.openSnackBar(error.error.message, "Close");

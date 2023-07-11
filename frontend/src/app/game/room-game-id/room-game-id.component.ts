@@ -36,6 +36,7 @@ import { AlertServices } from "../../services/alert.service";
 import { IPasswordChange } from "../../services/dialog/input/change_room_password/change-room-password-input.component";
 import { Roles } from "src/app/roles";
 import { Metropolis } from "../elements/Metropolis";
+import { g_buildImgUrl } from "../utils/images";
 
 @Component({
     selector: 'app-room-game-id',
@@ -128,7 +129,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
             .subscribe((entity) => {
                 this.room_dto = entity;
                 if (this.room_dto?.photoUrl)
-                    this.urlPreview = environment.staticUrl + this.room_dto?.photoUrl as string;
+                    this.urlPreview = g_buildImgUrl(this.room_dto?.photoUrl as string);
                 if (this.room_dto?.roomName.toLowerCase() === 'metropolis')
                     this.color = this.colors.metropolis;
                 if (this.room_dto?.roomName.toLowerCase() === 'wakanda')

@@ -6,6 +6,7 @@ import { SharedService } from '../../profile/profile-user/profile-user.component
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { g_buildImgUrl } from '../../../game/utils/images';
 
 
 @Component({
@@ -61,7 +62,7 @@ export class NavHeaderComponent implements OnInit {
   getPhotoUrl(): string {
     if (!this.user?.photoUrl)
       return ("");
-    return (environment.staticUrl + this.user.photoUrl);
+    return (g_buildImgUrl(this.user.photoUrl));
   }
 
   plus() {
