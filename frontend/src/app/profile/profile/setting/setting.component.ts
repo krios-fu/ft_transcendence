@@ -3,7 +3,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UserDto } from 'src/app/dtos/user.dto';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
-import { FormBuilder, FormGroup} from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { AlertServices } from 'src/app/services/alert.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,7 +38,7 @@ export class SettingComponent implements OnInit {
     private _formBuilder: FormBuilder,
     public alertServices: AlertServices,
     public dialogo: MatDialog
-    ) {
+  ) {
     this.usersService.getUser('me')
       .subscribe({
         next: (user) => {
@@ -72,17 +72,17 @@ export class SettingComponent implements OnInit {
   }
 
   auth2fa() {
-    if(this.user.doubleAuth)
-    this.http.post(`${environment.apiUrl}auth/2fa/deactivate`, this.user.username,)
-    .subscribe((dta: any) => {
-      // this.qr_generate = dta.qr.qr;
-    })
+    if (this.user.doubleAuth)
+      this.http.post(`${environment.apiUrl}auth/2fa/deactivate`, this.user.username,)
+        .subscribe((dta: any) => {
+          // this.qr_generate = dta.qr.qr;
+        })
 
     if (!this.user.doubleAuth && !this.qr_generate)
-    this.http.post(`${environment.apiUrl}auth/2fa/generate`, this.user.username,)
-      .subscribe((dta: any) => {
-        this.qr_generate = dta.qr.qr;
-      })
+      this.http.post(`${environment.apiUrl}auth/2fa/generate`, this.user.username,)
+        .subscribe((dta: any) => {
+          this.qr_generate = dta.qr.qr;
+        })
   }
 
   confir(code: any): Observable<HttpResponse<any>> {
@@ -102,9 +102,9 @@ export class SettingComponent implements OnInit {
   }
 
   confimateOtp(code: any) {
-    if(code.length > 0)
-    this.confir(code).subscribe(lol => {
-    })
+    if (code.length > 0)
+      this.confir(code).subscribe(lol => {
+      })
   }
 
   changeDetected() {
@@ -121,11 +121,15 @@ export class SettingComponent implements OnInit {
     }
     const form = formGroup.getRawValue();
 
-    if (this.icon === 'lock_open' && (login) )
+    if (this.icon === 'lock_open' && (login))
       this.http.patch(`${environment.apiUrl}users/me/settings`, { ...form, nickName: nickname })
         .subscribe(
           data => {
             this.icon = 'lock';
+          }
+          ,
+          error => {
+            this.alertServices.openSnackBar(error.error.message, "Close");
           });
     if (this.file) {
       const formData = new FormData();
@@ -134,15 +138,18 @@ export class SettingComponent implements OnInit {
 
       this.http.post(`${environment.apiUrl}users/me/avatar`, formData)
         .subscribe(
-          data => {
+          (data: any) => {
             this.icon = 'lock';
-          });
+            this.user.photoUrl = data.photoUrl;
+          },
+          error => {
+            this.alertServices.openSnackBar(error.error.message, "Close");
+          }
+        );
     }
 
-    this.alertServices.openSnackBar("Changes saved", "Close");
   }
 
-  getPhoto(): string { return this.urlPreview; }
 
   logout() { this.authService.logout(); }
 
