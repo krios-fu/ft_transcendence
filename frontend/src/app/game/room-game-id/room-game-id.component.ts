@@ -283,6 +283,9 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                         this.urlPreview = reader.result as string;
                     }
                     reader.readAsDataURL(file as any);
+                }, (error : HttpErrorResponse) =>{
+                    this.alertService.openSnackBar(error.error.message, "Ok");
+
                 });
     }
 
