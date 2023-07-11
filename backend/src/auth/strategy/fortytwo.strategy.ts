@@ -27,7 +27,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
             lastName: name.familyName,
             profileUrl: profileUrl,
             email: emails[0].value,
-            photoUrl: _json.image.link,
+            photoUrl: "users/default.gif",
         };
         
         callback(null, userProfile);
