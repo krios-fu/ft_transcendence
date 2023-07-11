@@ -139,6 +139,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this.userService.getUser('me')
             .subscribe((users: UserDto) => {
                 this.me = users;
+                this.userService.get_role(this.me);
             })
     }
 
@@ -369,6 +370,17 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
         this._destroyScenes(this.scenes);
         this.game?.destroy(true, false);
         this.socketService.unsubscribeFromEvent('banned_room');
+    }
+
+    delete() {
+        this.http.get<UserDto[]>(`${environment.apiUrl}user_room/rooms/${this.room_id}/users`)
+            .subscribe((users_room: UserDto[]) => {
+                users_room.forEach((room_user: any) => {
+                    this.gameServiceNoti.roomLeave(this.room_id, room_user.user, true);
+                })
+            })
+        this.http.delete(`${environment.apiUrl}room/${this.room_id}`)
+        . subscribe(()=>{});
     }
 
 }

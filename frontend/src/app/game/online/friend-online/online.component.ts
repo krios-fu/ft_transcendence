@@ -302,7 +302,7 @@ export class OnlineComponent implements OnInit, OnDestroy{
 
 
   ngOnDestroy(): void {
-    this.userService.deleted_role_room(this.me as UserDto, this.room?.id as number, Roles.player)
+    // this.userService.deleted_role_room(this.me as UserDto, this.room?.id as number, Roles.player)
     this.socketGameNotification.roomLeave(this.room_id, this.me, false, this.me?.username);
 
   }

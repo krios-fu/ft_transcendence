@@ -11,7 +11,7 @@
   <div class="column1" *ngIf="this.room_dto">
     <!-- <div id="container-title"> -->
 
-   
+
     <section style="color: white;">
 
       <mat-grid-list cols="3" rowHeight="60px">
@@ -29,10 +29,10 @@
               [ngStyle]="{'color': color, 'font-size':'25px'}"
               style="position: absolute; bottom: -5px; ">upload</mat-icon>
 
- 
+
           </mat-grid-tile>
         </mat-grid-tile-header>
-        
+
         <mat-grid-tile>
           <mat-form-field class="example-full-width" *ngIf="this.room_dto?.ownerId == this.me?.id && this.close">
             <input #name_room ngModule name="name" style="color: white; font-size: large; text-align: center;" matInput
@@ -40,12 +40,12 @@
           </mat-form-field>
 
           <span *ngIf="this.roles.official && !this.close">
-              <mat-icon [ngStyle]="{ color: color }">verified</mat-icon>
+            <mat-icon [ngStyle]="{ color: color }">verified</mat-icon>
           </span>
 
           <h5 (click)="edit()" *ngIf="this.room_dto?.ownerId != this.me?.id || !this.close"
             style="align-content: center; justify-content: center; display: flex; margin-left: 10px;">
-            {{this.room_dto?.roomName?.toUpperCase()}} 
+            {{this.room_dto?.roomName?.toUpperCase()}}
           </h5>
 
         </mat-grid-tile>
@@ -61,6 +61,12 @@
           <span *ngIf="this.room_dto?.ownerId == this.me?.id && this.roles.private">
             <a mat-icon-button (click)="changePassword()">
               <mat-icon>password</mat-icon>
+            </a>
+          </span>
+          <span
+            *ngIf="(this.room_dto?.ownerId == this.me?.id  || this.me?.role?.is_super_admin || this.me?.role?.is_moderator) && !this.roles.official">
+            <a mat-icon-button (click)="delete()">
+              <mat-icon>deleted</mat-icon>
             </a>
           </span>
           <span>
