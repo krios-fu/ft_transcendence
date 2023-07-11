@@ -113,6 +113,7 @@ export class UserService {
 
     public async postUser(newUser: CreateUserDto): Promise<UserEntity> {
         const newEntity: UserEntity = new UserEntity(newUser);
+        console.log(`Dto: ${JSON.stringify(newUser, null, 2)}, Ent: ${JSON.stringify(newEntity, null, 2)}`)
 
         await this.userRepository.insert(newEntity);
         return newEntity;
