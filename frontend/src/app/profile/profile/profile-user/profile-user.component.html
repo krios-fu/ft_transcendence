@@ -10,12 +10,13 @@
                 <img class="avatar" src="{{getPhotoUrl()}}" />
             </figure>
             <h1>
-                <mat-icon matTooltip="Online status" [ngStyle]="{'color': color_icon}">{{online_icon}}</mat-icon>
+                <mat-icon *ngIf="!this.user?.role?.is_player && view" matTooltip="Online status"
+                    [ngStyle]="{'color': color_icon}">{{online_icon}}</mat-icon>
                 {{getNickName()}}
             </h1>
         </section>
 
-        <div *ngIf="user"
+        <div *ngIf="user && view"
             style="display: flex; justify-content: space-around;  align-items: center; text-align: center; padding: 10px; ">
             <mat-icon>scoreboard</mat-icon>
             <h3 style="color : goldenrod; padding-left: 10px" matTooltip="Rating">{{user.ranking}}</h3>
@@ -107,7 +108,8 @@
         </mat-tab-group>
     </div>
     <div class="column2" style="border: outset 4px #02fbe6cc;">
-        <app-stats *ngIf="(this.user && view) || (this.user && this.user?.id === this.me?.id)" [username]="this.user.username"></app-stats>
+        <app-stats *ngIf="(this.user && view) || (this.user && this.user?.id === this.me?.id)"
+            [username]="this.user.username"></app-stats>
     </div>
 
 </section>

@@ -19,7 +19,7 @@ import { g_buildImgUrl } from '../../utils/images';
   templateUrl: './online.component.html',
   styleUrls: ['./online.component.scss']
 })
-export class OnlineComponent implements OnInit, OnDestroy {
+export class OnlineComponent implements OnInit, OnDestroy{
 
   me?: UserDto;
   room_id?: string;
@@ -156,8 +156,10 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.userService.get_role(this.me);
           this.userService.get_role_user_room(this.me, id);
+          this.userService.get_role(this.me);
+          // this.userService.post_role
+
           user_aux = user;
           this.http.get(`${environment.apiUrl}user_roles/users/${this.me.id}`)
             .subscribe((entity) => {
@@ -300,6 +302,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
+    this.userService.deleted_role_room(this.me as UserDto, this.room?.id as number, Roles.player)
     this.socketGameNotification.roomLeave(this.room_id, this.me, false, this.me?.username);
 
   }

@@ -47,7 +47,8 @@ export class UsersService {
       is_owner_room: false,
       is_banned: false,
       is_silenced: false,
-      is_moderator: false
+      is_moderator: false,
+      is_player : false
     }
     this.http.get(`${environment.apiUrl}user_roles/users/${user.id}`)
       .subscribe((payload) => {
@@ -69,6 +70,8 @@ export class UsersService {
               case Roles.moderator:
                 user.role.is_moderator = true;
               break; 
+              case Roles.player:
+                user.role.is_player = true;
           };
         });
       });
@@ -91,6 +94,10 @@ export class UsersService {
               break;
             case Roles.silenced:
               user.role.is_silenced = true;
+              break;
+              case Roles.player:
+                user.role.is_player = true;
+                break;
           };
         });
       });
@@ -167,7 +174,13 @@ export class UsersService {
 
   post_role_user_room(user: UserDto, roleId: number, roomId: number) {
 
-    if (roleId === Roles.banned) {
+    if(roleId === Roles.player){
+      this.http.post(`${environment.apiUrl}user_room_roles/as_player`, { userId: user.id, roleId: roleId, roomId: roomId })
+        .subscribe((payload: any) => {
+          this.get_role_user_room(user, roomId);
+        })
+    }
+    else if (roleId === Roles.banned) {
       this.http.post(`${environment.apiUrl}ban`, { userId: user.id.toString(), roomId: roomId.toString() })
       .subscribe((payload : any)=>{
         user.role.is_banned = true;
