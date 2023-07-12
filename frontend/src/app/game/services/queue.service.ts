@@ -73,7 +73,6 @@ export class    QueueService {
     }
 
     addToQueue(roomId: string): void {
-        console.log()
         this.socketService.emit<string>(
             "addToGameQueue",
             roomId

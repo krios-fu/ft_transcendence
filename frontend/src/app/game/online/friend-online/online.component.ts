@@ -60,8 +60,9 @@ export class OnlineComponent implements OnInit, OnDestroy {
           this._redirectToRoomLists();
         }
 
-        if (payload.user.role && !payload.user.role.is_banned)
-          this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id)
+        // if (payload.user.role && !payload.user.role.is_banned)
+          
+          // this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id)
 
         this.players.sort((user_a: any, user_b: any) => {
           return user_b.defaultOffline - user_a.defaultOffline;
@@ -95,7 +96,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
 
     payload.forEach((user_online: UserDto) => {
-      console.log(user_online);
       this.userService.get_blocked_user_id(user_online)
         .subscribe((_friend: Friendship) => {
 
@@ -336,4 +336,29 @@ export class OnlineComponent implements OnInit, OnDestroy {
     this.socketGameNotification.roomLeave(this.room_id, player, true, this.me?.username);
   }
 
+
+  karen_level_one(player: UserDto, user_view : UserDto){
+
+    if (user_view.role.is_super_admin && !player.role.is_super_admin)
+        return true;
+    if (user_view.role.is_moderator && (!player.role.is_super_admin && !player.role.is_moderator))
+        return true;
+    if (this.is_owner_room && (!player.role.is_super_admin && !player.role.is_moderator))
+        return true;
+    if (user_view.role.is_admin && (!player.role.is_super_admin && !player.role.is_moderator && !player.role.is_admin && !this.is_owner_room))
+        return true;
+
+    return false;
+  }
+
+  karen(player: UserDto, user_view : UserDto){
+
+    if (user_view.role.is_super_admin && !player.role.is_super_admin)
+        return true;
+    if (user_view.role.is_moderator && (!player.role.is_super_admin && !player.role.is_moderator))
+        return true;
+    if (this.is_owner_room && (!player.role.is_super_admin && !player.role.is_moderator))
+        return true;
+    return false;
+  }
 }

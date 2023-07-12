@@ -245,7 +245,6 @@ export class UserService {
                 .some((role: string) => roles.includes(role));
             await qr.commitTransaction();
         } catch(err: any) {
-            console.log(`caught error: ${err}`)
             assertion = false;
             await qr.rollbackTransaction();
         } finally {
