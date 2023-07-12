@@ -37,7 +37,7 @@ justify-content: center;" mat-dialog-title>
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USER">
             <mat-chip class="tag">
                 <img *ngIf="!user?.room_id" class="avatar" src={{user.photoUrl}} alt={{user.nickName}} />
-                <img *ngIf="user?.room_id" class="online" src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
+                <img *ngIf="user?.room_id" class="online" src={{user.photoUrl}} alt={{user.nickName}} />
 
                 <a [routerLink]="['/profile', user.username]">
                     <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span>
