@@ -40,17 +40,17 @@
                     <span>Game</span>
                 </button>
 
-                <!--  view if owner  -->
-                <div *ngIf="is_owner_room">
+                <!--  view if owner or moderator or super admin  -->
+                <div *ngIf="karen(this.player, this.me)">
 
-                    <div *ngIf="!player.role.is_owner_room && !player.role.is_admin && this.is_owner_room">
+                    <div *ngIf="!karen(this.player, this.me) && !this.player.role.is_admin">
                         <button mat-menu-item (click)="set_admin(player)">
                             <mat-icon>gamepad</mat-icon>
                             <span>Admin</span>
                         </button>
                     </div>
 
-                    <div *ngIf="!player.role.is_owner_room && player.role.is_admin && this.is_owner_room">
+                    <div *ngIf="this.player.role.is_admin">
                         <button mat-menu-item (click)="deleted_admin(player)">
                             <mat-icon>deleted</mat-icon>
                             <span>Admin role</span>
@@ -60,7 +60,7 @@
                 </div>
                 <!--  view if admin  -->
                 <div
-                    *ngIf="(this.me?.role?.is_admin && (!player.role.is_admin && !player.role.is_owner_room)) || is_owner_room">
+                    *ngIf="karen_level_one(this.player, this.me)">
                     <div *ngIf="!player.role.is_silenced">
                         <button mat-menu-item (click)="set_silenced(player)">
                             <mat-icon>voice_over_off</mat-icon>

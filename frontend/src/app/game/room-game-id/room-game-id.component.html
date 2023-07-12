@@ -64,7 +64,7 @@
             </a>
           </span>
           <span
-            *ngIf="(this.room_dto?.ownerId == this.me?.id  || this.me?.role?.is_super_admin || this.me?.role?.is_moderator) && !this.roles.official">
+            *ngIf="(this.me?.role?.is_super_admin || this.me?.role?.is_moderator) && !this.roles.official">
             <a mat-icon-button (click)="delete()">
               <mat-icon>deleted</mat-icon>
             </a>
