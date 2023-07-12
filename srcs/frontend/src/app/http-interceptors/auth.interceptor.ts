@@ -35,15 +35,24 @@ export class AuthInterceptor implements HttpInterceptor {
                 catchError((err: HttpErrorResponse) => {
                     if (err.status === 401 && err.headers.get('Location') === '/login/2fa') {
                         this.authService.redirect2FA();
-                        return throwError(() => err);
+                        return throwError(() => new HttpErrorResponse({
+                            status: err.status,
+                            statusText: err.statusText
+                        }));
                     }
                     if (err.status === 403 && err.headers.get('Location') === '/wtf') {
                         this.authService.redirectBan();
-                        return throwError(() => err);
+                        return throwError(() => new HttpErrorResponse({
+                            status: err.status,
+                            statusText: err.statusText
+                        }));
                     }
                     if (!this.authService.getAuthUser()) {
                         this.authService.logout();
-                        return throwError(() => err);
+                        return throwError(() => new HttpErrorResponse({
+                            status: err.status,
+                            statusText: err.statusText
+                        }));
                     }
                     if (err.status === 401 && req.url.indexOf('/token') == -1) {
                         return this.handleAuthError(req, next);

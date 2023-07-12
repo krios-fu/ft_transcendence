@@ -9,6 +9,7 @@
 !*/.dockerignore
 
 # ~~ python virtual environment ~~ #
+api
 venv
 **/__pycache__
 backend/static/*

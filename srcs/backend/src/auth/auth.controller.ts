@@ -172,25 +172,4 @@ export class AuthController {
         const username: string = userCreds.username;
         this.authService.logout(username, res);
     }
-
-    /* 
-    ** Generate a new JWT token for auth. without 42 Intra
-    ** Only for dev purposes, remove in production
-    */
-
-    @Public()
-    @Post('generate')
-    public async generateNewToken(
-        @Body() tokenCreds: TokenCredentials,
-        @Res({ passthrough: true }) res: Response,
-    ): Promise<IAuthPayload> {
-        const { userProfile, app_id, app_secret } = tokenCreds;
-
-        if (app_id !== process.env.FORTYTWO_APP_ID ||
-            app_secret !== process.env.FORTYTWO_APP_SECRET) {
-                this.authLogger.error('Invalid app credentials');
-                throw new ForbiddenException('wrong app credentials')
-        }
-        return await this.authService.authUser(userProfile, res);
-    }
 }

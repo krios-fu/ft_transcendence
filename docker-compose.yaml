@@ -4,7 +4,7 @@ services:
     env_file: 
       - .env.database
     build:
-      context: ./backend/
+      context: ./srcs/backend/
     ports:
       - 3000:3000   # default port
       - 3001:3001   # websockets
@@ -35,7 +35,7 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./frontend/
+      context: ./srcs/frontend/
     networks:
       - webapp-network
     volumes:

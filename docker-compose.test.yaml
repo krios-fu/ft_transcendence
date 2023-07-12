@@ -7,6 +7,6 @@ services:
     ports:
       - 9229:9229   # default debug port
     volumes:
-      - ./backend/:/usr/src/app
+      - ./srcs/backend/:/usr/src/app
     entrypoint: ["npm", "run", "test:e2e"]
     restart: unless-stopped
