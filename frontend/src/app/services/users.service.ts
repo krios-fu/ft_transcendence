@@ -157,7 +157,6 @@ export class UsersService {
     this.http.delete(`${environment.apiUrl}user_roles/${user_role_id}`)
       .subscribe((data: any) => {
         // user.role.is_banned = false;
-        console.log("deleted", data)
       });
   }
 

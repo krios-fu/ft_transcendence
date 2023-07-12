@@ -151,7 +151,7 @@ export class AuthService {
         authHeader: string | undefined
     ): Promise<IAuthPayload> {
         let tokenEntity: RefreshTokenEntity = await this.getTokenByUsername(username);
-  
+
         if (tokenEntity.token != refreshToken) {
             throw TokenError.TOKEN_INVALID;
         } else if (tokenEntity.expiresIn.getTime() < Date.now()) {

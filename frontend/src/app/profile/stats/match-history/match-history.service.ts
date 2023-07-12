@@ -76,8 +76,8 @@ export class    MatchHistoryService {
             return ({
                 winner: match.winner.user.nickName,
                 loser: match.loser.user.nickName,
-                winnerPhoto: match.winner.user.photoUrl ? environment.staticUrl + match.winner.user.photoUrl : "",
-                loserPhoto: match.loser.user.photoUrl ? environment.staticUrl + match.loser.user.photoUrl : "",
+                winnerPhoto: match.winner.user.photoUrl ? match.winner.user.photoUrl : "",
+                loserPhoto: match.loser.user.photoUrl ? match.loser.user.photoUrl : "",
                 winScore: match.winner.score,
                 loseScore: match.loser.score,
                 official: match.official,

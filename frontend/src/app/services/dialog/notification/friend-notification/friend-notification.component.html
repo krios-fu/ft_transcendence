@@ -12,9 +12,7 @@ justify-content: center;" mat-dialog-title>
     <cdk-virtual-scroll-viewport class="efect" class="scroll" itemSize="5">
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USERS_PENDDING">
             <mat-chip class="tag">
-
-                <img class="avatar" style="padding-left:0;" src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
-
+                <img class="avatar" style="padding-left:0;" src={{user.photoUrl}} alt={{user.nickName}} />
                 <a [routerLink]="['/profile', user.username]">
                     <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span></a>
                 <a mat-icon-button matTooltip="Add friend" (click)="add_friend(user)">
@@ -39,7 +37,7 @@ justify-content: center;" mat-dialog-title>
         <mat-chip-list style="padding-top: 10px;" *ngFor="let user of FRIENDS_USER">
             <mat-chip class="tag">
                 <img *ngIf="!user?.room_id" class="avatar" src={{user.photoUrl}} alt={{user.nickName}} />
-                <img *ngIf="user?.room_id" class="online" src={{buildImgUrl(user.photoUrl)}} alt={{user.nickName}} />
+                <img *ngIf="user?.room_id" class="online" src={{user.photoUrl}} alt={{user.nickName}} />
 
                 <a [routerLink]="['/profile', user.username]">
                     <span style="margin-left: 4px;">{{user.nickName.toUpperCase()}}</span>

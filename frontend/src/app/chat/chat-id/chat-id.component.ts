@@ -10,7 +10,6 @@ import { AlertServices } from 'src/app/services/alert.service';
 import { message } from '../chat';
 import { catchError, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { g_buildImgUrl } from '../../game/utils/images';
 import { AuthService } from 'src/app/services/auth.service';
 import { Friendship } from 'src/app/dtos/block.dto';
 
@@ -119,10 +118,6 @@ export class ChatIdComponent implements OnInit, OnDestroy {
   getMeId() { return this.me?.id as number }
 
   toggleBadgeVisibility() { this.hidden = !this.hidden; }
-
-  buildImgUrl(imgPath: string): string {
-    return (g_buildImgUrl(imgPath));
-  }
 
   ngOnDestroy(): void { }
 }

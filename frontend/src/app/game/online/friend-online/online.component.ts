@@ -11,7 +11,6 @@ import { environment } from 'src/environments/environment';
 import { RoomGameIdService } from '../../room-game-id/room-game-id.service';
 import { Chat } from 'src/app/chat/chat';
 import { Roles } from 'src/app/roles';
-import { g_buildImgUrl } from '../../utils/images';
 import { Friendship } from 'src/app/dtos/block.dto';
 
 
@@ -331,12 +330,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
   private _redirectToRoomLists(): void {
     this.router.navigate(['/game']);
   }
-
-  buildImgUrl(imgPath: string): string {
-    return (g_buildImgUrl(imgPath));
-  }
-
-
 
   leave(player: UserDto) {
     this.roomGameIdService.unregisterFromRoom(player.id, this.room_id)

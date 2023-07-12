@@ -173,7 +173,7 @@ export class RoomController {
         }
 
         const   path = String(avatar.path);
-        const   photoUrl = path.substring(("dist/static/").length);
+        const   photoUrl = path.substring(("dist").length);
 
         return await this.roomService.updateRoom(id, { photoUrl: photoUrl })
     }

@@ -19,13 +19,14 @@ def get_api_token(user: str):
     fortytwo_app_id = os.getenv('FORTYTWO_APP_ID')
     fortytwo_app_secret = os.getenv('FORTYTWO_APP_SECRET')
 
+    
     user_profile = {
         'username': user,
         'firstName': f'{user}-fn',
         'lastName': f'{user}-ln',
         'profileUrl': '(nil)',
         'email': f'{user}-dummyEmail@domain.com',
-        'photoUrl': ''
+        'photoUrl': None
     }
 
     body = {

@@ -6,7 +6,6 @@ import { UsersService } from 'src/app/services/users.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { message } from 'src/app/chat/chat';
 import { Chat } from 'src/app/chat/chat';
-import { environment } from '../../../environments/environment';
 import { Friendship } from 'src/app/dtos/block.dto';
 
 
@@ -73,7 +72,7 @@ export class ChatGameComponent implements OnInit {
     this.chat.getMessagesGame().subscribe(message => {
       this.userService.getUserById(message.sender)
       .subscribe((user: UserDto) => {
-        message.avatar = environment.staticUrl + user.photoUrl;
+        message.avatar = user.photoUrl;
         this.userService.get_blocked_user_id(user)
         .subscribe((friend: Friendship) => {
           if( !(friend && friend.block?.blockSenderId === this.me?.id))

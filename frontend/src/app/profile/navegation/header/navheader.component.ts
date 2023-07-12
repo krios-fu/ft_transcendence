@@ -61,7 +61,7 @@ export class NavHeaderComponent implements OnInit {
   getPhotoUrl(): string {
     if (!this.user?.photoUrl)
       return ("");
-    return (environment.staticUrl + this.user.photoUrl);
+    return (this.user.photoUrl);
   }
 
   plus() {

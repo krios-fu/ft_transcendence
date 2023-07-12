@@ -411,9 +411,9 @@ export class   Game {
     **  Returns if it could process all input.
     */
     private processInput(): boolean {    
-        this.sortInput();
+        /*this.sortInput();
         if (this.reconcileInput())
-            return (true);
+            return (true);*/
         this.applyInput(this._input);
         return (false);
     }
