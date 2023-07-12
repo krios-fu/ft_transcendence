@@ -1,7 +1,5 @@
 <section class="row" *ngIf="this.user">
     <div class="column1 " style="border: outset 4px silver;">
-
-
         <section style="display: flex;
       flex-direction: column;
       align-items: center;
@@ -10,12 +8,13 @@
                 <img class="avatar" src="{{getPhotoUrl()}}" />
             </figure>
             <h1>
-                <mat-icon matTooltip="Online status" [ngStyle]="{'color': color_icon}">{{online_icon}}</mat-icon>
+                <mat-icon *ngIf="!this.user?.role?.is_player && view" matTooltip="Online status"
+                    [ngStyle]="{'color': color_icon}">{{online_icon}}</mat-icon>
                 {{getNickName()}}
             </h1>
         </section>
 
-        <div *ngIf="user"
+        <div *ngIf="user && view"
             style="display: flex; justify-content: space-around;  align-items: center; text-align: center; padding: 10px; ">
             <mat-icon>scoreboard</mat-icon>
             <h3 style="color : goldenrod; padding-left: 10px" matTooltip="Rating">{{user.ranking}}</h3>
@@ -23,10 +22,7 @@
                 [ngStyle]="{'color': 'yellow'}">grade</mat-icon>
             <mat-icon matTooltip="Owner" *ngIf="this.user?.role?.is_super_admin"
                 [ngStyle]="{'color': '#02fbe6cc'}">api</mat-icon>
-
-
         </div>
-
 
         <section
             style="margin-top: 5px; display: flex; justify-content: space-around; align-items: center; padding: 21px; ;"
@@ -41,7 +37,7 @@
                     <mat-icon>lock_open</mat-icon>
                 </a>
             </span>
-            <span *ngIf="!this.blocked">
+            <span *ngIf="!this.blocked && (!this.user?.role?.is_super_admin && !this.user?.role?.is_moderator)">
                 <a mat-icon-button matTooltip="Block {{user?.nickName}}" (click)="block_user(user)">
                     <mat-icon>lock</mat-icon>
                 </a>
@@ -63,7 +59,7 @@
                     <mat-icon matTooltip="Admin panel">admin_panel_settings</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
-                    <button mat-menu-item (click)="close()" *ngIf="!this.user?.role?.is_banned">
+                    <button mat-menu-item (click)="close()" *ngIf="!this.user?.role?.is_banned ">
                         <mat-icon>do_not_disturb_off</mat-icon>
                         <span style="color:red">BAN</span>
                     </button>
@@ -83,11 +79,8 @@
             </span>
         </section>
 
-
-
         <mat-tab-group *ngIf="view" mat-stretch-tabs mat-align-tabs="end" color="primary" aria-label="primary"
             style="padding: 10px;">
-
             <mat-tab label="FRIENDS {{FRIENDS_USERS.length}}">
                 <section
                     style=" padding: 20px; font-size: small; align-items: center; justify-content: center; align-items: center;">
@@ -107,7 +100,8 @@
         </mat-tab-group>
     </div>
     <div class="column2" style="border: outset 4px #02fbe6cc;">
-        <app-stats *ngIf="(this.user && view) || (this.user && this.user?.id === this.me?.id)" [username]="this.user.username"></app-stats>
+        <app-stats *ngIf="(this.user && view) || (this.user && this.user?.id === this.me?.id)"
+            [username]="this.user.username"></app-stats>
     </div>
 
 </section>

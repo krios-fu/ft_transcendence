@@ -116,6 +116,7 @@ export class SocketNotificationService implements OnInit {
     joinRoomNotification(username: string) {
         this.socket.emit('join_room_notification', username);
     }
+
     sendNotification(payload: any) {
         this.socket.emit(`notifications`, payload)
     }
@@ -154,6 +155,16 @@ export class SocketNotificationService implements OnInit {
 
     playerUpdateEmit(_room: string, _user: UserDto ) {
         this.socket.emit('player_update', { room: _room, user: _user });
+    }
+
+
+    get_online(){
+        return this.socket.fromEvent('global_online');
+    }
+
+    send_request_online(user : UserDto){
+        this.socket.emit('global_online', { user: user });
+
     }
 
     // get_room_admin() {

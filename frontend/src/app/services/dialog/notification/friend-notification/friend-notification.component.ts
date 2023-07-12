@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
 import { g_buildImgUrl } from '../../../../game/utils/images';
+import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 
 @Component({
   selector: 'app-friend-notification',
@@ -24,18 +25,20 @@ export class FriendNotificationComponent implements OnInit {
     private authService: AuthService,
     private alertService: AlertServices,
     private userService: UsersService,
+    private socketNotiServices: SocketNotificationService
     ){}
 
   ngOnInit(): void {
     const user_sesion = this.authService.getAuthUser();
-
+    this.get_room_online();
+    
     this.http.get<any[]>(`${environment.apiUrl}users/me/friends/as_pending`)
-      .subscribe((friends: any[]) => {
-        for (let friend in friends) {
-          const { receiver } = friends[friend];
-          const { sender } = friends[friend];
-
-          const user = (receiver) ? receiver : sender;
+    .subscribe((friends: any[]) => {
+      for (let friend in friends) {
+        const { receiver } = friends[friend];
+        const { sender } = friends[friend];
+        
+        const user = (receiver) ? receiver : sender;
           if (sender && (sender.username !== user_sesion))
             this.FRIENDS_USERS_PENDDING.push(user);
         }
@@ -52,8 +55,10 @@ export class FriendNotificationComponent implements OnInit {
         const { receiver } = friends[friend];
         const { sender } = friends[friend];
         const user = (receiver) ? receiver : sender;
-        if (user)
+        if (user){
+          this.socketNotiServices.send_request_online(user);
           this.FRIENDS_USER.push(user);
+        }
       }
     })
   }
@@ -65,12 +70,11 @@ export class FriendNotificationComponent implements OnInit {
       .subscribe(() => {
         this.FRIENDS_USER.push(friend);
         this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== friend.id)
-
         this.alertService.openSnackBar("Friend add", "Close");
       })
   }
 
-  delete_friend(id_friend: number) {
+  delete_friend_as_pending(id_friend: number) {
 
     this.http.get<any[]>(`${environment.apiUrl}users/me/friends/as_pending`)
       .subscribe((friends: any[]) => {
@@ -83,12 +87,19 @@ export class FriendNotificationComponent implements OnInit {
             this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${friends[friend].id}`)
               .subscribe(data => {
                 this.FRIENDS_USERS_PENDDING = this.FRIENDS_USERS_PENDDING.filter((user: UserDto) => user.id !== id_friend)
-
               })
-
         }
       })
+  }
 
+  delete_friend(id_friend: number) {
+    this.http.get<any[]>(`${environment.apiUrl}users/me/friends/${id_friend}`)
+      .subscribe((friend: any) => {
+            this.http.delete(`${environment.apiUrl}users/me/friends/deleted/${friend.id}`)
+              .subscribe(data => {
+                this.FRIENDS_USER=  this.FRIENDS_USER.filter((user: UserDto) => user.id !== id_friend)
+              })
+        })
   }
 
   buildImgUrl(imgPath: string): string {
@@ -103,5 +114,23 @@ export class FriendNotificationComponent implements OnInit {
         this.FRIENDS_USER = this.FRIENDS_USER.filter((user: UserDto) => user.id !== friend.id)
       }
     )
+  }
+
+  get_room_online(){
+    this.socketNotiServices.get_online()
+    .subscribe(
+      (payload : any)=>{
+        console.log(payload)
+        this.FRIENDS_USER.forEach((user: UserDto, index : number) => {
+        console.log("USer friend", user)
+
+          if (user.id == payload.id){
+            this.FRIENDS_USER[index] = Object.assign(payload); 
+
+          }
+      });
+      }
+    )
+
   }
 }

@@ -12,6 +12,7 @@ import { RoomGameIdService } from '../../room-game-id/room-game-id.service';
 import { Chat } from 'src/app/chat/chat';
 import { Roles } from 'src/app/roles';
 import { g_buildImgUrl } from '../../utils/images';
+import { Friendship } from 'src/app/dtos/block.dto';
 
 
 @Component({
@@ -60,8 +61,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
           this._redirectToRoomLists();
         }
 
-          if (payload.user.role && !payload.user.role.is_banned)
-            this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id )
+        if (payload.user.role && !payload.user.role.is_banned)
+          this.players = this.players.filter((player: UserDto) => player.id !== payload.user.id)
 
         this.players.sort((user_a: any, user_b: any) => {
           return user_b.defaultOffline - user_a.defaultOffline;
@@ -79,42 +80,49 @@ export class OnlineComponent implements OnInit, OnDestroy {
   }
 
 
-  update_player(){
+  update_player() {
     this.socketGameNotification.playerUpdate()
-    .subscribe((payload : any) =>{
-        this.players.forEach((user: UserDto, index : number) => {
+      .subscribe((payload: any) => {
+        this.players.forEach((user: UserDto, index: number) => {
           if (user.id == payload.user.id)
             this.players[index] = Object.assign(payload.user);
-            if (payload.user.id == this.me?.id)
-                this.me = Object.assign(payload.user); 
-      });
-    })
+          if (payload.user.id == this.me?.id)
+            this.me = Object.assign(payload.user);
+        });
+      })
   }
 
   set_status_players(payload: any) {
 
-    payload.forEach((user_online: UserDto) => {
-      let lol = this.players.find((user: UserDto) => user.id == user_online.id)
-      let is_banned = this.players_banned.find((user: UserDto) => user.id == user_online.id)
-      if (!lol && !is_banned) {
-        user_online.defaultOffline = true;
-        this.players.push(user_online)
-      }
-      else if (is_banned && !lol && (this.me?.role.is_super_admin || this.me?.role.is_admin || this.is_owner_room)) {
-        user_online.role.is_banned = true;
-        this.players.push(user_online)
-      }
 
+    payload.forEach((user_online: UserDto) => {
+      console.log(user_online);
+      this.userService.get_blocked_user_id(user_online)
+        .subscribe((_friend: Friendship) => {
+
+          if (!(_friend && _friend.block?.blockSenderId === user_online.id)) {
+
+            let lol = this.players.find((user: UserDto) => user.id == user_online.id)
+            let is_banned = this.players_banned.find((user: UserDto) => user.id == user_online.id)
+            if (!lol && !is_banned) {
+              user_online.defaultOffline = true;
+              this.players.push(user_online)
+            }
+            else if (is_banned && !lol && (this.me?.role.is_super_admin || this.me?.role.is_admin || this.is_owner_room)) {
+              user_online.role.is_banned = true;
+              this.players.push(user_online)
+            }
+            else
+              this.players.forEach((user: UserDto, index: number) => {
+                if (user.id === user_online.id) {
+                  user_online.defaultOffline = true;
+                  this.players[index] = Object.assign(user_online);
+                }
+              })
+          }
+        })
     })
 
-    payload.forEach((online: UserDto) => {
-      this.players.forEach((user: UserDto, index : number) => {
-        if (user.id === online.id){
-          online.defaultOffline = true;
-          this.players[index] = Object.assign(online); 
-        }
-      })
-    });
 
 
     this.players.sort((user_a: any, user_b: any) => {
@@ -156,8 +164,10 @@ export class OnlineComponent implements OnInit, OnDestroy {
       this.userService.getUser('me')
         .subscribe((user: UserDto) => {
           this.me = user;
-          this.userService.get_role(this.me);
           this.userService.get_role_user_room(this.me, id);
+          this.userService.get_role(this.me);
+          // this.userService.post_role
+
           user_aux = user;
           this.http.get(`${environment.apiUrl}user_roles/users/${this.me.id}`)
             .subscribe((entity) => {
@@ -185,22 +195,26 @@ export class OnlineComponent implements OnInit, OnDestroy {
                     if (player['id'] === this.room?.ownerId) {
                       player.role.is_owner_room = true;
                     }
-
-                    if (this.room?.ownerId=== user_aux.id) {
+                    if (this.room?.ownerId === user_aux.id) {
                       user_aux.role.is_owner_room = true;
                     }
 
-                    let lol = this.players.find((user: UserDto) => user.id == player.id)
-                    let is_banned = this.players_banned.find((user: UserDto) => user.id == player.id)
-                    if (!lol && !is_banned) {
-                      this.players.push(player)
-                    }
-                    else if (is_banned && !lol && (this.me?.role.is_super_admin || this.me?.role.is_admin || this.is_owner_room)) {
-                      player.role.is_banned = true;
-                      this.players.push(player)
-                    }
-                  }
+                    this.userService.get_blocked_user_id(player)
+                      .subscribe((_friend: Friendship) => {
 
+                        if (!(_friend && _friend.block?.blockSenderId === player.id)) {
+                          let lol = this.players.find((user: UserDto) => user.id == player.id)
+                          let is_banned = this.players_banned.find((user: UserDto) => user.id == player.id)
+                          if (!lol && !is_banned) {
+                            this.players.push(player)
+                          }
+                          else if (is_banned && !lol && (this.me?.role.is_super_admin || this.me?.role.is_admin || this.is_owner_room)) {
+                            player.role.is_banned = true;
+                            this.players.push(player)
+                          }
+                        }
+                      });
+                  }
                   this.socketGameNotification.joinRoomId(this.room_id as string, user_aux);
                 });
             });
@@ -282,7 +296,7 @@ export class OnlineComponent implements OnInit, OnDestroy {
     user.role.is_banned = true;
     this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
     this.chat.sendMessageGame(`${user.nickName} IS NOW BANNED`, this.me?.id as number, 'game' + this.room_id);
-    
+
     // this.leave(user);
   }
 
@@ -290,16 +304,17 @@ export class OnlineComponent implements OnInit, OnDestroy {
     this.userService.delete_role_banned(user, this.room?.id as number);
     this.alertService.openSnackBar(`${user.nickName.toUpperCase()} IS NOW UNBANNED`, 'OK');
     user.role.is_banned = false;
-    
+
     this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
     this.chat.sendMessageGame(`${user.nickName} IS N'T NOW  BANNED`, this.me?.id as number, 'game' + this.room_id);
 
   }
 
- 
+
 
 
   ngOnDestroy(): void {
+    // this.userService.deleted_role_room(this.me as UserDto, this.room?.id as number, Roles.player)
     this.socketGameNotification.roomLeave(this.room_id, this.me, false, this.me?.username);
 
   }
@@ -319,6 +334,8 @@ export class OnlineComponent implements OnInit, OnDestroy {
   buildImgUrl(imgPath: string): string {
     return (g_buildImgUrl(imgPath));
   }
+
+
 
   leave(player: UserDto) {
     this.roomGameIdService.unregisterFromRoom(player.id, this.room_id)
