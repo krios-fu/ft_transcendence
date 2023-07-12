@@ -11,6 +11,8 @@ export class    PlayerScene extends MatchScene {
     cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
     powerKeys: any;
 
+    private _lastInput: number;
+
     constructor(
         socket: SocketIO.Socket,
         override readonly lagCompensator: LagCompensationService,
@@ -20,6 +22,7 @@ export class    PlayerScene extends MatchScene {
     ) {
         super("Player", socket,
                 lagCompensator, loadService, soundService, recoveryService);
+        this._lastInput = 0;
     }
 
     override create() {
@@ -34,26 +37,31 @@ export class    PlayerScene extends MatchScene {
 
     override update() {
         const   currentTime: number = Date.now();
+        const   allowInput: boolean = currentTime - this._lastInput > 30;
     
-        if (this.cursors?.up.isDown)
+        if (this.cursors?.up.isDown && allowInput)
         {
             if (this.match)
                 this.socket.emit('paddleUp', currentTime);
+            this._lastInput = currentTime;
         }
-        else if (this.cursors?.down.isDown)
+        else if (this.cursors?.down.isDown && allowInput)
         {
             if (this.match)
                 this.socket.emit('paddleDown', currentTime);
+            this._lastInput = currentTime;
         }
-        if (this.powerKeys.up.isDown)
+        if (this.powerKeys.up.isDown && allowInput)
         {
             if (this.match)
                 this.socket.emit('heroUp', currentTime);
+            this._lastInput = currentTime;
         }
-        else if (this.powerKeys.down.isDown)
+        else if (this.powerKeys.down.isDown && allowInput)
         {
             if (this.match)
                 this.socket.emit('heroDown', currentTime);
+            this._lastInput = currentTime;
         }
         super.update();
     }
