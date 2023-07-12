@@ -50,24 +50,15 @@ div {
 	overflow: hidden;
 
 	border-radius: 20px;
-	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border: outset 3px silver;
 	border-bottom: none;
-
 	box-shadow: 0 10px 30px black;
-	// right: -8vw;
 	right: 0;
 
-	// right: 1vw;
 
 	bottom: 1vh;
 	background: linear-gradient(180deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 
-	// &:hover{
-	// 	right: 1vw;
-	// 	animation: bounce-in 2s ease;
-
-	// }
 
 	animation: bounce-in 2s ease;
 
@@ -108,7 +99,7 @@ div {
 
 .chat {
 	width: 97%;
-	height: 67%;
+	height: 75%;
 	// bottom: 10px;
 	display: flex;
 	position: absolute;
@@ -138,16 +129,11 @@ div {
   Chat Title
   --------------------*/
 .chat-title {
-	//flex: 0 1 45px;
 	position: relative;
 	z-index: 10;
 	display: flex;
-	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-bottom: outset 3px silver;
 	background: linear-gradient(90deg, rgba(28, 181, 224, 0.093) 0, rgba(0, 8, 81, 0.093) 100%);
-
-
-	// border-top: none;
 
 	color: #fff;
 	text-transform: uppercase;
@@ -300,9 +286,6 @@ div {
 .message-box {
 	flex: 0 1 40px;
 	width: 100%;
-	//background: linear-gradient(90deg, #1CB5E0 0%, #000851 100%);
-	//background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
-	// border: 1px solid rgba(245, 245, 245, 0.29);
 	border-top: outset 3px silver;
 	background: linear-gradient(90deg, rgba(28, 181, 224, 0.093) 0, rgba(0, 8, 81, 0.093) 100%);
 
@@ -322,7 +305,6 @@ div {
 
 		width: 85%;
 		color: white;
-		//   width: 265px;
 	}
 
 	textarea:focus:-webkit-placeholder {

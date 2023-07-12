@@ -96,7 +96,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
 
     payload.forEach((user_online: UserDto) => {
-      console.log(user_online);
       this.userService.get_blocked_user_id(user_online)
         .subscribe((_friend: Friendship) => {
 

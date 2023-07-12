@@ -113,10 +113,7 @@ export class FriendNotificationComponent implements OnInit {
     this.socketNotiServices.get_online()
     .subscribe(
       (payload : any)=>{
-        console.log(payload)
         this.FRIENDS_USER.forEach((user: UserDto, index : number) => {
-        console.log("USer friend", user)
-
           if (user.id == payload.id){
             this.FRIENDS_USER[index] = Object.assign(payload); 
 

@@ -166,7 +166,6 @@ export class UsersService {
         const roles = Object.assign(payload);
         let role = roles.find((role: any) => { role.roleId == id_role; return role })
         if (role)
-        console.log(role);
           this.deleted_role(user, role.id);
       });
   }
@@ -197,7 +196,6 @@ export class UsersService {
     this.http.post(`${environment.apiUrl}user_roles`, { userId: user.id, roleId: role_id })
       .subscribe(
         (data: any) => {
-          console.log(data);
           this.get_role(user);
         }
       )

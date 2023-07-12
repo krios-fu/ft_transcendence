@@ -43,7 +43,7 @@
                 <!--  view if owner or moderator or super admin  -->
                 <div *ngIf="karen(this.player, this.me)">
 
-                    <div *ngIf="!karen(this.player, this.me) && !this.player.role.is_admin">
+                    <div *ngIf="!this.player.role.is_admin">
                         <button mat-menu-item (click)="set_admin(player)">
                             <mat-icon>gamepad</mat-icon>
                             <span>Admin</span>
