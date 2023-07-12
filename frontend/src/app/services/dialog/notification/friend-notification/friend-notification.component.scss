@@ -23,7 +23,7 @@
 .tag {
 	padding: 15px;
 	height: 70px;
-	width: 80%;
+	width: 100%;
   
 	background: linear-gradient(90deg, rgba(28, 181, 224, 0.25) 0, rgba(0, 8, 81, 0.25) 100%);
 	color: white;
@@ -49,21 +49,49 @@ a {
     color: white !important;
 }
 
-.avatar {
-    position: relative;
+	.avatar {
+        position: relative;
 
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    overflow: hidden;
-    margin: 0;
-    padding: 0;
-    border: 3px solid rgba(255, 255, 255, 0.24);
-    img {
-        width: 100%;
-        height: auto;
-    }
-}
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+		border: 4px solid rgba(255, 255, 255, 0.24);
+		content: "";
+		background-image: linear-gradient(var(--rotate), #3c4f55, #a8a8a8 43%, #d1d1d1);
+		animation: spin 2.5s linear infinite;
+
+		img {
+			width: 100%;
+			height: auto;
+		}
+
+	}
+
+	.online {
+        position: relative;
+
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+		border: 4px solid rgba(13, 24, 236, 0.24);
+		
+		content: "";
+		background-image: linear-gradient(var(--rotate), #11c4d8, #750ec9 43%, #ea0a7a79);
+		animation: spin 2.5s linear infinite;
+
+		img {
+			width: 100%;
+			height: auto;
+		}
+
+	}
+
 
  .mat-divider {
     border-top-color: white !important;

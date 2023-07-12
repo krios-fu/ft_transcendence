@@ -57,8 +57,7 @@ export class ProfileUserComponent implements OnInit {
 
         this.me = user;
         this.userService.get_role(this.me);
-        this.color_icon = (this.me.defaultOffline) ? '#49ff01' : '#ff0000';
-        this.online_icon = (this.me.defaultOffline) ? 'online_prediction' : 'online_prediction';
+
         this.shareService.eventEmitter.emit(this.me.username);
         this.friend();
 
@@ -125,9 +124,14 @@ export class ProfileUserComponent implements OnInit {
   view_chat() {
     const friend = this.FRIENDS_USERS.find((friend) => friend.id == this.me?.id)
 
-    this.view = friend ? true : false;
-    if (this.view)
-      this.icon_friend = 'person_remove';
+    this.view = friend || this.me?.id === this.user?.id ? true : false;
+
+    if (this.view){
+      if (this.icon_activate)
+      this.chatService.createChat(this.user?.id as number)
+        .subscribe((data: any) => { this.id_chat = data.chatId });
+        this.icon_friend = 'person_remove';
+    }
   }
 
   friend() {
@@ -141,6 +145,8 @@ export class ProfileUserComponent implements OnInit {
           this.view = false;
           this.icon_friend = 'person_add'
           this.FRIENDS_USERS = [];
+          this.color_icon = (this.user?.defaultOffline) ? '#49ff01' : '#ff0000';
+          this.online_icon = (this.user?.defaultOffline) ? 'online_prediction' : 'online_prediction';
           this.is_blocked(this.user, this.me as UserDto);
 
           this.userService.get_role(this.user);
@@ -148,9 +154,7 @@ export class ProfileUserComponent implements OnInit {
           if (this.user.username != this.authService.getAuthUser()) {
             this.icon_activate = true;
           }
-          if (this.icon_activate)
-            this.chatService.createChat(this.user.id)
-              .subscribe((data: any) => { this.id_chat = data.chatId });
+
 
           // change de icone visible add o remove 
 

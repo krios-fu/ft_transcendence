@@ -17,10 +17,12 @@ export class UserDto {
 		is_owner_room : boolean,
 		is_banned: boolean,
 		is_silenced: boolean,
-		is_moderator: boolean
+		is_moderator: boolean,
+		is_player: boolean
 	};
 	achievementUser ?: []
 	is_blocked ?: boolean;
+	room_id ?: number;
 
 
 	
@@ -43,12 +45,14 @@ export class UserDto {
 			is_owner_room : false,
 			is_banned: false,
 			is_silenced: false,
-			is_moderator: false
+			is_moderator: false,
+			is_player: false,
 		},
 
 
 		achievementUser ?: [],
 		is_blocked ?: boolean,
+		room_id ?: number,
 
 	) {
 		this.id = id;
@@ -65,6 +69,8 @@ export class UserDto {
 		this.achievementUser = achievementUser;
 		this.role = role;
 		this.is_blocked = is_blocked;
+		this.room_id = room_id;
+
 	}
   }
   

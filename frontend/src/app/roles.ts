@@ -5,5 +5,6 @@ export enum Roles {
 	official = 4,
 	banned = 5,
 	silenced = 6,
-	moderator = 7
+	moderator = 7,
+	player = 8
 }

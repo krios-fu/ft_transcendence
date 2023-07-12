@@ -91,6 +91,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     let users_send = [];
 
     client.join(`noti_roomGame_${payload.room}`);
+    client.data.room_id = payload.room;
+    client.join(`global_online`);
+
     let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
     for (let user of users_in_room) {
       let data = user.data;
@@ -110,6 +113,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     for (let user of users_in_room) {
       if (user.data.username === payload.user.username) {
         user.leave(`noti_roomGame_${payload.room}`);
+        user.leave('global_online');
       }
     }
 
@@ -130,4 +134,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     payload: { room: string, user: any }) {
     this.server.to(`noti_roomGame_${payload.room}`).emit('noti_game_room', payload)
   }
+
+  @SubscribeMessage('global_online')
+  async notificationGlobalOnline(
+    client: Socket,
+    payload: { user: any }) {
+
+      let users_in_room = await this.server.in(`global_online`).fetchSockets();
+      for (let user_online of users_in_room) {
+        if (user_online.data.username === payload.user.username)
+          client.emit('global_online', user_online.data);
+      }
+  }
+
+
+
 }
