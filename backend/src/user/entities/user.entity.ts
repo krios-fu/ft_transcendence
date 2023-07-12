@@ -24,6 +24,9 @@ export class UserEntity extends BaseEntity {
 		if (dto !== undefined) {
 			Object.assign(this, dto);
 			this.nickName = dto.username;
+			if (!dto.photoUrl) {
+				this.photoUrl = DEFAULT_AVATAR_PATH;
+			}
 		}
 	}
 

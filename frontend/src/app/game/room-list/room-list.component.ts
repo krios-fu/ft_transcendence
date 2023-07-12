@@ -14,7 +14,6 @@ import { PageEvent } from '@angular/material/paginator';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
 import { IUserRoom } from 'src/app/interfaces/IUserRoom.interface';
-import { g_buildImgUrl } from '../utils/images';
 
 @Component({
     selector: 'app-room-list',
@@ -187,9 +186,4 @@ export class    RoomListComponent implements OnInit {
             }
         })
     }
-
-    buildImgUrl(imgPath: string): string {
-        return (g_buildImgUrl(imgPath));
-    }
-
 }

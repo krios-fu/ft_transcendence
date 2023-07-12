@@ -4,14 +4,14 @@
         aria-label="options">
         <div class="badge">
             <figure class="avatar" *ngIf="!player.defaultOffline && !player.role.is_banned">
-                <img src={{buildImgUrl(player.photoUrl)}} alt={{player.username}} />
+                <img src={{player.photoUrl}} alt={{player.username}} />
                 <!-- <figcaption style="font-size:7px; "></figcaption> -->
             </figure>
             <figure class="online" *ngIf="player.defaultOffline && !player.role.is_banned">
-                <img src={{buildImgUrl(player.photoUrl)}} alt={{player.username}} />
+                <img src={{player.photoUrl}} alt={{player.username}} />
             </figure>
             <figure class="banned" *ngIf="player.role.is_banned">
-                <img src={{buildImgUrl(player.photoUrl)}} alt={{player.username}} />
+                <img src={{player.photoUrl}} alt={{player.username}} />
             </figure>
             <mat-icon *ngIf="player.role.is_admin && !player.role.is_owner_room"
                 [ngStyle]="{'color': 'red', 'font-size':'30px'}" class="icon-display"

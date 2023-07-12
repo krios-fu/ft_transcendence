@@ -35,8 +35,8 @@ export class CreateUserDto {
     readonly email: string;
 
     @IsString()
-    /*@IsNotEmpty(): Photo URL can be empty !*/
-    readonly photoUrl: string;
+    @IsOptional()
+    readonly photoUrl: string | null;
 }
 
 export class UpdateUserDto {

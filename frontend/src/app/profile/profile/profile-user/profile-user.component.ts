@@ -9,7 +9,6 @@ import { AlertServices } from 'src/app/services/alert.service';
 import { SocketNotificationService } from 'src/app/services/socket-notification.service';
 import { environment } from 'src/environments/environment';
 import { Roles } from 'src/app/roles';
-import { g_buildImgUrl } from '../../../game/utils/images';
 import { Friendship } from 'src/app/dtos/block.dto';
 
 @Injectable()
@@ -78,11 +77,7 @@ export class ProfileUserComponent implements OnInit {
   getPhotoUrl(): string {
     if (!this.user?.photoUrl)
       return ("");
-    return (g_buildImgUrl(this.user.photoUrl));
-  }
-
-  buildImgUrl(imgPath: string): string {
-    return (g_buildImgUrl(imgPath));
+    return (this.user.photoUrl);
   }
 
 

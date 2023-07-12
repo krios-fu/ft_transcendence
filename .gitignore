@@ -17,6 +17,7 @@ backend/static/users/*
 !backend/static/users/danrodri.*
 !backend/static/users/krios-fu.*
 !backend/static/users/onapoli-.*
+!backend/static/users/default-avatar.jpg
 !backend/static/rooms
 backend/static/rooms/*
 !backend/static/rooms/atlantis.*

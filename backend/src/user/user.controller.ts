@@ -223,7 +223,8 @@ export class UserController {
         }
 
         const   path = String(avatar.path);
-        const   photoUrl = path.substring(("dist/static/").length);
+        const   photoUrl = path.substring(("dist").length);
+        
         if (user.photoUrl !== photoUrl)
             await this.userService.removeAvatarFile(user.username, user.photoUrl);
         return await this.userService.updateUser(user.id, { photoUrl: photoUrl });

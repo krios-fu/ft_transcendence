@@ -5,7 +5,6 @@ import { AlertServices } from 'src/app/services/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { UsersService } from 'src/app/services/users.service';
 import { environment } from 'src/environments/environment';
-import { g_buildImgUrl } from '../../../../game/utils/images';
 
 @Component({
   selector: 'app-friend-notification',
@@ -46,8 +45,6 @@ export class FriendNotificationComponent implements OnInit {
   get_friends(){
     this.http.get(`${environment.apiUrl}users/me/friends`)
     .subscribe((friends: any) =>{
-      console.log("FRIENDSSS", friends);
-
       for (let friend in friends) {
         const { receiver } = friends[friend];
         const { sender } = friends[friend];
@@ -89,10 +86,6 @@ export class FriendNotificationComponent implements OnInit {
         }
       })
 
-  }
-
-  buildImgUrl(imgPath: string): string {
-    return (g_buildImgUrl(imgPath));
   }
 
   block_friend(friend : UserDto){

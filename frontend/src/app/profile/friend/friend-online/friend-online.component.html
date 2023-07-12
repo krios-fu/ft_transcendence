@@ -11,7 +11,7 @@
 				<a [routerLink]="['/home/profile/', friend.nickName]"  >
 					<figure class="avatar">
 						<img style="padding: 0;"
-						src={{buildImgUrl(friend.photoUrl)}} alt="{{friend.nickName}}"/>
+						src={{friend.photoUrl}} alt="{{friend.nickName}}"/>
 					</figure>
 					<div style="font-size:8px; padding-top: 8px; ">{{friend.nickName}}</div>
 				</a>
