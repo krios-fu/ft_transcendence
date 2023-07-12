@@ -10,7 +10,7 @@
         <ng-container matColumnDef="player">
             <th mat-header-cell *matHeaderCellDef> Player </th>
             <td style="display: grid; justify-content:center; align-items: center  " mat-cell *matCellDef="let element">
-                    <img class="avatar" src={{buildImgUrl(element.photoUrl)}} [routerLink]="['/profile', element.username]">
+                    <img class="avatar" src={{element.photoUrl}} [routerLink]="['/profile', element.username]">
                 <p class="ranking-nickname">{{element.nickName}}</p>
             </td>
         </ng-container>

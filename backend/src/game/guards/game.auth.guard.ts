@@ -48,6 +48,7 @@ export class    GameAuthGuard implements CanActivate {
     
         payload = this.authService.validateJWToken(token);
         if (!payload) {
+            console.log('[ exception ]')
             return (false);
         }
         if (!client.data.token
@@ -65,6 +66,7 @@ export class    GameAuthGuard implements CanActivate {
         const   handlerName: string = context.getHandler().name;
         const   token: string = this._getToken(client, handlerName, wsContext);
 
+        console.log(' [ in auth guard ]');
         if (!token)
         {
             this.socketAuthService.addAuthTimeout(client);
