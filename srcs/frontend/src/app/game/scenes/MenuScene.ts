@@ -57,6 +57,11 @@ export class    MenuScene extends BaseScene {
             this.initData.avatarA = "noUrl";
         if (!this.initData.avatarB)
             this.initData.avatarB = "noUrl";
+        if (this.textures.exists('playerA'))
+        {
+            this.textures.remove('playerA');
+            this.textures.remove('playerB');
+        }
         this.load.image('playerA', this.initData.avatarA);
         this.load.image('playerB', this.initData.avatarB);
         this.initData.avatarA = 'playerA';

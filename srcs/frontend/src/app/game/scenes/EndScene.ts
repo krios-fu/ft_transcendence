@@ -44,6 +44,11 @@ export class    EndScene extends BaseScene {
             this.resultData.aAvatar = "noUrl";
         if (!this.resultData.bAvatar)
             this.resultData.bAvatar = "noUrl";
+        if (this.textures.exists('playerA'))
+        {
+            this.textures.remove('playerA');
+            this.textures.remove('playerB');
+        }
         this.load.image('playerA', this.resultData.aAvatar);
         this.load.image('playerB', this.resultData.bAvatar);
         this.resultData.aAvatar = 'playerA';
