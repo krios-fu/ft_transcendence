@@ -186,7 +186,7 @@ export class    MenuSelector {
                 this._stage = data.stage;
                 this._renderer.render(this._status, "PlayerA", this._stage, false);
             }
-            else if (role != "PlayerA")
+            else if (role != "PlayerA" && this._status != data.status)
                 this._renderer.finish(this._stage);
         }
     }
