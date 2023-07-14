@@ -5,8 +5,13 @@ import {
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets';
+import { UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { ChatMessageService } from './message/chat-message.service';
+import { GameRolesGuard } from "../game/guards/game.roles.guard";
+import { ForbiddenRoles } from 'src/common/decorators/forbidden.roles.decorator';
+import { GameAuthGuard } from '../game/guards/game.auth.guard';
+import { GameRoomGuard } from '../game/guards/game.room.guard';
 
 @WebSocketGateway(3001, {
   namespace: 'private',
@@ -30,7 +35,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleConnection(client: any, ...args): any {
   }
 
-  handleDisconnect() {
+  handleDisconnect(client: any) {
+    console.log("HANDLE DISCONED", client.data);
 
   }
 
@@ -50,6 +56,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.messageService.saveMessages(payload);
   }
 
+  @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard)
+  @ForbiddenRoles('banned')
   @SubscribeMessage('message-game')
   gameMessage(
     client: Socket,
@@ -80,6 +88,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to(`notifications_${payload.dest}`).emit('notifications', payload)
   }
 
+
+
+  @UseGuards(GameRolesGuard)
+  @ForbiddenRoles('banned')
   @SubscribeMessage('join_room_game')
   async joinRoomGame(
     client: Socket,
@@ -119,15 +131,43 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   }
 
+  @UseGuards(GameRolesGuard)
+  @ForbiddenRoles('banned')
   @SubscribeMessage('player_update')
-  playerUpdate(
+  async playerUpdate(
     client: Socket,
     payload: { room: string, user: any }) {
-    this.server.to(`noti_roomGame_${payload.room}`).emit('player_update', payload)
-    client.data = payload.user;
+      
+      let users_gloabal = await this.server.in(`global_online`).fetchSockets();
+      for (let i = 0; i < users_gloabal.length; i++) {
+        let user_online = users_gloabal[i];
+        
+        if (user_online.data.username === payload.user.username) {
+            if (user_online.data.role.is_banned ){
+              user_online.leave(`global_online`);
+            }
+            else
+              users_gloabal[i] = Object.assign({}, user_online, { data: payload.user });
+        }
+      }
+
+    let users_in_room = await this.server.in(`noti_roomGame_${payload.room}`).fetchSockets();
+    for (let i = 0; i < users_in_room.length; i++) {
+      let user_online = users_in_room[i];
+      
+      if (user_online.data.username === payload.user.username) {
+          if (user_online.data.role.is_banned ){
+            user_online.leave(`noti_roomGame_${payload.room}`);
+          }
+          else
+            users_in_room[i] = Object.assign({}, user_online, { data: payload.user });
+      }
+    }
+      this.server.to(`noti_roomGame_${payload.room}`).emit('player_update', payload)
   }
 
-
+  @UseGuards(GameRolesGuard)
+  @ForbiddenRoles('banned')
   @SubscribeMessage('noti_game_room')
   notificationRoomGame(
     client: Socket,

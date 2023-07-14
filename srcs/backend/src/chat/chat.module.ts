@@ -10,15 +10,33 @@ import { ChatMapper } from "./mapper/chat.mapper";
 import { ChatMessageController } from './message/chat-message.controller';
 import { ChatMessageService } from './message/chat-message.service';
 import { ChatUserEntity } from './entities/chat-user.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { GameModule } from 'src/game/game.module';
+import { RoomModule } from 'src/room/room.module';
+import { UserRoomModule } from 'src/user_room/user_room.module';
+import { UserRolesModule } from 'src/user_roles/user_roles.module';
+import { UserRoomRolesModule } from 'src/user_room_roles/user_room_roles.module';
+import { BanModule } from 'src/ban/ban.module';
+import { RoomRolesModule } from 'src/room_roles/room_roles.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             ChatEntity,
             ChatMessageEntity,
-            ChatUserEntity
+            ChatUserEntity,
         ]),
+        AuthModule,
+        GameModule,
         UserModule,
+        RoomModule,
+        UserRoomModule,
+        UserRolesModule,
+        UserRoomRolesModule,
+        BanModule,
+        RoomRolesModule
+
+
     ],
     exports: [ChatService],
     providers: [
@@ -28,4 +46,4 @@ import { ChatUserEntity } from './entities/chat-user.entity';
         ChatMessageService],
     controllers: [ChatController, ChatMessageController],
 })
-export class ChatModule {}
+export class ChatModule { }

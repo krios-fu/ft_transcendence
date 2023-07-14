@@ -138,21 +138,21 @@ export class OnlineComponent implements OnInit, OnDestroy {
 
   set_status_players(payload: any) {
     payload.forEach((user_online: UserDto, index: number) => {
-      console.log("INDEX", index);
       this.userService.get_blocked_user_id(user_online)
       .subscribe((_friend: Friendship) => {
         
         if (!(_friend && _friend.block?.blockSenderId === user_online.id)) {
           
           if (!this.players.some((_player: UserDto) => _player.id === user_online.id)) {
-              console.log("SET STATUS", user_online);
+              this.set_role(user_online);
               this.players.push(user_online);
             }
             else {
               const refIndex = this.players.findIndex((user: UserDto) => user.id === user_online.id);
               if (refIndex !== -1) {
                 Object.assign(this.players[refIndex], user_online);
-                console.log("ref--->",user_online)
+                this.set_role(this.players[refIndex]);
+
               }
             }
             this.players.forEach((user: UserDto) => {
@@ -227,7 +227,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
     if (!user.role.is_silenced) {
       this.userService.post_role_user_room(user, Roles.silenced, this.room?.id as number);
       this.chat.sendMessageGame(`${user.nickName} NOW IS SILENCED`, this.me?.id as number, 'game' + this.room_id);
-      this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
       user.role.is_silenced = true;
       this.socketGameNotification.playerUpdateEmit(this.room_id as string, user);
     }

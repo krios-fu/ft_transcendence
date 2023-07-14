@@ -3,14 +3,14 @@
         style="margin: 5px; display:grid; align-items: center; justify-content: center;" [matMenuTriggerFor]="menu"
         aria-label="options">
         <div class="badge">
+            <figure class="banned" *ngIf="player.role.is_banned">
+                <img src={{player.photoUrl}} alt={{player.username}} />
+            </figure>
             <figure class="avatar" *ngIf="!player.defaultOffline && !player.role.is_banned">
                 <img src={{player.photoUrl}} alt={{player.username}} />
                 <!-- <figcaption style="font-size:7px; "></figcaption> -->
             </figure>
             <figure class="online" *ngIf="player.defaultOffline && !player.role.is_banned">
-                <img src={{player.photoUrl}} alt={{player.username}} />
-            </figure>
-            <figure class="banned" *ngIf="player.role.is_banned">
                 <img src={{player.photoUrl}} alt={{player.username}} />
             </figure>
             <mat-icon *ngIf="player.role.is_admin && !player.role.is_owner_room && (!player.role?.is_moderator && !player.role?.is_super_admin)"
