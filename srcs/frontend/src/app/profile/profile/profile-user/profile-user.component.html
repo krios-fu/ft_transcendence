@@ -99,7 +99,7 @@
             </mat-tab>
         </mat-tab-group>
     </div>
-    <div class="column2" style="border: outset 4px #02fbe6cc;">
+    <div class="column2">
         <app-stats *ngIf="(this.user && view) || (this.user && this.user?.id === this.me?.id)"
             [username]="this.user.username"></app-stats>
     </div>
