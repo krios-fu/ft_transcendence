@@ -5,8 +5,14 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-image: url("https://wallpaperaccess.com/full/7009391.jpg");
+  background-image: url("https://wallpaperaccess.com/full/5927911.gif");
+  background-image: steps(4);
   background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: saturate(50%) brightness(80%);
+  background-attachment: fixed;
+
 
   h2{
     font-size: 11px;

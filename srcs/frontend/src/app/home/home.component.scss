@@ -7,7 +7,11 @@
 	// height: 100%;
 	// bottom: 0;
 	background-image: url("https://cdna.artstation.com/p/assets/images/images/021/720/920/original/pixel-jeff-mario.gif?1572709433");
+	background-image: steps(4);
 	background-size: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
 
 	// background-repeat: no-repeat;
 	.title {

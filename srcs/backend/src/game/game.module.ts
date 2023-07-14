@@ -58,7 +58,9 @@ import {BanModule} from "../ban/ban.module";
     GameRoomService
   ],
   exports: [
-      SocketHelper
+      SocketHelper,
+      GameSocketAuthService,
+      GameMatchmakingService
   ]
 })
 export class GameModule {}
