@@ -110,7 +110,7 @@ export class    GameDataService {
         let     index: number;
     
         index = this._runningGames.findIndex((elem: RunningGame) => {
-            elem.id === gameId
+            return (elem.id === gameId);
         });
         if (index != -1)
             this._runningGames.splice(index, 1);
