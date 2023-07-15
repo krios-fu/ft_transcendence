@@ -1,0 +1,120 @@
+<h2 mat-dialog-title>
+    Game Instructions
+</h2>
+<mat-dialog-content class="mat-typography">
+    <h3 class="content-title">Roles</h3>
+    <ul>
+        <li>
+            <p>
+                <mat-icon class="icon-display" [ngStyle]="{'color': 'black', 'font-size':'15px'}">api</mat-icon>
+                <span class="version-title">Super Admin:</span>
+                The "Super Admin" is the highest level of administrator on the website.
+                Their primary function is to manage user roles and assign privileges.
+                They have the authority to appoint moderators and grant them specific permissions.
+                In gaming rooms, the Super Admin holds the same privileges as the room owner and is immune to the influence of other roles.
+            </p>
+        </li>
+        <li>
+            <p>
+                <mat-icon class="icon-display" [ngStyle]="{'color': 'black', 'font-size':'15px'}">grade</mat-icon>
+
+                <span class="version-title">Moderator: </span>
+                The "Moderator" role has similar privileges to the "Super Admin"
+                In gaming rooms, however, they possess the same privileges as the room owner.
+                Moderators play a crucial role in enforcing rules, maintaining order,
+                and ensuring a positive user experience on the website.
+            </p>
+        </li>
+        <li>
+            <p>
+                <mat-icon class="icon-display" [ngStyle]="{'color': 'black', 'font-size':'15px'}">verified</mat-icon>
+
+                <span class="version-title">Owner: </span>
+                The "Owner" is the highest authority within their owned room.
+                They have exclusive privileges limited to their specific room.
+                As an owner, they can appoint admins with similar privileges,
+                including the ability to silence, ban, and kick users from the room.
+                Additionally, they can grant admin status to other users.
+            </p>
+        </li>
+        <li>
+            <p>
+                <mat-icon class="icon-display" [ngStyle]="{'color': 'black', 'font-size':'15px'}">gamepad</mat-icon>
+                <span class="version-title">Admin room: </span>
+                The "Admin" role is appointed by the owner and possesses elevated privileges within the room.
+                They can silence disruptive users, ban users from the room, and kick them out if necessary.
+                While admins cannot appoint other admins, they play a vital role in maintaining order,
+                enforcing rules, and assisting the owner in managing the room effectively.
+            </p>
+        </li>
+    </ul>
+    <h3 class="content-title">Rules</h3>
+    <p>
+        When the ball reaches one of the game window's side limits,
+        the player defending the opposite side wins a point.
+    </p>
+    <p>The first player that wins 5 points wins the match.</p>
+
+    <h3 class="content-title">Versions</h3>
+    <p>
+        There are two game versions.
+    </p>
+    <ul>
+        <li>
+            <p>
+                <span class="version-title">Classic:</span>
+                Each player controls a paddle that can move up or down.
+            </p>
+        </li>
+        <li>
+            <p>
+                <span class="version-title">Hero:</span>
+                Each player controls a paddle that can move up or down,
+                and a hero that can appear from the top or the bottom of
+                the player's side. Each hero has unique trajectories and
+                can be invoked once per point.
+            </p>
+        </li>
+    </ul>
+
+    <h3 class="content-title">Controls</h3>
+    <div id="controls-container">
+        <div class="controls-child">
+            <h3 class="control-title">Paddle</h3>
+        </div>
+        <div class="controls-child">
+            <h3 class="control-title">Hero</h3>
+        </div>
+        <div class="controls-child">
+            <div>
+                <img class="control-key" src="/assets/up_key.png">
+                <p class="control-text">Up</p>
+            </div>
+        </div>
+        <div class="controls-child">
+            <div>
+                <img class="control-key" src="/assets/w_key.png">
+                <p class="control-text">Up</p>
+            </div>
+        </div>
+        <div class="controls-child">
+            <div>
+                <img class="control-key" src="/assets/down_key.png">
+                <p class="control-text">Down</p>
+            </div>
+        </div>
+        <div class="controls-child">
+            <div>
+                <img class="control-key" src="/assets/s_key.png">
+                <p class="control-text">Down</p>
+            </div>
+        </div>
+    </div>
+    <h3 class="content-title">Display Game Instructions</h3>
+    <p>
+        Press CTRL + SHIFT + i keys.
+    </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,36 @@
+<div class="effect">
+
+    <div>
+      <button mat-icon-button class="icon_logout" routerLink="/profile/me">
+        <mat-icon matTooltip="Profile">person</mat-icon>
+      </button>
+    </div>
+    <div>
+      <a mat-icon-button class="icon_nav" (click)="hello()">
+        <mat-icon matTooltip="Friends" matBadge="{{nPenddingFriends}}" matBadgeColor="warn" matBadgeSize="small">
+          people
+        </mat-icon>
+      </a>
+    </div>
+    <div>
+      <a mat-icon-button [routerLink]="[ '/', 'chat']">
+        <mat-icon matTooltip="Chat">chat</mat-icon>
+      </a>
+    </div>
+    <div>
+      <a mat-icon-button [routerLink]="[ '/', 'game']">
+        <mat-icon matTooltip="Rooms">videogame_asset</mat-icon>
+      </a>
+    </div>
+    <div>
+      <a mat-icon-button class="icon_nav" routerLinkActive="active" routerLink="/profile/me/setting">
+        <mat-icon matTooltip="Settings">manage_accounts</mat-icon>
+      </a>
+    </div>
+    <!-- > -->
+    <div>
+      <a mat-icon-button class="icon_logout" (click)="logout()">
+        <mat-icon matTooltip="Logout">logout</mat-icon>
+      </a>
+    </div>
+  </div>

@@ -8,7 +8,7 @@ services:
     ports:
       - 9229:9229   # default debug port
     volumes:
-      - ./backend/:/usr/src/app
+      - ./srcs/backend/:/usr/src/app
     entrypoint: ["npm", "run", "start:dev"]
     restart: unless-stopped
 
@@ -18,7 +18,7 @@ services:
     ports:
       - 4200:4200
     volumes:
-      - ./frontend/:/usr/src/
+      - ./srcs/frontend/:/usr/src/
     entrypoint: ["npm", "run", "start"]
     restart: unless-stopped
 

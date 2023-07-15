@@ -1,0 +1,88 @@
+<div class="row">
+  <div class="column2">
+
+
+    <div id="container">
+      <div id="game_zone"></div>
+    </div>
+  </div>
+
+
+  <div class="column1" *ngIf="this.room_dto">
+    <!-- <div id="container-title"> -->
+
+
+    <section style="color: white;">
+
+      <mat-grid-list cols="3" rowHeight="60px">
+        <mat-grid-tile-header>
+          <mat-grid-tile class="badge">
+            <!-- <div > -->
+            <figure class="avatar">
+
+              <img src={{this.urlPreview}} alt={{this.room_dto?.roomName}} />
+            </figure>
+
+            <input style="display: none;" type="file" (change)="onFile($event)" #fileInput>
+
+            <mat-icon *ngIf="this.room_dto?.ownerId == this.me?.id" (click)="fileInput.click()"
+              [ngStyle]="{'color': color, 'font-size':'25px'}"
+              style="position: absolute; bottom: -5px; ">upload</mat-icon>
+
+
+          </mat-grid-tile>
+        </mat-grid-tile-header>
+
+        <mat-grid-tile>
+          <mat-form-field class="example-full-width" *ngIf="this.room_dto?.ownerId == this.me?.id && this.close">
+            <input #name_room ngModule name="name" style="color: white; font-size: large; text-align: center;" matInput
+              value={{this.room_dto?.roomName}} (keydown.enter)="this.change_name(name_room.value)">
+          </mat-form-field>
+
+          <span *ngIf="this.roles.official && !this.close">
+            <mat-icon [ngStyle]="{ color: color }">verified</mat-icon>
+          </span>
+
+          <h5 (click)="edit()" *ngIf="this.room_dto?.ownerId != this.me?.id || !this.close"
+            style="align-content: center; justify-content: center; display: flex; padding-left: 5px">
+            {{this.room_dto?.roomName?.toUpperCase()}}
+          </h5>
+
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+
+          <span>
+            <a mat-icon-button (click)="info()">
+              <mat-icon>info</mat-icon>
+            </a>
+          </span>
+
+          <span *ngIf="this.room_dto?.ownerId == this.me?.id && this.roles.private">
+            <a mat-icon-button (click)="changePassword()">
+              <mat-icon>password</mat-icon>
+            </a>
+          </span>
+          <span
+            *ngIf="(this.me?.role?.is_super_admin || this.me?.role?.is_moderator) && !this.roles.official">
+            <a mat-icon-button (click)="delete()">
+              <mat-icon>deleted</mat-icon>
+            </a>
+          </span>
+          <span>
+            <a mat-icon-button (click)="leaveRoom()">
+              <mat-icon>logout</mat-icon>
+            </a>
+          </span>
+        </mat-grid-tile>
+      </mat-grid-list>
+      <app-game-queue [roomId]="room_id"></app-game-queue>
+
+      <cdk-virtual-scroll-viewport class="cdk-virtual-scroll-content-wrapper"
+        style=" height: 10vh; position: relative; color: white;" itemSize="4">
+        <app-online *ngIf="room_id?.length"></app-online>
+      </cdk-virtual-scroll-viewport>
+    </section>
+    <app-chat-game></app-chat-game>
+  </div>
+</div>
