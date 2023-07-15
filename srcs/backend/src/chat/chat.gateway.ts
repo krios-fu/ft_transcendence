@@ -55,7 +55,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.messageService.saveMessages(payload);
   }
 
-  @UseGuards(GameAuthGuard, GameRoomGuard, GameRolesGuard)
+  @UseGuards(GameRolesGuard)
   @ForbiddenRoles('banned')
   @SubscribeMessage('message-game')
   gameMessage(
