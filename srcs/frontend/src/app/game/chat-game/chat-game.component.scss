@@ -99,16 +99,13 @@ div {
 
 .chat {
 	width: 97%;
-	height: 60%;
-	// bottom: 10px;
+	height: 75%;
 	display: flex;
 	position: absolute;
-	// z-index: 2;
 	overflow: hidden;
 	box-shadow: 0 10px 30px black;
 	background: linear-gradient(90deg, rgba(0, 0, 0, 0.849) 0, rgba(0, 8, 81, 0.093) 100%);
-
-	// border: 1px solid rgba(245, 245, 245, 0.29);
+	bottom: -1;
 	border: outset 3px silver;
 
 	flex-direction: column;
