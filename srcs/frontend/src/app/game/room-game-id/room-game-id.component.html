@@ -44,7 +44,7 @@
           </span>
 
           <h5 (click)="edit()" *ngIf="this.room_dto?.ownerId != this.me?.id || !this.close"
-            style="align-content: center; justify-content: center; display: flex; margin-left: 10px;">
+            style="align-content: center; justify-content: center; display: flex; padding-left: 5px">
             {{this.room_dto?.roomName?.toUpperCase()}}
           </h5>
 

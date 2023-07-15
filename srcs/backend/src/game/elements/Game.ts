@@ -24,7 +24,7 @@ export enum GameState {
     Terminated // Forced end
 }
 
-export interface    IGameClientStart {
+export interface IGameClientStart {
     playerA: IPlayerClientStart;
     playerB: IPlayerClientStart;
     ball: IBallClientStart;
@@ -32,21 +32,21 @@ export interface    IGameClientStart {
     when: number;
 }
 
-export interface    IInputData {
+export interface IInputData {
     paddle: boolean; //paddle or hero
     playerA: boolean; //playerA or playerB
     up: boolean; //up or down
     when: number;
 }
 
-export interface    IGameData {
+export interface IGameData {
     playerA: IPlayerData;
     playerB: IPlayerData;
     ball: IBallData;
     when: number;
 }
 
-export interface    IGameResult {
+export interface IGameResult {
     winnerNick: string;
     loserNick: string;
     winnerScore: number;
@@ -61,23 +61,23 @@ export enum GameUpdateResult {
 
 export type GameType = "classic" | "hero";
 
-export class   Game {
+export class Game {
 
     private _width: number; //Make it static
     private _height: number; //Make it static
     private _playerA: Player;
     private _playerB: Player;
     private _ball: Ball;
-    private _stage?: StageId;  
+    private _stage?: StageId;
     private _lastUpdate: number; //timestamp milliseconds
     private _state: GameState;
     private _pointTransition: boolean;
     private _input: IInputData[];
     private _buffer: GameBuffer;
 
-    private static  winScore: number = 3;
+    private static winScore: number = 3;
 
-    constructor (
+    constructor(
         gameSelection: IGameSelectionData,
         private readonly reconciliator: GameReconciliationService
     ) {
@@ -95,7 +95,7 @@ export class   Game {
                 side: 0
             },
             hero: gameSelection.heroAConfirmed
-                    ? heroCreator.create(gameSelection.heroA, 0) : undefined,
+                ? heroCreator.create(gameSelection.heroA, 0) : undefined,
             score: 0,
             nick: gameSelection.nickPlayerA,
             gameWidth: this._width,
@@ -110,7 +110,7 @@ export class   Game {
                 side: 1
             },
             hero: gameSelection.heroBConfirmed
-                    ? heroCreator.create(gameSelection.heroB, 1) : undefined,
+                ? heroCreator.create(gameSelection.heroB, 1) : undefined,
             score: 0,
             nick: gameSelection.nickPlayerB,
             gameWidth: this._width,
@@ -147,7 +147,7 @@ export class   Game {
         return (this._state === GameState.Finished);
     }
 
-    serveBall(): void {    
+    serveBall(): void {
         this._ball.serve();
         this._lastUpdate = Date.now();
         this._buffer.addSnapshot(this.data());
@@ -175,16 +175,16 @@ export class   Game {
     }
 
     getResult(): IGameResult {
-        const   winnerNick: string = this.getWinnerNick();
-        let     winner: Player;
-        let     loser: Player;
+        const winnerNick: string = this.getWinnerNick();
+        let winner: Player;
+        let loser: Player;
 
         if (winnerNick === "")
             return (undefined);
         winner = winnerNick === this._playerA.nick
-                    ? this._playerA : this._playerB;
+            ? this._playerA : this._playerB;
         loser = winnerNick != this._playerA.nick
-                    ? this._playerA : this._playerB;
+            ? this._playerA : this._playerB;
         return ({
             winnerNick: winner.nick,
             loserNick: loser.nick,
@@ -198,11 +198,11 @@ export class   Game {
     }
 
     private checkBorderCollision(ballXDisplacement: number,
-                                    ballYDisplacement: number): number {
+        ballYDisplacement: number): number {
         let border: number;
 
         border = this._ball.checkBorderCollision(ballXDisplacement,
-                    ballYDisplacement, this._width, this._height);
+            ballYDisplacement, this._width, this._height);
         if (border === 0)
             this._playerB.score += 1;
         else if (border === 2)
@@ -211,31 +211,28 @@ export class   Game {
     }
 
     private ballUpdate(secondsElapsed: number): boolean {
-        const   ballXDisplacement: number =
-                    this._ball.displacement('x', secondsElapsed);
-        const   ballYDisplacement: number =
-                    this._ball.displacement('y', secondsElapsed);
-        let     border: number;
-    
-        if (this._playerA.hero)
-        {
+        const ballXDisplacement: number =
+            this._ball.displacement('x', secondsElapsed);
+        const ballYDisplacement: number =
+            this._ball.displacement('y', secondsElapsed);
+        let border: number;
+
+        if (this._playerA.hero) {
             if (this._ball.checkHeroCollision(this._playerA.hero,
-                                                secondsElapsed))
+                secondsElapsed))
                 return (false);
             if (this._ball.checkHeroCollision(this._playerB.hero,
-                                                secondsElapsed))
+                secondsElapsed))
                 return (false);
         }
         if (this._ball.checkPaddleCollision(
-                this._playerA.paddle, this._playerB.paddle,
-                ballXDisplacement, ballYDisplacement))
+            this._playerA.paddle, this._playerB.paddle,
+            ballXDisplacement, ballYDisplacement))
             return (false);
-        else
-        {
+        else {
             border = this.checkBorderCollision(ballXDisplacement,
-                                                ballYDisplacement);
-            if (border >= 0 && border < 4)
-            {
+                ballYDisplacement);
+            if (border >= 0 && border < 4) {
                 if (border === 0 || border === 2)
                     return (true);
                 return (false);
@@ -259,15 +256,13 @@ export class   Game {
 
     private applyInput(input: IInputData[]): void {
         input.forEach(elem => {
-            if (elem.paddle)
-            {
+            if (elem.paddle) {
                 if (elem.playerA)
                     this._playerA.updatePaddle(elem.up, this._height);
                 else
                     this._playerB.updatePaddle(elem.up, this._height);
             }
-            else
-            {//Just marks corresponding hero sprite as active
+            else {//Just marks corresponding hero sprite as active
                 if (elem.playerA)
                     this._playerA.processHeroInvocation(elem.up);
                 else
@@ -277,16 +272,14 @@ export class   Game {
     }
 
     private updateWorld(targetTime: number): void {
-        const   secondsElapsed: number = this.deltaTime(targetTime);
-    
+        const secondsElapsed: number = this.deltaTime(targetTime);
+
         if (this.ballUpdate(secondsElapsed))
             this._pointTransition = true;
-        if (this._playerA.hero)
-        {
+        if (this._playerA.hero) {
             this._playerA.updateHero(secondsElapsed);
             this._playerB.updateHero(secondsElapsed);
-            if (this._pointTransition)
-            {
+            if (this._pointTransition) {
                 this._playerA.hero.resetInvocation();
                 this._playerB.hero.resetInvocation();
             }
@@ -294,47 +287,44 @@ export class   Game {
     }
 
     private updateSnapshot(snapshot: IGameData,
-                            input: IInputData[]): void {
+        input: IInputData[]): void {
         let playerData: IPlayerData;
-    
+
         this.applyInput(input);
-        if (this._ball.xVelocity === 0)
-        { // To preserve ball serve information
+        if (this._ball.xVelocity === 0) { // To preserve ball serve information
             this._ball.xVelocity = snapshot.ball.xVel;
             this._ball.yVelocity = snapshot.ball.yVel;
         }
         this.updateWorld(snapshot.when);
-        snapshot.ball = {...this._ball.data()};
+        snapshot.ball = { ...this._ball.data() };
         playerData = this._playerA.data();
         snapshot.playerA.paddleY = playerData.paddleY;
         snapshot.playerA.score = playerData.score;
         if (snapshot.playerA.hero)
-            snapshot.playerA.hero = {...playerData.hero};
+            snapshot.playerA.hero = { ...playerData.hero };
         playerData = this._playerB.data();
         snapshot.playerB.paddleY = playerData.paddleY;
         snapshot.playerB.score = playerData.score;
         if (snapshot.playerB.hero)
-            snapshot.playerB.hero = {...playerData.hero};
+            snapshot.playerB.hero = { ...playerData.hero };
         this._lastUpdate = snapshot.when;
     }
 
     private reconstruct(snapshots: IGameData[],
-                            inputs: IInputData[]): void {
-        let     snapIter: number = 0;
-        let     inputIter: number = 0;
-        let     inputBatch: IInputData[] = [];
-        const   processBatch = () => {
+        inputs: IInputData[]): void {
+        let snapIter: number = 0;
+        let inputIter: number = 0;
+        let inputBatch: IInputData[] = [];
+        const processBatch = () => {
             this.updateSnapshot(snapshots[snapIter], inputBatch);
             inputBatch = [];
         };
-    
+
         this.mimic(snapshots[snapIter]);
         ++snapIter; // The initial snapshot just sets up the initial values
         // There will always be a snapshot after the last input
-        for (; inputIter < inputs.length; ++inputIter)
-        {
-            if (inputs[inputIter].when >= snapshots[snapIter].when)
-            {
+        for (; inputIter < inputs.length; ++inputIter) {
+            if (inputs[inputIter].when >= snapshots[snapIter].when) {
                 processBatch();
                 ++snapIter;
             }
@@ -345,12 +335,10 @@ export class   Game {
                 ++snapIter;
             }
         }
-        for (; snapIter < snapshots.length; ++snapIter)
-        {
+        for (; snapIter < snapshots.length; ++snapIter) {
             processBatch();
         }
-        if (snapshots[snapIter - 1].ball.xVel != 0)
-        {
+        if (snapshots[snapIter - 1].ball.xVel != 0) {
             /*
             **  After reconstructing the world, the last score has been
             **  determined wrong, and the point continues.
@@ -363,21 +351,20 @@ export class   Game {
             **  serveOrder.
             */
             // This corrects a finished game state after a cancelled match point
-            if (this._state === GameState.Finished)
-            {
+            if (this._state === GameState.Finished) {
                 this._state = GameState.Running;
             }
         }
     }
 
     private reconcileInput(): boolean {
-        const   [bufferReconIndex, inputDropIndex] =
-                    this.reconciliator.reconcile(this._input,
-                                                    this._buffer.inputs,
-                                                    this._lastUpdate);
-        let     reconSnapshots: IGameData[];
-        let     reconInputs: IInputData[];
-        
+        const [bufferReconIndex, inputDropIndex] =
+            this.reconciliator.reconcile(this._input,
+                this._buffer.inputs,
+                this._lastUpdate);
+        let reconSnapshots: IGameData[];
+        let reconInputs: IInputData[];
+
         if (bufferReconIndex === undefined)
             return (true);
         if (inputDropIndex != -1)
@@ -410,7 +397,7 @@ export class   Game {
     /*
     **  Returns if it could process all input.
     */
-    private processInput(): boolean {    
+    private processInput(): boolean {
         /*this.sortInput();
         if (this.reconcileInput())
             return (true);*/
@@ -419,16 +406,14 @@ export class   Game {
     }
 
     update(): GameUpdateResult {
-        const   currentTime: number = Date.now();
-    
+        const currentTime: number = Date.now();
+
         this._pointTransition = false;
-        if (this.processInput())
-        {// Not all inputs could be processed
+        if (this.processInput()) {// Not all inputs could be processed
             return (GameUpdateResult.Lag);
         }
         this.updateWorld(currentTime);
-        if (this._pointTransition)
-        {
+        if (this._pointTransition) {
             if (this.getWinnerNick() != "")
                 this._state = GameState.Finished;
         }

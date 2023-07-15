@@ -170,6 +170,12 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.routeParamsSubscription = this.route.params.subscribe(({ id }) => {
             this.formMessage.patchValue({ id });
+            this.color = '#ffffff';
+            this.roles.official =  false,
+            this.roles.private =false,
+            this.urlPreview = 'https://www.pngall.com/wp-content/uploads/2016/05/Ping-Pong-Download-PNG.png'
+
+
             this._checkUserInRoom(id);
             this.get_roles_room();
         });
@@ -281,7 +287,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                         this.urlPreview = reader.result as string;
                     }
                     reader.readAsDataURL(file as any);
-                }, (error : HttpErrorResponse) =>{
+                }, (error: HttpErrorResponse) => {
                     this.alertService.openSnackBar(error.error.message, "Ok");
 
                 });
@@ -381,7 +387,7 @@ export class RoomGameIdComponent implements OnInit, OnDestroy {
                 })
             })
         this.http.delete(`${environment.apiUrl}room/${this.room_id}`)
-        . subscribe(()=>{});
+            .subscribe(() => { });
     }
 
 }
